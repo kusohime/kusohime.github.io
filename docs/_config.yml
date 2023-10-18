@@ -24,7 +24,7 @@ description: # >- means to ignore newlines until "baseurl:"
   autogynephilic boymoding genderfuck slash post-fujoshi
 domain: kusohime.github.io       # if you want to force HTTPS, specify the domain without the http at the start, e.g. example.com
 url: https://kusohime.github.io  # the base hostname and protocol for your site, e.g. http://example.com
-baseurl: /doc       # place folder name if the site is served in a subfolder
+baseurl: /docs       # place folder name if the site is served in a subfolder
 twitter_username: 
 github_username:  
 
