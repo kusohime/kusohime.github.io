@@ -42,9 +42,9 @@ header_pages:
   - analects.markdown
 
 style: dark # dark (default), light or hacker
-listen_for_clients_preferred_style: true # false (default) or true
+listen_for_clients_preferred_style: false # false (default) or true
 
-footer: '<a href="https://kusohime.xyz">返回</a>'
+footer: '<a href="https://kusohime.xyz">首页</a>'
 
 # google_analytics: UA-NNNNNNNN-N
 
