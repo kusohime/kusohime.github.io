@@ -32,7 +32,7 @@ github_username:
 # theme: jekyll-theme-console
 plugins:
   - jekyll-feed
-
+markdown: kramdown
 remote_theme: b2a3e8/jekyll-theme-console
 
 # console theme settings
