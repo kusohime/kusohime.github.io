@@ -3,6 +3,7 @@ layout: post
 title:  "测试"
 date:   2023-10-18 11:06:35 -0400
 categories: jekyll update
+usemathjax: true
 ---
 
 *jekyll格式+主题md/code snippet效果测试*
