@@ -13,4 +13,5 @@ permalink: /projects/
 3. [谷歌](https://magenta.tensorflow.org/coconet)
 4. [基于旧对位法的原创研究](https://medium.com/@arsenaultk9/artificial-intelligence-music-generation-melody-harmonization-pt1-cb3e92c9a0ca)
 
+
 与上述研究不同的是，除了结合较新的调性音乐和声学理论（以及有关的extramusical toolkit如集合-群论），更重于强调随机化、游戏性，以及交互界面的去专业化。在结合1和4的基础上，提高对位规则的准确度，智能化基于音域的配器，并实现输出。
