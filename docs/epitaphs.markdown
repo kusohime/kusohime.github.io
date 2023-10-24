@@ -18,7 +18,7 @@ permalink: /epitaphs/
     - 出于对被拒绝之恐惧的Les Forces Infinies d'Oppression
     - 包茎的 / 抗雄的萨蒂主义
     - Typometrical Virtue
-    - Philanthropic egocentrism / Wicked Selbstreflexion
+    - Philanthropic egocentrism / Malicious Selbstreflexion
         1. 来自Antidromic Necromantic Cacoethes
         2. 相信注定的Compunctious Augury
         3. 爱比恨长久
