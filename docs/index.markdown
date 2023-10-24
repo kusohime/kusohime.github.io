@@ -14,4 +14,4 @@ autogynephilic boymoding genderfuck slash post-fujoshi.
 - [译稿](https://mi-tian-gong.gitbook.io/yi-gao/)
 - [施工中] **Cella Anasyrmae**
 - [施工中] 本站一个受供养的版本
-- [测试]({{kusohime.xyz}}/programs.markdown)
+- [测试]({{kusohime.xyz}}/programs/)
