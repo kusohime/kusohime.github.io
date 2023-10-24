@@ -8,3 +8,5 @@ permalink: /about/
 去中心化联系方式：
 - 邮箱: chubbymeemaw@proton.me
 - Telegram: @chubbymeemaw
+
+[GitHub Repository](https://github.com/kusohime/kusohime.github.io/tree/main)
