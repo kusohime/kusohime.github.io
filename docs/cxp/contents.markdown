@@ -19,7 +19,7 @@ permalink: /cxp/contents/
 
 ## 目录
 
-- [1-5](kusohime.xyz/cxp/otf)
+- [1-5](/cxp/otf/)
 - 6-10
 - 11-15
 - 布鞋篇
