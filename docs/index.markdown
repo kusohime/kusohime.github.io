@@ -9,7 +9,7 @@ layout: home
 auto-(thelerethist)-gyne-comastic-mixoscopo-perisphra-philic boymoding genderfuck slash post-fujoshi.
 
 
-- [**脆熊篇**]({{kusohime.xyz}}/cxp/contents/) *Tᾰ̀ ἐλέγχη*
+- [施工中] [**脆熊篇**]({{kusohime.xyz}}/cxp/contents/) *Tᾰ̀ ἐλέγχη*
 - [**脆状体的早期风格**](https://t.me/schitzkomm) *Der Blitz steuert alles*
 - [译稿](https://mi-tian-gong.gitbook.io/yi-gao/)
 - [施工中] **Cella Anasyrmae**
