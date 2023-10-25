@@ -1,10 +1,12 @@
 ---
 layout: post
-title:  "测试"
+title:  "沙盒"
 date:   2023-10-18 11:06:35 -0400
 categories: jekyll update
 usemathjax: true
 ---
+
+建站用沙盒。
 
 *jekyll格式+主题md/code snippet效果测试*
 
