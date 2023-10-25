@@ -11,6 +11,7 @@ permalink: /cxp/contents/
 - ...
 - 感觉有点像现代主义荒诞剧场appropriated版本的古希腊悲剧chorus内部话语
 - 安托男阿尔托x本卫肖...
+- the aphasic delight of being contained~
 
 
 *连载中，完结于我们真理子化的那天*
@@ -18,7 +19,7 @@ permalink: /cxp/contents/
 
 ## 目录
 
-- 1-5
+- [1-5](kusohime.xyz/cxp/otf)
 - 6-10
 - 11-15
 - 布鞋篇
