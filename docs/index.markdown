@@ -6,7 +6,7 @@ layout: home
 ---
 粪姬 Kusohime (2002.12- )
 
-autogynephilic boymoding genderfuck thelerethist-gynecomastic mixoscopohilic slash post-fujoshi.
+auto-(thelerethist)-gyne-comastic-mixoscopo-perisphratic-philic boymoding genderfuck slash post-fujoshi.
 
 
 - [**脆熊篇**]({{kusohime.xyz}}/cxp/contents/) *Tᾰ̀ ἐλέγχη*
