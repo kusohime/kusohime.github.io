@@ -14,6 +14,8 @@ permalink: /cxp/contents/
 - the aphasic delight of being contained~
 
 
+> Beide Namen wurden von den Anhängern der "guten alten Zeit" in einem Athem genannt, wenn es galt, die Volksverführer der Gegenwart aufzuzählen ... **Die Geburt der Tragödie XIII**
+
 *连载中，完结于我们真理子化的那天*
 
 
