@@ -4,6 +4,8 @@ title: 1-5
 permalink: /cxp/otf/
 ---
 
+[返回](https://kusohime.xyz/cxp/contents/)
+
 # 1
 - 想象一种死亡学…
 - Necro/thanatology... Bereavement studies...
