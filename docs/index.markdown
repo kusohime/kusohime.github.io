@@ -6,7 +6,7 @@ layout: home
 ---
 粪姬 Kusohime (2002.12- )
 
-auto-(thelerethist)-gyne-comastic-mixoscopo-perisphra-philic boymoding genderfuck slash post-fujoshi.
+auto-(thelerethist)-gyne-comastic-mixoscopo-euphu-philic boymoding genderfuck slash post-fujoshi.
 站点施工中。
 
 
