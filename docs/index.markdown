@@ -2,7 +2,7 @@
 # Feel free to add content and custom Front Matter to this file.
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
-title:... ﾟ･:,*｡oO,｡★ﾟ･粪ж姬:,*｡O☆:,｡ﾟ･o,...
+title: ... ﾟ･:,*｡oO,｡★ﾟ･粪ж姬:,*｡O☆:,｡ﾟ･o,...
 layout: home
 ---
 粪姬 Kusohime (2002.12- )
