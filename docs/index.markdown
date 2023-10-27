@@ -20,4 +20,4 @@ layout: home
 - [施工中] 本站一个受供养的版本
 - [测试]({{kusohime.xyz}}/tests/)
 
-![雪山](/pictures/Weixin Image_20231027012225.jpg)
+![雪山](https://github.com/kusohime/kusohime.github.io/raw/main/docs/pictures/Weixin%20Image_20231027012225.jpg)
