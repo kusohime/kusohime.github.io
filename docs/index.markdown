@@ -19,3 +19,5 @@ layout: home
 - [施工中] **Cella Anasyrmae**
 - [施工中] 本站一个受供养的版本
 - [测试]({{kusohime.xyz}}/tests/)
+
+![雪山](/pictures/Weixin Image_20231027012225.jpg)
