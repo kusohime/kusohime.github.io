@@ -21,3 +21,4 @@ layout: home
 - [测试]({{kusohime.xyz}}/tests/)
 
 ![雪山](https://github.com/kusohime/kusohime.github.io/raw/main/docs/pictures/Weixin%20Image_20231027012225.jpg)
+༄༅།།གཉན་ཆེན་ཁ་བ་དཀར་པོ།
