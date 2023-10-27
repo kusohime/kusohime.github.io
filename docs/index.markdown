@@ -6,9 +6,11 @@ layout: home
 ---
 粪姬 Kusohime (2002.12- )
 
-auto-(thelerethist)-gyne-comastic-mixoscopo-euphu-philic boymoding genderfuck slash post-fujoshi.
-站点施工中。
+乳然笃窥 - automoeified slash post-fu-hermaphrodite ...
+星レ德 - 遏恶饿 淫蝇吟 virality-dionysusness ...
+ἀνταποκατάστασις συνωνυμέω - 言尻化三清 ...
 
+> __站点施工中 ...__
 
 - [施工中] [**脆熊篇**]({{kusohime.xyz}}/cxp/contents/) *Tᾰ̀ ἐλέγχη*
 - [**脆状体的早期风格**](https://t.me/schitzkomm) *Der Blitz steuert alles*
