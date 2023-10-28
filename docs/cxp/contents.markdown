@@ -24,8 +24,8 @@ permalink: /cxp/contents/
 - [1-5](/cxp/otf/)
 - [6-10](/cxp/stt/)
 - [11-15](/cxp/etf/)
-- 本羣篇
-- 布鞋篇
+- [本羣篇](/cxp/bqp/)
+- [布鞋篇](/cxp/bxp/)
 
 
 
