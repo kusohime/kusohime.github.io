@@ -20,5 +20,6 @@ layout: home
 - [施工中] 本站一个受供养的版本
 - [测试]({{kusohime.xyz}}/tests/)
 
-<img src="/pictures/Weixin Image_20231027012225.jpg" width="50%" alt="雪山星空" />
 ༄༅།།གཉན་ཆེན་ཁ་བ་དཀར་པོ།
+<img src="/pictures/Weixin Image_20231027012225.jpg" width="100%" alt="雪山星空" />
+
