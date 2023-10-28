@@ -22,8 +22,8 @@ permalink: /cxp/contents/
 ## 目录
 
 - [1-5](/cxp/otf/)
-- 6-10
-- 11-15
+- [6-10](/cxp/stt/)
+- [11-15](/cxp/etf/)
 - 本羣篇
 - 布鞋篇
 
