@@ -5,6 +5,10 @@ permalink: /analects/
 ---
 **题壁**
 
+## Nick Land
+
+God is nowhere to be found, yet there is still so much light! Light that dazzles and maddens; crisp, ruthless light. Space echoes like an immense tomb, yet the stars still burn. Why does the sun take so long to die? Or the moon retain such fidelity to the Earth? Where is the new darkness? The greatest of all unknowings? Is death itself *shy* of us?
+
 ## Nietzsche
 
 Besorgt, doch nicht trostlos stehen wir eine kleine Weile bei Seite, als die Beschaulichen, denen es erlaubt ist, Zeugen jener ungeheuren Kämpfe und Uebergänge zu sein. Ach! Es ist der Zauber dieser Kämpfe, dass, wer sie schaut, sie auch kämpfen muss!
