@@ -46,7 +46,7 @@ header_pages:
 style: dark # dark (default), light or hacker
 listen_for_clients_preferred_style: false # false (default) or true
 
-footer: '<a href="https://kusohime.xyz/about">关于</a>'
+footer: '<a href="https://kusohime.xyz/cxp/contents/">脆熊篇</a>'
 
 # google_analytics: UA-NNNNNNNN-N
 
