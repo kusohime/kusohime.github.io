@@ -1,9 +1,9 @@
 ---
 layout: page
-title: 题壁
+title: 題_analects
 permalink: /analects/
 ---
-**题壁**
+**题ノ<sub>レ</sub>壁**
 
 ## Nick Land
 
