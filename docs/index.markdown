@@ -13,13 +13,18 @@ layout: home
 
 > __站点施工中 ...__
 
-- [施工中] [**脆熊篇**]({{kusohime.xyz}}/cxp/contents/) *Tᾰ̀ ἐλέγχη*
-- [**脆状体的早期风格**](https://t.me/schitzkomm) *Der Blitz steuert alles*
-- [译稿](https://mi-tian-gong.gitbook.io/yi-gao/)
-- [施工中] **Cella Anasyrmae**
-- [施工中] 本站一个受供养的版本
+# - [施工中] [**脆熊篇**]({{kusohime.xyz}}/cxp/contents/) *Tᾰ̀ ἐλέγχη*
+# - [**脆状体的早期风格**](https://t.me/schitzkomm) *Der Blitz steuert alles*
+# - [译稿](https://mi-tian-gong.gitbook.io/yi-gao/)
+# - [施工中] **Cella Anasyrmae**
+# - [施工中] 本站一个受供养的版本
 - [测试]({{kusohime.xyz}}/tests/)
 
-༄༅།།གཉན་ཆེན་ཁ་བ་དཀར་པོ།
+<img src="/pictures/photo_2025-01-17 10.47.59.jpeg" width="50%" alt="德勒茲貓" />
+<img src="pictures/photo_2025-01-17 10.48.19.jpeg" width="50%" alt="創傷貓" />
+<img src="/pictures/photo_2025-01-17 10.45.57.jpeg" width="50%" alt="齊澤克貓" />
+<img src="/pictures/photo_2025-01-17 10.47.57.jpeg" width="50%" alt="馬克思貓" />
+
+༄༅།།གཉན་ཆེན་ཁ་བ་དཀར་པོ། 梅里雪山, 6/7/2023, 22:53
 <img src="/pictures/Weixin Image_20231027012225.jpg" width="100%" alt="雪山星空" />
 
