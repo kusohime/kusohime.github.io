@@ -41,6 +41,7 @@ header_pages:
   - epitaphs.markdown
   - analects.markdown
   - projects.markdown
+  - about.markdown
 
 style: dark # dark (default), light or hacker
 listen_for_clients_preferred_style: false # false (default) or true
