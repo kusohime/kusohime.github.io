@@ -1,6 +1,6 @@
 ---
 layout: page
-title: 遗愿
+title: 銘_Epitaphs
 permalink: /epitaphs/
 ---
 **遗愿**
