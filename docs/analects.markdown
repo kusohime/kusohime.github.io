@@ -5,6 +5,11 @@ permalink: /analects/
 ---
 **题ノ<sub>レ</sub>壁**
 
+<details>
+  <summary>Schoenberg's Love Confession 勋伯格的告白</summary>
+  <p>Denn der Überschwang ist das Fieber, das das Unreine aus der Seele scheidet. Und so rein zu werden wie Sie, ist meine Angelegenheit, da es mir versagt ist, so gross zu sein.</p>
+</details>
+
 ## Nick Land
 
 God is nowhere to be found, yet there is still so much light! Light that dazzles and maddens; crisp, ruthless light. Space echoes like an immense tomb, yet the stars still burn. Why does the sun take so long to die? Or the moon retain such fidelity to the Earth? Where is the new darkness? The greatest of all unknowings? Is death itself *shy* of us?
