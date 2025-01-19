@@ -9,18 +9,22 @@ permalink: /analects/
   <summary>Schoenberg's Love Confession 勋伯格的告白</summary>
   <p>Denn der Überschwang ist das Fieber, das das Unreine aus der Seele scheidet. Und so rein zu werden wie Sie, ist meine Angelegenheit, da es mir versagt ist, so gross zu sein.</p>
 </details>
-
-## Nick Land
-
-God is nowhere to be found, yet there is still so much light! Light that dazzles and maddens; crisp, ruthless light. Space echoes like an immense tomb, yet the stars still burn. Why does the sun take so long to die? Or the moon retain such fidelity to the Earth? Where is the new darkness? The greatest of all unknowings? Is death itself *shy* of us?
-
-## Nietzsche
-
-Besorgt, doch nicht trostlos stehen wir eine kleine Weile bei Seite, als die Beschaulichen, denen es erlaubt ist, Zeugen jener ungeheuren Kämpfe und Uebergänge zu sein. Ach! Es ist der Zauber dieser Kämpfe, dass, wer sie schaut, sie auch kämpfen muss!
-
-## Deleuze
-
-Je crois tres ya aucun besoin de comprendre ... c'est comme si ... comprends, c'est un certain niveau de lecture, mais c'est un peu comme si tu me disais pour un peu apprecier par example gauguin ou un grand tableau faut quand meme si commettre evidemment vous y connaitre. C'est mieux mais que y est egalement d'emotion extremement authentique extremement pur extremement violente ... dans une ignorance totale de la peinture ... c'est evident quelqu'un de recevoir mais comme un veritable coup de tonnerre un tableau et ...
+<br>
+<details>
+  <summary>Nick Land: _The Thirst for Annihilation: Georges Bataille and Virulent Nihilism_</summary>
+  <p>God is nowhere to be found, yet there is still so much light! Light that dazzles and maddens; crisp, ruthless light. Space echoes like an immense tomb, yet the stars still burn. Why does the sun take so long to die? Or the moon retain such fidelity to the Earth? Where is the new darkness? The greatest of all unknowings? Is death itself *shy* of us?</p>
+</details>
+<br>
+<details>
+  <summary>Nietzsche: _Götzen-Dämmerung_</summary>
+  <p>Besorgt, doch nicht trostlos stehen wir eine kleine Weile bei Seite, als die Beschaulichen, denen es erlaubt ist, Zeugen jener ungeheuren Kämpfe und Uebergänge zu sein. Ach! Es ist der Zauber dieser Kämpfe, dass, wer sie schaut, sie auch kämpfen muss!</p>
+</details>
+<br>
+<details>
+  <summary>Deleuze</summary>
+  <p>Je crois tres ya aucun besoin de comprendre ... c'est comme si ... comprends, c'est un certain niveau de lecture, mais c'est un peu comme si tu me disais pour un peu apprecier par example gauguin ou un grand tableau faut quand meme si commettre evidemment vous y connaitre. C'est mieux mais que y est egalement d'emotion extremement authentique extremement pur extremement violente ... dans une ignorance totale de la peinture ... c'est evident quelqu'un de recevoir mais comme un veritable coup de tonnerre un tableau et ...</p>
+</details>
+<br>
 
 ## Foucault
 
