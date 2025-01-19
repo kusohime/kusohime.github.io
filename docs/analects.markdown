@@ -1,6 +1,6 @@
 ---
 layout: page
-title: 題_analects
+title: 題_Analects
 permalink: /analects/
 ---
 **题ノ<sub>レ</sub>壁**
