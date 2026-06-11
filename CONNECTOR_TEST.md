@@ -1,1 +1,0 @@
-Temporary connection test. This file will be removed during the website publication commit.
