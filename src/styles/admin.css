@@ -1,0 +1,705 @@
+/*
+ * 中文：本地 Website Studio 的独立界面样式。
+ * English: Isolated interface styles for the local Website Studio.
+ * Caveat / 注意：不要在这里设计公开网站；global.css 才控制访客页面。
+ * Caveat: Do not design the public site here; global.css controls visitor pages.
+ */
+:root {
+  color-scheme: light;
+  --admin-accent: #cc0000;
+  --admin-background: #f3f2ef;
+  --admin-panel: #fff;
+  --admin-text: #171717;
+  --admin-muted: #666;
+  --admin-border: #c8c6c0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--admin-text);
+  background: var(--admin-background);
+}
+
+/*
+ * 管理页面固定在视口中，各个面板分别负责滚动。
+ * The Studio stays fixed to the viewport; each pane handles its own scrolling.
+ */
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+.studio-toolbar a,
+.pane-heading a {
+  color: inherit;
+}
+
+button {
+  border: 1px solid var(--admin-border);
+  padding: 0.4rem 0.65rem;
+  background: var(--admin-panel);
+  cursor: pointer;
+}
+
+button:hover,
+button:focus-visible,
+a:focus-visible {
+  border-color: var(--admin-accent);
+  outline: 2px solid color-mix(in srgb, var(--admin-accent) 35%, transparent);
+  outline-offset: 1px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/*
+ * 口令入口保持简单，不使用公开网站的排版系统。
+ * The passcode gate stays plain and independent from the public site's typography.
+ */
+.admin-gate {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.gate-card {
+  display: grid;
+  width: min(22rem, 100%);
+  gap: 0.8rem;
+  border: 1px solid var(--admin-border);
+  padding: 1.4rem;
+  background: var(--admin-panel);
+}
+
+.gate-card h1,
+.gate-card p {
+  margin: 0;
+}
+
+.gate-card h1 {
+  font-size: 1rem;
+}
+
+.gate-kicker,
+.gate-message {
+  color: var(--admin-muted);
+  font-size: 0.75rem;
+}
+
+.gate-card label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+}
+
+.gate-card input {
+  width: 100%;
+  border: 1px solid var(--admin-border);
+  padding: 0.55rem 0.6rem;
+}
+
+.gate-message[data-kind="error"] {
+  color: var(--admin-accent);
+}
+
+.studio {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.studio-toolbar {
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.8fr) minmax(28rem, auto) auto;
+  gap: 0.65rem 1.5rem;
+  align-items: center;
+  padding: 0.7rem 0.85rem 0.55rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-panel);
+}
+
+.studio-toolbar h1,
+.studio-toolbar p {
+  margin: 0;
+}
+
+.studio-toolbar h1 {
+  font-size: 1rem;
+}
+
+.studio-toolbar > div:first-child p,
+.studio-status {
+  color: var(--admin-muted);
+  font-size: 0.8rem;
+}
+
+.studio-identity {
+  min-width: 0;
+}
+
+.toolbar-actions,
+.studio-links,
+.preview-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+}
+
+.toolbar-actions label,
+.studio-links {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.studio-status {
+  grid-column: 1 / -1;
+  min-height: 1em;
+}
+
+.studio-status[data-kind="error"] {
+  color: var(--admin-accent);
+}
+
+.studio-workspace {
+  display: grid;
+  grid-template-columns: minmax(14rem, 17rem) minmax(24rem, 1.1fr) minmax(24rem, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.studio-sidebar,
+.studio-editor-pane,
+.studio-preview-pane {
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--admin-border);
+  background: var(--admin-panel);
+}
+
+.studio-sidebar,
+.studio-editor-pane {
+  overflow: hidden;
+}
+
+.studio-sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.sidebar-tabs button {
+  border-width: 0 0 1px;
+}
+
+.sidebar-tabs button[aria-selected="true"] {
+  color: var(--admin-accent);
+  border-bottom-color: var(--admin-accent);
+}
+
+.sidebar-panel {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.75rem;
+}
+
+.filter-field,
+.preview-controls label {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--admin-muted);
+  font-size: 0.75rem;
+}
+
+.filter-field input,
+.preview-controls input {
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  padding: 0.4rem 0.5rem;
+  color: var(--admin-text);
+  background: var(--admin-panel);
+}
+
+.file-list,
+.file-tree {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-tree ul {
+  margin: 0;
+  padding-left: 0.85rem;
+  list-style: none;
+}
+
+.file-tree details {
+  margin: 0;
+}
+
+.file-tree summary {
+  overflow: hidden;
+  padding: 0.28rem 0.25rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-tree summary::marker {
+  color: var(--admin-accent);
+}
+
+.file-tree button {
+  width: 100%;
+  overflow: hidden;
+  border: 0;
+  padding: 0.28rem 0.35rem;
+  background: transparent;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.74rem;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-tree button:hover,
+.file-tree button[aria-current="true"] {
+  color: var(--admin-accent);
+  background: color-mix(in srgb, var(--admin-accent) 7%, transparent);
+}
+
+.file-tree button[aria-current="true"] {
+  box-shadow: inset 0.18rem 0 var(--admin-accent);
+  font-weight: 700;
+}
+
+.file-tree button[data-inspector-reveal="true"] {
+  outline: 1px solid var(--admin-accent);
+  outline-offset: -1px;
+}
+
+/* 搜索结果显示路径、行号和命中的原文片段。 */
+.global-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: end;
+}
+
+.search-summary {
+  margin: 0.75rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+}
+
+.search-results {
+  margin: 0.55rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-results button {
+  display: grid;
+  width: 100%;
+  gap: 0.2rem;
+  border-width: 0 0 1px;
+  padding: 0.5rem 0.3rem;
+  text-align: left;
+}
+
+.search-result-path {
+  overflow: hidden;
+  color: var(--admin-accent);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-result-excerpt {
+  overflow: hidden;
+  color: var(--admin-text);
+  font-size: 0.74rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-introduction {
+  margin-bottom: 0.85rem;
+}
+
+.panel-introduction h2,
+.panel-introduction p {
+  margin: 0;
+}
+
+.panel-introduction h2 {
+  font-size: 0.85rem;
+}
+
+.panel-introduction p {
+  margin-top: 0.25rem;
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+}
+
+.design-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 0.65rem;
+}
+
+.design-mode button {
+  padding-inline: 0.35rem;
+  font-size: 0.7rem;
+}
+
+.design-mode button + button {
+  border-left: 0;
+}
+
+.design-mode button[aria-pressed="true"] {
+  color: var(--admin-accent);
+  border-color: var(--admin-accent);
+}
+
+.design-dashboard {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.design-dashboard > label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--admin-muted);
+  font-size: 0.75rem;
+}
+
+.design-dashboard select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  padding: 0.42rem 0.45rem;
+  color: var(--admin-text);
+  background: var(--admin-panel);
+}
+
+.color-control,
+.range-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.color-control input[type="color"] {
+  width: 100%;
+  height: 2rem;
+  border: 1px solid var(--admin-border);
+  padding: 0.1rem;
+  background: transparent;
+}
+
+.color-control output,
+.range-control output {
+  min-width: 3.2rem;
+  color: var(--admin-text);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.range-control input {
+  width: 100%;
+}
+
+.design-dashboard .design-check {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--admin-text);
+}
+
+.design-presets {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--admin-border);
+  padding: 0.65rem;
+}
+
+.design-presets legend {
+  padding-inline: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.design-presets label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+}
+
+.design-presets p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 0.68rem;
+}
+
+.design-presets > div {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3rem;
+}
+
+.design-presets button {
+  padding-inline: 0.25rem;
+  font-size: 0.68rem;
+}
+
+.design-actions {
+  display: block;
+}
+
+.design-actions button {
+  width: 100%;
+  padding-inline: 0.4rem;
+  font-size: 0.72rem;
+}
+
+.studio-editor-pane,
+.studio-preview-pane {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.pane-heading {
+  min-height: 2.8rem;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-background);
+  font-size: 0.8rem;
+}
+
+.pane-heading strong {
+  word-break: break-all;
+}
+
+.editor-heading {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editor-file-state {
+  display: flex;
+  min-width: 0;
+  gap: 0.45rem;
+  align-items: baseline;
+  overflow: hidden;
+}
+
+.editor-file-state strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-option {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0.3rem;
+  align-items: center;
+  color: var(--admin-muted);
+  white-space: nowrap;
+}
+
+[data-dirty-state] {
+  color: var(--admin-accent);
+}
+
+.code-editor {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.code-editor .cm-editor {
+  height: 100%;
+}
+
+.code-editor .cm-scroller {
+  overflow: auto;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.85rem;
+}
+
+.studio-preview-pane {
+  border-right: 0;
+}
+
+.preview-controls {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) auto auto auto auto auto;
+}
+
+.preview-controls label {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.inspect-control {
+  display: inline-flex !important;
+  grid-template-columns: none !important;
+  gap: 0.3rem !important;
+  align-items: center;
+  color: var(--admin-text) !important;
+  white-space: nowrap;
+}
+
+.preview-size {
+  display: inline-flex;
+}
+
+.preview-size button {
+  padding-inline: 0.45rem;
+}
+
+.preview-size button + button {
+  border-left: 0;
+}
+
+.preview-size button[aria-pressed="true"] {
+  color: var(--admin-accent);
+  border-color: var(--admin-accent);
+}
+
+/*
+ * 手机模式只改变预览框尺寸，不会改变真实网站代码。
+ * Phone mode changes only the preview frame, never the site's source.
+ */
+.preview-stage {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: #deddd9;
+}
+
+.preview-stage iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+.preview-stage[data-preview-stage="phone"] {
+  place-items: start center;
+  padding: 1rem;
+}
+
+.preview-stage[data-preview-stage="phone"] iframe {
+  width: min(390px, 100%);
+  height: min(844px, calc(100% - 0.01px));
+  min-height: 36rem;
+  border: 1px solid var(--admin-border);
+  box-shadow: 0 0 0 0.25rem rgb(255 255 255 / 55%);
+}
+
+.image-library {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.image-card {
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  padding: 0.4rem;
+}
+
+.image-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: var(--admin-background);
+}
+
+.image-card code {
+  display: block;
+  overflow: hidden;
+  margin-block: 0.4rem;
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.image-actions button {
+  padding: 0.25rem 0.4rem;
+  font-size: 0.7rem;
+}
+
+.local-only-message {
+  padding: 2rem;
+}
+
+@media (max-width: 70rem) {
+  .studio-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-status {
+    grid-column: auto;
+  }
+
+  .studio-workspace {
+    grid-template-columns: 14rem minmax(20rem, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .studio-sidebar {
+    grid-row: 1 / 3;
+  }
+
+  .studio-preview-pane {
+    grid-column: 2;
+  }
+}

@@ -1,0 +1,65 @@
+---
+// 中文：按文本类型整理并列出全部文章。
+// English: Groups and lists all writings by type.
+// Caveat / 注意：类型与显示顺序来自 data/contentTaxonomy.ts。
+// Caveat: Types and their display order come from data/contentTaxonomy.ts.
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  writingTypeHeadings,
+  writingTypes,
+} from "../../data/contentTaxonomy";
+
+const writings = (await getCollection("writings")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const writingGroups = writingTypes.map((type) => ({
+  type,
+  heading: writingTypeHeadings[type],
+  writings: writings.filter((writing) => writing.data.type === type),
+}));
+---
+
+<BaseLayout
+  title="Writings"
+  description="Translations, essays, fiction, blog entries, program notes, and other texts by Yixin Cui."
+>
+  <div
+    class="index-page writings-index"
+    data-source-file="src/pages/writings/index.astro"
+  >
+    <header class="page-introduction">
+      <h1 data-i18n-en="Writings" data-i18n-zh="文字">Writings</h1>
+    </header>
+
+    <div class="writing-groups">
+      {
+        writingGroups.map(({ type, heading, writings: groupedWritings }) => (
+          <section
+            class="writing-group"
+            aria-labelledby={`writing-type-${type.toLowerCase().replaceAll(" ", "-")}`}
+          >
+            <h2 id={`writing-type-${type.toLowerCase().replaceAll(" ", "-")}`}>
+              {heading}
+            </h2>
+            {groupedWritings.length > 0 ? (
+              <ul class="dated-list">
+                {groupedWritings.map((writing) => (
+                  <li data-source-file={`content/writings/${writing.id}/index.md`}>
+                    <time>{writing.data.date}</time>
+                    <a href={`/writings/${writing.data.slug}/`}>
+                      {writing.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No entries yet.</p>
+            )}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,17 @@
+<!--
+  中文：作品示例图 03；由 Markdown 中的 /images/work-03.svg 引用。
+  English: Placeholder work image 03, referenced from Markdown as /images/work-03.svg.
+  Caveat / 注意：保持 title 与图像内容一致以保证无障碍说明。
+  Caveat: Keep the title synchronized with the image for accessibility.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title">
+  <title id="title">Abstract concentric circle study</title>
+  <rect width="1200" height="800" fill="#ededeb"/>
+  <g fill="none" stroke="#111" stroke-width="2">
+    <circle cx="600" cy="400" r="80"/>
+    <circle cx="600" cy="400" r="150"/>
+    <circle cx="600" cy="400" r="230"/>
+    <circle cx="600" cy="400" r="320"/>
+    <path d="M0 400H1200"/>
+  </g>
+</svg>

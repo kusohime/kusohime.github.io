@@ -1,0 +1,68 @@
+# Yixin Cui Website / 崔逸新个人网站
+
+**中文：** 这是 Astro 静态网站与本地 Website Studio 的项目根目录。
+日常作品和文章维护请直接进入 `content/`；网站结构、组件与样式位于 `src/`。
+
+**English:** This is the project root for the Astro static site and local
+Website Studio. For ordinary works and writings, begin in `content/`; site
+structure, components, and styles live in `src/`.
+
+## Main Folders / 主要文件夹
+
+- `content/`: editable works and writings; see `content/README.md`.
+- `content/`: 可编辑的作品与文章；详见 `content/README.md`。
+- `src/`: website routes, components, scripts, schemas, and CSS.
+- `src/`: 网站路由、组件、脚本、数据检查与 CSS。
+- `public/`: files served directly, including images and the favicon.
+- `public/`: 直接公开的图片与 favicon 等静态文件。
+
+## Commands / 命令
+
+```text
+npm run dev      Local editing and preview / 本地编辑与预览
+npm run check    Astro and TypeScript checks / 类型与结构检查
+npm run build    Production static build / 生成静态网站
+```
+
+## Generated Files / 自动生成文件
+
+`package-lock.json`, `.astro/`, and `dist/` are generated. Do not add
+maintenance comments or hand-edit their internal content; update source files
+or `package.json` and let the tools regenerate them.
+
+`package-lock.json`、`.astro/` 与 `dist/` 都是自动生成内容。不要手动加入注释或
+修改内部结构；应修改源文件或 `package.json`，再由工具重新生成。
+
+## Publishing / 发布
+
+The workflow at `.github/workflows/deploy-pages.yml` checks and builds the site,
+removes the local-only Admin Studio from the public artifact, and deploys the
+remaining files to GitHub Pages whenever `main` is updated.
+
+`.github/workflows/deploy-pages.yml` 会在 `main` 更新时检查并构建网站，从公开
+产物中移除仅限本地使用的管理器，再将其余文件发布到 GitHub Pages。
+
+The production address is `https://yixincui.com`. In the GitHub repository,
+select **Settings > Pages > GitHub Actions**, set the custom domain to
+`yixincui.com`, and enable HTTPS after the certificate becomes available.
+
+正式网址为 `https://yixincui.com`。在 GitHub 仓库中选择
+**Settings > Pages > GitHub Actions**，将自定义域名设置为 `yixincui.com`，
+并在证书可用后开启 HTTPS。
+
+Current required DNS / 当前所需 DNS:
+
+```text
+A      @      185.199.108.153
+A      @      185.199.109.153
+A      @      185.199.110.153
+A      @      185.199.111.153
+CNAME  www    kusohime.github.io
+```
+
+GitHub domain verification also requires a TXT record whose host and value are
+generated under personal **Settings > Pages > Add a domain**. Keep that TXT
+record after verification.
+
+GitHub 域名验证还需要一条 TXT 记录，其主机名和值会在个人
+**Settings > Pages > Add a domain** 中生成。验证完成后应保留该 TXT 记录。

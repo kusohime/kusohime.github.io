@@ -1,0 +1,108 @@
+---
+// 中文：公开网站页眉、主导航与三个偏好菜单。
+// English: Public header, primary navigation, and three preference menus.
+// Caveat / 注意：选择性翻译依赖 data-i18n-en / data-i18n-zh。
+// Caveat: Selective translation depends on paired data-i18n-en / data-i18n-zh values.
+const { pathname } = Astro.url;
+const currentPath = pathname.replace(/\/$/, "") || "/";
+
+// 导航文字分别保存英文和中文；只有带 data-i18n 的元素会被切换。
+// Navigation stores both languages; only elements marked data-i18n are translated.
+const navItems = [
+  { label: "Works", labelZh: "作品", href: "/works" },
+  { label: "Writings", labelZh: "文字", href: "/writings" },
+];
+---
+
+<header class="site-header" data-source-file="src/components/Header.astro">
+  <div class="header-row">
+    <p class="site-name">
+      <a href="/" aria-label="Yixin Cui, home">Yixin Cui</a>
+    </p>
+
+    <nav aria-label="Primary navigation">
+      <ul class="nav-list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={currentPath.startsWith(item.href) ? "page" : undefined}
+              >
+                <span
+                  data-i18n-en={item.label}
+                  data-i18n-zh={item.labelZh}
+                >
+                  {item.label}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header-tools" aria-label="Site preferences">
+      <!-- keep everything you already have here -->
+    </div>
+  </div>
+</header>
+
+  <div class="header-tools" aria-label="Site preferences">
+    <!--
+      三个偏好菜单共用同一套脚本和 CSS，新增选项时保持 data-* 命名一致。
+      All preference menus share one script and style system; keep data-* names consistent.
+    -->
+    <details
+      class="preference-menu"
+      data-preference-menu
+      data-preference-type="language"
+    >
+      <summary>
+        <span class="disclosure-triangle" aria-hidden="true"></span>
+        <span data-current-language>EN</span>
+      </summary>
+      <div class="preference-options" role="group" aria-label="Language">
+        <button type="button" data-language-option="en">English</button>
+        <button type="button" data-language-option="zh">中文</button>
+      </div>
+    </details>
+
+    <details
+      class="preference-menu"
+      data-preference-menu
+      data-preference-type="theme"
+    >
+      <summary>
+        <span class="disclosure-triangle" aria-hidden="true"></span>
+        <span data-current-theme>Light</span>
+      </summary>
+      <div class="preference-options" role="group" aria-label="Color theme">
+        <button type="button" data-theme-option="light">Light</button>
+        <button type="button" data-theme-option="dark">Dark</button>
+      </div>
+    </details>
+
+    <details
+      class="preference-menu"
+      data-preference-menu
+      data-preference-type="font-size"
+    >
+      <summary>
+        <span class="disclosure-triangle" aria-hidden="true"></span>
+        <span data-current-font-size>M</span>
+      </summary>
+      <div class="preference-options" role="group" aria-label="Font size">
+        <button type="button" data-font-size-option="s">S</button>
+        <button type="button" data-font-size-option="m">M</button>
+        <button type="button" data-font-size-option="l">L</button>
+      </div>
+    </details>
+  </div>
+</header>
+
+<script>
+  import { initializePreferences } from "../scripts/preferences";
+
+  initializePreferences();
+</script>

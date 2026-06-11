@@ -1,0 +1,9 @@
+// 中文：启用 Astro 的严格 TypeScript 检查。
+// English: Enables Astro's strict TypeScript checking.
+// Caveat / 注意：dist 是生成目录，不应参加类型检查。
+// Caveat: dist is generated output and must remain excluded from type checking.
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}

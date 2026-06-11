@@ -1,0 +1,67 @@
+---
+// 中文：渲染分章文章的单个章节页面。
+// English: Renders one chapter belonging to a multi-part writing.
+// Caveat / 注意：父文章由共同的 content/writings 文件夹推断。
+// Caveat: The parent writing is inferred from the shared content/writings folder.
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { contentFolder } from "../../../data/contentPaths";
+
+export async function getStaticPaths() {
+  const [writings, chapters] = await Promise.all([
+    getCollection("writings"),
+    getCollection("writingChapters"),
+  ]);
+
+  return chapters.flatMap((chapter) => {
+    const parentFolder = contentFolder(chapter.id);
+    const writing = writings.find(
+      (entry) => contentFolder(entry.id) === parentFolder,
+    );
+
+    if (!writing) return [];
+
+    return [{
+      params: {
+        slug: writing.data.slug,
+        chapter: chapter.data.slug,
+      },
+      props: { writing, chapter },
+    }];
+  });
+}
+
+interface Props {
+  writing: CollectionEntry<"writings">;
+  chapter: CollectionEntry<"writingChapters">;
+}
+
+const { writing, chapter } = Astro.props;
+const { Content } = await render(chapter);
+---
+
+<BaseLayout
+  title={`${chapter.data.title} | ${writing.data.title}`}
+  description={chapter.data.excerpt ?? writing.data.excerpt}
+>
+  <article
+    class="detail-page writing-chapter-page"
+    data-source-file={`content/writings/${chapter.id}.md`}
+  >
+    <header class="detail-header">
+      <p>{writing.data.title}</p>
+      <h1>{chapter.data.title}</h1>
+    </header>
+
+    <div class="prose writing-body chicago-prose">
+      <Content />
+    </div>
+
+    <p class="back-link">
+      <a href={`/writings/${writing.data.slug}/`}>
+        <span class="back-triangle" aria-hidden="true"></span>
+        Back to Contents
+      </a>
+    </p>
+  </article>
+</BaseLayout>

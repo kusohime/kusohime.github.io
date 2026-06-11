@@ -1,0 +1,129 @@
+---
+// 中文：公开页面共用的 HTML 外壳，包含页眉、主体、页脚和偏好预加载。
+// English: Shared public-page shell with header, body, footer, and preference preload.
+// Caveat / 注意：此处改动会影响除管理器之外的全部公开页面。
+// Caveat: Changes here affect every public page except the Studio.
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { site } from "../data/site";
+import "katex/dist/katex.min.css";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  adminOnly?: boolean;
+}
+
+const {
+  title,
+  description = site.description,
+  noindex = false,
+  adminOnly = false,
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${site.name}` : site.name;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {
+      adminOnly && (
+        <>
+          <style is:inline>
+            html {"{"} visibility: hidden; {"}"}
+          </style>
+          <script is:inline>
+            // 管理指南只在本地 Studio 解锁后显示；这不是线上账户系统。
+            // The guide appears only after the local Studio is unlocked; this is not online authentication.
+            try {
+              const isLocal =
+                location.hostname === "localhost" ||
+                location.hostname === "127.0.0.1";
+              const isUnlocked =
+                sessionStorage.getItem("yixin-cui-studio-passcode") === "0592";
+
+              if (!isLocal || !isUnlocked) {
+                location.replace("/admin/");
+              } else {
+                document.documentElement.style.visibility = "visible";
+              }
+            } catch {
+              location.replace("/admin/");
+            }
+          </script>
+        </>
+      )
+    }
+    <script is:inline>
+      // 在页面绘制前恢复偏好设置，避免深浅色或字号短暂闪烁。
+      // Restore preferences before paint to prevent a theme or font-size flash.
+      try {
+        const theme = localStorage.getItem("yc-theme");
+        const fontSize = localStorage.getItem("yc-font-size");
+        const language = localStorage.getItem("yc-language");
+        const noticeDismissed =
+          sessionStorage.getItem("yc-site-notice-dismissed") === "true";
+
+        if (theme === "light" || theme === "dark") {
+          document.documentElement.dataset.theme = theme;
+        }
+
+        if (fontSize === "s" || fontSize === "m" || fontSize === "l") {
+          document.documentElement.dataset.fontSize = fontSize;
+        }
+
+        if (language === "en" || language === "zh") {
+          document.documentElement.lang = language === "zh" ? "zh-Hans" : "en";
+        }
+
+        if (noticeDismissed) {
+          document.documentElement.dataset.siteNotice = "dismissed";
+        }
+      } catch {}
+    </script>
+    <title>{pageTitle}</title>
+  </head>
+  <body data-style-source="src/styles/global.css">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    {
+      !adminOnly && (
+        <aside class="site-notice" role="status" aria-label="Website status">
+          <p>This site is under construction and all contents are placeholders.</p>
+          <button
+            type="button"
+            class="site-notice-dismiss"
+            aria-label="Dismiss website status notice"
+            data-site-notice-dismiss
+          >
+            X
+          </button>
+        </aside>
+      )
+    }
+    <div class="site-shell">
+      <Header />
+      <main id="main-content">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+    {
+      !adminOnly && (
+        <script>
+          import { initializeSiteNotice } from "../scripts/siteNotice";
+
+          initializeSiteNotice();
+        </script>
+      )
+    }
+  </body>
+</html>

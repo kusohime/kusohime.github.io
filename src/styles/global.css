@@ -1,0 +1,761 @@
+/*
+ * 中文：公开网站的全局排版、颜色、间距与内容样式。
+ * English: Global typography, color, spacing, and content styles for the public site.
+ * Caveat / 注意：优先修改 :root 变量；大范围选择器会影响所有页面。
+ * Caveat: Prefer :root variables; broad selectors affect every public page.
+ */
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+
+:root {
+  color-scheme: light;
+
+  /*
+   * 字体候选集中放在这里；以后调整字体时不需要逐个修改组件。
+   * Font stacks live here so typography can change without editing each component.
+   */
+  /* OPTION 1: classic typewriter / 经典打字机 */
+  --font-typewriter: "Lucida Console",
+                     "Courier New",
+                     Courier,
+                     "Noto Sans Mono CJK SC",
+                     "Noto Sans Mono CJK JP",
+                     "Source Han Mono SC",
+                     "Source Han Mono",
+                     "Sarasa Mono SC",
+                     "Sarasa Mono J",
+                     "NSimSun",
+                     "SimSun",
+                     "MS Gothic",
+                     "Yu Gothic",
+                     monospace;
+
+  /* OPTION 2: modern mono / 现代等宽 */
+  --font-modern-mono: "IBM Plex Mono",
+                      "Noto Sans Mono CJK SC",
+                      "Source Han Mono SC",
+                      Consolas,
+                      monospace;
+
+  /* OPTION 3: system sans / 系统无衬线 */
+  --font-system-sans: "Helvetica Neue",
+                      Helvetica,
+                      Arial,
+                      "PingFang SC",
+                      "PingFang TC",
+                      "Hiragino Sans GB",
+                      "Microsoft YaHei",
+                      "Noto Sans CJK SC",
+                      "Source Han Sans SC",
+                      sans-serif;
+
+  /* OPTION 4: humanist sans / 人文无衬线 */
+  --font-humanist-sans: "Source Sans 3",
+                        "PingFang SC",
+                        "Microsoft YaHei",
+                        "Noto Sans CJK SC",
+                        sans-serif;
+
+  /* OPTION 5: traditional serif / 传统衬线 */
+  --font-system-serif: "Times New Roman",
+                       Times,
+                       "Songti SC",
+                       SimSun,
+                       "Noto Serif CJK SC",
+                       serif;
+
+  /* OPTION 6: Garamond / Garamond 衬线 */
+  --font-garamond: "EB Garamond",
+                   Garamond,
+                   "Songti SC",
+                   "Noto Serif CJK SC",
+                   Georgia,
+                   serif;
+
+  /*
+   * DESIGN DASHBOARD / 设计面板
+   * The local Studio edits only the variables in this documented block.
+   * 本地管理器只会修改这个区块中的变量。
+   */
+  --font-body: var(--font-system-serif);
+
+  --font-heading: var(--font-body);
+  --base-font-size: 17px;
+
+  --color-text: #000;
+  --color-background: #fff;
+  --color-muted: #555;
+  --color-rule: #aaa;
+  /*
+   * 全站主题色：链接下划线、三角形、引用线等都引用这个变量。
+   * Global accent: link underlines, triangles, quote rules, and related details use it.
+   */
+  --theme-color: #c81e1e;
+
+  --page-width: 64rem;
+  --content-width: 44rem;
+  --reading-width: 38rem;
+  --page-gutter: 1.25rem;
+
+  --space-xs: 0.35rem;
+  --space-sm: 0.7rem;
+  --space-md: 1.4rem;
+  --space-lg: 2.8rem;
+  --space-xl: 4rem;
+
+  --line-height: 1.3;
+  --heading-line-height: 1.2;
+  --paragraph-indent: 0em;
+  --paragraph-spacing: 1rem;
+  /* END DESIGN DASHBOARD / 设计面板结束 */
+}
+
+html {
+  font-family: var(--font-body);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-text: #f2f2f2;
+  --color-background: #111;
+  --color-muted: #bbb;
+  --color-rule: #666;
+}
+
+:root,
+:root[data-font-size="m"] {
+  font-size: var(--base-font-size);
+}
+
+:root[data-font-size="s"] {
+  font-size: calc(var(--base-font-size) - 2px);
+}
+
+:root[data-font-size="l"] {
+  font-size: calc(var(--base-font-size) + 3px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color: var(--color-text);
+  background: var(--color-background);
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  line-height: var(--line-height);
+}
+
+.site-notice {
+  position: relative;
+  width: 100%;
+  border-bottom: 1px solid var(--theme-color);
+  padding: var(--space-xs) calc(var(--page-gutter) + 2rem);
+  text-align: center;
+}
+
+.site-notice p {
+  margin: 0;
+}
+
+.site-notice-dismiss {
+  position: absolute;
+  top: 50%;
+  right: var(--page-gutter);
+  border: 0;
+  padding: 0.15rem 0.35rem;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.site-notice-dismiss:hover,
+.site-notice-dismiss:focus-visible {
+  color: var(--theme-color);
+  outline: 1px solid var(--theme-color);
+}
+
+:root[data-site-notice="dismissed"] .site-notice {
+  display: none;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--theme-color);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.15em;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: var(--heading-line-height);
+}
+
+button,
+summary {
+  color: inherit;
+  font: inherit;
+}
+
+.site-shell {
+  width: min(100% - (2 * var(--page-gutter)), var(--page-width));
+  margin: 0 auto;
+  padding: var(--space-md) 0;
+  text-align: left;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  position: static;
+}
+
+.site-header,
+.site-footer {
+  padding: var(--space-sm) 0;
+}
+
+.site-name {
+  margin-top: 0;
+}
+
+.nav-list,
+.category-navigation ul,
+.resource-links ul,
+.works-list,
+.writings-list,
+.dated-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-list,
+.category-navigation ul,
+.resource-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: var(--space-sm);
+}
+
+.header-tools {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.preference-menu {
+  position: relative;
+}
+
+.preference-menu summary {
+  cursor: pointer;
+  list-style: none;
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+  text-underline-offset: 0.15em;
+}
+
+.preference-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure-triangle {
+  display: inline-block;
+  margin-right: 0.3em;
+  border-top: 0.3em solid transparent;
+  border-bottom: 0.3em solid transparent;
+  border-left: 0.4em solid var(--theme-color);
+  vertical-align: 0.05em;
+  transition: transform 150ms ease;
+}
+
+.preference-menu[open] .disclosure-triangle {
+  transform: rotate(90deg);
+}
+
+.preference-options {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  min-width: 7rem;
+  padding: var(--space-xs);
+  border: 1px solid var(--theme-color);
+  background: var(--color-background);
+}
+
+.preference-options button {
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0.25rem 0.35rem;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.preference-options button:hover,
+.preference-options button:focus-visible,
+.preference-options button[aria-pressed="true"] {
+  text-decoration: underline;
+}
+
+main {
+  padding: var(--space-lg) 0;
+}
+
+.home-page,
+.index-page,
+.work-detail,
+.writing-title-page,
+.writing-chapter-page {
+  max-width: var(--content-width);
+}
+
+.home-page > section,
+.page-introduction,
+.category-navigation,
+.category-group,
+.writing-group,
+.entry-list > li {
+  margin-bottom: var(--space-lg);
+}
+
+.page-introduction {
+  max-width: var(--reading-width);
+}
+
+.category-navigation,
+.category-group {
+  scroll-margin-top: var(--space-md);
+}
+
+.category-navigation p {
+  margin-bottom: var(--space-xs);
+}
+
+.entry-summary {
+  margin: 0;
+}
+
+.entry-summary h2,
+.entry-summary h3 {
+  margin-bottom: var(--space-xs);
+}
+
+.writing-groups {
+  max-width: var(--reading-width);
+}
+
+.dated-list li {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.dated-list time {
+  color: var(--color-muted);
+}
+
+.detail-page {
+  margin: 0;
+}
+
+.detail-header {
+  max-width: var(--reading-width);
+  margin: 0 0 var(--space-lg);
+}
+
+.metadata-list {
+  max-width: var(--reading-width);
+  margin: 0 0 var(--space-md);
+}
+
+.metadata-list > div {
+  margin-bottom: var(--space-sm);
+}
+
+.metadata-list dt {
+  font-weight: bold;
+}
+
+.metadata-list dd {
+  margin: 0;
+}
+
+.metadata-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resource-links {
+  margin-bottom: var(--space-lg);
+}
+
+.media-placeholder {
+  max-width: var(--content-width);
+  margin: 0 0 var(--space-lg);
+}
+
+.media-placeholder img,
+.media-placeholder > div {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+}
+
+.media-placeholder > div {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-rule);
+}
+
+.media-placeholder figcaption {
+  margin-top: var(--space-xs);
+  color: var(--color-muted);
+}
+
+.prose,
+.writing-brief,
+.writing-contents {
+  max-width: var(--reading-width);
+}
+
+.prose > :first-child,
+.writing-brief > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child,
+.writing-brief > :last-child {
+  margin-bottom: 0;
+}
+
+.prose h2,
+.prose h3 {
+  margin-top: var(--space-lg);
+  scroll-margin-top: var(--space-md);
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote {
+  margin-block: var(--space-sm);
+}
+
+.chicago-prose > p {
+  margin-block: 0 var(--paragraph-spacing);
+  text-indent: var(--paragraph-indent);
+}
+
+.chicago-prose > h2 + p,
+.chicago-prose > h3 + p,
+.chicago-prose > figure + p,
+.chicago-prose > blockquote + p {
+  text-indent: var(--paragraph-indent);
+}
+
+.chicago-prose .no-indent p,
+.chicago-prose p.no-indent,
+.chicago-prose .poetry p {
+  text-indent: 0;
+}
+
+.prose blockquote {
+  margin: var(--space-md) 0;
+  padding-left: var(--space-sm);
+  border-left: 0.18rem solid var(--theme-color);
+}
+
+.poetry {
+  margin-block: var(--space-md);
+}
+
+.poetry p {
+  margin: 0;
+  line-height: inherit;
+  white-space: normal;
+}
+
+.poetry footer {
+  margin-top: var(--space-xs);
+  color: var(--color-muted);
+}
+
+.chicago-prose blockquote {
+  margin-right: 0;
+  margin-left: var(--space-md);
+}
+
+.writing-brief {
+  margin-bottom: var(--space-lg);
+}
+
+.writing-brief > .prose {
+  margin-top: var(--space-md);
+}
+
+.writing-contents {
+  margin-bottom: var(--space-lg);
+}
+
+.writing-contents ol {
+  padding-left: 1.25rem;
+}
+
+.writing-contents li {
+  margin-bottom: var(--space-sm);
+}
+
+.writing-contents li p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.admin-guide-contents li a {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.admin-guide-contents li a > span {
+  color: var(--color-muted);
+}
+
+.admin-guide-contents a[aria-current="page"] {
+  font-weight: bold;
+}
+
+.writing-body {
+  text-align: left;
+}
+
+.back-link {
+  margin-top: var(--space-lg);
+}
+
+.back-link-top {
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+}
+
+.back-link a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+
+.back-triangle {
+  display: inline-block;
+  border-top: 0.3em solid transparent;
+  border-right: 0.45em solid var(--theme-color);
+  border-bottom: 0.3em solid transparent;
+}
+
+.forward-triangle {
+  display: inline-block;
+  border-top: 0.3em solid transparent;
+  border-bottom: 0.3em solid transparent;
+  border-left: 0.45em solid var(--theme-color);
+}
+
+.guide-chapter-navigation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-md);
+  max-width: var(--reading-width);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+.guide-chapter-navigation a {
+  display: inline-flex;
+  gap: 0.4em;
+  align-items: baseline;
+}
+
+.guide-chapter-navigation a:last-child {
+  justify-self: end;
+  text-align: right;
+}
+
+.writing-body figure {
+  margin: var(--space-md) 0;
+}
+
+.writing-body figcaption {
+  margin-top: var(--space-xs);
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+
+.writing-body ruby {
+  ruby-align: center;
+}
+
+.writing-body rt {
+  font-size: 0.6em;
+}
+
+.writing-body .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.writing-body .footnotes {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.9em;
+}
+
+.writing-body .footnotes p {
+  margin: 0;
+  text-indent: 0;
+}
+
+.writing-body sup {
+  line-height: 0;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--theme-color);
+  margin-block: var(--space-md);
+}
+
+.prose pre,
+.prose code {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.prose :not(pre) > code {
+  padding: 0.05em 0.25em;
+  background: color-mix(in srgb, var(--theme-color) 8%, transparent);
+}
+
+.prose pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-rule);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: var(--space-md);
+}
+
+.prose th,
+.prose td {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose mark {
+  color: inherit;
+  background: color-mix(in srgb, var(--theme-color) 25%, transparent);
+}
+
+.prose kbd {
+  padding: 0.05em 0.3em;
+  border: 1px solid var(--color-rule);
+  border-radius: 0.2em;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.85em;
+}
+
+.prose dl {
+  margin-block: var(--space-md);
+}
+
+.prose dt {
+  font-weight: bold;
+}
+
+.prose dd {
+  margin: 0 0 var(--space-sm) var(--space-md);
+}
+
+.prose details {
+  margin-block: var(--space-md);
+}
+
+.prose details summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+.prose .contains-task-list,
+.prose .task-list-item {
+  list-style: none;
+}
+
+.prose .task-list-item input {
+  margin-left: -1.25rem;
+}
+
+.site-footer {
+  margin-top: var(--space-md);
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --space-lg: 3rem;
+    --space-xl: 4rem;
+  }
+
+  .dated-list li {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .preference-options {
+    right: 0;
+    left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .disclosure-triangle {
+    transition: none;
+  }
+}

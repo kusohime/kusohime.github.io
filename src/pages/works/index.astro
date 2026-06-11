@@ -1,0 +1,91 @@
+---
+// 中文：按类别整理并列出全部作品。
+// English: Groups and lists all works by category.
+// Caveat / 注意：类别顺序来自 data/contentTaxonomy.ts。
+// Caveat: Category order comes from data/contentTaxonomy.ts.
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { toAnchor, workCategories } from "../../data/contentTaxonomy";
+
+const works = (await getCollection("works")).sort(
+  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
+);
+
+const worksByCategory = workCategories.map((category) => ({
+  category,
+  works: works.filter((work) => work.data.category === category),
+}));
+---
+
+<BaseLayout
+  title="Works"
+  description="Selected compositions by Yixin Cui."
+>
+  <div
+    class="index-page works-index"
+    data-source-file="src/pages/works/index.astro"
+  >
+    <header class="page-introduction">
+      <h1>Works</h1>
+      <p>
+        Selected compositions for soloists, voices, ensembles, orchestra,
+        theatre, and other formats.
+      </p>
+    </header>
+
+    <nav class="category-navigation" aria-label="Browse works by category">
+      <p>Browse by category:</p>
+      <ul>
+        {
+          worksByCategory.map(({ category, works: categoryWorks }) => (
+            <li>
+              <a href={`#${toAnchor(category)}`}>
+                {category} ({categoryWorks.length})
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="category-groups">
+      {
+        worksByCategory.map(({ category, works: categoryWorks }) => (
+          <section
+            class="category-group"
+            id={toAnchor(category)}
+            aria-labelledby={`${toAnchor(category)}-heading`}
+          >
+            <h2 id={`${toAnchor(category)}-heading`}>{category}</h2>
+            {categoryWorks.length > 0 ? (
+              <ol class="entry-list works-list">
+                {categoryWorks.map((work) => (
+                  <li>
+                    <article
+                      class="entry-summary work-summary"
+                      data-source-file={`content/works/${work.id}/index.md`}
+                    >
+                      <h3>
+                        <a href={`/works/${work.data.slug}/`}>
+                          {work.data.title}
+                        </a>
+                      </h3>
+                      {work.data.subtitle && <p>{work.data.subtitle}</p>}
+                      <p>
+                        {work.data.year}. {work.data.instrumentation}.{" "}
+                        {work.data.duration}.
+                      </p>
+                      <p>{work.data.description}</p>
+                    </article>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p>No works in this category yet.</p>
+            )}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

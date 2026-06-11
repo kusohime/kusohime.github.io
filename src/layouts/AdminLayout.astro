@@ -1,0 +1,30 @@
+---
+// 中文：管理器专用 HTML 外壳，隔离公开网站样式并禁止搜索引擎收录。
+// English: Admin-only HTML shell that isolates styles and blocks search indexing.
+// Caveat / 注意：不要导入 global.css，否则可能干扰 CodeMirror 界面。
+// Caveat: Do not import global.css here; it can disturb the CodeMirror interface.
+import "../styles/admin.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <!--
+    管理页面使用独立样式，避免编辑器界面受到公开网站 CSS 的影响。
+    Admin styles are isolated so public-site CSS cannot disturb the editor interface.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

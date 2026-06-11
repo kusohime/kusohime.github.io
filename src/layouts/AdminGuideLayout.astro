@@ -1,0 +1,127 @@
+---
+// 中文：管理指南章节的共用布局，自动显示总目录和前后章节。
+// English: Shared layout for Admin Guide chapters with contents and previous/next links.
+// Caveat / 注意：页面仍是静态文件；本地口令仅用于阻止普通访问，不是线上保密系统。
+// Caveat: Pages remain static files; the local passcode prevents casual access, not online secrecy.
+import BaseLayout from "./BaseLayout.astro";
+import { adminGuideChapters } from "../data/adminGuide";
+
+const { frontmatter } = Astro.props;
+const currentIndex = adminGuideChapters.findIndex(
+  (chapter) => chapter.slug === frontmatter.slug,
+);
+const previousChapter =
+  currentIndex > 0 ? adminGuideChapters[currentIndex - 1] : undefined;
+const nextChapter =
+  currentIndex >= 0 && currentIndex < adminGuideChapters.length - 1
+    ? adminGuideChapters[currentIndex + 1]
+    : undefined;
+
+const bilingual = (value: string) => {
+  const [en, ...zhParts] = value.split(" / ");
+  return { en, zh: zhParts.join(" / ") || en };
+};
+const title = bilingual(frontmatter.title);
+const description = bilingual(frontmatter.description ?? "");
+---
+
+<BaseLayout
+  title={frontmatter.title}
+  description={frontmatter.description}
+  noindex
+  adminOnly
+>
+  <article
+    class="detail-page writing-chapter-page admin-guide-page"
+    data-source-file={`src/pages/admin/guide/${frontmatter.slug}.md`}
+  >
+    <header class="detail-header">
+      <p class="detail-kicker">
+        <span data-guide-language="en">Website Studio Admin Guide</span>
+        <span data-guide-language="zh" lang="zh-Hans" hidden>网站管理指南</span>
+      </p>
+      <h1>
+        <span data-guide-language="en">{title.en}</span>
+        <span data-guide-language="zh" lang="zh-Hans" hidden>{title.zh}</span>
+      </h1>
+      {
+        frontmatter.description && (
+          <p>
+            <span data-guide-language="en">{description.en}</span>
+            <span data-guide-language="zh" lang="zh-Hans" hidden>{description.zh}</span>
+          </p>
+        )
+      }
+    </header>
+
+    <nav class="writing-contents admin-guide-contents" aria-label="Admin Guide contents">
+      <h2>
+        <span data-guide-language="en">Contents</span>
+        <span data-guide-language="zh" lang="zh-Hans" hidden>目录</span>
+      </h2>
+      <ol>
+        {
+          adminGuideChapters.map((chapter) => {
+            const chapterTitle = bilingual(chapter.title);
+            return (
+              <li>
+                <a
+                  href={`/admin/guide/${chapter.slug}/`}
+                  aria-current={chapter.slug === frontmatter.slug ? "page" : undefined}
+                >
+                  <span data-guide-language="en">{chapterTitle.en}</span>
+                  <span data-guide-language="zh" lang="zh-Hans" hidden>{chapterTitle.zh}</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </nav>
+
+    <div class="prose writing-body chicago-prose">
+      <slot />
+    </div>
+
+    <nav class="guide-chapter-navigation" aria-label="Adjacent guide chapters">
+      {
+        previousChapter ? (
+          <a href={`/admin/guide/${previousChapter.slug}/`}>
+            <span class="back-triangle" aria-hidden="true"></span>
+            <span data-guide-language="en">{bilingual(previousChapter.title).en}</span>
+            <span data-guide-language="zh" lang="zh-Hans" hidden>
+              {bilingual(previousChapter.title).zh}
+            </span>
+          </a>
+        ) : (
+          <span></span>
+        )
+      }
+      {
+        nextChapter && (
+          <a href={`/admin/guide/${nextChapter.slug}/`}>
+            <span data-guide-language="en">{bilingual(nextChapter.title).en}</span>
+            <span data-guide-language="zh" lang="zh-Hans" hidden>
+              {bilingual(nextChapter.title).zh}
+            </span>
+            <span class="forward-triangle" aria-hidden="true"></span>
+          </a>
+        )
+      }
+    </nav>
+
+    <p class="back-link">
+      <a href="/admin/guide/">
+        <span class="back-triangle" aria-hidden="true"></span>
+        <span data-guide-language="en">Guide contents</span>
+        <span data-guide-language="zh" lang="zh-Hans" hidden>指南目录</span>
+      </a>
+    </p>
+  </article>
+
+  <script>
+    import { prepareAdminGuideLanguage } from "../scripts/adminGuideLanguage";
+
+    prepareAdminGuideLanguage();
+  </script>
+</BaseLayout>

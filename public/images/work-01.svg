@@ -1,0 +1,20 @@
+<!--
+  中文：作品示例图 01；由 Markdown 中的 /images/work-01.svg 引用。
+  English: Placeholder work image 01, referenced from Markdown as /images/work-01.svg.
+  Caveat / 注意：保持 viewBox，避免现有页面比例变化。
+  Caveat: Keep the viewBox stable to preserve the current page ratio.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title">
+  <title id="title">Abstract horizontal line study</title>
+  <rect width="1200" height="800" fill="#f4f4f2"/>
+  <g fill="none" stroke="#111" stroke-width="2">
+    <path d="M80 180H1120"/>
+    <path d="M80 245H980"/>
+    <path d="M220 310H1120"/>
+    <path d="M80 375H830"/>
+    <path d="M370 440H1120"/>
+    <path d="M80 505H1050"/>
+    <path d="M160 570H1120"/>
+    <path d="M80 635H900"/>
+  </g>
+</svg>

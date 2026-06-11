@@ -1,0 +1,35 @@
+---
+// 中文：公开网站首页，只保留姓名、身份与通讯邮箱。
+// English: Public home page containing only the name, role, and correspondence email.
+// Caveat / 注意：不要在此重新加入 selected works 或 recent writings。
+// Caveat: Keep selected works and recent writings off this page.
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+  <div class="home-page" data-source-file="src/pages/index.astro">
+    <section aria-labelledby="home-title">
+      <h1 id="home-title">Yixin Cui</h1>
+      <p
+        data-i18n-en="Composer / Scholar"
+        data-i18n-zh="作曲家 / 学者"
+      >
+        Composer / Scholar
+      </p>
+      <p
+        data-i18n-en="Yixin Cui is a composer and scholar whose work attends to resonance, memory, and the ethics of listening."
+        data-i18n-zh="崔一心是一位作曲家与学者，其创作关注共鸣、记忆以及聆听的伦理。"
+      >
+        Yixin Cui is a composer and scholar whose work attends to resonance,
+        memory, and the ethics of listening.
+      </p>
+      <p
+        data-i18n-en="Through music and writing, she explores how sound carries histories across bodies, places, and forms of notation."
+        data-i18n-zh="她通过音乐与写作，探索声音如何在身体、地点与记谱形式之间承载历史。"
+      >
+        Through music and writing, she explores how sound carries histories
+        across bodies, places, and forms of notation.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

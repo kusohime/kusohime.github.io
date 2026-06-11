@@ -1,0 +1,123 @@
+---
+// 中文：根据作品 Markdown 生成单个作品详情页。
+// English: Generates an individual work detail page from its Markdown file.
+// Caveat / 注意：公开网址使用 frontmatter 中的 slug，而不是文件夹名称。
+// Caveat: The public URL uses the frontmatter slug, not the folder name.
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const works = await getCollection("works");
+
+  return works.map((work) => ({
+    params: { slug: work.data.slug },
+    props: { work },
+  }));
+}
+
+interface Props {
+  work: CollectionEntry<"works">;
+}
+
+const { work } = Astro.props;
+const { Content } = await render(work);
+const {
+  title,
+  subtitle,
+  year,
+  category,
+  instrumentation,
+  duration,
+  collaborators,
+  premiere,
+  recordingUrl,
+  scoreUrl,
+  image,
+  imageAlt,
+  description,
+} = work.data;
+---
+
+<BaseLayout title={title} description={description}>
+  <article
+    class="detail-page work-detail"
+    data-source-file={`content/works/${work.id}/index.md`}
+  >
+    <header class="detail-header">
+      <h1>{title}</h1>
+      {subtitle && <p>{subtitle}</p>}
+      <p>{year}</p>
+    </header>
+
+    <dl class="metadata-list">
+      <div>
+        <dt>Category</dt>
+        <dd>{category}</dd>
+      </div>
+      <div>
+        <dt>Instrumentation</dt>
+        <dd>{instrumentation}</dd>
+      </div>
+      <div>
+        <dt>Duration</dt>
+        <dd>{duration}</dd>
+      </div>
+      {
+        collaborators && (
+          <div>
+            <dt>Collaborators</dt>
+            <dd>
+              <ul>
+                {collaborators.map((collaborator) => <li>{collaborator}</li>)}
+              </ul>
+            </dd>
+          </div>
+        )
+      }
+      {
+        premiere && (
+          <div>
+            <dt>Premiere</dt>
+            <dd>{premiere}</dd>
+          </div>
+        )
+      }
+    </dl>
+
+    {
+      (recordingUrl || scoreUrl) && (
+        <nav class="resource-links" aria-label="Work resources">
+          <ul>
+            {recordingUrl && (
+              <li><a href={recordingUrl}>Recording</a></li>
+            )}
+            {scoreUrl && (
+              <li><a href={scoreUrl}>Score</a></li>
+            )}
+          </ul>
+        </nav>
+      )
+    }
+
+    <figure class="media-placeholder">
+      {
+        image ? (
+          <img src={image} alt={imageAlt ?? ""} width="1200" height="800" />
+        ) : (
+          <div role="img" aria-label="Media placeholder">
+            Image or media placeholder
+          </div>
+        )
+      }
+      <figcaption>Image or media placeholder</figcaption>
+    </figure>
+
+    <div class="prose work-notes">
+      <Content />
+    </div>
+
+    <p class="back-link">
+      <a href="/works/"><span class="back-triangle" aria-hidden="true"></span>Back to Works</a>
+    </p>
+  </article>
+</BaseLayout>

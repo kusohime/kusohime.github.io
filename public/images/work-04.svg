@@ -1,0 +1,15 @@
+<!--
+  中文：作品示例图 04；由 Markdown 中的 /images/work-04.svg 引用。
+  English: Placeholder work image 04, referenced from Markdown as /images/work-04.svg.
+  Caveat / 注意：保持 viewBox，避免现有页面比例变化。
+  Caveat: Keep the viewBox stable to preserve the current page ratio.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title">
+  <title id="title">Abstract angular landscape study</title>
+  <rect width="1200" height="800" fill="#f7f7f5"/>
+  <g fill="none" stroke="#111" stroke-width="2">
+    <path d="M0 610 230 380 390 530 670 190 870 450 1030 300 1200 500"/>
+    <path d="M0 680 270 470 440 620 690 300 900 540 1080 410 1200 570"/>
+    <path d="M0 750H1200"/>
+  </g>
+</svg>

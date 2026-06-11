@@ -1,0 +1,76 @@
+---
+// 中文：渲染文章标题页，并为同一文件夹中的章节自动生成目录。
+// English: Renders a writing title page and auto-builds contents from its folder.
+// Caveat / 注意：章节必须放在该文章的 chapters/ 文件夹中。
+// Caveat: Chapters must remain inside that writing's chapters/ folder.
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { contentFolder } from "../../data/contentPaths";
+
+export async function getStaticPaths() {
+  const writings = await getCollection("writings");
+
+  return writings.map((writing) => ({
+    params: { slug: writing.data.slug },
+    props: { writing },
+  }));
+}
+
+interface Props {
+  writing: CollectionEntry<"writings">;
+}
+
+const { writing } = Astro.props;
+const { Content } = await render(writing);
+const allChapters = await getCollection("writingChapters");
+const writingFolder = contentFolder(writing.id);
+const chapters = allChapters
+  .filter((chapter) => contentFolder(chapter.id) === writingFolder)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const { title, subtitle, date, type, language, excerpt } = writing.data;
+const hasChapters = chapters.length > 0;
+---
+
+<BaseLayout title={title} description={excerpt}>
+  <article
+    class="detail-page writing-title-page"
+    data-source-file={`content/writings/${writing.id}/index.md`}
+  >
+    <header class="detail-header">
+      <h1>{title}</h1>
+      {subtitle && <p>{subtitle}</p>}
+      <p>{type}. {date}. {language}.</p>
+    </header>
+
+    <section class="writing-brief" aria-labelledby="brief-heading">
+      <h2 id="brief-heading">Brief</h2>
+      <p>{excerpt}</p>
+      <div class:list={["prose", "chicago-prose", { "writing-body": !hasChapters }]}>
+        <Content />
+      </div>
+    </section>
+
+    {
+      hasChapters && (
+        <nav class="writing-contents" aria-labelledby="contents-heading">
+          <h2 id="contents-heading">Contents</h2>
+          <ol>
+            {chapters.map((chapter) => (
+              <li>
+                <a href={`/writings/${writing.data.slug}/${chapter.data.slug}/`}>
+                  {chapter.data.title}
+                </a>
+                {chapter.data.excerpt && <p>{chapter.data.excerpt}</p>}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <p class="back-link">
+      <a href="/writings/"><span class="back-triangle" aria-hidden="true"></span>Back to Writings</a>
+    </p>
+  </article>
+</BaseLayout>
