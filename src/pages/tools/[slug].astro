@@ -1,13 +1,13 @@
 ---
-// 中文：单个工具页：上方是互动仪器，下方是 Markdown 说明与参考文献。
-// English: One tool page: interactive instrument on top, Markdown
-// instructions and references below.
+// 中文：单个工具页：上方是互动仪器，下方是说明（Notes）与参考文献（References）。
+// English: One tool page: interactive instrument on top, Notes and
+// References below. Both headings are structural and translated.
 // Caveat / 注意：新工具 = content/tools/<slug>/index.md + components/tools 中的同名组件。
 // Caveat: A new tool needs content/tools/<slug>/index.md plus a component
 // registered in the map below.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { translate } from "../../config/locales";
+import { toolGroupLabel, translate } from "../../config/locales";
 import "../../styles/tools.css";
 
 import MetricModulation from "../../components/tools/MetricModulation.astro";
@@ -55,6 +55,16 @@ interface Props {
 const { tool } = Astro.props;
 const { Content } = await render(tool);
 const Instrument = registry[tool.data.slug];
+const statusKey =
+  tool.data.status === "beta" ? "tools.statusBeta" : "tools.statusDataPending";
+
+// 参考文献条目中的 *斜体* 转成 <em>；其余字符照原样转义。
+// Render *italics* in reference strings as <em>; escape everything else.
+const refHtml = (text: string) =>
+  text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 ---
 
 <BaseLayout title={tool.data.title} description={tool.data.summary}>
@@ -64,13 +74,21 @@ const Instrument = registry[tool.data.slug];
   >
     <header class="tool-header">
       <p class="tool-number">
-        Tool No. {String(tool.data.number).padStart(2, "0")} · {tool.data.group}
+        <span data-i18n-key="tools.numberPrefix">
+          {translate("en", "tools.numberPrefix")}
+        </span>
+        {" "}{String(tool.data.number).padStart(2, "0")} ·{" "}
+        <span data-i18n-tool-group={tool.data.group}>
+          {toolGroupLabel(tool.data.group, "en")}
+        </span>
       </p>
       <h1>{tool.data.title}</h1>
       {tool.data.subtitle && <p class="tool-subtitle">{tool.data.subtitle}</p>}
       {
         tool.data.status !== "stable" && (
-          <p class="tool-status">{tool.data.status}</p>
+          <p class="tool-status" data-i18n-key={statusKey}>
+            {translate("en", statusKey)}
+          </p>
         )
       }
     </header>
@@ -78,7 +96,22 @@ const Instrument = registry[tool.data.slug];
     {Instrument && <Instrument />}
 
     <div class="prose tool-docs">
+      <h2 data-i18n-key="tools.notes">{translate("en", "tools.notes")}</h2>
       <Content />
+      {
+        tool.data.references.length > 0 && (
+          <>
+            <h2 data-i18n-key="tools.references">
+              {translate("en", "tools.references")}
+            </h2>
+            <ul>
+              {tool.data.references.map((reference) => (
+                <li set:html={refHtml(reference)} />
+              ))}
+            </ul>
+          </>
+        )
+      }
     </div>
 
     <p class="back-link">

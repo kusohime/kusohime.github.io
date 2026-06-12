@@ -17,7 +17,10 @@ export const BASE_UNITS = [
 
 /**
  * Duration of a notated unit in whole notes.
- * dots: 0..2; tuplet: { actual, normal } meaning "actual in the time of normal".
+ * @param {string} baseId
+ * @param {number} [dots] 0..2
+ * @param {{ actual: number, normal: number } | null} [tuplet]
+ *   "actual in the time of normal"
  */
 export function unitValue(baseId, dots = 0, tuplet = null) {
   const base = BASE_UNITS.find((u) => u.id === baseId);

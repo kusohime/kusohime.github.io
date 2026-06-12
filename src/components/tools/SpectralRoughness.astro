@@ -128,7 +128,8 @@
     let html = `<tr><th></th>${names.map((n) => `<th>${n}</th>`).join("")}</tr>`;
     matrix.forEach((row, i) => {
       html += `<tr><th scope="row">${names[i]}</th>${row
-        .map((value) => (value === null ? "<td>—</td>" : `<td>${value.toFixed(4)}</td>`))
+        .map((value: number | null) =>
+          value === null ? "<td>—</td>" : `<td>${value.toFixed(4)}</td>`)
         .join("")}</tr>`;
     });
     byId("sr-matrix").innerHTML = html;

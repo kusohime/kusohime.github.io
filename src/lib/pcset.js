@@ -47,7 +47,7 @@ export function normalOrder(pcsIn) {
       if (!decided && rot[0] < best[0]) best = rot;
     }
   }
-  return best;
+  return best ?? pcs;
 }
 
 /** Zero-based normal order. */

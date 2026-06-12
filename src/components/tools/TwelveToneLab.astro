@@ -102,18 +102,18 @@
       `Ordered intervals: &lt;${ints.join(" ")}&gt;` +
       (allInterval ? ` — <span style="color:#c81e1e;">all-interval row</span>` : "");
 
-    const matrix = rowMatrix(row);
+    const matrix: number[][] = rowMatrix(row);
     const table = byId("tt-matrix");
     const headerCells = matrix[0]
-      .map((_, col) => `<th class="axis">I${matrix[0][col]}</th>`)
+      .map((_: number, col: number) => `<th class="axis">I${matrix[0][col]}</th>`)
       .join("");
     let html = `<tr><th class="axis"></th>${headerCells}<th class="axis"></th></tr>`;
-    matrix.forEach((matrixRow) => {
+    matrix.forEach((matrixRow: number[]) => {
       html += `<tr><th class="axis">P${matrixRow[0]}</th>`;
-      html += matrixRow.map((pc) => `<td data-pc="${pc}">${pc === 10 ? "T" : pc === 11 ? "E" : pc}</td>`).join("");
+      html += matrixRow.map((pc: number) => `<td data-pc="${pc}">${pc === 10 ? "T" : pc === 11 ? "E" : pc}</td>`).join("");
       html += `<th class="axis">R${matrixRow[0]}</th></tr>`;
     });
-    html += `<tr><th class="axis"></th>${matrix[0].map((pc) => `<th class="axis">RI${pc}</th>`).join("")}<th class="axis"></th></tr>`;
+    html += `<tr><th class="axis"></th>${matrix[0].map((pc: number) => `<th class="axis">RI${pc}</th>`).join("")}<th class="axis"></th></tr>`;
     table.innerHTML = html;
 
     const comb = combinatorialForms(row);
@@ -131,8 +131,8 @@
     const n = Number(byId("tt-index").value);
     const form = rowForm(row, kind, n);
     byId("tt-form").innerHTML =
-      `${kind}${n}: <strong>${form.map((p) => (p === 10 ? "T" : p === 11 ? "E" : p)).join(" ")}</strong>` +
-      ` <span class="tool-note">(${form.map((p) => PC_NAMES[p]).join(" ")})</span>`;
+      `${kind}${n}: <strong>${form.map((p: number) => (p === 10 ? "T" : p === 11 ? "E" : p)).join(" ")}</strong>` +
+      ` <span class="tool-note">(${form.map((p: number) => PC_NAMES[p]).join(" ")})</span>`;
     return form;
   }
 
@@ -143,7 +143,7 @@
     if (!form) return;
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
-    form.forEach((pc, index) => blip(midiToHz(60 + pc), t0 + index * 0.32, { dur: 0.3, gain: 0.45 }));
+    form.forEach((pc: number, index: number) => blip(midiToHz(60 + pc), t0 + index * 0.32, { dur: 0.3, gain: 0.45 }));
   });
   build();
 </script>

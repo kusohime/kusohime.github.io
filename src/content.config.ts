@@ -114,6 +114,9 @@ const tools = defineCollection({
     summary: z.string(),
     status: z.enum(["stable", "beta", "data-pending"]).default("stable"),
     slug: z.string(),
+    // 参考文献列表；正文 Markdown 只放说明文字。
+    // Reference list; the Markdown body holds only the notes prose.
+    references: z.array(z.string()).default([]),
   }),
 });
 

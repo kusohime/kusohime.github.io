@@ -103,7 +103,7 @@
     const t0 = ctx.currentTime + 0.08;
     let voices: number[] | null = null;
     lastSteps.forEach((step, index) => {
-      voices = nearestVoicing(voices, step.triad);
+      voices = nearestVoicing(voices, step.triad) as number[];
       for (const note of voices) {
         blip(midiToHz(note), t0 + index * 0.85, { dur: 0.8, gain: 0.3 });
       }

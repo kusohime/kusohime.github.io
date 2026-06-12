@@ -53,7 +53,7 @@
     currentPcs = analysis.pcs;
 
     const zText = analysis.zPartners.length
-      ? analysis.zPartners.map((z) => `${z.forte} ${z.primeFormString}`).join(", ")
+      ? analysis.zPartners.map((z: any) => `${z.forte} ${z.primeFormString}`).join(", ")
       : "—";
     const rows: [string, string][] = [
       ["Input (as pcs)", analysis.pcs.join(" ")],

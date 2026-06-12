@@ -5,6 +5,7 @@
 import motionSettings from "../config/motion.json";
 import typographySettings from "../config/typography.json";
 import type {
+  ToolGroup,
   WorkCategory,
   WritingType,
 } from "../config/contentTaxonomy";
@@ -14,6 +15,7 @@ import {
   formatDuration,
   localeCodes,
   localeInfo,
+  toolGroupLabel,
   translate,
   workCategoryLabel,
   writingTypeLabel,
@@ -169,6 +171,13 @@ function applyLanguage(language: Locale, animate = false) {
         writingTypeLabel(type, language, form),
         shouldAnimate,
       );
+    });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-tool-group]")
+    .forEach((element) => {
+      const group = element.dataset.i18nToolGroup as ToolGroup;
+      setLocalizedText(element, toolGroupLabel(group, language), shouldAnimate);
     });
 
   document

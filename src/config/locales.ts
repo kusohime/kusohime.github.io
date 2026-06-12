@@ -1,4 +1,5 @@
 import type {
+  ToolGroup,
   WorkCategory,
   WritingType,
 } from "./contentTaxonomy";
@@ -23,6 +24,11 @@ export const messages = {
     "nav.writings": "Writings",
     "nav.tools": "Tools",
     "common.backTools": "Back to Tools",
+    "tools.numberPrefix": "Tool No.",
+    "tools.notes": "Notes",
+    "tools.references": "References",
+    "tools.statusBeta": "beta",
+    "tools.statusDataPending": "data pending",
     "common.skip": "Skip to content",
     "common.notice":
       "This site is under construction and all contents are placeholders.",
@@ -53,6 +59,11 @@ export const messages = {
     "nav.writings": "文字",
     "nav.tools": "工具",
     "common.backTools": "返回工具",
+    "tools.numberPrefix": "工具編號",
+    "tools.notes": "說明",
+    "tools.references": "參考文獻",
+    "tools.statusBeta": "測試版",
+    "tools.statusDataPending": "資料待補",
     "common.skip": "跳至正文",
     "common.notice": "本站正在建置中，所有內容均為暫用文字。",
     "common.noWorks": "此類別目前尚無作品。",
@@ -81,6 +92,11 @@ export const messages = {
     "nav.writings": "Texte",
     "nav.tools": "Werkzeuge",
     "common.backTools": "Zurück zu den Werkzeugen",
+    "tools.numberPrefix": "Werkzeug Nr.",
+    "tools.notes": "Anmerkungen",
+    "tools.references": "Literatur",
+    "tools.statusBeta": "Beta",
+    "tools.statusDataPending": "Daten ausstehend",
     "common.skip": "Zum Inhalt springen",
     "common.notice":
       "Diese Website befindet sich im Aufbau; alle Inhalte sind Platzhalter.",
@@ -111,6 +127,11 @@ export const messages = {
     "nav.writings": "Écrits",
     "nav.tools": "Outils",
     "common.backTools": "Retour aux outils",
+    "tools.numberPrefix": "Outil nº",
+    "tools.notes": "Notes",
+    "tools.references": "Références",
+    "tools.statusBeta": "bêta",
+    "tools.statusDataPending": "données en attente",
     "common.skip": "Aller au contenu",
     "common.notice":
       "Ce site est en construction ; tous les contenus sont provisoires.",
@@ -141,6 +162,11 @@ export const messages = {
     "nav.writings": "文章",
     "nav.tools": "ツール",
     "common.backTools": "ツール一覧へ戻る",
+    "tools.numberPrefix": "ツール No.",
+    "tools.notes": "解説",
+    "tools.references": "参考文献",
+    "tools.statusBeta": "ベータ",
+    "tools.statusDataPending": "データ整備中",
     "common.skip": "本文へ移動",
     "common.notice": "このサイトは制作中です。掲載内容はすべて仮のものです。",
     "common.noWorks": "このカテゴリーには、まだ作品がありません。",
@@ -354,6 +380,48 @@ const writingTypeTranslations: Record<
     },
   },
 };
+
+const toolGroupTranslations: Record<ToolGroup, Record<Locale, string>> = {
+  "Rhythm & Time": {
+    en: "Rhythm & Time",
+    zh: "節奏與時間",
+    de: "Rhythmus & Zeit",
+    fr: "Rythme et temps",
+    ja: "リズムと時間",
+  },
+  "Pitch & Spectrum": {
+    en: "Pitch & Spectrum",
+    zh: "音高與頻譜",
+    de: "Tonhöhe & Spektrum",
+    fr: "Hauteur et spectre",
+    ja: "音高とスペクトル",
+  },
+  "Sets & Series": {
+    en: "Sets & Series",
+    zh: "集合與序列",
+    de: "Mengen & Reihen",
+    fr: "Ensembles et séries",
+    ja: "集合とセリー",
+  },
+  Transformation: {
+    en: "Transformation",
+    zh: "變換",
+    de: "Transformation",
+    fr: "Transformation",
+    ja: "変換",
+  },
+  "Performance Resources": {
+    en: "Performance Resources",
+    zh: "演奏資源",
+    de: "Aufführungsressourcen",
+    fr: "Ressources d’interprétation",
+    ja: "演奏リソース",
+  },
+};
+
+export function toolGroupLabel(group: ToolGroup, locale: Locale) {
+  return toolGroupTranslations[group][locale];
+}
 
 export function workCategoryLabel(category: WorkCategory, locale: Locale) {
   return workCategoryTranslations[category][locale];

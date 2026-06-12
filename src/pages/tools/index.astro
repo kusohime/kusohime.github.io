@@ -6,7 +6,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { toAnchor, toolGroups } from "../../config/contentTaxonomy";
-import { translate } from "../../config/locales";
+import { toolGroupLabel, translate } from "../../config/locales";
 import "../../styles/tools.css";
 
 const tools = (await getCollection("tools")).sort(
@@ -17,11 +17,14 @@ const toolsByGroup = toolGroups.map((group) => ({
   group,
   tools: tools.filter((tool) => tool.data.group === group),
 }));
+
+const statusKey = (status: string) =>
+  status === "beta" ? "tools.statusBeta" : "tools.statusDataPending";
 ---
 
 <BaseLayout
   title="Tools"
-  description="Working tools for contemporary composers: rhythm, tuning, set theory, spectra, and performance resources."
+  description="Calculators and reference tools for composition: rhythm, tuning, set theory, spectra, and performance resources."
 >
   <div
     class="index-page tools-index"
@@ -31,12 +34,6 @@ const toolsByGroup = toolGroups.map((group) => ({
       {translate("en", "nav.tools")}
     </h1>
 
-    <p class="tool-note tools-intro">
-      A workbench of small, exact instruments for composition and analysis.
-      Everything runs in the browser; nothing is stored or sent anywhere.
-      Each tool documents its own conventions and sources.
-    </p>
-
     <nav class="catalog-rail" aria-label="Browse tools by group">
       <ul>
         {
@@ -44,7 +41,10 @@ const toolsByGroup = toolGroups.map((group) => ({
             groupTools.length > 0 ? (
               <li>
                 <a href={`#${toAnchor(group)}`}>
-                  {group} ({groupTools.length})
+                  <span data-i18n-tool-group={group}>
+                    {toolGroupLabel(group, "en")}
+                  </span>{" "}
+                  ({groupTools.length})
                 </a>
               </li>
             ) : null,
@@ -62,8 +62,12 @@ const toolsByGroup = toolGroups.map((group) => ({
               id={toAnchor(group)}
               aria-labelledby={`${toAnchor(group)}-heading`}
             >
-              <h2 id={`${toAnchor(group)}-heading`} class="tool-group-heading">
-                {group}
+              <h2
+                id={`${toAnchor(group)}-heading`}
+                class="tool-group-heading"
+                data-i18n-tool-group={group}
+              >
+                {toolGroupLabel(group, "en")}
               </h2>
               <ol class="tools-list">
                 {groupTools.map((tool) => (
@@ -81,7 +85,12 @@ const toolsByGroup = toolGroups.map((group) => ({
                         </h3>
                         <p>{tool.data.summary}</p>
                         {tool.data.status !== "stable" && (
-                          <p class="tool-status">{tool.data.status}</p>
+                          <p
+                            class="tool-status"
+                            data-i18n-key={statusKey(tool.data.status)}
+                          >
+                            {translate("en", statusKey(tool.data.status) as any)}
+                          </p>
                         )}
                       </div>
                     </article>
