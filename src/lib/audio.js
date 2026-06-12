@@ -82,6 +82,41 @@ export function playEvents(events, { onStep = null } = {}) {
   return t0;
 }
 
+/**
+ * Look-ahead clock for open-ended playback (metronomes, phase canons).
+ * `tick(from, to)` must schedule every event whose time falls in [from, to),
+ * against the AudioContext clock. Scheduling stays sample-accurate while
+ * UI parameters (tempo, phase offset) may change between ticks.
+ */
+export function createClock({ lookAhead = 0.2, interval = 60 } = {}) {
+  let timer = null;
+  let horizon = 0;
+
+  return {
+    running: () => timer !== null,
+    start(tick) {
+      const ctx = audioContext();
+      this.stop();
+      horizon = ctx.currentTime + 0.08;
+      const pump = () => {
+        const until = ctx.currentTime + lookAhead;
+        if (until > horizon) {
+          tick(horizon, until);
+          horizon = until;
+        }
+      };
+      pump();
+      timer = window.setInterval(pump, interval);
+    },
+    stop() {
+      if (timer !== null) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    },
+  };
+}
+
 export function stopAll() {
   for (const node of liveNodes) {
     try {

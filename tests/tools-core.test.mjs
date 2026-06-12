@@ -274,6 +274,28 @@ test("classic negative harmony in C: C->G, E->Eb (sum 7)", () => {
   assert.equal(pcMappingTable(sum).filter((r) => r.fixed).length, 0); // odd sum: no fixed pcs
 });
 
+/* ---------- canon & phase ---------- */
+test("pattern parsing: Piano Phase pitched, Clapping Music compact", async () => {
+  const { parsePattern, driftPeriodSeconds, PRESETS } = await import("../src/lib/canon.js");
+  const pianoPhase = parsePattern("E4 F#4 B4 C#5 D5 F#4 E4 C#5 B4 F#4 D5 C#5");
+  assert.ok(pianoPhase.ok && pianoPhase.pitched);
+  assert.equal(pianoPhase.steps.length, 12);
+  assert.equal(pianoPhase.steps.filter((s) => s.rest).length, 0);
+  const clapping = parsePattern("xxx.xx.x.xx.");
+  assert.ok(clapping.ok && !clapping.pitched);
+  assert.equal(clapping.steps.length, 12);
+  assert.equal(clapping.steps.filter((s) => !s.rest).length, 8);
+  assert.equal(parsePattern("E4 x . C5").ok, false); // mixed forms rejected
+  assert.equal(parsePattern("").ok, false);
+  for (const preset of PRESETS) assert.ok(parsePattern(preset.pattern).ok, preset.id);
+});
+test("drift period: pattern/|rate-1|; infinite when locked", async () => {
+  const { driftPeriodSeconds } = await import("../src/lib/canon.js");
+  approx(driftPeriodSeconds(10, 1.01), 1000, 1e-6);
+  approx(driftPeriodSeconds(10, 0.99), 1000, 1e-6);
+  assert.equal(driftPeriodSeconds(10, 1), Infinity);
+});
+
 /* ---------- input parsing ---------- */
 test("pc parsing disambiguates T/E numerals from note names", async () => {
   const { parsePcList, parseNoteList } = await import("../src/lib/parse.js");

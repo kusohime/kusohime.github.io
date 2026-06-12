@@ -1,10 +1,11 @@
 ---
-// 中文：复节奏与重合点实验台。
-// English: Polyrhythm and coincidence-cycle workbench.
+// 中文：节奏实验台：复节奏重合点、相位卡农（Reich 式连续相移）、多轨节拍器。
+// English: Rhythm lab: polyrhythm coincidences, phase canon with a
+// continuous entry offset (Reich-style), and a multi-track metronome.
 ---
 
 <section class="tool-panel" aria-label="Polyrhythm laboratory">
-  <span class="tool-panel-label">Layers</span>
+  <span class="tool-panel-label">Layers &amp; coincidences</span>
 
   <div class="tool-controls">
     <label class="tool-field">
@@ -33,11 +34,107 @@
   </div>
 </section>
 
+<section class="tool-panel" aria-label="Phase canon">
+  <span class="tool-panel-label">Canon &amp; phase</span>
+
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Pattern (note names, or x / . steps)</span>
+      <input type="text" id="cn-pattern" value="E4 F#4 B4 C#5 D5 F#4 E4 C#5 B4 F#4 D5 C#5" size="44" />
+    </label>
+    <label class="tool-field">
+      <span>Preset</span>
+      <select id="cn-preset"><option value="">—</option></select>
+    </label>
+  </div>
+
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
+    <label class="tool-field">
+      <span>Tempo (quarter = BPM)</span>
+      <input type="number" id="cn-bpm" value="72" min="20" max="240" />
+    </label>
+    <label class="tool-field">
+      <span>Steps per quarter</span>
+      <select id="cn-spq">
+        <option value="2">2 (eighths)</option>
+        <option value="3">3 (triplets)</option>
+        <option value="4" selected>4 (sixteenths)</option>
+        <option value="6">6 (sextuplets)</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Voice 2 transposition (semitones)</span>
+      <input type="number" id="cn-transpose" value="0" min="-24" max="24" />
+    </label>
+    <button type="button" class="tool-primary" id="cn-play">Play</button>
+    <button type="button" id="cn-stop">Stop</button>
+  </div>
+
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
+    <label class="tool-field">
+      <span><input type="radio" name="cn-mode" id="cn-mode-locked" checked /> Locked offset (canon)</span>
+    </label>
+    <label class="tool-field" style="flex: 1; min-width: 16rem;">
+      <span>Entry offset — continuous, 0 to 1 cycle</span>
+      <span class="range-pair">
+        <input type="range" id="cn-offset" min="0" max="1" step="0.001" value="0.25" />
+        <output id="cn-offset-out"></output>
+      </span>
+    </label>
+  </div>
+
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
+    <label class="tool-field">
+      <span><input type="radio" name="cn-mode" id="cn-mode-phasing" /> Gradual phasing (Reich)</span>
+    </label>
+    <label class="tool-field" style="flex: 1; min-width: 16rem;">
+      <span>Voice 2 tempo ratio</span>
+      <span class="range-pair">
+        <input type="range" id="cn-rate" min="0.94" max="1.06" step="0.001" value="1.01" />
+        <output id="cn-rate-out"></output>
+      </span>
+    </label>
+  </div>
+
+  <p class="tool-error" id="cn-error" hidden></p>
+  <p class="tool-note" id="cn-readout"></p>
+</section>
+
+<section class="tool-panel" aria-label="Multi-track metronome">
+  <span class="tool-panel-label">Multi-track metronome</span>
+
+  <div class="tool-table-wrap">
+    <table class="tool-table" id="mt-table">
+      <thead>
+        <tr>
+          <th>On</th><th>Tempo (♩/min)</th><th>Clicks every</th>
+          <th>Beats per bar</th><th>Sound</th>
+        </tr>
+      </thead>
+      <tbody id="mt-tracks"></tbody>
+    </table>
+  </div>
+
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
+    <button type="button" class="tool-primary" id="mt-start">Start</button>
+    <button type="button" id="mt-stop">Stop</button>
+  </div>
+  <p class="tool-note">
+    Each track may run at its own quarter-note tempo, or share a tempo while
+    clicking a different note value (a dotted-eighth track against a quarter
+    track at the same ♩ gives the 3:4 of a metric modulation in sound).
+    The first beat of each bar is accented. Tempo and meter changes apply
+    live, on the next scheduled click.
+  </p>
+</section>
+
 <script>
   import { cycleAttacks } from "../../lib/tempo.js";
   import { fnum } from "../../lib/fraction.js";
   import { parseCountList } from "../../lib/parse.js";
-  import { playEvents, stopAll } from "../../lib/audio.js";
+  import { parsePattern, driftPeriodSeconds, PRESETS } from "../../lib/canon.js";
+  import { midiToHz } from "../../lib/pitch.js";
+  import { blip, createClock, playEvents, stopAll, audioContext } from "../../lib/audio.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -48,6 +145,8 @@
     for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
     return node;
   }
+
+  /* ---------- Panel 1: polyrhythm cycles (unchanged behavior) ---------- */
 
   function currentCounts() {
     const parsed = parseCountList(byId("pr-counts").value, { min: 1, max: 48 });
@@ -76,7 +175,6 @@
       `${counts.join(" : ")} — smallest common grid: ${lcm} divisions; ` +
       `${positions.length} distinct attack points; ${coincidences.length} coincidence${coincidences.length === 1 ? "" : "s"} per cycle.`;
 
-    // Linear grid
     const linear = byId("pr-linear");
     linear.innerHTML = "";
     const left = 30, right = 700, top = 18, rowGap = 30;
@@ -100,7 +198,6 @@
     }
     linear.setAttribute("viewBox", `0 0 720 ${axisY + 18}`);
 
-    // Circular view
     const circle = byId("pr-circle");
     circle.innerHTML = "";
     const cx = 120, cy = 120;
@@ -129,7 +226,7 @@
     }
   }
 
-  function play(onlyCoincidences: boolean) {
+  function playCycle(onlyCoincidences: boolean) {
     const counts = currentCounts();
     if (!counts) return;
     const seconds = Number(byId("pr-seconds").value) || 3;
@@ -156,8 +253,259 @@
   }
 
   byId("pr-counts").addEventListener("input", draw);
-  byId("pr-play").addEventListener("click", () => play(false));
-  byId("pr-play-coincidence").addEventListener("click", () => play(true));
+  byId("pr-play").addEventListener("click", () => playCycle(false));
+  byId("pr-play-coincidence").addEventListener("click", () => playCycle(true));
   byId("pr-stop").addEventListener("click", () => stopAll());
   draw();
+
+  /* ---------- Panel 2: canon & phase ---------- */
+
+  const presetSelect = byId("cn-preset");
+  for (const preset of PRESETS) {
+    const option = document.createElement("option");
+    option.value = preset.id;
+    option.textContent = preset.label;
+    presetSelect.append(option);
+  }
+  presetSelect.addEventListener("change", () => {
+    const preset = PRESETS.find((p) => p.id === presetSelect.value);
+    if (preset) {
+      byId("cn-pattern").value = preset.pattern;
+      updateCanonReadout();
+    }
+  });
+
+  const canonClock = createClock();
+  // 每个声部都用增量时间推进；改变 offset / ratio 只影响未来的事件，
+  // 因此滑杆在播放中是“连续可调”的，正如 Reich 的渐进过程。
+  // Each voice advances by incremental time; offset/ratio changes affect
+  // only future events, so the sliders are continuously adjustable during
+  // playback — the gradual process itself.
+  interface CanonVoice {
+    nextTime: number;
+    stepIndex: number;
+  }
+  let canonVoices: CanonVoice[] = [];
+  let appliedOffset = 0;
+
+  const canonParams = () => {
+    const bpm = Math.min(300, Math.max(20, Number(byId("cn-bpm").value) || 72));
+    const spq = Number(byId("cn-spq").value) || 4;
+    const stepDur = 60 / bpm / spq;
+    const parsed = parsePattern(byId("cn-pattern").value);
+    const offset = Number(byId("cn-offset").value);
+    const rate = Number(byId("cn-rate").value);
+    const phasing = byId("cn-mode-phasing").checked;
+    const transpose = Number(byId("cn-transpose").value) || 0;
+    return { stepDur, parsed, offset, rate, phasing, transpose };
+  };
+
+  function updateCanonReadout() {
+    const { stepDur, parsed, offset, rate, phasing } = canonParams();
+    byId("cn-offset-out").textContent =
+      `${offset.toFixed(3)} ≈ ${(offset * (parsed.steps.length || 0)).toFixed(2)} steps`;
+    byId("cn-rate-out").textContent = `× ${rate.toFixed(3)}`;
+    const error = byId("cn-error");
+    if (!parsed.ok) {
+      error.hidden = false;
+      error.textContent = `Could not read pattern: ${parsed.bad.join(", ") || "empty"}. Use note names (E4 F#4 …) or x / . steps.`;
+      byId("cn-readout").textContent = "";
+      return;
+    }
+    error.hidden = true;
+    const patternDur = stepDur * parsed.steps.length;
+    const drift = driftPeriodSeconds(patternDur, rate);
+    byId("cn-readout").textContent =
+      `${parsed.steps.length}-step ${parsed.pitched ? "pitched" : "rhythm"} pattern, ` +
+      `one cycle = ${patternDur.toFixed(2)} s. ` +
+      (phasing
+        ? Number.isFinite(drift)
+          ? `Phasing: voice 2 laps the pattern once every ${drift.toFixed(1)} s.`
+          : "Phasing ratio 1.000: the voices stay locked."
+        : `Locked canon at ${(offset * parsed.steps.length).toFixed(2)} steps.`);
+  }
+
+  function scheduleCanon(from: number, to: number) {
+    const { stepDur, parsed, offset, rate, phasing, transpose } = canonParams();
+    if (!parsed.ok) return;
+    const steps = parsed.steps;
+    const patternDur = stepDur * steps.length;
+
+    // Apply live offset changes as a delta to voice 2's next event time.
+    if (!phasing) {
+      const delta = (offset - appliedOffset) * patternDur;
+      if (Math.abs(delta) > 1e-9 && canonVoices[1]) {
+        canonVoices[1].nextTime += delta;
+        appliedOffset = offset;
+      }
+    }
+
+    canonVoices.forEach((voice, index) => {
+      const voiceRate = index === 1 && phasing ? rate : 1;
+      const voiceStep = stepDur / voiceRate;
+      // Skip anything pushed behind the horizon (e.g. offset slid backward).
+      while (voice.nextTime < from) {
+        voice.nextTime += voiceStep;
+        voice.stepIndex += 1;
+      }
+      while (voice.nextTime < to) {
+        const step = steps[voice.stepIndex % steps.length];
+        if (!step.rest) {
+          const freq = parsed.pitched && step.midi !== null
+            ? midiToHz(step.midi + (index === 1 ? transpose : 0))
+            : index === 0 ? 880 : 660;
+          blip(freq, voice.nextTime, {
+            dur: Math.min(0.22, voiceStep * 0.9),
+            gain: index === 0 ? 0.45 : 0.38,
+            type: index === 0 ? "sine" : "triangle",
+          });
+        }
+        voice.nextTime += voiceStep;
+        voice.stepIndex += 1;
+      }
+    });
+  }
+
+  byId("cn-play").addEventListener("click", () => {
+    const { parsed, offset, phasing, stepDur } = canonParams();
+    if (!parsed.ok) {
+      updateCanonReadout();
+      return;
+    }
+    const ctx = audioContext();
+    const start = ctx.currentTime + 0.1;
+    const patternDur = stepDur * parsed.steps.length;
+    appliedOffset = phasing ? 0 : offset;
+    canonVoices = [
+      { nextTime: start, stepIndex: 0 },
+      { nextTime: start + (phasing ? 0 : offset * patternDur), stepIndex: 0 },
+    ];
+    canonClock.start(scheduleCanon);
+    updateCanonReadout();
+  });
+  byId("cn-stop").addEventListener("click", () => {
+    canonClock.stop();
+    stopAll();
+  });
+
+  for (const id of ["cn-pattern", "cn-bpm", "cn-spq", "cn-offset", "cn-rate", "cn-transpose"]) {
+    byId(id).addEventListener("input", updateCanonReadout);
+  }
+  byId("cn-mode-locked").addEventListener("change", updateCanonReadout);
+  byId("cn-mode-phasing").addEventListener("change", updateCanonReadout);
+  updateCanonReadout();
+
+  /* ---------- Panel 3: multi-track metronome ---------- */
+
+  const UNIT_OPTIONS = [
+    { label: "whole", quarters: 4 },
+    { label: "dotted half", quarters: 3 },
+    { label: "half", quarters: 2 },
+    { label: "dotted quarter", quarters: 1.5 },
+    { label: "quarter", quarters: 1 },
+    { label: "triplet quarter", quarters: 2 / 3 },
+    { label: "dotted eighth", quarters: 0.75 },
+    { label: "eighth", quarters: 0.5 },
+    { label: "triplet eighth", quarters: 1 / 3 },
+    { label: "sixteenth", quarters: 0.25 },
+  ];
+  const SOUND_OPTIONS = [
+    { label: "high tick", freq: 1318.5 },
+    { label: "ping", freq: 880 },
+    { label: "mid", freq: 587.33 },
+    { label: "low", freq: 392 },
+  ];
+  const TRACK_DEFAULTS = [
+    { on: true, bpm: 120, unit: "quarter", beats: 4, sound: "ping" },
+    { on: false, bpm: 120, unit: "dotted eighth", beats: 4, sound: "mid" },
+    { on: false, bpm: 90, unit: "quarter", beats: 3, sound: "high tick" },
+    { on: false, bpm: 60, unit: "quarter", beats: 1, sound: "low" },
+  ];
+
+  const trackBody = byId("mt-tracks");
+  TRACK_DEFAULTS.forEach((defaults, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML =
+      `<td><input type="checkbox" data-mt-on="${index}" ${defaults.on ? "checked" : ""}></td>` +
+      `<td><input type="number" data-mt-bpm="${index}" value="${defaults.bpm}" min="20" max="300" style="width:5em"></td>` +
+      `<td><select data-mt-unit="${index}">${UNIT_OPTIONS.map((u) =>
+        `<option ${u.label === defaults.unit ? "selected" : ""}>${u.label}</option>`).join("")}</select></td>` +
+      `<td><input type="number" data-mt-beats="${index}" value="${defaults.beats}" min="1" max="13" style="width:4em"></td>` +
+      `<td><select data-mt-sound="${index}">${SOUND_OPTIONS.map((s) =>
+        `<option ${s.label === defaults.sound ? "selected" : ""}>${s.label}</option>`).join("")}</select></td>`;
+    trackBody.append(row);
+  });
+
+  const metronomeClock = createClock();
+  interface MetronomeTrack {
+    nextTime: number;
+    beatIndex: number;
+  }
+  let metronomeTracks: MetronomeTrack[] = [];
+
+  const trackParams = (index: number) => {
+    const on = (document.querySelector(`[data-mt-on="${index}"]`) as HTMLInputElement).checked;
+    const bpm = Math.min(300, Math.max(20, Number((document.querySelector(`[data-mt-bpm="${index}"]`) as HTMLInputElement).value) || 120));
+    const unitLabel = (document.querySelector(`[data-mt-unit="${index}"]`) as HTMLSelectElement).value;
+    const quarters = UNIT_OPTIONS.find((u) => u.label === unitLabel)?.quarters ?? 1;
+    const beats = Math.min(13, Math.max(1, Number((document.querySelector(`[data-mt-beats="${index}"]`) as HTMLInputElement).value) || 4));
+    const soundLabel = (document.querySelector(`[data-mt-sound="${index}"]`) as HTMLSelectElement).value;
+    const freq = SOUND_OPTIONS.find((s) => s.label === soundLabel)?.freq ?? 880;
+    return { on, interval: (60 / bpm) * quarters, beats, freq };
+  };
+
+  function scheduleMetronome(from: number, to: number) {
+    metronomeTracks.forEach((track, index) => {
+      const params = trackParams(index);
+      if (!params.on) {
+        // Keep silent tracks aligned with the clock so re-enabling is sane.
+        while (track.nextTime < to) {
+          track.nextTime += params.interval;
+          track.beatIndex += 1;
+        }
+        return;
+      }
+      while (track.nextTime < from) {
+        track.nextTime += params.interval;
+        track.beatIndex += 1;
+      }
+      while (track.nextTime < to) {
+        const accent = track.beatIndex % params.beats === 0;
+        blip(accent ? params.freq * 1.5 : params.freq, track.nextTime, {
+          dur: 0.09,
+          gain: accent ? 0.6 : 0.35,
+          type: "sine",
+        });
+        track.nextTime += params.interval;
+        track.beatIndex += 1;
+      }
+    });
+  }
+
+  byId("mt-start").addEventListener("click", () => {
+    const ctx = audioContext();
+    const start = ctx.currentTime + 0.1;
+    metronomeTracks = TRACK_DEFAULTS.map(() => ({ nextTime: start, beatIndex: 0 }));
+    metronomeClock.start(scheduleMetronome);
+  });
+  byId("mt-stop").addEventListener("click", () => {
+    metronomeClock.stop();
+    stopAll();
+  });
 </script>
+
+<style>
+  .range-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .range-pair output {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    min-width: 7.5rem;
+    text-align: right;
+  }
+</style>
