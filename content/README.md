@@ -232,12 +232,14 @@ Poetry without paragraph indentation / 無首行縮排的詩歌:
 
 ## Local Studio / 本地管理器
 
-Run `npm run dev`, then open `/admin/`. The Studio provides a folder tree,
-project-wide Find, syntax highlighting, line wrapping, image browsing, and
-desktop/phone previews. The current local passcode is `0592`.
+Run `npm run dev`, then open `/admin/`. The Studio provides a folder tree with
+project-wide Find, folder-based image albums, visual design controls, syntax
+highlighting, line wrapping, Inspect and Edit Text modes, draft page creation,
+and desktop/phone previews. The current local passcode is `0592`.
 
-執行 `npm run dev` 後開啟 `/admin/`。管理器提供資料夾目錄、全域性搜尋、
-語法高亮、自動換行、圖片瀏覽，以及桌面和手機預覽。目前本地口令是 `0592`。
+執行 `npm run dev` 後開啟 `/admin/`。管理器提供含全域性搜尋的資料夾目錄、
+資料夾圖片相簿、可視設計控制、語法高亮、自動換行、Inspect 與 Edit Text 模式、
+草稿頁面建立，以及桌面和手機預覽。目前本地口令是 `0592`。
 
 The Studio is intentionally local-only. It is not a writable administration
 service on the published static website.

@@ -14,7 +14,10 @@ import {
 } from "../../config/locales";
 
 export async function getStaticPaths() {
-  const writings = await getCollection("writings");
+  const writings = await getCollection(
+    "writings",
+    ({ data }) => import.meta.env.DEV || !data.draft,
+  );
 
   return writings.map((writing) => ({
     params: { slug: writing.data.slug },
@@ -38,12 +41,15 @@ const { title, subtitle, date, type, language, excerpt } = writing.data;
 const hasChapters = chapters.length > 0;
 ---
 
-<BaseLayout title={title} description={excerpt}>
+<BaseLayout title={title} description={excerpt} noindex={writing.data.draft}>
   <article
     class="detail-page writing-title-page"
     data-source-file={`content/writings/${writing.id}/index.md`}
   >
     <header class="detail-header">
+      {writing.data.draft && (
+        <p class="draft-flag">Draft — not listed publicly</p>
+      )}
       <h1>{title}</h1>
       {subtitle && <p>{subtitle}</p>}
       <p class="writing-metadata">

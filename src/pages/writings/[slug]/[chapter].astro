@@ -21,6 +21,7 @@ export async function getStaticPaths() {
     );
 
     if (!writing) return [];
+    if (!import.meta.env.DEV && writing.data.draft) return [];
 
     return [{
       params: {
@@ -53,6 +54,7 @@ const nextChapter =
 <BaseLayout
   title={`${chapter.data.title} | ${writing.data.title}`}
   description={chapter.data.excerpt ?? writing.data.excerpt}
+  noindex={writing.data.draft}
 >
   <article
     class="detail-page writing-chapter-page"

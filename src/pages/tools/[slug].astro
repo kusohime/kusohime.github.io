@@ -24,20 +24,22 @@ import NeoRiemannian from "../../components/tools/NeoRiemannian.astro";
 import NegativeHarmony from "../../components/tools/NegativeHarmony.astro";
 import MultiphonicsBrowser from "../../components/tools/MultiphonicsBrowser.astro";
 
-const registry: Record<string, any> = {
-  "metric-modulation": MetricModulation,
-  "polyrhythm-cycles": PolyrhythmCycles,
-  "pitch-tuning-lab": PitchTuningLab,
-  "harmonic-partials": HarmonicPartials,
-  "spectral-roughness": SpectralRoughness,
-  "piano-harmonics": PianoHarmonics,
-  "pc-set-analysis": PcSetAnalysis,
-  "twelve-tone-lab": TwelveToneLab,
-  "messiaen-modes": MessiaenModes,
-  "melody-transformer": MelodyTransformer,
-  "neo-riemannian": NeoRiemannian,
-  "negative-harmony": NegativeHarmony,
-  "multiphonics-browser": MultiphonicsBrowser,
+// component + file 让预览检查器（Inspect）能直接打开工具的源文件。
+// component + file lets the Studio Inspector open the tool's source file.
+const registry: Record<string, { component: any; file: string }> = {
+  "metric-modulation": { component: MetricModulation, file: "MetricModulation.astro" },
+  "polyrhythm-cycles": { component: PolyrhythmCycles, file: "PolyrhythmCycles.astro" },
+  "pitch-tuning-lab": { component: PitchTuningLab, file: "PitchTuningLab.astro" },
+  "harmonic-partials": { component: HarmonicPartials, file: "HarmonicPartials.astro" },
+  "spectral-roughness": { component: SpectralRoughness, file: "SpectralRoughness.astro" },
+  "piano-harmonics": { component: PianoHarmonics, file: "PianoHarmonics.astro" },
+  "pc-set-analysis": { component: PcSetAnalysis, file: "PcSetAnalysis.astro" },
+  "twelve-tone-lab": { component: TwelveToneLab, file: "TwelveToneLab.astro" },
+  "messiaen-modes": { component: MessiaenModes, file: "MessiaenModes.astro" },
+  "melody-transformer": { component: MelodyTransformer, file: "MelodyTransformer.astro" },
+  "neo-riemannian": { component: NeoRiemannian, file: "NeoRiemannian.astro" },
+  "negative-harmony": { component: NegativeHarmony, file: "NegativeHarmony.astro" },
+  "multiphonics-browser": { component: MultiphonicsBrowser, file: "MultiphonicsBrowser.astro" },
 };
 
 export async function getStaticPaths() {
@@ -54,7 +56,9 @@ interface Props {
 
 const { tool } = Astro.props;
 const { Content } = await render(tool);
-const Instrument = registry[tool.data.slug];
+const entry = registry[tool.data.slug];
+const Instrument = entry?.component;
+const instrumentFile = entry ? `src/components/tools/${entry.file}` : null;
 const statusKey =
   tool.data.status === "beta" ? "tools.statusBeta" : "tools.statusDataPending";
 
@@ -93,7 +97,16 @@ const refHtml = (text: string) =>
       }
     </header>
 
-    {Instrument && <Instrument />}
+    {
+      Instrument && (
+        <div
+          data-source-file={instrumentFile}
+          data-style-source="src/styles/tools.css"
+        >
+          <Instrument />
+        </div>
+      )
+    }
 
     <div class="prose tool-docs">
       <h2 data-i18n-key="tools.notes">{translate("en", "tools.notes")}</h2>

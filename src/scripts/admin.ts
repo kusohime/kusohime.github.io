@@ -5,6 +5,8 @@
  * Caveat / 注意：这里的文件 API 只应连接 astro.config.mjs 中的本地开发中间件；
  * it must never be treated as production authentication or a public CMS backend.
  */
+import { workCategories, writingTypes } from "../config/contentTaxonomy";
+
 interface DirectoryPickerOptions {
   mode?: "read" | "readwrite";
 }
@@ -57,6 +59,7 @@ const PANE_LAYOUT_STORAGE_KEY = "yixin-cui-studio-pane-layout";
 const GLOBAL_CSS_PATH = "src/styles/global.css";
 const MOTION_SETTINGS_PATH = "src/config/motion.json";
 const TYPOGRAPHY_SETTINGS_PATH = "src/config/typography.json";
+const SITE_DEFAULTS_PATH = "src/config/siteDefaults.json";
 
 type MotionSetting =
   | "languageFlap"
@@ -358,6 +361,30 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLInputElement>("[data-preview-visual-editor]");
   const studioWorkspace =
     studio.querySelector<HTMLElement>("[data-studio-workspace]");
+  const searchBlock =
+    studio.querySelector<HTMLElement>("[data-search-block]");
+  const searchClearButton =
+    studio.querySelector<HTMLButtonElement>("[data-search-clear]");
+  const defaultLanguageSelect =
+    studio.querySelector<HTMLSelectElement>("[data-default-language]");
+  const siteDefaultsFieldset =
+    studio.querySelector<HTMLFieldSetElement>("[data-site-defaults]");
+  const indentToggle =
+    studio.querySelector<HTMLInputElement>("[data-indent-toggle]");
+  const newPageForm =
+    studio.querySelector<HTMLFormElement>("[data-new-page-form]");
+  const newKindSelect =
+    studio.querySelector<HTMLSelectElement>("[data-new-kind]");
+  const newTitleInput =
+    studio.querySelector<HTMLInputElement>("[data-new-title]");
+  const newSlugInput =
+    studio.querySelector<HTMLInputElement>("[data-new-slug]");
+  const newSubmitButton =
+    studio.querySelector<HTMLButtonElement>("[data-new-submit]");
+  const newMessage =
+    studio.querySelector<HTMLElement>("[data-new-message]");
+  const draftShelfButton =
+    studio.querySelector<HTMLButtonElement>("[data-draft-shelf]");
 
   if (
     !openFolderButton ||
@@ -391,7 +418,19 @@ export async function initializeAdminStudio() {
     !lineWrapInput ||
     !previewInspectorInput ||
     !previewVisualEditorInput ||
-    !studioWorkspace
+    !studioWorkspace ||
+    !searchBlock ||
+    !searchClearButton ||
+    !defaultLanguageSelect ||
+    !siteDefaultsFieldset ||
+    !indentToggle ||
+    !newPageForm ||
+    !newKindSelect ||
+    !newTitleInput ||
+    !newSlugInput ||
+    !newSubmitButton ||
+    !newMessage ||
+    !draftShelfButton
   ) {
     return;
   }
@@ -433,13 +472,20 @@ export async function initializeAdminStudio() {
   let paneLayout = readPaneLayout();
 
   const applyPaneLayout = () => {
+    // 行内变量会覆盖样式表里的折叠宽度，所以折叠状态必须在这里直接落实。
+    // Inline variables override the stylesheet's collapsed widths, so the
+    // collapsed size must be written here, not only in CSS.
     studioWorkspace.style.setProperty(
       "--studio-sidebar-width",
-      `${paneLayout.sidebarWidth}px`,
+      paneLayout.collapsed.includes("sidebar")
+        ? "2.65rem"
+        : `${paneLayout.sidebarWidth}px`,
     );
     studioWorkspace.style.setProperty(
       "--studio-editor-width",
-      `${paneLayout.editorWidth}px`,
+      paneLayout.collapsed.includes("editor")
+        ? "2.65rem"
+        : `${paneLayout.editorWidth}px`,
     );
 
     (["sidebar", "editor", "preview"] as PaneName[]).forEach((pane) => {
@@ -463,6 +509,7 @@ export async function initializeAdminStudio() {
         button.setAttribute("aria-expanded", String(!collapsed));
       }
     });
+    studioWorkspace.scrollLeft = 0;
   };
 
   const storePaneLayout = () => {
@@ -501,6 +548,7 @@ export async function initializeAdminStudio() {
   let loadingDocument = false;
   let saveTimer: number | undefined;
   let previewTimer: number | undefined;
+  let apiConnected = false;
 
   const setStatus = (message: string, kind: "normal" | "error" = "normal") => {
     status.textContent = message;
@@ -825,6 +873,348 @@ export async function initializeAdminStudio() {
     }
   };
 
+  /* ----- Design panel: live CSS-variable editing ----- */
+
+  const designInputs = [
+    ...studio.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+      "[data-design-var]",
+    ),
+  ];
+  const designFieldsets = [
+    ...studio.querySelectorAll<HTMLFieldSetElement>(
+      "[data-design-settings], [data-design-settings-2], [data-design-settings-3], [data-design-settings-4]",
+    ),
+  ];
+  const designOutputFor = (name: string) =>
+    studio.querySelector<HTMLOutputElement>(
+      `[data-design-output="${name}"]`,
+    );
+
+  const escapeForRegExp = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  // 只匹配真正的声明行（行首的 --name:），不会碰到 var(--name) 引用。
+  // Match only real declaration lines (--name: at line start), never
+  // var(--name) references.
+  const cssVariablePattern = (name: string) =>
+    new RegExp(`(^|\\n)(\\s*)(${escapeForRegExp(name)}\\s*:\\s*)([^;]+);`);
+
+  const readCssVariable = (cssText: string, name: string) => {
+    const match = cssText.match(cssVariablePattern(name));
+    return match ? match[4].trim() : null;
+  };
+
+  const designDisplayValue = (input: HTMLInputElement | HTMLSelectElement) => {
+    const unit = input.dataset.designUnit ?? "";
+    return input.dataset.designKind === "raw"
+      ? input.value
+      : `${input.value}${unit}`;
+  };
+
+  const applyDesignPreview = (name: string, value: string) => {
+    previewFrame.contentDocument?.documentElement.style.setProperty(name, value);
+  };
+
+  const syncDesignOutput = (input: HTMLInputElement | HTMLSelectElement) => {
+    const name = input.dataset.designVar ?? "";
+    const output = designOutputFor(name);
+    if (output) output.value = designDisplayValue(input);
+  };
+
+  const syncDesignControls = (cssText: string) => {
+    for (const input of designInputs) {
+      const name = input.dataset.designVar ?? "";
+      const current = readCssVariable(cssText, name);
+      if (current === null) continue;
+      if (input.dataset.designKind === "raw") {
+        input.value = current;
+      } else {
+        const numeric = Number.parseFloat(current);
+        if (Number.isFinite(numeric)) input.value = String(numeric);
+      }
+      syncDesignOutput(input);
+    }
+    const indentValue = Number.parseFloat(
+      readCssVariable(cssText, "--paragraph-indent") ?? "0",
+    );
+    indentToggle.checked = indentValue > 0;
+    const indentWidth = studio.querySelector<HTMLInputElement>(
+      "[data-indent-width]",
+    );
+    if (indentWidth) {
+      indentWidth.disabled = !indentToggle.checked;
+      if (indentValue > 0) indentWidth.value = String(indentValue);
+    }
+  };
+
+  const globalCssText = async () => {
+    const handle = fileHandles.get(GLOBAL_CSS_PATH);
+    if (!handle) return null;
+    return currentPath === GLOBAL_CSS_PATH
+      ? editor.state.doc.toString()
+      : await (await handle.getFile()).text();
+  };
+
+  const saveCssVariable = async (name: string, value: string) => {
+    try {
+      const source = await globalCssText();
+      if (source === null) throw new Error("global.css is unavailable.");
+      const pattern = cssVariablePattern(name);
+      if (!pattern.test(source)) {
+        throw new Error(`${name} was not found in global.css.`);
+      }
+      const updated = source.replace(pattern, `$1$2$3${value};`);
+      await writeVisualSource(GLOBAL_CSS_PATH, updated, `Set ${name}: ${value}.`);
+      applyDesignPreview(name, value);
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? error.message : "Unable to update global.css.",
+        "error",
+      );
+    }
+  };
+
+  const loadDesignSettings = async () => {
+    const available = fileHandles.has(GLOBAL_CSS_PATH);
+    designFieldsets.forEach((fieldset) => {
+      fieldset.disabled = !available;
+    });
+    if (!available) return;
+    const source = await globalCssText();
+    if (source) syncDesignControls(source);
+  };
+
+  designInputs.forEach((input) => {
+    input.addEventListener("input", () => {
+      syncDesignOutput(input);
+      const name = input.dataset.designVar ?? "";
+      applyDesignPreview(name, designDisplayValue(input));
+    });
+    input.addEventListener("change", () => {
+      const name = input.dataset.designVar ?? "";
+      void saveCssVariable(name, designDisplayValue(input));
+    });
+  });
+
+  indentToggle.addEventListener("change", () => {
+    const indentWidth = studio.querySelector<HTMLInputElement>(
+      "[data-indent-width]",
+    );
+    if (indentWidth) indentWidth.disabled = !indentToggle.checked;
+    const value = indentToggle.checked
+      ? `${indentWidth?.value ?? "2"}em`
+      : "0em";
+    void saveCssVariable("--paragraph-indent", value);
+  });
+
+  /* ----- Site defaults (default language for new visitors) ----- */
+
+  const loadSiteDefaults = async () => {
+    const handle = fileHandles.get(SITE_DEFAULTS_PATH);
+    siteDefaultsFieldset.disabled = !handle;
+    if (!handle) return;
+    try {
+      const parsed = JSON.parse(await (await handle.getFile()).text()) as {
+        defaultLanguage?: string;
+      };
+      if (parsed.defaultLanguage) {
+        defaultLanguageSelect.value = parsed.defaultLanguage;
+      }
+    } catch {
+      siteDefaultsFieldset.disabled = true;
+    }
+  };
+
+  defaultLanguageSelect.addEventListener("change", () => {
+    void (async () => {
+      const handle = fileHandles.get(SITE_DEFAULTS_PATH);
+      if (!handle) return;
+      const nextText = `${JSON.stringify(
+        { defaultLanguage: defaultLanguageSelect.value },
+        null,
+        2,
+      )}\n`;
+      try {
+        const writable = await handle.createWritable();
+        await writable.write(nextText);
+        await writable.close();
+        setStatus(
+          `Default language set to ${defaultLanguageSelect.value}. Applies to first-time visitors; returning visitors keep their own choice.`,
+        );
+        schedulePreviewRefresh();
+      } catch (error) {
+        setStatus(
+          error instanceof Error ? error.message : "Unable to save site defaults.",
+          "error",
+        );
+      }
+    })();
+  });
+
+  /* ----- Add page (works and writings, drafts by default) ----- */
+
+  const slugify = (text: string) =>
+    text
+      .toLocaleLowerCase()
+      .normalize("NFKD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const yamlQuote = (text: string) =>
+    `"${text.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
+
+  const newField = <T extends HTMLElement>(selector: string) =>
+    studio.querySelector<T>(selector);
+
+  const newCategorySelect = newField<HTMLSelectElement>("[data-new-category]");
+  const newTypeSelect = newField<HTMLSelectElement>("[data-new-type]");
+  if (newCategorySelect) {
+    for (const category of workCategories) {
+      const option = document.createElement("option");
+      option.value = category;
+      option.textContent = category;
+      newCategorySelect.append(option);
+    }
+  }
+  if (newTypeSelect) {
+    for (const type of writingTypes) {
+      const option = document.createElement("option");
+      option.value = type;
+      option.textContent = type;
+      newTypeSelect.append(option);
+    }
+  }
+
+  let slugEditedManually = false;
+  newSlugInput.addEventListener("input", () => {
+    slugEditedManually = newSlugInput.value.trim().length > 0;
+  });
+  newTitleInput.addEventListener("input", () => {
+    if (!slugEditedManually) newSlugInput.value = slugify(newTitleInput.value);
+  });
+  newKindSelect.addEventListener("change", () => {
+    const isWork = newKindSelect.value === "work";
+    const workFields = newField<HTMLElement>("[data-new-work-fields]");
+    const writingFields = newField<HTMLElement>("[data-new-writing-fields]");
+    if (workFields) workFields.hidden = !isWork;
+    if (writingFields) writingFields.hidden = isWork;
+  });
+
+  const buildNewPageSource = () => {
+    const kind = newKindSelect.value;
+    const title = newTitleInput.value.trim();
+    const slug = slugify(newSlugInput.value.trim());
+    const summary =
+      newField<HTMLInputElement>("[data-new-summary]")?.value.trim() ?? "";
+    const draft = newField<HTMLInputElement>("[data-new-draft]")?.checked ?? true;
+    if (!title || !slug) return { error: "A title and slug are required." };
+
+    if (kind === "work") {
+      const year =
+        Number(newField<HTMLInputElement>("[data-new-year]")?.value) ||
+        new Date().getFullYear();
+      const category = newCategorySelect?.value ?? "Other";
+      const instrumentation =
+        newField<HTMLInputElement>("[data-new-instrumentation]")?.value.trim() ||
+        "To be decided";
+      const minutes = Number(
+        newField<HTMLInputElement>("[data-new-duration]")?.value,
+      );
+      const durationBlock = minutes > 0 ? `\n  minutes: ${minutes}` : " {}";
+      return {
+        path: `content/works/${slug}/index.md`,
+        previewPath: `/works/${slug}/`,
+        source: `---
+title: ${yamlQuote(title)}
+year: ${year}
+category: ${yamlQuote(category)}
+instrumentation:
+  en: ${yamlQuote(instrumentation)}
+duration:${durationBlock}
+description: ${yamlQuote(summary || title)}
+slug: ${yamlQuote(slug)}
+order: 999${draft ? "\ndraft: true" : ""}
+---
+
+## Program Notes
+
+Write about this piece here.
+`,
+      };
+    }
+
+    const date =
+      newField<HTMLInputElement>("[data-new-date]")?.value.trim() ||
+      new Date().toISOString().slice(0, 10);
+    const type = newTypeSelect?.value ?? "Other";
+    const language =
+      newField<HTMLSelectElement>("[data-new-language]")?.value ?? "English";
+    return {
+      path: `content/writings/${slug}/index.md`,
+      previewPath: `/writings/${slug}/`,
+      source: `---
+title: ${yamlQuote(title)}
+date: ${yamlQuote(date)}
+type: ${yamlQuote(type)}
+language: ${yamlQuote(language)}
+excerpt: ${yamlQuote(summary || title)}
+slug: ${yamlQuote(slug)}
+order: 999${draft ? "\ndraft: true" : ""}
+---
+
+Write the text here.
+`,
+    };
+  };
+
+  newPageForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void (async () => {
+      const built = buildNewPageSource();
+      if ("error" in built) {
+        newMessage.textContent = built.error ?? "";
+        return;
+      }
+      if (fileHandles.has(built.path)) {
+        newMessage.textContent = `${built.path} already exists — pick another slug.`;
+        return;
+      }
+      try {
+        newSubmitButton.disabled = true;
+        newMessage.textContent = `Creating ${built.path}…`;
+        const handle = createApiFileHandle(built.path);
+        const writable = await handle.createWritable();
+        await writable.write(built.source);
+        await writable.close();
+        await connectDevProject();
+        await loadFile(built.path);
+        selectSidebarTab("files");
+        previewPath.value = built.previewPath;
+        newMessage.textContent = `Created ${built.path}. Draft pages are listed at /drafts/.`;
+        setStatus(`Created ${built.path}. Continue writing in the editor.`);
+        // Astro 需要片刻同步新内容文件，稍后再刷新预览。
+        // Astro needs a moment to sync the new content file before preview.
+        window.setTimeout(refreshPreview, 1500);
+        newTitleInput.value = "";
+        newSlugInput.value = "";
+        slugEditedManually = false;
+      } catch (error) {
+        newMessage.textContent =
+          error instanceof Error ? error.message : "Unable to create the page.";
+      } finally {
+        newSubmitButton.disabled = !apiConnected;
+      }
+    })();
+  });
+
+  draftShelfButton.addEventListener("click", () => {
+    previewPath.value = "/drafts/";
+    openPreviewLink.href = "/drafts/";
+    sessionStorage.setItem(PREVIEW_PATH_SESSION_KEY, "/drafts/");
+    refreshPreview();
+  });
+
   const loadFile = async (path: string, targetLine?: number) => {
     if (dirty) {
       const proceed = window.confirm(
@@ -887,10 +1277,20 @@ export async function initializeAdminStudio() {
     if (!handle) return 1;
     const text = await (await handle.getFile()).text();
     const lines = text.split(/\r?\n/);
-    const visibleText = normalizedSourceText(element.textContent ?? "");
+    const associatedLabel =
+      (element as HTMLInputElement).labels?.[0]?.textContent ?? "";
+    const visibleText = normalizedSourceText(
+      element.textContent ||
+        associatedLabel ||
+        element.getAttribute("aria-label") ||
+        element.getAttribute("placeholder") ||
+        "",
+    );
     const searchPhrases = [
       visibleText.slice(0, 90),
       visibleText.split(" ").slice(0, 7).join(" "),
+      normalizedSourceText(element.getAttribute("id") ?? ""),
+      normalizedSourceText(element.getAttribute("name") ?? ""),
     ].filter((phrase) => phrase.length >= 4);
 
     for (const phrase of searchPhrases) {
@@ -904,8 +1304,14 @@ export async function initializeAdminStudio() {
   };
 
   const findStyleLine = async (element: Element) => {
+    // 元素可声明自己的样式文件（如工具页的 tools.css）；body 是兜底。
+    // Elements may declare their stylesheet (e.g. tools.css on tool panels);
+    // the body attribute is the fallback.
     const path =
-      element.ownerDocument.body.dataset.styleSource ?? GLOBAL_CSS_PATH;
+      element.closest<HTMLElement>("[data-style-source]")?.dataset
+        .styleSource ??
+      element.ownerDocument.body.dataset.styleSource ??
+      GLOBAL_CSS_PATH;
     const handle = fileHandles.get(path);
     if (!handle) return { path, line: 1 };
 
@@ -1284,6 +1690,58 @@ export async function initializeAdminStudio() {
     }
   };
 
+  // Astro 文本允许一小组安全的行内标签（样式、注音、语言标记）；
+  // 其余 < > 与所有 { } 仍被拒绝，保护组件与表达式不被改坏。
+  // Astro text accepts a small whitelist of inline tags (styling, ruby,
+  // language marks); any other < > and all { } are still rejected so
+  // components and expressions stay safe.
+  const ALLOWED_INLINE_TAGS = new Set([
+    "em", "strong", "span", "ruby", "rt", "rb", "br",
+    "small", "sub", "sup", "code", "mark", "abbr",
+  ]);
+  const ALLOWED_INLINE_ATTRIBUTES = new Set(["style", "lang", "class", "title"]);
+  const ALLOWED_STYLE_PROPERTIES = new Set([
+    "letter-spacing", "word-spacing", "font-variant", "font-variant-caps",
+    "font-style", "font-weight", "font-size", "font-family",
+    "text-transform", "white-space", "color",
+  ]);
+
+  const validateInlineHtml = (text: string): string | null => {
+    if (/[{}]/.test(text)) {
+      return "Astro expressions { } are not allowed in visual edits.";
+    }
+    const tagPattern = /<\/?([a-zA-Z][a-zA-Z0-9]*)((?:\s+[a-zA-Z-]+(?:="[^"<>]*")?)*)\s*\/?>/g;
+    let match = tagPattern.exec(text);
+    while (match) {
+      const tag = match[1].toLocaleLowerCase();
+      if (!ALLOWED_INLINE_TAGS.has(tag)) {
+        return `<${tag}> is not an allowed inline tag.`;
+      }
+      const attributePattern = /([a-zA-Z-]+)(?:="([^"]*)")?/g;
+      let attribute = attributePattern.exec(match[2] ?? "");
+      while (attribute) {
+        const name = attribute[1].toLocaleLowerCase();
+        if (!ALLOWED_INLINE_ATTRIBUTES.has(name)) {
+          return `Attribute "${name}" is not allowed.`;
+        }
+        if (name === "style") {
+          for (const declaration of (attribute[2] ?? "").split(";")) {
+            const property = declaration.split(":")[0]?.trim().toLocaleLowerCase();
+            if (property && !ALLOWED_STYLE_PROPERTIES.has(property)) {
+              return `Style property "${property}" is not allowed.`;
+            }
+          }
+        }
+        attribute = attributePattern.exec(match[2] ?? "");
+      }
+      match = tagPattern.exec(text);
+    }
+    if (/[<>]/.test(text.replace(tagPattern, ""))) {
+      return "Unbalanced or unsupported < > markup.";
+    }
+    return null;
+  };
+
   const applyVisualTextEdit = async (
     element: Element,
     oldText: string,
@@ -1303,12 +1761,12 @@ export async function initializeAdminStudio() {
       return false;
     }
 
-    if (extension === ".astro" && /[<>{}]/.test(newText)) {
-      setStatus(
-        "Astro visual edits cannot contain <, >, {, or }. Use Content for code.",
-        "error",
-      );
-      return false;
+    if (extension === ".astro") {
+      const problem = validateInlineHtml(newText);
+      if (problem) {
+        setStatus(problem, "error");
+        return false;
+      }
     }
 
     try {
@@ -1316,7 +1774,19 @@ export async function initializeAdminStudio() {
         currentPath === path
           ? editor.state.doc.toString()
           : await (await handle.getFile()).text();
-      const range = await findVisualTextRange(path, source, oldText, element);
+      let range: { start: number; end: number } | null = null;
+      if (extension === ".astro" && /<[^>]+>/.test(oldText)) {
+        const directStart = source.indexOf(oldText);
+        const directEnd = directStart + oldText.length;
+        const unique =
+          directStart >= 0 && source.indexOf(oldText, directStart + 1) < 0;
+        const astroBodyStart =
+          source.indexOf("---", source.indexOf("---") + 3) + 3;
+        if (unique && (astroBodyStart <= 2 || directStart >= astroBodyStart)) {
+          range = { start: directStart, end: directEnd };
+        }
+      }
+      range ??= await findVisualTextRange(path, source, oldText, element);
       if (!range) {
         setStatus(
           "This block contains generated or structured markup. Use Content instead.",
@@ -1361,6 +1831,12 @@ export async function initializeAdminStudio() {
 
   // Inspector markup is injected only into the same-origin preview iframe.
   // 检查器只注入同源预览，不会写入或发布到公开页面。
+  //
+  // 交互模型：移动 = 高亮候选块；点击 = 钉选（工具条停住，链接不再跳转）；
+  // Parent 沿层级上移；Esc 或 ✕ 取消钉选。这样按钮永远可以到达。
+  // Interaction model: hover highlights a candidate block; CLICK PINS it
+  // (the toolbar stays put and links stop navigating); Parent walks up the
+  // tree; Esc or ✕ unpins. The toolbar is therefore always reachable.
   const installPreviewInspector = () => {
     removePreviewInspector();
     if (!previewInspectorInput.checked || previewVisualEditorInput.checked) return;
@@ -1377,8 +1853,12 @@ export async function initializeAdminStudio() {
         z-index: 2147483645;
         display: none;
         border: 1px dashed #c81e1e;
-        background: rgb(200 30 30 / 7%);
+        background: rgb(200 30 30 / 6%);
         pointer-events: none;
+      }
+      [data-studio-inspector-frame][data-pinned="true"] {
+        border-style: solid;
+        background: rgb(200 30 30 / 4%);
       }
       [data-studio-inspector-toolbar] {
         position: fixed;
@@ -1386,13 +1866,17 @@ export async function initializeAdminStudio() {
         display: none;
         gap: 0.25rem;
         align-items: center;
-        max-width: min(30rem, calc(100vw - 1rem));
+        max-width: min(34rem, calc(100vw - 1rem));
         padding: 0.25rem;
         border: 1px solid #c81e1e;
         background: #fff;
         color: #111;
-        font: 12px/1.2 Arial, sans-serif;
+        font: 12px/1.2 Consolas, monospace;
         box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+        pointer-events: none;
+      }
+      [data-studio-inspector-toolbar][data-pinned="true"] {
+        pointer-events: auto;
       }
       [data-studio-inspector-toolbar] span {
         overflow: hidden;
@@ -1400,6 +1884,11 @@ export async function initializeAdminStudio() {
         padding-inline: 0.25rem;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+      [data-studio-inspector-toolbar] em {
+        color: #888;
+        font-style: normal;
+        padding-inline: 0.25rem;
       }
       [data-studio-inspector-toolbar] button {
         border: 1px solid #aaa;
@@ -1411,6 +1900,22 @@ export async function initializeAdminStudio() {
       }
       [data-studio-inspector-toolbar] button:hover {
         border-color: #c81e1e;
+        color: #c81e1e;
+      }
+      [data-studio-inspector-toolbar][data-pinned="false"] button {
+        display: none;
+      }
+      html,
+      body,
+      body * {
+        cursor: crosshair !important;
+      }
+      [data-studio-inspector-ui],
+      [data-studio-inspector-ui] * {
+        cursor: auto !important;
+      }
+      [data-studio-inspector-toolbar] button {
+        cursor: pointer !important;
       }
     `;
 
@@ -1421,72 +1926,179 @@ export async function initializeAdminStudio() {
     toolbar.dataset.studioInspectorToolbar = "true";
     toolbar.dataset.studioInspectorUi = "true";
     const label = frameDocument.createElement("span");
+    const hint = frameDocument.createElement("em");
+    hint.textContent = "click to pin";
     const styleButton = frameDocument.createElement("button");
     styleButton.type = "button";
     styleButton.textContent = "Style";
+    styleButton.title = "Open the stylesheet rule for this block";
     const contentButton = frameDocument.createElement("button");
     contentButton.type = "button";
     contentButton.textContent = "Content";
-    toolbar.append(label, styleButton, contentButton);
+    contentButton.title = "Open the source file for this block";
+    const parentButton = frameDocument.createElement("button");
+    parentButton.type = "button";
+    parentButton.textContent = "Parent";
+    parentButton.title = "Select the enclosing block";
+    const closeButton = frameDocument.createElement("button");
+    closeButton.type = "button";
+    closeButton.textContent = "✕";
+    closeButton.title = "Unpin (Esc)";
+    toolbar.append(label, hint, styleButton, contentButton, parentButton, closeButton);
     frameDocument.head.append(style);
     frameDocument.body.append(frame, toolbar);
 
-    let inspectedElement: Element | null = null;
+    const BLOCK_SELECTOR =
+      "button, input, select, textarea, label, output, summary, details, canvas, svg, p, h1, h2, h3, h4, blockquote, figure, li, dl, table, nav, section, article, aside, header, footer, main, form, fieldset, div";
+
+    let hoveredElement: Element | null = null;
+    let pinnedElement: Element | null = null;
+    let frameRequest = 0;
+
+    const activeElement = () => pinnedElement ?? hoveredElement;
 
     const updateFrame = () => {
-      if (!inspectedElement || !inspectedElement.isConnected) return;
-      const rect = inspectedElement.getBoundingClientRect();
+      frameRequest = 0;
+      const element = activeElement();
+      const pinned = pinnedElement !== null;
+      if (!element || !element.isConnected) {
+        frame.style.display = "none";
+        toolbar.style.display = "none";
+        return;
+      }
+      const rect = element.getBoundingClientRect();
+      frame.dataset.pinned = String(pinned);
       frame.style.display = "block";
       frame.style.left = `${rect.left}px`;
       frame.style.top = `${rect.top}px`;
       frame.style.width = `${rect.width}px`;
       frame.style.height = `${rect.height}px`;
 
-      const toolbarTop =
-        rect.top >= 34 ? Math.max(4, rect.top - 31) : Math.min(rect.bottom + 4, frameWindow.innerHeight - 32);
-      toolbar.style.display = "flex";
-      toolbar.style.left = `${Math.max(4, Math.min(rect.left, frameWindow.innerWidth - 310))}px`;
-      toolbar.style.top = `${toolbarTop}px`;
+      toolbar.dataset.pinned = String(pinned);
+      hint.hidden = pinned;
       label.textContent = [
-        inspectedElement.tagName.toLocaleLowerCase(),
-        ...inspectedElement.classList,
+        element.tagName.toLocaleLowerCase(),
+        ...element.classList,
       ].join(".");
+      toolbar.style.display = "flex";
+      // 工具条优先出现在块的上方；空间不足时移到下方，且不遮住块本身。
+      // The toolbar prefers the space above the block, dropping below only
+      // when the top is off-screen, and never covering the block itself.
+      const toolbarHeight = 30;
+      const top =
+        rect.top >= toolbarHeight + 8
+          ? rect.top - toolbarHeight - 4
+          : Math.min(rect.bottom + 4, frameWindow.innerHeight - toolbarHeight - 4);
+      toolbar.style.left = `${Math.max(4, Math.min(rect.left, frameWindow.innerWidth - 340))}px`;
+      toolbar.style.top = `${Math.max(4, top)}px`;
+    };
+
+    const scheduleFrameUpdate = () => {
+      if (frameRequest) return;
+      frameRequest = frameWindow.requestAnimationFrame(updateFrame);
     };
 
     const handlePointerMove = (event: PointerEvent) => {
+      if (pinnedElement) return; // pinned: ignore hover entirely
+      const target = event.target;
+      if (!target || (target as Node).nodeType !== Node.ELEMENT_NODE) return;
+      const targetElement = target as Element;
+      if (targetElement.closest("[data-studio-inspector-ui]")) return;
+      const candidate =
+        targetElement.closest(BLOCK_SELECTOR) ?? targetElement;
+      if (candidate === hoveredElement) return;
+      hoveredElement = candidate;
+      scheduleFrameUpdate();
+    };
+
+    // Pointer-down pins before native controls can open or change value.
+    // 指针按下时先钉选，避免工具按钮、下拉框或滑杆在检查模式中被触发。
+    const handlePointerDown = (event: PointerEvent) => {
       const target = event.target;
       if (!target || (target as Node).nodeType !== Node.ELEMENT_NODE) return;
       const targetElement = target as Element;
       if (targetElement.closest("[data-studio-inspector-ui]")) return;
 
-      inspectedElement =
-        targetElement.closest(
-          "p, h1, h2, h3, h4, blockquote, figure, li, dl, nav, section, article, header, footer, main, div",
-        ) ?? targetElement;
-      updateFrame();
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      const candidate =
+        targetElement.closest(BLOCK_SELECTOR) ?? targetElement;
+      pinnedElement = candidate;
+      hoveredElement = null;
+      scheduleFrameUpdate();
+    };
+
+    // Capture-phase click interception keeps links and tool controls inert.
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!target || (target as Node).nodeType !== Node.ELEMENT_NODE) return;
+      if ((target as Element).closest("[data-studio-inspector-ui]")) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    };
+
+    const unpin = () => {
+      pinnedElement = null;
+      scheduleFrameUpdate();
+    };
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        unpin();
+      }
     };
 
     const hideFrame = () => {
-      frame.style.display = "none";
-      toolbar.style.display = "none";
+      if (pinnedElement) return;
+      hoveredElement = null;
+      scheduleFrameUpdate();
     };
 
-    styleButton.addEventListener("click", () => {
-      if (inspectedElement) void openInspectorStyle(inspectedElement);
+    styleButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const element = activeElement();
+      if (element) void openInspectorStyle(element);
     });
-    contentButton.addEventListener("click", () => {
-      if (inspectedElement) void openInspectorContent(inspectedElement);
+    contentButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const element = activeElement();
+      if (element) void openInspectorContent(element);
     });
+    parentButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const element = activeElement();
+      const parent = element?.parentElement?.closest(BLOCK_SELECTOR);
+      if (parent && parent !== frameDocument.body.parentElement) {
+        pinnedElement = parent;
+        scheduleFrameUpdate();
+      }
+    });
+    closeButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      unpin();
+    });
+
     frameDocument.addEventListener("pointermove", handlePointerMove, true);
+    frameDocument.addEventListener("pointerdown", handlePointerDown, true);
+    frameDocument.addEventListener("click", handleClick, true);
+    frameDocument.addEventListener("keydown", handleKeydown, true);
     frameDocument.addEventListener("pointerleave", hideFrame);
-    frameWindow.addEventListener("scroll", updateFrame, true);
-    frameWindow.addEventListener("resize", updateFrame);
+    frameWindow.addEventListener("scroll", scheduleFrameUpdate, true);
+    frameWindow.addEventListener("resize", scheduleFrameUpdate);
 
     removePreviewInspector = () => {
       frameDocument.removeEventListener("pointermove", handlePointerMove, true);
+      frameDocument.removeEventListener("pointerdown", handlePointerDown, true);
+      frameDocument.removeEventListener("click", handleClick, true);
+      frameDocument.removeEventListener("keydown", handleKeydown, true);
       frameDocument.removeEventListener("pointerleave", hideFrame);
-      frameWindow.removeEventListener("scroll", updateFrame, true);
-      frameWindow.removeEventListener("resize", updateFrame);
+      frameWindow.removeEventListener("scroll", scheduleFrameUpdate, true);
+      frameWindow.removeEventListener("resize", scheduleFrameUpdate);
+      if (frameRequest) frameWindow.cancelAnimationFrame(frameRequest);
       style.remove();
       frame.remove();
       toolbar.remove();
@@ -1603,6 +2215,11 @@ export async function initializeAdminStudio() {
     const sourceLabel = frameDocument.createElement("small");
     const formatToolbar = frameDocument.createElement("div");
     formatToolbar.dataset.studioVisualToolbar = "true";
+    // 行内排版工具条：对 Markdown 与 Astro 都可用（输出受白名单校验）。
+    // Inline typography toolbar: available for Markdown AND Astro
+    // (the output passes the inline-HTML whitelist).
+    const inlineToolbar = frameDocument.createElement("div");
+    inlineToolbar.dataset.studioVisualToolbar = "true";
     const textarea = frameDocument.createElement("textarea");
     textarea.setAttribute("aria-label", "Selected website text");
     const guidance = frameDocument.createElement("small");
@@ -1641,6 +2258,7 @@ export async function initializeAdminStudio() {
       heading,
       sourceLabel,
       formatToolbar,
+      inlineToolbar,
       textarea,
       guidance,
       blockActions,
@@ -1654,6 +2272,7 @@ export async function initializeAdminStudio() {
     let originalText = "";
     let originalSourceText = "";
     let selectedIsMarkdown = false;
+    let selectedIsAstro = false;
     let canManageBlocks = false;
     let editAction: "replace" | "before" | "after" = "replace";
     let deleteArmed = false;
@@ -1748,6 +2367,96 @@ export async function initializeAdminStudio() {
       formatToolbar.append(button);
     });
 
+    // 行内排版命令：包裹所选文字。Astro 文本用 <em>/<strong>/<span style> 而非 Markdown 星号。
+    // Inline typography commands wrap the selection. Astro text uses
+    // <em>/<strong>/<span style> rather than Markdown asterisks.
+    const inlineCommands = [
+      { label: "⟨em⟩", title: "Italic (HTML)", run: () => insertAroundSelection("<em>", "</em>", "text") },
+      { label: "⟨strong⟩", title: "Bold (HTML)", run: () => insertAroundSelection("<strong>", "</strong>", "text") },
+      {
+        label: "Sᴄ",
+        title: "Small caps",
+        run: () =>
+          insertAroundSelection(
+            '<span style="font-variant-caps: small-caps">',
+            "</span>",
+            "text",
+          ),
+      },
+      {
+        label: "A…A",
+        title: "Letterspaced",
+        run: () =>
+          insertAroundSelection(
+            '<span style="letter-spacing: 0.08em">',
+            "</span>",
+            "text",
+          ),
+      },
+      {
+        label: "中",
+        title: "Mark as Chinese (lang attribute, picks CJK fonts)",
+        run: () =>
+          insertAroundSelection('<span lang="zh-Hant">', "</span>", "文字"),
+      },
+      {
+        label: "x²",
+        title: "Superscript",
+        run: () => insertAroundSelection("<sup>", "</sup>", "2"),
+      },
+    ];
+    inlineCommands.forEach((command) => {
+      const button = frameDocument.createElement("button");
+      button.type = "button";
+      button.textContent = command.label;
+      button.title = command.title;
+      button.setAttribute("aria-label", command.title);
+      button.addEventListener("click", command.run);
+      inlineToolbar.append(button);
+    });
+
+    // 进阶排版：自定字距与字号，包裹所选文字。
+    // Advanced typography: custom letter-spacing and font-size wraps.
+    const spacingInput = frameDocument.createElement("input");
+    spacingInput.type = "number";
+    spacingInput.step = "0.01";
+    spacingInput.value = "0.05";
+    spacingInput.title = "Letter-spacing in em";
+    spacingInput.style.width = "3.6rem";
+    const spacingButton = frameDocument.createElement("button");
+    spacingButton.type = "button";
+    spacingButton.textContent = "spacing em";
+    spacingButton.title = "Wrap selection with this letter-spacing";
+    spacingButton.addEventListener("click", () => {
+      const value = Number(spacingInput.value);
+      if (!Number.isFinite(value)) return;
+      insertAroundSelection(
+        `<span style="letter-spacing: ${value}em">`,
+        "</span>",
+        "text",
+      );
+    });
+    const sizeInput = frameDocument.createElement("input");
+    sizeInput.type = "number";
+    sizeInput.step = "5";
+    sizeInput.value = "85";
+    sizeInput.title = "Font size as % of surrounding text";
+    sizeInput.style.width = "3.6rem";
+    const sizeButton = frameDocument.createElement("button");
+    sizeButton.type = "button";
+    sizeButton.textContent = "size %";
+    sizeButton.title = "Wrap selection with this font size";
+    sizeButton.addEventListener("click", () => {
+      const value = Number(sizeInput.value);
+      if (!(value > 0)) return;
+      insertAroundSelection(
+        `<span style="font-size: ${value}%">`,
+        "</span>",
+        "text",
+      );
+    });
+    inlineToolbar.append(spacingInput, spacingButton, sizeInput, sizeButton);
+
     const clearHover = () => {
       hoveredElement?.removeAttribute("data-studio-visual-hover");
       hoveredElement = null;
@@ -1759,6 +2468,7 @@ export async function initializeAdminStudio() {
       originalText = "";
       originalSourceText = "";
       selectedIsMarkdown = false;
+      selectedIsAstro = false;
       canManageBlocks = false;
       editAction = "replace";
       deleteArmed = false;
@@ -1807,6 +2517,7 @@ export async function initializeAdminStudio() {
           .sourceFile ?? "Unknown source";
       sourceLabel.textContent = sourcePath;
       selectedIsMarkdown = extensionOf(sourcePath) === ".md";
+      selectedIsAstro = extensionOf(sourcePath) === ".astro";
       canManageBlocks = false;
       originalSourceText = originalText;
       if (selectedIsMarkdown) {
@@ -1819,19 +2530,42 @@ export async function initializeAdminStudio() {
           canManageBlocks = context.canManageBlocks;
         }
       }
+      if (selectedIsAstro) {
+        const path = sourcePath;
+        const handle = fileHandles.get(path);
+        if (handle) {
+          const source =
+            currentPath === path
+              ? editor.state.doc.toString()
+              : await (await handle.getFile()).text();
+          const inlineSource = selectedElement.innerHTML.trim();
+          const start = inlineSource ? source.indexOf(inlineSource) : -1;
+          if (
+            start >= 0 &&
+            source.indexOf(inlineSource, start + 1) < 0
+          ) {
+            originalSourceText = inlineSource;
+          }
+        }
+      }
       editAction = "replace";
       deleteArmed = false;
       deleteBlockButton.textContent = "Delete block";
       heading.textContent = selectedIsMarkdown
         ? "Edit Markdown block"
-        : "Edit plain text";
+        : selectedIsAstro
+          ? "Edit Astro text"
+          : "Edit plain text";
       textarea.value = originalSourceText;
       formatToolbar.hidden = !selectedIsMarkdown || !canManageBlocks;
+      inlineToolbar.hidden = !selectedIsMarkdown && !selectedIsAstro;
       blockActions.hidden = !selectedIsMarkdown || !canManageBlocks;
       guidance.textContent =
         selectedIsMarkdown && canManageBlocks
-          ? "Markdown is supported. Blank lines create separate blocks."
-          : "Plain text only. Structured Astro markup stays protected.";
+          ? "Markdown is supported. Blank lines create separate blocks. Inline HTML styling is allowed."
+          : selectedIsAstro
+            ? "Inline styling allowed: <em>, <strong>, <span style=…>, ruby, lang marks. Components and { } stay protected."
+            : "Plain text only. Structured markup stays protected.";
       applyButton.textContent = "Apply";
       panel.dataset.open = "true";
       textarea.focus();
@@ -1853,7 +2587,7 @@ export async function initializeAdminStudio() {
           )
         : await applyVisualTextEdit(
             selectedElement,
-            originalText,
+            selectedIsAstro ? originalSourceText : originalText,
             textarea.value,
           );
       applyButton.disabled = false;
@@ -2117,6 +2851,7 @@ export async function initializeAdminStudio() {
 
   const runGlobalSearch = async () => {
     const query = globalSearchInput.value.trim();
+    searchBlock.hidden = false;
     if (query.length < 2) {
       searchSummary.textContent = "Enter at least two characters.";
       searchResults.replaceChildren();
@@ -2164,60 +2899,112 @@ export async function initializeAdminStudio() {
     imageUrls.splice(0).forEach((url) => URL.revokeObjectURL(url));
   };
 
-  const renderImages = async () => {
+  const createImageCard = async (path: string) => {
+    const handle = imageHandles.get(path);
+    if (!handle) return null;
+    const file = await handle.getFile();
+    const objectUrl = URL.createObjectURL(file);
+    imageUrls.push(objectUrl);
+    const webPath = publicImageUrl(path);
+
+    const card = document.createElement("article");
+    card.className = "image-card";
+    const image = document.createElement("img");
+    image.src = objectUrl;
+    image.alt = file.name;
+    image.loading = "lazy";
+    const code = document.createElement("code");
+    code.textContent = webPath;
+    code.title = webPath;
+    const actions = document.createElement("div");
+    actions.className = "image-actions";
+
+    const copyButton = document.createElement("button");
+    copyButton.type = "button";
+    copyButton.textContent = "Copy URL";
+    copyButton.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(webPath);
+      setStatus(`Copied ${webPath}.`);
+    });
+
+    const insertButton = document.createElement("button");
+    insertButton.type = "button";
+    insertButton.textContent = "Insert Markdown";
+    insertButton.addEventListener("click", () => {
+      if (!currentPath) {
+        setStatus("Open a file first, then insert the image.", "error");
+        return;
+      }
+      const selection = editor.state.selection.main;
+      const markdownImage = `![Image description](${webPath})`;
+      editor.dispatch({
+        changes: {
+          from: selection.from,
+          to: selection.to,
+          insert: markdownImage,
+        },
+        selection: {
+          anchor: selection.from + markdownImage.length,
+        },
+      });
+      editor.focus();
+    });
+
+    actions.append(copyButton, insertButton);
+    card.append(image, code, actions);
+    return card;
+  };
+
+  // 相簿 = 资料夹。打开相簿时才读取该夹的图片，连接项目时不再全量加载。
+  // Albums are folders. An album's images load when it is first opened,
+  // so connecting the project no longer downloads every image at once.
+  const renderImages = () => {
     clearImageUrls();
     imageLibrary.replaceChildren();
 
-    for (const [path, handle] of [...imageHandles.entries()].sort(([a], [b]) =>
+    const albums = new Map<string, string[]>();
+    for (const path of [...imageHandles.keys()].sort((a, b) =>
       a.localeCompare(b),
     )) {
-      const file = await handle.getFile();
-      const objectUrl = URL.createObjectURL(file);
-      imageUrls.push(objectUrl);
-      const webPath = publicImageUrl(path);
-
-      const card = document.createElement("article");
-      card.className = "image-card";
-      const image = document.createElement("img");
-      image.src = objectUrl;
-      image.alt = file.name;
-      const code = document.createElement("code");
-      code.textContent = webPath;
-      const actions = document.createElement("div");
-      actions.className = "image-actions";
-
-      const copyButton = document.createElement("button");
-      copyButton.type = "button";
-      copyButton.textContent = "Copy URL";
-      copyButton.addEventListener("click", async () => {
-        await navigator.clipboard.writeText(webPath);
-        setStatus(`Copied ${webPath}.`);
-      });
-
-      const insertButton = document.createElement("button");
-      insertButton.type = "button";
-      insertButton.textContent = "Insert Markdown";
-      insertButton.disabled = !currentPath;
-      insertButton.addEventListener("click", () => {
-        const selection = editor.state.selection.main;
-        const markdownImage = `![Image description](${webPath})`;
-        editor.dispatch({
-          changes: {
-            from: selection.from,
-            to: selection.to,
-            insert: markdownImage,
-          },
-          selection: {
-            anchor: selection.from + markdownImage.length,
-          },
-        });
-        editor.focus();
-      });
-
-      actions.append(copyButton, insertButton);
-      card.append(image, code, actions);
-      imageLibrary.append(card);
+      const folder = path.split("/").slice(0, -1).join("/") || "(project root)";
+      if (!albums.has(folder)) albums.set(folder, []);
+      albums.get(folder)?.push(path);
     }
+
+    for (const [folder, paths] of albums) {
+      const album = document.createElement("details");
+      album.className = "image-album";
+      const summary = document.createElement("summary");
+      summary.textContent = `${folder} (${paths.length})`;
+      const grid = document.createElement("div");
+      grid.className = "image-album-grid";
+      album.append(summary, grid);
+      album.dataset.loaded = "false";
+      album.addEventListener("toggle", () => {
+        if (!album.open || album.dataset.loaded !== "false") return;
+        album.dataset.loaded = "loading";
+        void (async () => {
+          for (const path of paths) {
+            try {
+              const card = await createImageCard(path);
+              if (card) grid.append(card);
+            } catch {
+              const error = document.createElement("p");
+              error.className = "image-load-error";
+              error.textContent = `Could not load ${path}.`;
+              grid.append(error);
+            }
+          }
+          album.dataset.loaded = "true";
+        })();
+      });
+      imageLibrary.append(album);
+    }
+
+    // 网站正式图片夹默认展开。 The site's main image folder opens by default.
+    const mainAlbum = [...imageLibrary.querySelectorAll<HTMLDetailsElement>(".image-album")]
+      .find((album) => album.querySelector("summary")?.textContent?.startsWith("public/images"));
+    if (mainAlbum) mainAlbum.open = true;
   };
 
   const connectDevProject = async () => {
@@ -2237,6 +3024,7 @@ export async function initializeAdminStudio() {
 
       fileHandles.clear();
       imageHandles.clear();
+      apiConnected = true;
       project.files.forEach((path) => {
         fileHandles.set(path, createApiFileHandle(path));
       });
@@ -2246,15 +3034,21 @@ export async function initializeAdminStudio() {
 
       openFolderButton.textContent = "Reload project";
       renderFileList();
-      await renderImages();
+      renderImages();
       openThemeCssButton.disabled = !fileHandles.has(GLOBAL_CSS_PATH);
       await loadMotionSettings();
       await loadTypographySettings();
+      await loadDesignSettings();
+      await loadSiteDefaults();
+      newSubmitButton.disabled = false;
+      newMessage.textContent = "";
       setStatus(
         `Connected: ${fileHandles.size} editable files and ${imageHandles.size} images.`,
       );
       return true;
     } catch {
+      apiConnected = false;
+      newSubmitButton.disabled = true;
       return false;
     }
   };
@@ -2294,13 +3088,19 @@ export async function initializeAdminStudio() {
       const directory = await window.showDirectoryPicker({ mode: "readwrite" });
       fileHandles.clear();
       imageHandles.clear();
+      apiConnected = false;
       setStatus("Reading project files…");
       await scanDirectory(directory);
       renderFileList();
-      await renderImages();
+      renderImages();
       openThemeCssButton.disabled = !fileHandles.has(GLOBAL_CSS_PATH);
       await loadMotionSettings();
       await loadTypographySettings();
+      await loadDesignSettings();
+      await loadSiteDefaults();
+      newSubmitButton.disabled = true;
+      newMessage.textContent =
+        "Add Page requires the local development server connection.";
       setStatus(
         `Opened ${directory.name}: ${fileHandles.size} editable files and ${imageHandles.size} images.`,
       );
@@ -2337,6 +3137,13 @@ export async function initializeAdminStudio() {
   searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
     void runGlobalSearch();
+  });
+  searchClearButton.addEventListener("click", () => {
+    globalSearchInput.value = "";
+    searchSummary.textContent = "";
+    searchResults.replaceChildren();
+    searchBlock.hidden = true;
+    globalSearchInput.focus();
   });
   loadPreviewButton.addEventListener("click", refreshPreview);
   refreshPreviewButton.addEventListener("click", refreshPreview);
@@ -2530,7 +3337,7 @@ export async function initializeAdminStudio() {
   window.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "F") {
       event.preventDefault();
-      selectSidebarTab("find");
+      selectSidebarTab("files");
       globalSearchInput.focus();
       globalSearchInput.select();
     }

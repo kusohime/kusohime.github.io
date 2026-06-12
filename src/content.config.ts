@@ -60,6 +60,9 @@ const works = defineCollection({
     description: z.string(),
     slug: z.string(),
     order: z.number().int().default(999),
+    // 草稿不出现在公开目录页，只在 /drafts/ 与直接网址下可见。
+    // Drafts stay off the public index pages; see /drafts/ and direct URLs.
+    draft: z.boolean().default(false),
   }),
 });
 
@@ -78,6 +81,7 @@ const writings = defineCollection({
     excerpt: z.string(),
     slug: z.string(),
     order: z.number().int().default(999),
+    draft: z.boolean().default(false),
   }),
 });
 

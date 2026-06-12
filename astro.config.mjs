@@ -7,8 +7,8 @@
  */
 import { defineConfig } from "astro/config";
 import { unified } from "@astrojs/markdown-remark";
-import { readdir, readFile, stat, writeFile } from "node:fs/promises";
-import { extname, isAbsolute, relative, resolve, sep } from "node:path";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 
@@ -222,6 +222,23 @@ function localStudioPlugin() {
           }
 
           const filePath = resolveProjectFile(requestedPath);
+
+          // PUT 可以创建尚不存在的文件（用于 Studio 的 Add page）。
+          // PUT may create files that do not exist yet (Studio's Add page).
+          if (
+            url.pathname === "/__admin/api/file" &&
+            request.method === "PUT"
+          ) {
+            if (!editableExtensions.has(extname(filePath).toLowerCase())) {
+              sendJson(response, 415, { error: "This file type is not editable." });
+              return;
+            }
+            await mkdir(dirname(filePath), { recursive: true });
+            await writeFile(filePath, await readBody(request), "utf8");
+            sendJson(response, 200, { saved: requestedPath });
+            return;
+          }
+
           const fileStats = await stat(filePath);
           if (!fileStats.isFile()) {
             sendJson(response, 404, { error: "File not found." });
@@ -239,12 +256,6 @@ function localStudioPlugin() {
               response.setHeader("Content-Type", "text/plain; charset=utf-8");
               response.setHeader("Cache-Control", "no-store");
               response.end(await readFile(filePath, "utf8"));
-              return;
-            }
-
-            if (request.method === "PUT") {
-              await writeFile(filePath, await readBody(request), "utf8");
-              sendJson(response, 200, { saved: requestedPath });
               return;
             }
           }

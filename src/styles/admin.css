@@ -6,15 +6,17 @@
  */
 :root {
   color-scheme: light;
-  --admin-accent: #cc0000;
-  --admin-background: #f4f3ef;
-  --admin-panel: #fff;
-  --admin-text: #171717;
-  --admin-muted: #666;
-  --admin-border: #c8c6c0;
+  --admin-accent: #c81e1e;
+  --admin-accent-soft: #f9ecea;
+  --admin-background: #efeee9;
+  --admin-panel: #fffefb;
+  --admin-text: #151515;
+  --admin-muted: #686761;
+  --admin-border: #c9c5bc;
+  --admin-border-strong: #9e9a91;
   --studio-sidebar-width: 17rem;
   --studio-editor-width: 40vw;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "IBM Plex Mono", Consolas, "Courier New", monospace;
   color: var(--admin-text);
   background: var(--admin-background);
 }
@@ -40,7 +42,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -52,7 +55,7 @@ button,
 
 button {
   border: 1px solid var(--admin-border);
-  border-radius: 0.15rem;
+  border-radius: 0;
   padding: 0.35rem 0.6rem;
   background: var(--admin-panel);
   cursor: pointer;
@@ -62,7 +65,7 @@ button:hover,
 button:focus-visible,
 a:focus-visible {
   border-color: var(--admin-accent);
-  outline: 2px solid color-mix(in srgb, var(--admin-accent) 35%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--admin-accent) 24%, transparent);
   outline-offset: 1px;
 }
 
@@ -86,9 +89,10 @@ button:disabled {
   display: grid;
   width: min(22rem, 100%);
   gap: 0.8rem;
-  border: 1px solid var(--admin-border);
-  padding: 1.4rem;
+  border: 1px solid var(--admin-border-strong);
+  padding: 1.6rem;
   background: var(--admin-panel);
+  box-shadow: 0.55rem 0.55rem 0 var(--admin-accent-soft);
 }
 
 .gate-card h1,
@@ -97,7 +101,8 @@ button:disabled {
 }
 
 .gate-card h1 {
-  font-size: 1rem;
+  font-size: 1.1rem;
+  letter-spacing: -0.03em;
 }
 
 .gate-kicker,
@@ -116,6 +121,7 @@ button:disabled {
   width: 100%;
   border: 1px solid var(--admin-border);
   padding: 0.55rem 0.6rem;
+  background: #fff;
 }
 
 .gate-message[data-kind="error"] {
@@ -136,8 +142,9 @@ button:disabled {
   grid-template-columns: auto minmax(10rem, 1fr) auto;
   gap: 0.5rem 1rem;
   align-items: center;
-  padding: 0.45rem 0.65rem;
-  border-bottom: 1px solid var(--admin-border);
+  min-height: 3.25rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--admin-border-strong);
   background: var(--admin-panel);
 }
 
@@ -168,6 +175,17 @@ button:disabled {
   font-size: 0.8rem;
 }
 
+.toolbar-actions button[data-save-file]:not(:disabled) {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent);
+  color: #fff;
+}
+
+.studio-links a {
+  color: var(--admin-accent);
+  text-underline-offset: 0.16em;
+}
+
 .studio-status[data-kind="error"] {
   color: var(--admin-accent);
 }
@@ -190,6 +208,11 @@ button:disabled {
   min-width: 0;
   min-height: 0;
   background: var(--admin-panel);
+}
+
+.studio-sidebar,
+.studio-editor-pane {
+  border-right: 1px solid var(--admin-border);
 }
 
 .studio-sidebar,
@@ -233,6 +256,12 @@ button:disabled {
   justify-content: space-between;
 }
 
+.pane-title strong {
+  color: var(--admin-accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .pane-toggle {
   display: inline-grid;
   width: 1.55rem;
@@ -240,6 +269,7 @@ button:disabled {
   flex: none;
   place-items: center;
   padding: 0;
+  border-color: var(--admin-border-strong);
   font-weight: 700;
   line-height: 1;
 }
@@ -288,22 +318,33 @@ button:disabled {
 .sidebar-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-background);
 }
 
 .sidebar-tabs button {
-  border-width: 0 0 1px;
+  min-width: 0;
+  border-width: 0 1px 0 0;
+  padding: 0.58rem 0.2rem;
+  background: transparent;
+  color: var(--admin-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
 }
 
 .sidebar-tabs button[aria-selected="true"] {
   color: var(--admin-accent);
-  border-bottom-color: var(--admin-accent);
+  background: var(--admin-panel);
+  box-shadow: inset 0 -0.16rem var(--admin-accent);
+  font-weight: 700;
 }
 
 .sidebar-panel {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0.75rem;
+  padding: 0.8rem;
+  scrollbar-color: var(--admin-border-strong) transparent;
 }
 
 .filter-field,
@@ -315,12 +356,23 @@ button:disabled {
 }
 
 .filter-field input,
-.preview-controls input {
+.preview-controls input,
+.design-group input:not([type="checkbox"]):not([type="range"]),
+.design-group select {
   min-width: 0;
   border: 1px solid var(--admin-border);
   padding: 0.4rem 0.5rem;
   color: var(--admin-text);
-  background: var(--admin-panel);
+  background: #fff;
+}
+
+.filter-field input:focus,
+.preview-controls input:focus,
+.design-group input:focus,
+.design-group select:focus {
+  border-color: var(--admin-accent);
+  outline: 1px solid var(--admin-accent);
+  outline-offset: 0;
 }
 
 .file-list,
@@ -389,16 +441,29 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.45rem;
   align-items: end;
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--admin-border);
+}
+
+.search-block {
+  margin-top: 0.7rem;
+  border: 1px solid var(--admin-border);
+  background: color-mix(in srgb, var(--admin-background) 48%, white);
 }
 
 .search-summary {
-  margin: 0.75rem 0 0;
+  margin: 0;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--admin-border);
   color: var(--admin-muted);
   font-size: 0.72rem;
 }
 
 .search-results {
-  margin: 0.55rem 0 0;
+  max-height: 15rem;
+  overflow: auto;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -408,8 +473,16 @@ button:disabled {
   width: 100%;
   gap: 0.2rem;
   border-width: 0 0 1px;
-  padding: 0.5rem 0.3rem;
+  padding: 0.5rem;
+  background: transparent;
   text-align: left;
+}
+
+.search-clear {
+  width: 100%;
+  border-width: 1px 0 0;
+  color: var(--admin-muted);
+  font-size: 0.7rem;
 }
 
 .search-result-path {
@@ -501,15 +574,21 @@ button:disabled {
 }
 
 .preview-controls {
-  display: grid;
-  grid-template-columns: minmax(8rem, 1fr) repeat(7, auto);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  overflow: hidden;
+}
+
+.preview-controls > label:not(.inspect-control) {
+  flex: 1 1 10rem;
 }
 
 .css-file-button {
   width: 100%;
-  min-height: 3rem;
+  min-height: 2.55rem;
   border: 1px solid var(--admin-accent);
-  background: transparent;
+  background: var(--admin-accent-soft);
   color: var(--admin-accent);
   font-weight: 700;
   cursor: pointer;
@@ -520,40 +599,46 @@ button:disabled {
   background: color-mix(in srgb, var(--admin-accent) 8%, white);
 }
 
-.motion-settings,
-.typography-settings {
+.design-group {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.65rem;
   margin: 0.85rem 0 0;
   border: 1px solid var(--admin-border);
-  padding: 0.7rem;
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--admin-background) 34%, white);
 }
 
-.motion-settings legend,
-.typography-settings legend {
+.design-group legend {
   padding-inline: 0.25rem;
+  color: var(--admin-accent);
   font-size: 0.75rem;
   font-weight: 700;
 }
 
-.motion-settings label,
-.typography-settings label {
-  display: flex;
+.design-group label {
+  display: grid;
   gap: 0.45rem;
-  align-items: flex-start;
+  align-items: center;
+  color: var(--admin-muted);
   font-size: 0.72rem;
   line-height: 1.25;
 }
 
-.motion-settings p,
-.typography-settings p {
+.design-group label:has(> input[type="checkbox"]) {
+  grid-template-columns: auto minmax(0, 1fr);
+  color: var(--admin-text);
+}
+
+.design-group p,
+.panel-hint {
   margin: 0.15rem 0 0;
   color: var(--admin-muted);
   font-size: 0.68rem;
+  line-height: 1.45;
 }
 
-.typography-settings label {
-  display: grid;
+.design-group[disabled] {
+  opacity: 0.55;
 }
 
 .range-control {
@@ -565,6 +650,7 @@ button:disabled {
 
 .range-control input {
   width: 100%;
+  accent-color: var(--admin-accent);
 }
 
 .range-control output {
@@ -613,7 +699,14 @@ button:disabled {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  background: #deddd9;
+  background:
+    linear-gradient(45deg, #deddd9 25%, transparent 25%),
+    linear-gradient(-45deg, #deddd9 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #deddd9 75%),
+    linear-gradient(-45deg, transparent 75%, #deddd9 75%),
+    #e9e8e3;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  background-size: 12px 12px;
 }
 
 .preview-stage iframe {
@@ -638,14 +731,42 @@ button:disabled {
 
 .image-library {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
+}
+
+.image-album {
+  border: 1px solid var(--admin-border);
+  background: var(--admin-panel);
+}
+
+.image-album > summary {
+  padding: 0.55rem 0.65rem;
+  color: var(--admin-text);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.image-album[open] > summary {
+  border-bottom: 1px solid var(--admin-border);
+  color: var(--admin-accent);
+  background: var(--admin-accent-soft);
+}
+
+.image-album-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.55rem;
 }
 
 .image-card {
   min-width: 0;
   border: 1px solid var(--admin-border);
   padding: 0.4rem;
+  background: #fff;
 }
 
 .image-card img {
@@ -672,8 +793,40 @@ button:disabled {
 }
 
 .image-actions button {
+  flex: 1 1 auto;
   padding: 0.25rem 0.4rem;
   font-size: 0.7rem;
+}
+
+.image-load-error {
+  margin: 0;
+  border: 1px solid var(--admin-accent);
+  padding: 0.5rem;
+  color: var(--admin-accent);
+  font-size: 0.68rem;
+}
+
+.new-page-panel form,
+.new-page-panel fieldset {
+  margin-top: 0;
+}
+
+.new-page-panel [data-new-work-fields],
+.new-page-panel [data-new-writing-fields] {
+  display: grid;
+  gap: 0.65rem;
+  padding-block: 0.2rem;
+}
+
+.new-page-submit {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.draft-shelf-button {
+  color: var(--admin-accent);
 }
 
 .local-only-message {
@@ -692,5 +845,9 @@ button:disabled {
   .studio-workspace {
     --studio-sidebar-width: 13rem;
     --studio-editor-width: 36vw;
+  }
+
+  .preview-controls {
+    align-content: center;
   }
 }

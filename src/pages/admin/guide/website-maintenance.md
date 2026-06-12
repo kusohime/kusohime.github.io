@@ -52,34 +52,49 @@ or technical folders. Do not use them for ordinary content work.
 ## Studio panes / 管理器區域
 
 **Files / 檔案** displays the project as folders. Select a text file to edit
-it. **Wrap lines** changes only the editor display and does not change the
-file.
+it. File filtering and project-wide text search now live together in this
+pane. The search shortcut is <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> +
+<kbd>Shift</kbd> + <kbd>F</kbd>. **Wrap lines** changes only the editor
+display and does not change the file.
 
-**Files / 檔案** 以資料夾形式顯示專案。選擇文字檔案即可編輯。
-**Wrap lines** 只改變編輯器中的顯示，不修改檔案內容。
+**Files / 檔案** 以資料夾形式顯示專案。選擇文字檔案即可編輯；檔名篩選與
+全專案文字搜尋都位於同一區域。搜尋快捷鍵是 <kbd>Ctrl</kbd> 或 <kbd>Cmd</kbd> +
+<kbd>Shift</kbd> + <kbd>F</kbd>。**Wrap lines** 只改變編輯器中的顯示，
+不修改檔案內容。
 
-**Images / 圖片** previews image files and can copy a public URL or insert
-Markdown. Images normally belong in `public/images/`.
+**Images / 圖片** groups image files into folder albums. Albums load their
+thumbnails only when opened and can copy a public URL or insert Markdown.
+Images normally belong in `public/images/`.
 
-**Images / 圖片** 用於預覽圖片、複製公開網址或插入 Markdown。圖片通常放在
-`public/images/`。
+**Images / 圖片** 會依資料夾分成相簿，開啟相簿時才載入縮圖；可複製公開網址
+或插入 Markdown。圖片通常放在 `public/images/`。
 
-**Find / 查詢** searches the whole project. Use it before renaming a class,
-URL, field, or component. The shortcut is <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> +
-<kbd>Shift</kbd> + <kbd>F</kbd>.
+Use **Find in files / 在檔案中查詢** before renaming a class, URL, field, or
+component. Results open the matching file and line.
 
-**Find / 查詢** 搜尋整個專案。重新命名 class、網址、欄位或元件前應先查詢。
-快捷鍵是 <kbd>Ctrl</kbd> 或 <kbd>Cmd</kbd> + <kbd>Shift</kbd> +
-<kbd>F</kbd>。
+重新命名 class、網址、欄位或元件前，應先使用 **Find in files /
+在檔案中查詢**；結果會直接開啟相符的檔案與行號。
 
-**Design / 設計** contains one **CSS** button. It opens
-`src/styles/global.css`, where the documented variables near the beginning of
-the file control color, typography, spacing, widths, header height, and footer
-height.
+**Design / 設計** provides visual controls for the default visitor language,
+body and heading fonts, font sizes, line heights, paragraph indentation,
+paragraph spacing, page widths, gutters, and the site's spacing scale. Changes
+preview immediately and update the documented variables near the beginning of
+`src/styles/global.css`. **Open global.css** remains available for settings not
+represented by a control.
 
-**Design / 設計** 中只保留一個 **CSS** 按鈕。它會開啟
-`src/styles/global.css`；檔案開頭附近已經說明的變數用於控制顏色、字型、間距、
-寬度、頁首高度和頁尾高度。
+**Design / 設計** 提供新訪客預設語言、內文與標題字型、字號、行高、段落縮排、
+段落間距、頁面寬度、頁邊距與全站間距尺度等可視控制。變更會立即預覽，並更新
+`src/styles/global.css` 開頭附近的變數。未出現在控制項中的設定仍可透過
+**Open global.css** 修改。
+
+**New / 新增** creates a work or writing page. New entries start as drafts by
+default, stay out of the public Works and Writings lists, and appear on the
+local `/drafts/` shelf. Remove `draft: true` from the new Markdown file when it
+is ready to publish.
+
+**New / 新增** 可建立作品或文章頁面。新項目預設為草稿，不會出現在公開的作品
+與文章列表中，並可在本地 `/drafts/` 草稿架預覽。完成後，從 Markdown 檔案刪除
+`draft: true` 即可公開。
 
 The five animation switches below **CSS** edit `src/config/motion.json`.
 Language flaps, theme fading, font-size scaling, glyph rotation, and interface
@@ -98,10 +113,14 @@ Chinese or Japanese.
 ## Preview inspector / 預覽檢查器
 
 Turn on **Inspect** above the preview. Moving the pointer over the website draws
-a dim frame around a meaningful block.
+a dim frame around a meaningful block. Click to pin the selection before using
+the toolbar. Press <kbd>Esc</kbd>, click the close button, or choose
+**Parent** to move through the hierarchy. Preview links and interactive tool
+controls stay inactive while Inspect is on.
 
 開啟預覽上方的 **Inspect**。將滑鼠移過網頁時，會在有意義的內容區塊周圍顯示
-淡色邊框。
+淡色邊框。點選後會固定選取範圍，再使用工具列；可按 <kbd>Esc</kbd>、關閉按鈕，
+或用 **Parent** 向上選取。Inspect 開啟時，預覽中的連結與互動工具不會被誤觸。
 
 - **Style** opens `src/styles/global.css` near the first shared selector that
   appears to control the block.
@@ -135,15 +154,18 @@ click. Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> to apply, or
 <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> 應用，按
 <kbd>Esc</kbd> 取消；空行會分隔 Markdown 區塊。
 
-Simple Astro text remains plain-text-only so component structure cannot be
-damaged from the preview. For styles, links, code, and component changes, use
-**Inspect**, **Content**, **Design**, or the code editor. The preview path,
-desktop/phone size, and active preview mode are remembered while the Studio
-refreshes after a save.
+Literal text in Astro files supports a protected set of inline typography:
+italic, bold, small caps, letter spacing, language marks, superscript, custom
+letter spacing, and relative font size. Components and Astro expressions remain
+protected. For links, code, and component changes, use **Inspect**,
+**Content**, **Design**, or the code editor. The preview path, desktop/phone
+size, and active preview mode are remembered while the Studio refreshes after
+a save.
 
-此模式有意不修改樣式、連結、程式程式碼或元件結構。此類修改請使用
-**Inspect**、**Content**、**Design** 或程式碼編輯器。儲存後管理器重新整理時，預覽
-路徑、桌面/手機尺寸和當前預覽模式會被保留。
+Astro 檔案中的字面文字可使用受保護的行內排版功能，包括斜體、粗體、小型大寫、
+字距、語言標記、上標、自訂字距與相對字號；元件與 Astro 表達式仍受保護。連結、
+程式碼與元件修改請使用 **Inspect**、**Content**、**Design** 或程式碼編輯器。
+儲存後管理器重新整理時，預覽路徑、桌面/手機尺寸和當前預覽模式會被保留。
 
 Drag the narrow separators between **Project**, **Code**, and **Preview** to
 resize the panes. The minus button folds a pane horizontally; the plus button

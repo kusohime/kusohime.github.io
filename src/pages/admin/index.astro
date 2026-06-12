@@ -95,51 +95,33 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             type="button"
             role="tab"
             aria-selected="false"
-            data-sidebar-tab="find"
+            data-sidebar-tab="design"
           >
-            Find
+            Design
           </button>
           <button
             type="button"
             role="tab"
             aria-selected="false"
-            data-sidebar-tab="design"
+            data-sidebar-tab="new"
           >
-            Design
+            New
           </button>
         </div>
 
         <!--
-          檔案樹按目錄分組；輸入框只篩選檔名和路徑。
-          The directory tree groups files by folder; this filter searches paths and names.
+          檔案頁籤同時提供檔名篩選與全文搜尋（原 Find 頁籤已併入此處）。
+          The Files tab offers both name filtering and full-text search
+          (the former Find tab now lives here).
         -->
         <section class="sidebar-panel" data-sidebar-panel="files">
           <label class="filter-field">
             Filter files
             <input type="search" data-file-filter placeholder="works, CSS, Astro…" />
           </label>
-          <nav aria-label="Project files">
-            <ul class="file-list file-tree" data-file-list></ul>
-          </nav>
-        </section>
-
-        <section
-          class="sidebar-panel"
-          data-sidebar-panel="images"
-          hidden
-        >
-          <p>Select an image to copy its public URL or insert Markdown.</p>
-          <div class="image-library" data-image-library></div>
-        </section>
-
-        <!--
-          Find 會在整個專案的可編輯文字檔案中查詢內容。
-          Find searches the contents of every editable text file in the project.
-        -->
-        <section class="sidebar-panel" data-sidebar-panel="find" hidden>
           <form class="global-search" data-search-form>
             <label class="filter-field">
-              Find throughout project
+              Find in files
               <input
                 type="search"
                 data-global-search
@@ -148,17 +130,245 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             </label>
             <button type="submit">Find</button>
           </form>
-          <p class="search-summary" data-search-summary>
-            Search file contents across the project.
-          </p>
-          <ol class="search-results" data-search-results></ol>
+          <div class="search-block" data-search-block hidden>
+            <p class="search-summary" data-search-summary></p>
+            <ol class="search-results" data-search-results></ol>
+            <button type="button" class="search-clear" data-search-clear>
+              Clear results
+            </button>
+          </div>
+          <nav aria-label="Project files">
+            <ul class="file-list file-tree" data-file-list></ul>
+          </nav>
         </section>
 
+        <!--
+          圖片按資料夾分為相簿；打開相簿時才載入縮圖。
+          Images group into folder albums; thumbnails load when an album opens.
+        -->
+        <section
+          class="sidebar-panel"
+          data-sidebar-panel="images"
+          hidden
+        >
+          <p class="panel-hint">
+            Albums follow the project folders. Open one to load thumbnails,
+            then copy the URL or insert Markdown.
+          </p>
+          <div class="image-library" data-image-library></div>
+        </section>
+
+        <!--
+          Design 直接改寫 global.css 的 :root 變數與 config JSON，並即時預覽。
+          Design rewrites global.css :root variables and config JSON, with
+          live preview before the file save round-trips.
+        -->
         <section class="sidebar-panel design-panel" data-sidebar-panel="design" hidden>
           <button type="button" class="css-file-button" data-open-theme-css disabled>
-            CSS
+            Open global.css
           </button>
-          <fieldset class="motion-settings" data-motion-settings disabled>
+
+          <fieldset class="design-group" data-site-defaults disabled>
+            <legend>Site defaults</legend>
+            <label>
+              Default language for new visitors
+              <select data-default-language>
+                <option value="en">English</option>
+                <option value="zh">中文</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
+                <option value="ja">日本語</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset class="design-group" data-design-settings disabled>
+            <legend>Typography</legend>
+            <label>
+              Body font
+              <select data-design-var="--font-body" data-design-kind="raw">
+                <option value="var(--font-typewriter)">Classic typewriter</option>
+                <option value="var(--font-modern-mono)">Modern mono</option>
+                <option value="var(--font-system-sans)">System sans</option>
+                <option value="var(--font-humanist-sans)">Humanist sans</option>
+                <option value="var(--font-system-serif)">Traditional serif</option>
+                <option value="var(--font-garamond)">Garamond</option>
+              </select>
+            </label>
+            <label>
+              Heading font
+              <select data-design-var="--font-heading" data-design-kind="raw">
+                <option value="var(--font-body)">Same as body</option>
+                <option value="var(--font-typewriter)">Classic typewriter</option>
+                <option value="var(--font-modern-mono)">Modern mono</option>
+                <option value="var(--font-system-sans)">System sans</option>
+                <option value="var(--font-humanist-sans)">Humanist sans</option>
+                <option value="var(--font-system-serif)">Traditional serif</option>
+                <option value="var(--font-garamond)">Garamond</option>
+              </select>
+            </label>
+            <label>
+              Base font size
+              <span class="range-control">
+                <input type="range" min="14" max="22" step="0.5"
+                  data-design-var="--base-font-size" data-design-unit="px" />
+                <output data-design-output="--base-font-size"></output>
+              </span>
+            </label>
+            <label>
+              Line height
+              <span class="range-control">
+                <input type="range" min="1.15" max="1.9" step="0.05"
+                  data-design-var="--line-height" data-design-unit="" />
+                <output data-design-output="--line-height"></output>
+              </span>
+            </label>
+            <label>
+              Heading size
+              <span class="range-control">
+                <input type="range" min="0.9" max="1.8" step="0.05"
+                  data-design-var="--heading-size" data-design-unit="rem" />
+                <output data-design-output="--heading-size"></output>
+              </span>
+            </label>
+            <label>
+              Heading line height
+              <span class="range-control">
+                <input type="range" min="0.9" max="1.7" step="0.05"
+                  data-design-var="--heading-line-height" data-design-unit="" />
+                <output data-design-output="--heading-line-height"></output>
+              </span>
+            </label>
+          </fieldset>
+
+          <fieldset class="design-group" data-design-settings-2 disabled>
+            <legend>Spacing &amp; paragraphs</legend>
+            <label>
+              <input type="checkbox" data-indent-toggle />
+              Paragraph first-line indent
+            </label>
+            <label>
+              Indent width
+              <span class="range-control">
+                <input type="range" min="0.5" max="3" step="0.25"
+                  data-design-var="--paragraph-indent" data-design-unit="em"
+                  data-indent-width />
+                <output data-design-output="--paragraph-indent"></output>
+              </span>
+            </label>
+            <label>
+              Paragraph spacing
+              <span class="range-control">
+                <input type="range" min="0" max="2.5" step="0.1"
+                  data-design-var="--paragraph-spacing" data-design-unit="rem" />
+                <output data-design-output="--paragraph-spacing"></output>
+              </span>
+            </label>
+          </fieldset>
+
+          <fieldset class="design-group" data-design-settings-3 disabled>
+            <legend>Page layout</legend>
+            <label>
+              Overall page width
+              <span class="range-control">
+                <input type="range" min="42" max="76" step="1"
+                  data-design-var="--page-width" data-design-unit="rem" />
+                <output data-design-output="--page-width"></output>
+              </span>
+            </label>
+            <label>
+              Content column width
+              <span class="range-control">
+                <input type="range" min="30" max="46" step="1"
+                  data-design-var="--content-width" data-design-unit="rem" />
+                <output data-design-output="--content-width"></output>
+              </span>
+            </label>
+            <label>
+              Reading column width
+              <span class="range-control">
+                <input type="range" min="24" max="40" step="1"
+                  data-design-var="--reading-width" data-design-unit="rem" />
+                <output data-design-output="--reading-width"></output>
+              </span>
+            </label>
+            <label>
+              Page gutter
+              <span class="range-control">
+                <input type="range" min="0.5" max="3" step="0.25"
+                  data-design-var="--page-gutter" data-design-unit="rem" />
+                <output data-design-output="--page-gutter"></output>
+              </span>
+            </label>
+          </fieldset>
+
+          <fieldset class="design-group" data-design-settings-4 disabled>
+            <legend>Advanced spacing</legend>
+            <label>
+              Compact gap
+              <span class="range-control">
+                <input type="range" min="0.15" max="0.8" step="0.05"
+                  data-design-var="--space-xs" data-design-unit="rem" />
+                <output data-design-output="--space-xs"></output>
+              </span>
+            </label>
+            <label>
+              Standard gap
+              <span class="range-control">
+                <input type="range" min="0.35" max="1.5" step="0.05"
+                  data-design-var="--space-sm" data-design-unit="rem" />
+                <output data-design-output="--space-sm"></output>
+              </span>
+            </label>
+            <label>
+              Section gap
+              <span class="range-control">
+                <input type="range" min="0.8" max="3" step="0.1"
+                  data-design-var="--space-md" data-design-unit="rem" />
+                <output data-design-output="--space-md"></output>
+              </span>
+            </label>
+            <label>
+              Major section gap
+              <span class="range-control">
+                <input type="range" min="1.5" max="6" step="0.25"
+                  data-design-var="--space-lg" data-design-unit="rem" />
+                <output data-design-output="--space-lg"></output>
+              </span>
+            </label>
+            <label>
+              Header padding
+              <span class="range-control">
+                <input type="range" min="0.25" max="2" step="0.05"
+                  data-design-var="--header-padding" data-design-unit="rem" />
+                <output data-design-output="--header-padding"></output>
+              </span>
+            </label>
+          </fieldset>
+
+          <fieldset class="design-group typography-settings" data-typography-settings disabled>
+            <legend>Advanced typography</legend>
+            <label for="cjk-letter-spacing">
+              East Asian character spacing
+              <span class="range-control">
+                <input
+                  id="cjk-letter-spacing"
+                  type="range"
+                  min="-0.08"
+                  max="0.08"
+                  step="0.005"
+                  value="0"
+                  data-cjk-letter-spacing
+                />
+                <output for="cjk-letter-spacing" data-cjk-letter-spacing-output>
+                  0.000em
+                </output>
+              </span>
+            </label>
+            <p>Applies when the site is shown in Traditional Chinese or Japanese.</p>
+          </fieldset>
+
+          <fieldset class="design-group motion-settings" data-motion-settings disabled>
             <legend>Animations</legend>
             <label>
               <input type="checkbox" data-motion-setting="languageFlap" />
@@ -182,27 +392,88 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             </label>
             <p data-motion-settings-status>All animations are off.</p>
           </fieldset>
-          <fieldset class="typography-settings" data-typography-settings disabled>
-            <legend>East Asian typography</legend>
-            <label for="cjk-letter-spacing">
-              Character spacing
-              <span class="range-control">
-                <input
-                  id="cjk-letter-spacing"
-                  type="range"
-                  min="-0.08"
-                  max="0.08"
-                  step="0.005"
-                  value="-0.03"
-                  data-cjk-letter-spacing
-                />
-                <output for="cjk-letter-spacing" data-cjk-letter-spacing-output>
-                  -0.030em
-                </output>
-              </span>
-            </label>
-            <p>Applies when the site is shown in Traditional Chinese or Japanese.</p>
-          </fieldset>
+        </section>
+
+        <!--
+          New 頁籤：以表單建立新的作品或文章草稿，存於 content/ 之下。
+          The New tab creates a fresh work or writing draft under content/.
+        -->
+        <section class="sidebar-panel new-page-panel" data-sidebar-panel="new" hidden>
+          <form data-new-page-form>
+            <fieldset class="design-group">
+              <legend>Add a page</legend>
+              <label>
+                Kind
+                <select data-new-kind>
+                  <option value="work">Work (composition)</option>
+                  <option value="writing">Writing (text)</option>
+                </select>
+              </label>
+              <label>
+                Title
+                <input type="text" data-new-title placeholder="Still Water, Turning" required />
+              </label>
+              <label>
+                Slug (folder and URL name)
+                <input type="text" data-new-slug placeholder="still-water-turning" required />
+              </label>
+
+              <div data-new-work-fields>
+                <label>
+                  Year
+                  <input type="number" data-new-year min="1900" max="2100" />
+                </label>
+                <label>
+                  Category
+                  <select data-new-category></select>
+                </label>
+                <label>
+                  Instrumentation
+                  <input type="text" data-new-instrumentation placeholder="Solo piano" />
+                </label>
+                <label>
+                  Duration (minutes)
+                  <input type="number" data-new-duration min="0" step="0.5" />
+                </label>
+              </div>
+
+              <div data-new-writing-fields hidden>
+                <label>
+                  Date (YYYY or YYYY-MM-DD)
+                  <input type="text" data-new-date placeholder="2026-06" />
+                </label>
+                <label>
+                  Type
+                  <select data-new-type></select>
+                </label>
+                <label>
+                  Language
+                  <select data-new-language>
+                    <option>English</option>
+                    <option>Chinese</option>
+                    <option>Chinese / English</option>
+                    <option>Japanese</option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                One-line summary
+                <input type="text" data-new-summary placeholder="Shown in lists and search results" />
+              </label>
+              <label>
+                <input type="checkbox" data-new-draft checked />
+                Start as draft (unlisted; preview at /drafts/)
+              </label>
+              <button type="submit" class="new-page-submit" data-new-submit disabled>
+                Create page
+              </button>
+              <button type="button" class="draft-shelf-button" data-draft-shelf>
+                Preview draft shelf
+              </button>
+              <p class="panel-hint" data-new-message aria-live="polite"></p>
+            </fieldset>
+          </form>
         </section>
       </aside>
 

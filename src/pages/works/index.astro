@@ -12,7 +12,7 @@ import {
   workCategoryLabel,
 } from "../../config/locales";
 
-const works = (await getCollection("works")).sort(
+const works = (await getCollection("works", ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
 );
 

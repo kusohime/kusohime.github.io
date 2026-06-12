@@ -6,6 +6,7 @@
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import { translate } from "../config/locales";
+import siteDefaults from "../config/siteDefaults.json";
 import { site } from "../config/site";
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
@@ -25,6 +26,7 @@ const {
 } = Astro.props;
 
 const pageTitle = title ? `${title} | ${site.name}` : site.name;
+const defaultLanguage = siteDefaults.defaultLanguage;
 ---
 
 <!doctype html>
@@ -64,13 +66,14 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name;
         </>
       )
     }
-    <script is:inline>
+    <script is:inline define:vars={{ defaultLanguage }}>
       // 在頁面繪製前恢復偏好設定，避免深淺色或字號短暫閃爍。
       // Restore preferences before paint to prevent a theme or font-size flash.
       try {
         const theme = localStorage.getItem("yc-theme");
         const fontSize = localStorage.getItem("yc-font-size");
-        const language = localStorage.getItem("yc-language");
+        const storedLanguage = localStorage.getItem("yc-language");
+        const language = storedLanguage ?? defaultLanguage;
         const noticeDismissed =
           sessionStorage.getItem("yc-site-notice-dismissed") === "true";
 

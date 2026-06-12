@@ -13,7 +13,10 @@ import {
 } from "../../config/locales";
 
 export async function getStaticPaths() {
-  const works = await getCollection("works");
+  const works = await getCollection(
+    "works",
+    ({ data }) => import.meta.env.DEV || !data.draft,
+  );
 
   return works.map((work) => ({
     params: { slug: work.data.slug },
@@ -45,12 +48,13 @@ const {
 } = work.data;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} noindex={work.data.draft}>
   <article
     class="detail-page work-detail"
     data-source-file={`content/works/${work.id}/index.md`}
   >
     <header class="detail-header work-detail-header">
+      {work.data.draft && <p class="draft-flag">Draft — not listed publicly</p>}
       <div class="work-title-line">
         <h1>{title}</h1>
         <p class="work-year">

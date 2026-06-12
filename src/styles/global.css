@@ -220,6 +220,18 @@ body {
   animation: theme-dim 360ms ease-in-out;
 }
 
+/* 草稿标记：仅出现在草稿详情页与 /drafts/ 列表。 */
+/* Draft flag: shown on draft detail pages and the /drafts/ shelf. */
+.draft-flag {
+  display: inline-block;
+  border: 1px solid var(--theme-color);
+  padding: 0.05rem 0.45rem;
+  color: var(--theme-color);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .flap-glyph {
   display: inline-block;
   backface-visibility: hidden;

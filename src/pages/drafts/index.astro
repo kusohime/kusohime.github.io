@@ -1,0 +1,85 @@
+---
+// 中文：草稿一览：列出尚未公开发布的作品与文章，方便预览成稿效果。
+// English: Draft shelf: lists unpublished works and writings so they can be
+// previewed exactly as they will render once published.
+// Caveat / 注意：此页不在导航中且 noindex；删除 frontmatter 的 draft: true 即正式发布。
+// Caveat: Unlinked and noindexed; removing draft: true from the frontmatter publishes the entry.
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate } from "../../config/locales";
+
+const isLocalDraftPreview = import.meta.env.DEV;
+const draftWorks = isLocalDraftPreview
+  ? (
+      await getCollection("works", ({ data }) => data.draft)
+    ).sort((a, b) => a.data.order - b.data.order)
+  : [];
+const draftWritings = isLocalDraftPreview
+  ? (
+      await getCollection("writings", ({ data }) => data.draft)
+    ).sort((a, b) => a.data.order - b.data.order)
+  : [];
+const empty = draftWorks.length === 0 && draftWritings.length === 0;
+---
+
+<BaseLayout
+  title="Drafts"
+  description="Unpublished drafts."
+  noindex
+  adminOnly
+>
+  <div class="index-page" data-source-file="src/pages/drafts/index.astro">
+    <h1>Drafts</h1>
+    <p class="draft-flag">
+      Not linked from the public site. Remove “draft: true” to publish.
+    </p>
+
+    {empty && <p>No drafts at the moment.</p>}
+
+    {
+      draftWorks.length > 0 && (
+        <section>
+          <h2>Works</h2>
+          <ol class="catalog-list entry-list dated-list">
+            {draftWorks.map((work) => (
+              <li>
+                <time datetime={String(work.data.year)}>
+                  {formatDate(work.data.year, "en")}
+                </time>
+                <article class="entry-summary">
+                  <h3>
+                    <a href={`/works/${work.data.slug}/`}>{work.data.title}</a>
+                  </h3>
+                </article>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    {
+      draftWritings.length > 0 && (
+        <section>
+          <h2>Writings</h2>
+          <ol class="catalog-list entry-list dated-list">
+            {draftWritings.map((writing) => (
+              <li>
+                <time datetime={String(writing.data.date)}>
+                  {formatDate(writing.data.date, "en")}
+                </time>
+                <article class="entry-summary">
+                  <h3>
+                    <a href={`/writings/${writing.data.slug}/`}>
+                      {writing.data.title}
+                    </a>
+                  </h3>
+                </article>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>

@@ -3,6 +3,7 @@
  * English: Manages language, theme, font size, and optional public-site motion.
  */
 import motionSettings from "../config/motion.json";
+import siteDefaults from "../config/siteDefaults.json";
 import typographySettings from "../config/typography.json";
 import type {
   ToolGroup,
@@ -295,7 +296,14 @@ export function initializePreferences() {
   root.dataset.motionGlyphs = String(motionSettings.glyphRotation);
   root.dataset.motionInterface = String(motionSettings.interfaceMotion);
 
-  const language = readStored<Locale>("yc-language", localeCodes, "en");
+  // 新访客的默认语言来自 src/config/siteDefaults.json（可在 Studio 中修改）。
+  // New visitors start in the language set in src/config/siteDefaults.json.
+  const fallbackLanguage = (localeCodes as readonly string[]).includes(
+    siteDefaults.defaultLanguage,
+  )
+    ? (siteDefaults.defaultLanguage as Locale)
+    : "en";
+  const language = readStored<Locale>("yc-language", localeCodes, fallbackLanguage);
   const theme = readStored<Theme>("yc-theme", ["light", "dark"], "light");
   const fontSize = readStored<FontSize>("yc-font-size", ["s", "m", "l"], "m");
 

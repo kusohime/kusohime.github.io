@@ -15,9 +15,9 @@ import {
   writingTypeLabel,
 } from "../../config/locales";
 
-const writings = (await getCollection("writings")).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+const writings = (
+  await getCollection("writings", ({ data }) => !data.draft)
+).sort((a, b) => a.data.order - b.data.order);
 
 const writingGroups = writingTypes.map((type) => ({
   type,
