@@ -16,10 +16,6 @@
       <span>Cycle length (seconds)</span>
       <input type="number" id="pr-seconds" value="3" min="0.5" max="20" step="0.5" />
     </label>
-    <label class="tool-field">
-      <span>Repeats</span>
-      <input type="number" id="pr-repeats" value="2" min="1" max="8" />
-    </label>
     <button type="button" class="tool-primary" id="pr-play">Play</button>
     <button type="button" id="pr-play-coincidence">Coincidences only</button>
     <button type="button" id="pr-stop">Stop</button>
@@ -29,8 +25,12 @@
 
   <div class="tool-result">
     <p class="tool-note" id="pr-summary"></p>
-    <svg id="pr-linear" class="tool-svg" viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Linear attack grid"></svg>
+    <svg id="pr-linear" class="tool-svg" viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Linear attack grid with playhead; drag to reposition while playing" style="touch-action: none; cursor: ew-resize;"></svg>
     <svg id="pr-circle" class="tool-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="max-width: 16rem; margin-top: var(--space-md);" role="img" aria-label="Cyclic view"></svg>
+    <p class="tool-note">
+      Playback loops until Stop. While playing, drag anywhere on the linear
+      grid to move the playhead — the loop continues from where you put it.
+    </p>
   </div>
 </section>
 
@@ -100,11 +100,16 @@
   <p class="tool-note" id="cn-readout"></p>
 
   <div class="tool-result">
+    <div class="tool-controls" style="margin-bottom: var(--space-sm);">
+      <button type="button" id="cn-view-lines" aria-pressed="true">Lines</button>
+      <button type="button" id="cn-view-rings" aria-pressed="false">Rings</button>
+    </div>
+    <svg id="cn-lines" class="tool-svg" viewBox="0 0 720 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two voices as rows; the lower row slides by the current displacement"></svg>
     <svg id="cn-rings" class="tool-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="max-width: 16rem;" role="img" aria-label="Two voices on the cycle; the inner ring is rotated by the current offset"></svg>
     <p class="tool-note">
-      Outer ring: voice 1. Inner ring: voice 2, rotated by the current
-      displacement (the red radius marks it). In phasing mode the inner
-      ring turns while the canon plays.
+      Voice 1 above (or outer ring), voice 2 below (or inner ring), slid by
+      the current displacement. During playback the red playhead sweeps the
+      cycle; in phasing mode the displacement itself drifts as you listen.
     </p>
   </div>
 </section>
@@ -148,7 +153,7 @@
   import { parseCountList } from "../../lib/parse.js";
   import { parsePattern, driftPeriodSeconds, attackDurationSteps, PRESETS } from "../../lib/canon.js";
   import { midiToHz } from "../../lib/pitch.js";
-  import { blip, tone, createClock, playEvents, stopAll, audioContext } from "../../lib/audio.js";
+  import { blip, tone, createClock, stopAll, audioContext } from "../../lib/audio.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -160,7 +165,7 @@
     return node;
   }
 
-  /* ---------- Panel 1: polyrhythm cycles (unchanged behavior) ---------- */
+  /* ---------- Panel 1: polyrhythm cycles ---------- */
 
   function currentCounts() {
     const parsed = parseCountList(byId("pr-counts").value, { min: 1, max: 48 });
@@ -238,38 +243,165 @@
         stroke: "#c81e1e", "stroke-width": 1,
       }));
     }
+
+    // 播放指针：线性图上一条可拖动的竖线，圆图上一条转动的半径。
+    // Playheads: a draggable vertical line on the grid, a turning radius
+    // on the circle. Hidden until playback starts.
+    linear.append(el("line", {
+      x1: left, y1: top - 12, x2: left, y2: axisY,
+      stroke: "#c81e1e", "stroke-width": 1.8, opacity: 0, id: "pr-ph-line",
+    }));
+    circle.append(el("line", {
+      x1: cx, y1: cy, x2: cx, y2: cy - 100,
+      stroke: "#c81e1e", "stroke-width": 1.4, opacity: 0, id: "pr-ph-radius",
+    }));
   }
 
-  function playCycle(onlyCoincidences: boolean) {
-    const counts = currentCounts();
-    if (!counts) return;
-    const seconds = Number(byId("pr-seconds").value) || 3;
-    const repeats = Math.min(8, Math.max(1, Number(byId("pr-repeats").value) || 1));
-    const { positions } = cycleAttacks(counts);
-    const events = [];
-    for (let cycle = 0; cycle < repeats; cycle++) {
-      for (const position of positions) {
-        const isCoincidence = position.layers.length > 1;
-        if (onlyCoincidences && !isCoincidence) continue;
-        for (const layer of position.layers) {
-          events.push({
-            time: (cycle + fnum(position.at)) * seconds,
-            freq: LAYER_FREQS[layer % LAYER_FREQS.length],
-            gain: isCoincidence ? 0.65 : 0.4,
-            dur: 0.12,
-            type: layer % 2 === 0 ? "sine" : "triangle",
-          });
+  /* 连续循环播放：look-ahead 时钟逐拍调度，直到 Stop。 */
+  /* Continuous looped playback: the look-ahead clock schedules attack by
+     attack until Stop. The playhead is draggable mid-flight: scrubbing
+     re-anchors the cycle origin, and future events follow. */
+  const cycleClock = createClock();
+  let cycleEvents: { frac: number; layers: number[] }[] = [];
+  let cyclePhaseOrigin = 0;
+  let cycleSeconds = 3;
+  let cycleEventPtr = 0;
+  let cycleCoincOnly = false;
+  let cyclePlayheadTimer: number | null = null;
+
+  const cyclePhaseNow = () => {
+    const elapsed = audioContext().currentTime - cyclePhaseOrigin;
+    return ((elapsed / cycleSeconds) % 1 + 1) % 1;
+  };
+
+  const seekCyclePhase = (phase: number) => {
+    cyclePhaseOrigin = audioContext().currentTime - phase * cycleSeconds;
+    cycleEventPtr = cycleEvents.findIndex((event) => event.frac >= phase);
+    if (cycleEventPtr < 0) cycleEventPtr = cycleEvents.length; // next cycle
+  };
+
+  function tickCycle(from: number, to: number) {
+    if (!cycleEvents.length) return;
+    let guard = 0;
+    while (guard++ < 4000) {
+      const event = cycleEvents[cycleEventPtr % cycleEvents.length];
+      const cycleNumber = Math.floor(cycleEventPtr / cycleEvents.length);
+      const when = cyclePhaseOrigin + (cycleNumber + event.frac) * cycleSeconds;
+      if (when >= to) break;
+      if (when >= from) {
+        const isCoincidence = event.layers.length > 1;
+        if (!cycleCoincOnly || isCoincidence) {
+          for (const layer of event.layers) {
+            blip(LAYER_FREQS[layer % LAYER_FREQS.length], when, {
+              dur: 0.12,
+              gain: isCoincidence ? 0.65 : 0.4,
+              type: layer % 2 === 0 ? "sine" : "triangle",
+            });
+          }
         }
       }
+      cycleEventPtr += 1;
     }
-    stopAll();
-    playEvents(events);
   }
 
-  byId("pr-counts").addEventListener("input", draw);
-  byId("pr-play").addEventListener("click", () => playCycle(false));
-  byId("pr-play-coincidence").addEventListener("click", () => playCycle(true));
-  byId("pr-stop").addEventListener("click", () => stopAll());
+  function updateCyclePlayhead() {
+    const line = document.getElementById("pr-ph-line");
+    const radius = document.getElementById("pr-ph-radius");
+    const playing = cycleClock.running();
+    if (line) {
+      line.setAttribute("opacity", playing ? "1" : "0");
+      if (playing) {
+        const x = 30 + (700 - 30) * cyclePhaseNow();
+        line.setAttribute("x1", String(x));
+        line.setAttribute("x2", String(x));
+      }
+    }
+    if (radius) {
+      radius.setAttribute("opacity", playing ? "1" : "0");
+      if (playing) {
+        const angle = 2 * Math.PI * cyclePhaseNow() - Math.PI / 2;
+        radius.setAttribute("x2", String(120 + 100 * Math.cos(angle)));
+        radius.setAttribute("y2", String(120 + 100 * Math.sin(angle)));
+      }
+    }
+  }
+
+  function startCycle(coincidencesOnly: boolean) {
+    const counts = currentCounts();
+    if (!counts) return;
+    const { positions } = cycleAttacks(counts);
+    cycleEvents = positions.map((position) => ({
+      frac: fnum(position.at),
+      layers: position.layers,
+    }));
+    cycleCoincOnly = coincidencesOnly;
+    cycleSeconds = Number(byId("pr-seconds").value) || 3;
+    cyclePhaseOrigin = audioContext().currentTime + 0.1;
+    cycleEventPtr = 0;
+    stopAll();
+    cycleClock.start(tickCycle);
+    if (cyclePlayheadTimer) window.clearInterval(cyclePlayheadTimer);
+    cyclePlayheadTimer = window.setInterval(updateCyclePlayhead, 50);
+  }
+
+  function stopCycle() {
+    cycleClock.stop();
+    if (cyclePlayheadTimer) window.clearInterval(cyclePlayheadTimer);
+    cyclePlayheadTimer = null;
+    stopAll();
+    updateCyclePlayhead();
+  }
+
+  // 拖动线性图即移动指针；松手后循环从新位置继续。
+  // Dragging the linear grid moves the playhead; the loop continues
+  // from wherever you release it.
+  const linearSvg = byId("pr-linear");
+  let scrubbing = false;
+  const scrubTo = (clientX: number) => {
+    if (!cycleClock.running()) return;
+    const rect = linearSvg.getBoundingClientRect();
+    const viewX = ((clientX - rect.left) / rect.width) * 720;
+    const phase = Math.min(0.999, Math.max(0, (viewX - 30) / (700 - 30)));
+    seekCyclePhase(phase);
+    updateCyclePlayhead();
+  };
+  linearSvg.addEventListener("pointerdown", (event: PointerEvent) => {
+    if (!cycleClock.running()) return;
+    scrubbing = true;
+    scrubTo(event.clientX);
+    try {
+      linearSvg.setPointerCapture(event.pointerId);
+    } catch {}
+  });
+  linearSvg.addEventListener("pointermove", (event: PointerEvent) => {
+    if (scrubbing) scrubTo(event.clientX);
+  });
+  linearSvg.addEventListener("pointerup", (event: PointerEvent) => {
+    scrubbing = false;
+    try {
+      linearSvg.releasePointerCapture(event.pointerId);
+    } catch {}
+  });
+
+  // 播放中更改周期时长时保持当前相位不跳变。
+  // Changing the cycle length mid-playback preserves the current phase.
+  byId("pr-seconds").addEventListener("input", () => {
+    if (!cycleClock.running()) return;
+    const phase = cyclePhaseNow();
+    cycleSeconds = Number(byId("pr-seconds").value) || cycleSeconds;
+    seekCyclePhase(phase);
+  });
+
+  byId("pr-counts").addEventListener("input", () => {
+    const wasPlaying = cycleClock.running();
+    const wasCoincOnly = cycleCoincOnly;
+    if (wasPlaying) stopCycle();
+    draw();
+    if (wasPlaying) startCycle(wasCoincOnly);
+  });
+  byId("pr-play").addEventListener("click", () => startCycle(false));
+  byId("pr-play-coincidence").addEventListener("click", () => startCycle(true));
+  byId("pr-stop").addEventListener("click", stopCycle);
   draw();
 
   /* ---------- Panel 2: canon & phase ---------- */
@@ -389,9 +521,12 @@
     });
   }
 
-  /* Ring view: voice 1 outside, voice 2 inside, rotated by displacement. */
+  /* Two views of the same displacement: sliding rows (cf. the familiar
+     Clapping Music videos) or concentric rings. The red playhead sweeps
+     voice 1's cycle during playback. */
   let canonStartTime = 0;
   let phaseTimer: number | null = null;
+  let canonView: "lines" | "rings" = "lines";
 
   function currentPhaseFraction() {
     const { stepDur, parsed, offset, rate, phasing } = canonParams();
@@ -401,6 +536,14 @@
     return (((elapsed * (rate - 1)) / patternDur) % 1 + 1) % 1;
   }
 
+  function canonPlayheadPhase() {
+    if (!canonClock.running()) return null;
+    const { stepDur, parsed } = canonParams();
+    const patternDur = stepDur * parsed.steps.length;
+    const elapsed = audioContext().currentTime - canonStartTime;
+    return ((elapsed / patternDur) % 1 + 1) % 1;
+  }
+
   function drawRings() {
     const { parsed } = canonParams();
     const svg = byId("cn-rings");
@@ -408,9 +551,7 @@
     if (!parsed.ok) return;
     const steps = parsed.steps;
     const cx = 120, cy = 120;
-    const phase = canonClock.running() || !byId("cn-mode-phasing").checked
-      ? currentPhaseFraction()
-      : Number(byId("cn-offset").value);
+    const phase = currentPhaseFraction();
 
     const drawRing = (radius: number, rotation: number, accent: boolean) => {
       svg.append(el("circle", { cx, cy, r: radius, fill: "none", stroke: "currentColor", "stroke-width": 0.5, opacity: 0.3 }));
@@ -436,7 +577,78 @@
       x2: cx + 52 * Math.cos(angle), y2: cy + 52 * Math.sin(angle),
       stroke: "#c81e1e", "stroke-width": 1,
     }));
+    // playhead radius (voice 1's position in its cycle)
+    const playhead = canonPlayheadPhase();
+    if (playhead !== null) {
+      const playheadAngle = 2 * Math.PI * playhead - Math.PI / 2;
+      svg.append(el("line", {
+        x1: cx, y1: cy,
+        x2: cx + 104 * Math.cos(playheadAngle),
+        y2: cy + 104 * Math.sin(playheadAngle),
+        stroke: "#c81e1e", "stroke-width": 1.6, opacity: 0.85,
+      }));
+    }
   }
+
+  function drawLines() {
+    const { parsed } = canonParams();
+    const svg = byId("cn-lines");
+    svg.innerHTML = "";
+    if (!parsed.ok) return;
+    const steps = parsed.steps;
+    const left = 30, right = 706, width = right - left;
+    const rows = [
+      { y: 38, rotation: 0, accent: false },
+      { y: 92, rotation: currentPhaseFraction(), accent: true },
+    ];
+
+    for (const row of rows) {
+      svg.append(el("line", { x1: left, y1: row.y, x2: right, y2: row.y, stroke: "currentColor", "stroke-width": 0.5, opacity: 0.35 }));
+      steps.forEach((step, index) => {
+        const position = ((index / steps.length + row.rotation) % 1 + 1) % 1;
+        const x = left + position * width;
+        if (step.rest) {
+          svg.append(el("line", { x1: x, y1: row.y - 2.5, x2: x, y2: row.y + 2.5, stroke: "currentColor", "stroke-width": 0.7, opacity: 0.3 }));
+        } else if (step.hold) {
+          svg.append(el("circle", { cx: x, cy: row.y, r: 2.6, fill: "none", stroke: row.accent ? "#c81e1e" : "currentColor", "stroke-width": 1 }));
+        } else {
+          svg.append(el("circle", { cx: x, cy: row.y, r: 4.6, fill: row.accent ? "#c81e1e" : "currentColor" }));
+        }
+      });
+    }
+    const v1 = el("text", { x: 4, y: 41, "font-size": 9, fill: "currentColor" });
+    v1.textContent = "V1";
+    const v2 = el("text", { x: 4, y: 95, "font-size": 9, fill: "#c81e1e" });
+    v2.textContent = "V2";
+    svg.append(v1, v2);
+    // playhead sweeping voice 1's cycle
+    const playhead = canonPlayheadPhase();
+    if (playhead !== null) {
+      const x = left + playhead * width;
+      svg.append(el("line", {
+        x1: x, y1: 16, x2: x, y2: 114,
+        stroke: "#c81e1e", "stroke-width": 1.6, opacity: 0.85,
+      }));
+    }
+  }
+
+  function drawCanonViz() {
+    if (canonView === "rings") drawRings();
+    else drawLines();
+  }
+
+  function setCanonView(view: "lines" | "rings") {
+    canonView = view;
+    // SVG 元素不支持 hidden 属性，须用 style.display 切换。
+    // SVG elements ignore the hidden property; toggle style.display.
+    byId("cn-lines").style.display = view === "lines" ? "" : "none";
+    byId("cn-rings").style.display = view === "rings" ? "" : "none";
+    byId("cn-view-lines").setAttribute("aria-pressed", String(view === "lines"));
+    byId("cn-view-rings").setAttribute("aria-pressed", String(view === "rings"));
+    drawCanonViz();
+  }
+  byId("cn-view-lines").addEventListener("click", () => setCanonView("lines"));
+  byId("cn-view-rings").addEventListener("click", () => setCanonView("rings"));
 
   byId("cn-play").addEventListener("click", () => {
     const { parsed, offset, phasing, stepDur } = canonParams();
@@ -454,38 +666,39 @@
       { nextTime: start + (phasing ? 0 : offset * patternDur), stepIndex: 0 },
     ];
     canonClock.start(scheduleCanon);
-    // 相移期间转动内环；锁定模式只需随滑杆重绘，无需计时器。
-    // The inner ring turns during phasing; locked mode redraws on input only.
+    // 播放期间持续重绘：指针扫过周期，相移模式下位移环/行也随之转动。
+    // Redraw continuously while playing: the playhead sweeps the cycle,
+    // and in phasing mode the displacement turns with it.
     if (phaseTimer) window.clearInterval(phaseTimer);
-    phaseTimer = phasing ? window.setInterval(drawRings, 120) : null;
+    phaseTimer = window.setInterval(drawCanonViz, 80);
     updateCanonReadout();
-    drawRings();
+    drawCanonViz();
   });
   byId("cn-stop").addEventListener("click", () => {
     canonClock.stop();
     if (phaseTimer) window.clearInterval(phaseTimer);
     phaseTimer = null;
     stopAll();
-    drawRings();
+    drawCanonViz();
   });
 
   for (const id of ["cn-pattern", "cn-bpm", "cn-spq", "cn-offset", "cn-rate", "cn-transpose"]) {
     byId(id).addEventListener("input", () => {
       updateCanonReadout();
-      drawRings();
+      drawCanonViz();
     });
   }
   byId("cn-mode-locked").addEventListener("change", () => {
     updateCanonReadout();
-    drawRings();
+    drawCanonViz();
   });
   byId("cn-mode-phasing").addEventListener("change", () => {
     updateCanonReadout();
-    drawRings();
+    drawCanonViz();
   });
-  presetSelect.addEventListener("change", drawRings);
+  presetSelect.addEventListener("change", drawCanonViz);
   updateCanonReadout();
-  drawRings();
+  setCanonView("lines");
 
   /* ---------- Panel 3: multi-track metronome ---------- */
 

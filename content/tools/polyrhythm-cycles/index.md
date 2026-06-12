@@ -26,13 +26,15 @@ continuum, and fully independent tempo streams.
 **Layers & coincidences.** Enter the attack counts of up to four layers —
 `3, 4` is the familiar hemiola; `5, 7, 11` is already a texture. The
 linear grid shows each layer's attacks across one cycle; the circle shows
-the same cycle bent round. Red verticals mark coincidences. **Coincidences
-only** plays nothing but the meeting points — the skeleton of the
-polyrhythm rather than its surface. Attack positions are exact fractions,
-so coincidence is integer arithmetic, never floating-point near-equality;
-the summary reports the smallest common grid a notator would need (for
-5:7 already 35 divisions — usually the moment one decides to notate in
-two voices).
+the same cycle bent round. Red verticals mark coincidences. Playback
+loops until Stop, with a playhead sweeping the grid and a radius turning
+on the circle; **drag the linear grid while playing** to move the
+playhead and the loop continues from there. **Coincidences only** plays
+nothing but the meeting points — the skeleton of the polyrhythm rather
+than its surface. Attack positions are exact fractions, so coincidence is
+integer arithmetic, never floating-point near-equality; the summary
+reports the smallest common grid a notator would need (for 5:7 already
+35 divisions — usually the moment one decides to notate in two voices).
 
 **Canon & phase.** State a pattern — note names for a pitch canon
 (`E4 F#4 B4 C#5 …`; the Piano Phase pattern is the default and a preset),
@@ -49,6 +51,11 @@ is the formal span of a Reich phase section: with a 12-step pattern at
 ♩=72 and ratio 1.01, one lap of the pattern takes about a minute and a
 half, which is why those pieces breathe at the pace they do. A
 transposition control turns the pitch canon into a canon at the interval.
+Pitched patterns play as sustained notes (`_` extends a note across
+steps), and the displacement can be viewed two ways: as two **rows**,
+voice 2 sliding against voice 1 — the layout familiar from the Clapping
+Music videos — or as two **rings**, the cycle bent round; a red playhead
+sweeps either view during playback.
 
 **Multi-track metronome.** Up to four click tracks. Each has its own
 quarter-note tempo, clicks on its own note value, and accents its own
