@@ -39,7 +39,7 @@
 
   <div class="tool-controls">
     <label class="tool-field">
-      <span>Pattern (note names, or x / . steps)</span>
+      <span>Pattern (note names or x · . rest · _ hold)</span>
       <input type="text" id="cn-pattern" value="E4 F#4 B4 C#5 D5 F#4 E4 C#5 B4 F#4 D5 C#5" size="44" />
     </label>
     <label class="tool-field">
@@ -98,6 +98,15 @@
 
   <p class="tool-error" id="cn-error" hidden></p>
   <p class="tool-note" id="cn-readout"></p>
+
+  <div class="tool-result">
+    <svg id="cn-rings" class="tool-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="max-width: 16rem;" role="img" aria-label="Two voices on the cycle; the inner ring is rotated by the current offset"></svg>
+    <p class="tool-note">
+      Outer ring: voice 1. Inner ring: voice 2, rotated by the current
+      displacement (the red radius marks it). In phasing mode the inner
+      ring turns while the canon plays.
+    </p>
+  </div>
 </section>
 
 <section class="tool-panel" aria-label="Multi-track metronome">
@@ -119,6 +128,11 @@
     <button type="button" class="tool-primary" id="mt-start">Start</button>
     <button type="button" id="mt-stop">Stop</button>
   </div>
+
+  <div class="tool-result">
+    <svg id="mt-grid" class="tool-svg" viewBox="0 0 720 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Click grid of the active tracks over six seconds"></svg>
+    <p class="tool-note" id="mt-grid-note"></p>
+  </div>
   <p class="tool-note">
     Each track may run at its own quarter-note tempo, or share a tempo while
     clicking a different note value (a dotted-eighth track against a quarter
@@ -132,9 +146,9 @@
   import { cycleAttacks } from "../../lib/tempo.js";
   import { fnum } from "../../lib/fraction.js";
   import { parseCountList } from "../../lib/parse.js";
-  import { parsePattern, driftPeriodSeconds, PRESETS } from "../../lib/canon.js";
+  import { parsePattern, driftPeriodSeconds, attackDurationSteps, PRESETS } from "../../lib/canon.js";
   import { midiToHz } from "../../lib/pitch.js";
-  import { blip, createClock, playEvents, stopAll, audioContext } from "../../lib/audio.js";
+  import { blip, tone, createClock, playEvents, stopAll, audioContext } from "../../lib/audio.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -349,21 +363,79 @@
         voice.stepIndex += 1;
       }
       while (voice.nextTime < to) {
-        const step = steps[voice.stepIndex % steps.length];
-        if (!step.rest) {
-          const freq = parsed.pitched && step.midi !== null
-            ? midiToHz(step.midi + (index === 1 ? transpose : 0))
-            : index === 0 ? 880 : 660;
-          blip(freq, voice.nextTime, {
-            dur: Math.min(0.22, voiceStep * 0.9),
-            gain: index === 0 ? 0.45 : 0.38,
-            type: index === 0 ? "sine" : "triangle",
-          });
+        const position = voice.stepIndex % steps.length;
+        const step = steps[position];
+        if (!step.rest && !step.hold) {
+          if (parsed.pitched && step.midi !== null) {
+            // 音高卡农奏持续音：时值 = 本步 + 后续 "_" 延音步。
+            // Pitched canons sustain: duration = this step plus "_" holds.
+            const holdSteps = attackDurationSteps(steps, position);
+            tone(midiToHz(step.midi + (index === 1 ? transpose : 0)), voice.nextTime, {
+              dur: holdSteps * voiceStep * 0.96,
+              gain: index === 0 ? 0.34 : 0.28,
+              type: index === 0 ? "sine" : "triangle",
+            });
+          } else {
+            blip(index === 0 ? 880 : 660, voice.nextTime, {
+              dur: Math.min(0.22, voiceStep * 0.9),
+              gain: index === 0 ? 0.45 : 0.38,
+              type: index === 0 ? "sine" : "triangle",
+            });
+          }
         }
         voice.nextTime += voiceStep;
         voice.stepIndex += 1;
       }
     });
+  }
+
+  /* Ring view: voice 1 outside, voice 2 inside, rotated by displacement. */
+  let canonStartTime = 0;
+  let phaseTimer: number | null = null;
+
+  function currentPhaseFraction() {
+    const { stepDur, parsed, offset, rate, phasing } = canonParams();
+    if (!phasing || !canonClock.running()) return offset;
+    const patternDur = stepDur * parsed.steps.length;
+    const elapsed = audioContext().currentTime - canonStartTime;
+    return (((elapsed * (rate - 1)) / patternDur) % 1 + 1) % 1;
+  }
+
+  function drawRings() {
+    const { parsed } = canonParams();
+    const svg = byId("cn-rings");
+    svg.innerHTML = "";
+    if (!parsed.ok) return;
+    const steps = parsed.steps;
+    const cx = 120, cy = 120;
+    const phase = canonClock.running() || !byId("cn-mode-phasing").checked
+      ? currentPhaseFraction()
+      : Number(byId("cn-offset").value);
+
+    const drawRing = (radius: number, rotation: number, accent: boolean) => {
+      svg.append(el("circle", { cx, cy, r: radius, fill: "none", stroke: "currentColor", "stroke-width": 0.5, opacity: 0.3 }));
+      steps.forEach((step, index) => {
+        const angle = (2 * Math.PI * (index / steps.length + rotation)) - Math.PI / 2;
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        if (step.rest) {
+          svg.append(el("circle", { cx: x, cy: y, r: 1.2, fill: "currentColor", opacity: 0.3 }));
+        } else if (step.hold) {
+          svg.append(el("circle", { cx: x, cy: y, r: 2.4, fill: "none", stroke: accent ? "#c81e1e" : "currentColor", "stroke-width": 1 }));
+        } else {
+          svg.append(el("circle", { cx: x, cy: y, r: 4, fill: accent ? "#c81e1e" : "currentColor" }));
+        }
+      });
+    };
+    drawRing(96, 0, false);
+    drawRing(66, phase, true);
+    // displacement marker
+    const angle = 2 * Math.PI * phase - Math.PI / 2;
+    svg.append(el("line", {
+      x1: cx, y1: cy,
+      x2: cx + 52 * Math.cos(angle), y2: cy + 52 * Math.sin(angle),
+      stroke: "#c81e1e", "stroke-width": 1,
+    }));
   }
 
   byId("cn-play").addEventListener("click", () => {
@@ -376,24 +448,44 @@
     const start = ctx.currentTime + 0.1;
     const patternDur = stepDur * parsed.steps.length;
     appliedOffset = phasing ? 0 : offset;
+    canonStartTime = start;
     canonVoices = [
       { nextTime: start, stepIndex: 0 },
       { nextTime: start + (phasing ? 0 : offset * patternDur), stepIndex: 0 },
     ];
     canonClock.start(scheduleCanon);
+    // 相移期间转动内环；锁定模式只需随滑杆重绘，无需计时器。
+    // The inner ring turns during phasing; locked mode redraws on input only.
+    if (phaseTimer) window.clearInterval(phaseTimer);
+    phaseTimer = phasing ? window.setInterval(drawRings, 120) : null;
     updateCanonReadout();
+    drawRings();
   });
   byId("cn-stop").addEventListener("click", () => {
     canonClock.stop();
+    if (phaseTimer) window.clearInterval(phaseTimer);
+    phaseTimer = null;
     stopAll();
+    drawRings();
   });
 
   for (const id of ["cn-pattern", "cn-bpm", "cn-spq", "cn-offset", "cn-rate", "cn-transpose"]) {
-    byId(id).addEventListener("input", updateCanonReadout);
+    byId(id).addEventListener("input", () => {
+      updateCanonReadout();
+      drawRings();
+    });
   }
-  byId("cn-mode-locked").addEventListener("change", updateCanonReadout);
-  byId("cn-mode-phasing").addEventListener("change", updateCanonReadout);
+  byId("cn-mode-locked").addEventListener("change", () => {
+    updateCanonReadout();
+    drawRings();
+  });
+  byId("cn-mode-phasing").addEventListener("change", () => {
+    updateCanonReadout();
+    drawRings();
+  });
+  presetSelect.addEventListener("change", drawRings);
   updateCanonReadout();
+  drawRings();
 
   /* ---------- Panel 3: multi-track metronome ---------- */
 
@@ -482,6 +574,51 @@
     });
   }
 
+  /* Grid view: each active track's clicks across a six-second window. */
+  function drawMetronomeGrid() {
+    const svg = byId("mt-grid");
+    svg.innerHTML = "";
+    const windowSeconds = 6;
+    const left = 30, right = 700, rowGap = 26, top = 16;
+    const activeTracks = TRACK_DEFAULTS
+      .map((_, index) => ({ index, params: trackParams(index) }))
+      .filter((track) => track.params.on);
+
+    activeTracks.forEach((track, row) => {
+      const y = top + row * rowGap;
+      svg.append(el("line", { x1: left, y1: y, x2: right, y2: y, stroke: "currentColor", "stroke-width": 0.5, opacity: 0.4 }));
+      const label = el("text", { x: 4, y: y + 3.5, "font-size": 9, fill: "currentColor" });
+      label.textContent = String(track.index + 1);
+      svg.append(label);
+      for (let k = 0; k * track.params.interval <= windowSeconds; k++) {
+        const x = left + ((right - left) * (k * track.params.interval)) / windowSeconds;
+        const accent = k % track.params.beats === 0;
+        if (accent) {
+          svg.append(el("line", { x1: x, y1: y - 8, x2: x, y2: y + 8, stroke: "#c81e1e", "stroke-width": 1.6 }));
+        } else {
+          svg.append(el("line", { x1: x, y1: y - 4.5, x2: x, y2: y + 4.5, stroke: "currentColor", "stroke-width": 1 }));
+        }
+      }
+    });
+    // seconds axis
+    const axisY = top + Math.max(activeTracks.length, 1) * rowGap;
+    svg.append(el("line", { x1: left, y1: axisY, x2: right, y2: axisY, stroke: "currentColor", "stroke-width": 0.8 }));
+    for (let second = 0; second <= windowSeconds; second++) {
+      const x = left + ((right - left) * second) / windowSeconds;
+      svg.append(el("line", { x1: x, y1: axisY - 3, x2: x, y2: axisY + 3, stroke: "currentColor", "stroke-width": 0.8 }));
+      const tick = el("text", { x, y: axisY + 13, "font-size": 8.5, "text-anchor": "middle", fill: "currentColor" });
+      tick.textContent = `${second}s`;
+      svg.append(tick);
+    }
+    svg.setAttribute("viewBox", `0 0 720 ${axisY + 20}`);
+    byId("mt-grid-note").textContent = activeTracks.length
+      ? "Tall red marks are bar downbeats; where they line up across rows, the tracks agree."
+      : "Enable a track to see its click grid.";
+  }
+
+  trackBody.addEventListener("input", drawMetronomeGrid);
+  trackBody.addEventListener("change", drawMetronomeGrid);
+
   byId("mt-start").addEventListener("click", () => {
     const ctx = audioContext();
     const start = ctx.currentTime + 0.1;
@@ -492,6 +629,7 @@
     metronomeClock.stop();
     stopAll();
   });
+  drawMetronomeGrid();
 </script>
 
 <style>

@@ -83,6 +83,33 @@ export function playEvents(events, { onStep = null } = {}) {
 }
 
 /**
+ * A sustained tone scheduled at an absolute context time: quick attack,
+ * held body, short release. For canon voices and fugue playback, where
+ * notes must last their notated value rather than decay like clicks.
+ */
+export function tone(freq, when, { dur = 0.5, gain = 0.35, type = "sine" } = {}) {
+  const ctx = audioContext();
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  const attack = Math.min(0.015, dur / 4);
+  const release = Math.min(0.07, dur / 3);
+  env.gain.setValueAtTime(0.0001, when);
+  env.gain.linearRampToValueAtTime(gain, when + attack);
+  env.gain.setValueAtTime(gain, Math.max(when + attack, when + dur - release));
+  env.gain.linearRampToValueAtTime(0.0001, when + dur);
+  osc.connect(env).connect(master);
+  osc.start(when);
+  osc.stop(when + dur + 0.03);
+  liveNodes.push(osc);
+  osc.onended = () => {
+    liveNodes = liveNodes.filter((node) => node !== osc);
+  };
+  return osc;
+}
+
+/**
  * Look-ahead clock for open-ended playback (metronomes, phase canons).
  * `tick(from, to)` must schedule every event whose time falls in [from, to),
  * against the AudioContext clock. Scheduling stays sample-accurate while

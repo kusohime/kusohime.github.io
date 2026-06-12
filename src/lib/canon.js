@@ -9,15 +9,16 @@ import { nameToMidi } from "./pitch.js";
 
 /**
  * Parse a pattern. Two forms:
- *  - rhythm steps: "x . x x" or compact "x.xx" ("x" attack, "." or "-" rest)
- *  - pitched steps: note names with octaves, "." or "-" for rests
+ *  - rhythm steps: "x . x x" or compact "x.xx" ("x" attack, "." or "-" rest,
+ *    "_" holds the previous note for another step)
+ *  - pitched steps: note names with octaves, "." / "-" rests, "_" holds
  *    ("E4 F#4 B4 C#5 …")
- * Returns { ok, pitched, steps: [{ rest, midi }], bad[] }.
+ * Returns { ok, pitched, steps: [{ rest, hold, midi }], bad[] }.
  */
 export function parsePattern(text) {
   let tokens = String(text).trim().split(/[\s,;|]+/).filter(Boolean);
-  // One unbroken run of x/./- characters reads as one step per character.
-  if (tokens.length === 1 && /^[xX.\-]+$/.test(tokens[0])) {
+  // One unbroken run of x/./-/_ characters reads as one step per character.
+  if (tokens.length === 1 && /^[xX.\-_]+$/.test(tokens[0])) {
     tokens = tokens[0].split("");
   }
   const steps = [];
@@ -26,11 +27,15 @@ export function parsePattern(text) {
 
   for (const token of tokens) {
     if (token === "." || token === "-") {
-      steps.push({ rest: true, midi: null });
+      steps.push({ rest: true, hold: false, midi: null });
+      continue;
+    }
+    if (token === "_") {
+      steps.push({ rest: false, hold: true, midi: null });
       continue;
     }
     if (token === "x" || token === "X") {
-      steps.push({ rest: false, midi: null });
+      steps.push({ rest: false, hold: false, midi: null });
       continue;
     }
     const midi = nameToMidi(token);
@@ -39,16 +44,32 @@ export function parsePattern(text) {
       continue;
     }
     pitched = true;
-    steps.push({ rest: false, midi });
+    steps.push({ rest: false, hold: false, midi });
   }
 
-  const mixed = pitched && steps.some((step) => !step.rest && step.midi === null);
+  const mixed =
+    pitched && steps.some((step) => !step.rest && !step.hold && step.midi === null);
   return {
     ok: bad.length === 0 && steps.length > 0 && !mixed,
     pitched,
     steps,
     bad: mixed ? [...bad, "(mixed x-steps and note names)"] : bad,
   };
+}
+
+/**
+ * Duration of the attack at cyclic position `index`, in steps:
+ * 1 plus following "_" holds (wrapping across the cycle boundary,
+ * capped at the pattern length — a tie over the barline is musical,
+ * an infinite note is not).
+ */
+export function attackDurationSteps(steps, index) {
+  let duration = 1;
+  for (let k = 1; k < steps.length; k++) {
+    if (steps[(index + k) % steps.length].hold) duration += 1;
+    else break;
+  }
+  return duration;
 }
 
 /**

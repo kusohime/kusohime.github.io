@@ -1,0 +1,284 @@
+---
+// 中文：赋格呈示部搭建器：主题、答题、对题、声部进入与紧接（stretto）。
+// English: Fugue exposition builder: subject, answer, countersubject,
+// voice entries, and stretto spacing.
+---
+
+<section class="tool-panel" aria-label="Fugue material">
+  <span class="tool-panel-label">Material</span>
+  <div class="tool-controls">
+    <label class="tool-field" style="flex:1; min-width: 20rem;">
+      <span>Subject — NOTE:duration, durations w h q e s (+ dot), R = rest; a missing duration repeats the last</span>
+      <input type="text" id="fg-subject" value="D4:e A4 F4 D4 C#4 D4:q E4:e D4 E4 F4:q G4:e F4 G4 A4:q" size="56" />
+    </label>
+  </div>
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
+    <label class="tool-field" style="flex:1; min-width: 20rem;">
+      <span>Answer (optional — empty gives the real answer, up a fifth)</span>
+      <input type="text" id="fg-answer" value="" size="56" placeholder="Supply your own for a tonal answer" />
+    </label>
+  </div>
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
+    <label class="tool-field" style="flex:1; min-width: 20rem;">
+      <span>Countersubject (optional — as it should sound against entry 2)</span>
+      <input type="text" id="fg-cs" value="" size="56" placeholder="e.g. F4:q E4:e D4 C#4:q D4:e E4 F4:q." />
+    </label>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Entry plan">
+  <span class="tool-panel-label">Entries</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Voices</span>
+      <select id="fg-voices">
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Entry distance (beats; less than the subject = stretto)</span>
+      <input type="number" id="fg-gap" min="0.5" step="0.5" placeholder="subject length" style="width: 7em;" />
+    </label>
+    <label class="tool-field">
+      <span>Tempo (♩/min)</span>
+      <input type="number" id="fg-bpm" value="84" min="30" max="200" />
+    </label>
+    <button type="button" class="tool-primary" id="fg-build">Build</button>
+    <button type="button" id="fg-play">Play</button>
+    <button type="button" id="fg-stop">Stop</button>
+  </div>
+
+  <div class="tool-table-wrap" style="margin-top: var(--space-sm);">
+    <table class="tool-table">
+      <caption>Per-entry plan (defaults: alternating subject and answer at the fifth)</caption>
+      <thead>
+        <tr><th>Entry</th><th>Material</th><th>Transpose</th><th>Octave</th></tr>
+      </thead>
+      <tbody id="fg-entries"></tbody>
+    </table>
+  </div>
+
+  <p class="tool-error" id="fg-error" hidden></p>
+
+  <div class="tool-result" id="fg-result" hidden>
+    <p class="tool-note" id="fg-summary"></p>
+    <svg id="fg-roll" class="tool-svg" viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Exposition piano roll: one row of pitches per voice"></svg>
+    <p class="tool-note" id="fg-parallels"></p>
+  </div>
+</section>
+
+<script>
+  import {
+    buildExposition, findParallels, parseVoice, totalBeats, voiceTimeline,
+  } from "../../lib/fugue.js";
+  import { midiToHz, midiToName } from "../../lib/pitch.js";
+  import { tone, stopAll, audioContext } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const el = (name: string, attrs: Record<string, string | number>) => {
+    const node = document.createElementNS(SVG_NS, name);
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+    return node;
+  };
+
+  const TRANSPOSE_OPTIONS = [
+    { label: "unison", value: 0 },
+    { label: "up a 5th (+7)", value: 7 },
+    { label: "down a 4th (−5)", value: -5 },
+    { label: "up a 4th (+5)", value: 5 },
+    { label: "down a 5th (−7)", value: -7 },
+    { label: "up an octave", value: 12 },
+    { label: "down an octave", value: -12 },
+  ];
+  const ENTRY_DEFAULTS = [
+    { material: "S", transpose: 0, octave: 0 },
+    { material: "A", transpose: 0, octave: 0 },
+    { material: "S", transpose: 0, octave: -1 },
+    { material: "A", transpose: 0, octave: -1 },
+  ];
+
+  const entriesBody = byId("fg-entries");
+
+  function renderEntryRows() {
+    const voiceCount = Number(byId("fg-voices").value);
+    entriesBody.innerHTML = "";
+    for (let index = 0; index < voiceCount; index++) {
+      const defaults = ENTRY_DEFAULTS[index];
+      const row = document.createElement("tr");
+      row.innerHTML =
+        `<td>${index + 1}</td>` +
+        `<td><select data-fg-material="${index}">` +
+        `<option value="S" ${defaults.material === "S" ? "selected" : ""}>Subject</option>` +
+        `<option value="A" ${defaults.material === "A" ? "selected" : ""}>Answer</option>` +
+        `</select></td>` +
+        `<td><select data-fg-transpose="${index}">${TRANSPOSE_OPTIONS.map((option) =>
+          `<option value="${option.value}" ${option.value === defaults.transpose ? "selected" : ""}>${option.label}</option>`,
+        ).join("")}</select></td>` +
+        `<td><select data-fg-octave="${index}">${[1, 0, -1, -2].map((octave) =>
+          `<option value="${octave}" ${octave === defaults.octave ? "selected" : ""}>${octave > 0 ? `+${octave}` : octave}</option>`,
+        ).join("")}</select></td>`;
+      entriesBody.append(row);
+    }
+  }
+  byId("fg-voices").addEventListener("change", () => {
+    renderEntryRows();
+    build();
+  });
+  renderEntryRows();
+
+  let exposition: any = null;
+
+  function build() {
+    const error = byId("fg-error");
+    const subject = parseVoice(byId("fg-subject").value);
+    if (!subject.ok) {
+      error.hidden = false;
+      error.textContent = `Could not read the subject: ${subject.bad.join(", ") || "empty"}. Use NOTE:duration tokens like “D4:e A4 F4:q”.`;
+      byId("fg-result").hidden = true;
+      return;
+    }
+    const answerText = byId("fg-answer").value.trim();
+    const answer = answerText ? parseVoice(answerText) : null;
+    if (answer && !answer.ok) {
+      error.hidden = false;
+      error.textContent = `Could not read the answer: ${answer.bad.join(", ")}.`;
+      return;
+    }
+    const csText = byId("fg-cs").value.trim();
+    const cs = csText ? parseVoice(csText) : null;
+    if (cs && !cs.ok) {
+      error.hidden = false;
+      error.textContent = `Could not read the countersubject: ${cs.bad.join(", ")}.`;
+      return;
+    }
+    error.hidden = true;
+
+    const voiceCount = Number(byId("fg-voices").value);
+    const entries = [];
+    for (let index = 0; index < voiceCount; index++) {
+      entries.push({
+        material: (document.querySelector(`[data-fg-material="${index}"]`) as HTMLSelectElement).value as "S" | "A",
+        semitones: Number((document.querySelector(`[data-fg-transpose="${index}"]`) as HTMLSelectElement).value),
+        octave: Number((document.querySelector(`[data-fg-octave="${index}"]`) as HTMLSelectElement).value),
+      });
+    }
+    const gapInput = Number(byId("fg-gap").value);
+    exposition = buildExposition({
+      subjectEvents: subject.events,
+      answerEvents: answer?.events ?? null,
+      csEvents: cs?.events ?? null,
+      entries,
+      gapBeats: gapInput > 0 ? gapInput : null,
+    });
+
+    const subjectBeats = totalBeats(subject.events);
+    const stretto = exposition.gap < subjectBeats - 1e-9;
+    byId("fg-summary").textContent =
+      `${voiceCount} voices, entries every ${exposition.gap} beats` +
+      `${stretto ? ` — stretto (subject is ${subjectBeats} beats)` : ""}; ` +
+      `answer is ${answerText ? "as supplied (tonal)" : "the subject up a fifth (real)"}` +
+      `${csText ? "; countersubject follows each statement" : ""}.`;
+
+    drawRoll();
+    reportParallels();
+    byId("fg-result").hidden = false;
+  }
+
+  function drawRoll() {
+    const svg = byId("fg-roll");
+    svg.innerHTML = "";
+    if (!exposition) return;
+    const lines = exposition.voices.map((voice: any) => voiceTimeline(voice));
+    const allNotes = lines.flat();
+    if (!allNotes.length) return;
+    const minMidi = Math.min(...allNotes.map((note: any) => note.midi)) - 2;
+    const maxMidi = Math.max(...allNotes.map((note: any) => note.midi)) + 2;
+    const left = 34, right = 706, top = 12, bottom = 215;
+    const span = exposition.totalBeats || 1;
+    const x = (beat: number) => left + ((right - left) * beat) / span;
+    const y = (midi: number) =>
+      bottom - ((bottom - top) * (midi - minMidi)) / (maxMidi - minMidi || 1);
+
+    // beat grid
+    for (let beat = 0; beat <= span; beat += 1) {
+      svg.append(el("line", { x1: x(beat), y1: top, x2: x(beat), y2: bottom, stroke: "currentColor", "stroke-width": 0.3, opacity: 0.18 }));
+    }
+    const VOICE_STYLE = [
+      { color: "#c81e1e", opacity: 1 },
+      { color: "currentColor", opacity: 0.95 },
+      { color: "currentColor", opacity: 0.6 },
+      { color: "currentColor", opacity: 0.35 },
+    ];
+    lines.forEach((line: any[], index: number) => {
+      const style = VOICE_STYLE[index];
+      for (const note of line) {
+        svg.append(el("line", {
+          x1: x(note.start), y1: y(note.midi),
+          x2: x(note.start + note.beats) - 1.5, y2: y(note.midi),
+          stroke: style.color, "stroke-width": note.part === "cs" ? 2 : 3.5,
+          opacity: style.opacity,
+          ...(note.part === "cs" ? { "stroke-dasharray": "5 2" } : {}),
+        }));
+      }
+      // entry label + free-region dashes
+      const voice = exposition.voices[index];
+      const labelNode = el("text", {
+        x: x(voice.entryStart) + 2, y: y(line[0]?.midi ?? 60) - 6,
+        "font-size": 9, fill: style.color, opacity: style.opacity,
+      });
+      labelNode.textContent =
+        `V${index + 1}: ${exposition.voices[index] === voice ? "" : ""}${voice.cs ? "S/A + CS" : "S/A"}`;
+      svg.append(labelNode);
+      if (voice.freeFrom < span) {
+        const midline = y(line.at(-1)?.midi ?? 60);
+        svg.append(el("line", {
+          x1: x(voice.freeFrom) + 2, y1: midline, x2: x(span), y2: midline,
+          stroke: style.color, "stroke-width": 0.8, opacity: style.opacity * 0.5,
+          "stroke-dasharray": "2 4",
+        }));
+      }
+    });
+    svg.append(el("line", { x1: left, y1: bottom, x2: right, y2: bottom, stroke: "currentColor", "stroke-width": 0.8 }));
+  }
+
+  function reportParallels() {
+    if (!exposition) return;
+    const parallels = findParallels(exposition);
+    byId("fg-parallels").textContent = parallels.length
+      ? `Parallel perfects at attack onsets: ${parallels
+          .map((p: any) => `${p.interval} between V${p.voices[0]}–V${p.voices[1]} at beat ${p.beat}`)
+          .join("; ")}. (Dashed regions are free counterpoint — yours to write.)`
+      : "No parallel fifths or octaves between the stated materials at attack onsets. Dashed regions are free counterpoint — yours to write.";
+  }
+
+  byId("fg-build").addEventListener("click", build);
+  for (const id of ["fg-subject", "fg-answer", "fg-cs", "fg-gap"]) {
+    byId(id).addEventListener("change", build);
+  }
+
+  byId("fg-play").addEventListener("click", () => {
+    if (!exposition) build();
+    if (!exposition) return;
+    stopAll();
+    const bpm = Math.min(240, Math.max(30, Number(byId("fg-bpm").value) || 84));
+    const beatSeconds = 60 / bpm;
+    const ctx = audioContext();
+    const start = ctx.currentTime + 0.15;
+    const GAINS = [0.35, 0.3, 0.27, 0.24];
+    exposition.voices.forEach((voice: any, index: number) => {
+      for (const note of voiceTimeline(voice)) {
+        tone(midiToHz(note.midi), start + note.start * beatSeconds, {
+          dur: note.beats * beatSeconds * 0.94,
+          gain: GAINS[index] ?? 0.25,
+          type: index % 2 === 0 ? "sine" : "triangle",
+        });
+      }
+    });
+  });
+  byId("fg-stop").addEventListener("click", () => stopAll());
+
+  build();
+</script>

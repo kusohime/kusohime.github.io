@@ -295,6 +295,77 @@ test("drift period: pattern/|rate-1|; infinite when locked", async () => {
   approx(driftPeriodSeconds(10, 0.99), 1000, 1e-6);
   assert.equal(driftPeriodSeconds(10, 1), Infinity);
 });
+test("hold steps extend attacks; wrap across the cycle", async () => {
+  const { parsePattern, attackDurationSteps } = await import("../src/lib/canon.js");
+  const held = parsePattern("E4 _ _ F4");
+  assert.ok(held.ok);
+  assert.equal(attackDurationSteps(held.steps, 0), 3);
+  assert.equal(attackDurationSteps(held.steps, 3), 1);
+  const wrap = parsePattern("_ x C4"); // leading hold belongs to the final attack
+  assert.equal(attackDurationSteps(parsePattern("x . _ x").steps, 0), 1); // rest stops nothing—holds only
+  assert.equal(attackDurationSteps(wrap.steps, 2), 2);
+});
+
+/* ---------- fugue ---------- */
+test("voice parsing: durations persist, dots, rests", async () => {
+  const { parseVoice } = await import("../src/lib/fugue.js");
+  const line = parseVoice("D4:e A4 F4:q. R:e C#4");
+  assert.ok(line.ok);
+  assert.deepEqual(line.events.map((e) => e.beats), [0.5, 0.5, 1.5, 0.5, 0.5]);
+  assert.equal(line.events[3].midi, null);
+  assert.equal(line.events[0].midi, 62);
+  assert.equal(parseVoice("D4:z").ok, false);
+  assert.equal(parseVoice("").ok, false);
+});
+test("exposition: real answer +7 by default, entries at subject length", async () => {
+  const { parseVoice, buildExposition, totalBeats } = await import("../src/lib/fugue.js");
+  const subject = parseVoice("C4:q D4 E4 F4");
+  const exposition = buildExposition({
+    subjectEvents: subject.events,
+    entries: [
+      { material: "S", semitones: 0, octave: 0 },
+      { material: "A", semitones: 0, octave: 0 },
+      { material: "S", semitones: 0, octave: -1 },
+    ],
+  });
+  assert.equal(exposition.gap, 4);
+  assert.equal(exposition.voices.length, 3);
+  assert.equal(exposition.voices[1].entryStart, 4);
+  assert.equal(exposition.voices[1].statement[0].midi, 60 + 7); // answer at the fifth
+  assert.equal(exposition.voices[2].statement[0].midi, 60 - 12); // subject an octave down
+  assert.equal(exposition.totalBeats, 12);
+});
+test("stretto gap and tonal answer override", async () => {
+  const { parseVoice, buildExposition } = await import("../src/lib/fugue.js");
+  const subject = parseVoice("C4:q D4 E4 F4");
+  const tonal = parseVoice("G4:q A4 B4 C5");
+  const exposition = buildExposition({
+    subjectEvents: subject.events,
+    answerEvents: tonal.events,
+    entries: [
+      { material: "S", semitones: 0, octave: 0 },
+      { material: "A", semitones: 0, octave: 0 },
+    ],
+    gapBeats: 2,
+  });
+  assert.equal(exposition.voices[1].entryStart, 2); // stretto
+  assert.equal(exposition.voices[1].statement[0].midi, 67); // supplied answer used verbatim
+});
+test("parallel fifths between subject and real answer at gap 0 are flagged", async () => {
+  const { parseVoice, buildExposition, findParallels } = await import("../src/lib/fugue.js");
+  const subject = parseVoice("C4:q D4 E4");
+  const exposition = buildExposition({
+    subjectEvents: subject.events,
+    entries: [
+      { material: "S", semitones: 0, octave: 0 },
+      { material: "A", semitones: 0, octave: 0 },
+    ],
+    gapBeats: 0, // simultaneous entries: parallel fifths throughout
+  });
+  const parallels = findParallels(exposition);
+  assert.ok(parallels.length >= 1, "expected parallel fifths to be flagged");
+  assert.ok(parallels.every((p) => p.interval === "P5"));
+});
 
 /* ---------- input parsing ---------- */
 test("pc parsing disambiguates T/E numerals from note names", async () => {
