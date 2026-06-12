@@ -308,6 +308,13 @@
 
 /* ---- Tools index ---- */
 
+/* 介紹段橫跨兩欄，避免擠壓左側目錄欄。 */
+/* The intro spans both grid columns so the rail keeps its own column. */
+.tools-index .tools-intro {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
 .tools-index .tool-group-heading {
   border-bottom: 1px solid var(--color-rule);
   padding-bottom: 0.3rem;
