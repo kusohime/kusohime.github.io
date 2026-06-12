@@ -1,82 +1,87 @@
 /*
- * 中文：公开网站的全局排版、颜色、间距与内容样式。
+ * 中文：公開網站的全域排版、顏色、間距與內容樣式。
  * English: Global typography, color, spacing, and content styles for the public site.
- * Caveat / 注意：优先修改 :root 变量；大范围选择器会影响所有页面。
+ * Caveat / 注意：優先修改 :root 變數；大範圍選擇器會影響所有頁面。
  * Caveat: Prefer :root variables; broad selectors affect every public page.
  */
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
 
 :root {
   color-scheme: light;
 
   /*
-   * 字体候选集中放在这里；以后调整字体时不需要逐个修改组件。
+   * 字型候選集中放在這裡；之後調整字型時不需要逐一修改元件。
    * Font stacks live here so typography can change without editing each component.
    */
-  /* OPTION 1: classic typewriter / 经典打字机 */
+  --font-cjk-sans: "Noto Sans JP",
+                   "Yu Gothic",
+                   YuGothic,
+                   "Hiragino Sans",
+                   "Hiragino Kaku Gothic ProN",
+                   "BIZ UDGothic",
+                   "Noto Sans CJK JP",
+                   "Source Han Sans JP",
+                   "PingFang TC",
+                   "Noto Sans CJK TC",
+                   "Microsoft JhengHei",
+                   sans-serif;
+  --font-cjk-serif: "Noto Serif JP",
+                    "Yu Mincho",
+                    YuMincho,
+                    "Hiragino Mincho ProN",
+                    "Noto Serif CJK JP",
+                    "Source Han Serif JP",
+                    "Songti TC",
+                    "Noto Serif CJK TC",
+                    serif;
+  --font-cjk-mono: "Noto Sans JP",
+                   "Sarasa Mono J",
+                   "BIZ UDGothic",
+                   "Yu Gothic",
+                   "Noto Sans Mono CJK JP",
+                   "Source Han Mono JP",
+                   "PingFang TC",
+                   "Microsoft JhengHei",
+                   monospace;
+
+  /* OPTION 1: classic typewriter / 經典打字機 */
   --font-typewriter: "Lucida Console",
                      "Courier New",
                      Courier,
-                     "Noto Sans Mono CJK SC",
-                     "Noto Sans Mono CJK JP",
-                     "Source Han Mono SC",
-                     "Source Han Mono",
-                     "Sarasa Mono SC",
-                     "Sarasa Mono J",
-                     "NSimSun",
-                     "SimSun",
-                     "MS Gothic",
-                     "Yu Gothic",
-                     monospace;
+                     var(--font-cjk-mono);
 
-  /* OPTION 2: modern mono / 现代等宽 */
+  /* OPTION 2: modern mono / 現代等寬 */
   --font-modern-mono: "IBM Plex Mono",
-                      "Noto Sans Mono CJK SC",
-                      "Source Han Mono SC",
                       Consolas,
-                      monospace;
+                      var(--font-cjk-mono);
 
-  /* OPTION 3: system sans / 系统无衬线 */
+  /* OPTION 3: system sans / 系統無襯線 */
   --font-system-sans: "Helvetica Neue",
                       Helvetica,
                       Arial,
-                      "PingFang SC",
-                      "PingFang TC",
-                      "Hiragino Sans GB",
-                      "Microsoft YaHei",
-                      "Noto Sans CJK SC",
-                      "Source Han Sans SC",
-                      sans-serif;
+                      var(--font-cjk-sans);
 
-  /* OPTION 4: humanist sans / 人文无衬线 */
+  /* OPTION 4: humanist sans / 人文無襯線 */
   --font-humanist-sans: "Source Sans 3",
-                        "PingFang SC",
-                        "Microsoft YaHei",
-                        "Noto Sans CJK SC",
-                        sans-serif;
+                        var(--font-cjk-sans);
 
-  /* OPTION 5: traditional serif / 传统衬线 */
+  /* OPTION 5: traditional serif / 傳統襯線 */
   --font-system-serif: "Times New Roman",
                        Times,
-                       "Songti SC",
-                       SimSun,
-                       "Noto Serif CJK SC",
-                       serif;
+                       var(--font-cjk-serif);
 
-  /* OPTION 6: Garamond / Garamond 衬线 */
+  /* OPTION 6: Garamond / Garamond 襯線 */
   --font-garamond: "EB Garamond",
                    Garamond,
-                   "Songti SC",
-                   "Noto Serif CJK SC",
                    Georgia,
-                   serif;
+                   var(--font-cjk-serif);
 
   /*
    * DESIGN DASHBOARD / 设计面板
    * The local Studio edits only the variables in this documented block.
    * 本地管理器只会修改这个区块中的变量。
    */
-  --font-body: var(--font-system-serif);
+  --font-body: var(--font-modern-mono);
 
   --font-heading: var(--font-body);
   --base-font-size: 17px;
@@ -87,13 +92,13 @@
   --color-rule: #aaa;
   /*
    * 全站主题色：链接下划线、三角形、引用线等都引用这个变量。
-   * Global accent: link underlines, triangles, quote rules, and related details use it.
+   * Global accent: link underlines, arrow glyphs, quote rules, and related details use it.
    */
   --theme-color: #c81e1e;
 
-  --page-width: 64rem;
-  --content-width: 44rem;
-  --reading-width: 38rem;
+  --page-width: 56rem;
+  --content-width: 38rem;
+  --reading-width: 32rem;
   --page-gutter: 1.25rem;
 
   --space-xs: 0.35rem;
@@ -104,9 +109,37 @@
 
   --line-height: 1.3;
   --heading-line-height: 1.2;
+  --heading-size: 1rem;
+  --header-padding: 0.7rem;
+  --footer-min-height: 5rem;
   --paragraph-indent: 0em;
   --paragraph-spacing: 1rem;
+  --cjk-letter-spacing: 0em;
   /* END DESIGN DASHBOARD / 设计面板结束 */
+}
+
+/*
+ * 中文：繁體介面優先使用台灣慣例字型，使全形標點置中於字身（em）中央。
+ * English: The Traditional Chinese UI prefers TC-convention fonts so fullwidth
+ * punctuation sits centered in the ideographic em square.
+ */
+:root:lang(zh-Hant-TW) {
+  --font-cjk-sans: "Noto Sans TC",
+                   "PingFang TC",
+                   "Noto Sans CJK TC",
+                   "Source Han Sans TC",
+                   "Microsoft JhengHei",
+                   sans-serif;
+  --font-cjk-serif: "Noto Serif TC",
+                    "Songti TC",
+                    "Noto Serif CJK TC",
+                    "Source Han Serif TC",
+                    serif;
+  --font-cjk-mono: "Noto Sans TC",
+                   "Sarasa Mono TC",
+                   "PingFang TC",
+                   "Microsoft JhengHei",
+                   monospace;
 }
 
 html {
@@ -142,13 +175,64 @@ html {
   color: var(--color-text);
   background: var(--color-background);
   font-family: var(--font-body);
+}
+
+:root[data-motion-interface="true"] {
   scroll-behavior: smooth;
+}
+
+:root[data-motion-theme="true"] {
+  transition:
+    background-color 150ms linear,
+    color 150ms linear;
+}
+
+:root[data-motion-font-size="true"] {
+  transition: font-size 220ms ease;
 }
 
 body {
   margin: 0;
   background: var(--color-background);
+  color: var(--color-text);
   line-height: var(--line-height);
+}
+
+:root:lang(zh-Hant-TW) body,
+:root:lang(ja) body {
+  /* 不使用 palt：比例寬度會破壞全形標點的置中與佔位。 */
+  /* No palt: proportional widths break fullwidth punctuation centering. */
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+  letter-spacing: var(--cjk-letter-spacing);
+  line-break: strict;
+  text-autospace: normal;
+  word-break: normal;
+}
+
+:root[data-motion-theme="true"] body {
+  transition:
+    background-color 150ms linear,
+    color 150ms linear;
+}
+
+:root[data-theme-transition] body {
+  animation: theme-dim 360ms ease-in-out;
+}
+
+.flap-glyph {
+  display: inline-block;
+  backface-visibility: hidden;
+  transform-origin: center top;
+  animation: glyph-flap 165ms steps(3, end) var(--flap-delay, 0ms) both;
+}
+
+:root[data-font-size-transition="grow"] .site-shell {
+  animation: font-grow 280ms ease;
+}
+
+:root[data-font-size-transition="shrink"] .site-shell {
+  animation: font-shrink 280ms ease;
 }
 
 .site-notice {
@@ -204,7 +288,7 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: var(--heading-size);
   font-weight: bold;
   line-height: var(--heading-line-height);
 }
@@ -231,13 +315,44 @@ summary {
   position: static;
 }
 
-.site-header,
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.site-header {
+  padding: var(--header-padding) 0;
+}
+
 .site-footer {
+  min-height: var(--footer-min-height);
   padding: var(--space-sm) 0;
 }
 
+.header-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: var(--space-sm);
+  white-space: nowrap;
+}
+
 .site-name {
-  margin-top: 0;
+  flex: none;
+  margin: 0;
+}
+
+.site-name .name-pronunciation {
+  text-decoration: inherit;
+}
+
+.header-row nav {
+  flex: none;
 }
 
 .nav-list,
@@ -260,14 +375,40 @@ summary {
   gap: var(--space-sm);
 }
 
+.header-row .nav-list {
+  flex-wrap: nowrap;
+}
+
 .header-tools {
   position: relative;
   z-index: 5;
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  flex: none;
+  flex-wrap: nowrap;
+  align-items: baseline;
   gap: var(--space-sm);
-  margin-top: var(--space-sm);
+  margin: 0 0 0 auto;
+}
+
+.site-header a,
+.site-header button,
+.site-header summary {
+  color: var(--color-text);
+  font-weight: bold;
+}
+
+.site-header a {
+  text-decoration: none;
+}
+
+.site-header a:hover,
+.site-header a:focus-visible,
+.site-header a[aria-current="page"] {
+  font-weight: bold;
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.15em;
 }
 
 .preference-menu {
@@ -275,29 +416,129 @@ summary {
 }
 
 .preference-menu summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
   cursor: pointer;
   list-style: none;
-  text-decoration: underline;
-  text-decoration-color: var(--theme-color);
-  text-underline-offset: 0.15em;
+}
+
+.preference-value {
+  text-decoration: none;
 }
 
 .preference-menu summary::-webkit-details-marker {
   display: none;
 }
 
-.disclosure-triangle {
+.glyph-arrow {
+  --arrow-direction: 0deg;
+  --arrow-image: url("/icons/arrow-1.svg");
+  --arrow-scale: 1;
+  --arrow-wobble: 0deg;
+
   display: inline-block;
-  margin-right: 0.3em;
-  border-top: 0.3em solid transparent;
-  border-bottom: 0.3em solid transparent;
-  border-left: 0.4em solid var(--theme-color);
-  vertical-align: 0.05em;
-  transition: transform 150ms ease;
+  flex: none;
+  width: 0.76em;
+  height: 0.76em;
+  background: var(--theme-color);
+  -webkit-mask: var(--arrow-image) center / contain no-repeat;
+  mask: var(--arrow-image) center / contain no-repeat;
+  transform: rotate(calc(var(--arrow-direction) + var(--arrow-wobble)))
+    scale(var(--arrow-scale));
+  transform-origin: center;
 }
 
-.preference-menu[open] .disclosure-triangle {
-  transform: rotate(90deg);
+:root[data-motion-glyphs="true"] .glyph-arrow {
+  transition: transform 180ms ease;
+}
+
+.glyph-arrow--forward {
+  --arrow-direction: 90deg;
+}
+
+.glyph-arrow--back {
+  --arrow-direction: -90deg;
+}
+
+.preference-menu[open] .glyph-arrow--disclosure {
+  --arrow-direction: 180deg;
+}
+
+.theme-toggle {
+  display: inline-grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.theme-glyph {
+  --theme-glyph-image: url("/icons/sun-1.svg");
+  --theme-glyph-scale: 1;
+  --theme-glyph-turn: 0deg;
+
+  display: inline-block;
+  flex: none;
+  width: 0.82em;
+  height: 0.82em;
+  background: currentColor;
+  -webkit-mask: var(--theme-glyph-image) center / contain no-repeat;
+  mask: var(--theme-glyph-image) center / contain no-repeat;
+  transform: rotate(var(--theme-glyph-turn)) scale(var(--theme-glyph-scale));
+  transform-origin: center;
+}
+
+:root[data-motion-glyphs="true"] .theme-glyph {
+  transition: transform 700ms cubic-bezier(0.35, 0.05, 0.2, 1);
+}
+
+.theme-toggle[data-turning="true"] .theme-glyph {
+  --theme-glyph-turn: 360deg;
+}
+
+:root[data-motion-glyphs="true"] .preference-menu summary:hover .glyph-arrow,
+:root[data-motion-glyphs="true"] .preference-menu summary:focus-visible .glyph-arrow,
+:root[data-motion-glyphs="true"] .theme-toggle:hover .theme-glyph,
+:root[data-motion-glyphs="true"] .theme-toggle:focus-visible .theme-glyph,
+:root[data-motion-glyphs="true"] .back-link a:hover .glyph-arrow,
+:root[data-motion-glyphs="true"] .back-link a:focus-visible .glyph-arrow,
+:root[data-motion-glyphs="true"] .guide-chapter-navigation a:hover .glyph-arrow,
+:root[data-motion-glyphs="true"] .guide-chapter-navigation a:focus-visible .glyph-arrow {
+  --arrow-scale: 1.08;
+  --theme-glyph-scale: 1.08;
+}
+
+.font-size-options {
+  min-width: 3.2rem;
+}
+
+.font-size-options button {
+  display: block;
+  width: 100%;
+  padding-block: 0.2rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.font-size-options button[data-font-size-option="s"] {
+  font-size: 0.72em;
+}
+
+.font-size-options button[data-font-size-option="m"] {
+  font-size: 0.9em;
+}
+
+.font-size-options button[data-font-size-option="l"] {
+  font-size: 1.08em;
+}
+
+.font-size-options button[aria-pressed="true"] {
+  font-weight: bold;
+  background: color-mix(in srgb, var(--theme-color) 8%, transparent);
 }
 
 .preference-options {
@@ -347,6 +588,23 @@ main {
   margin-bottom: var(--space-lg);
 }
 
+.home-manuscript {
+  width: min(100%, var(--reading-width));
+  margin: 0;
+}
+
+.home-manuscript img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.home-manuscript figcaption {
+  margin-top: var(--space-xs);
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
 .page-introduction {
   max-width: var(--reading-width);
 }
@@ -373,10 +631,79 @@ main {
   max-width: var(--reading-width);
 }
 
-.dated-list li {
+.works-index,
+.writings-index {
   display: grid;
-  grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
-  gap: var(--space-sm);
+  grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-lg);
+  max-width: var(--page-width);
+}
+
+.catalog-rail {
+  position: sticky;
+  top: var(--space-md);
+  align-self: start;
+}
+
+.catalog-rail ul {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-rail a {
+  text-decoration: none;
+}
+
+.catalog-rail a:hover,
+.catalog-rail a:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+.catalog-groups,
+.writing-groups {
+  max-width: var(--reading-width);
+}
+
+.catalog-groups .category-group,
+.catalog-groups .writing-group {
+  margin-bottom: var(--space-md);
+}
+
+.catalog-groups section > h2 {
+  margin: 0 0 var(--space-sm);
+}
+
+.catalog-list > li,
+.catalog-groups .entry-list > li {
+  margin-bottom: var(--space-xs);
+}
+
+.catalog-entry-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+}
+
+.catalog-entry-line h3,
+.catalog-entry-subtitle {
+  margin: 0;
+}
+
+.catalog-entry-subtitle {
+  color: var(--color-muted);
+}
+
+.dated-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
   margin-bottom: var(--space-xs);
 }
 
@@ -391,6 +718,58 @@ main {
 .detail-header {
   max-width: var(--reading-width);
   margin: 0 0 var(--space-lg);
+}
+
+.work-detail-header {
+  margin-bottom: var(--space-md);
+}
+
+.work-title-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.75rem;
+}
+
+.work-title-line h1,
+.work-title-line p,
+.work-detail-header > p {
+  margin: 0;
+}
+
+.work-year {
+  color: var(--color-muted);
+}
+
+.work-facts {
+  margin-top: var(--space-sm) !important;
+}
+
+.work-facts span + span::before {
+  color: var(--color-muted);
+  content: " · ";
+}
+
+.writing-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.writing-metadata > * + *::before {
+  color: var(--color-muted);
+  content: " · ";
+}
+
+:root:lang(zh-Hant-TW) .work-facts span + span::before,
+:root:lang(ja) .work-facts span + span::before,
+:root:lang(zh-Hant-TW) .writing-metadata > * + *::before,
+:root:lang(ja) .writing-metadata > * + *::before {
+  content: "・";
+}
+
+.work-detail-header .resource-links {
+  margin: var(--space-xs) 0 0;
 }
 
 .metadata-list {
@@ -418,6 +797,32 @@ main {
 
 .resource-links {
   margin-bottom: var(--space-lg);
+}
+
+.work-credits {
+  max-width: var(--reading-width);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-muted);
+}
+
+.work-credits p {
+  margin: 0 0 var(--space-xs);
+}
+
+.work-credits em {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+.metadata-divider::before {
+  content: " · ";
+}
+
+:root:lang(zh-Hant-TW) .metadata-divider::before,
+:root:lang(ja) .metadata-divider::before {
+  content: "・";
 }
 
 .media-placeholder {
@@ -573,20 +978,6 @@ main {
   gap: 0.4em;
 }
 
-.back-triangle {
-  display: inline-block;
-  border-top: 0.3em solid transparent;
-  border-right: 0.45em solid var(--theme-color);
-  border-bottom: 0.3em solid transparent;
-}
-
-.forward-triangle {
-  display: inline-block;
-  border-top: 0.3em solid transparent;
-  border-bottom: 0.3em solid transparent;
-  border-left: 0.45em solid var(--theme-color);
-}
-
 .guide-chapter-navigation {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -733,6 +1124,36 @@ main {
   margin-top: var(--space-md);
 }
 
+@keyframes theme-dim {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 0.16; }
+}
+
+@keyframes glyph-flap {
+  0% {
+    opacity: 0;
+    transform: rotateX(-90deg) rotateZ(var(--flap-lean, 0deg));
+  }
+  48% {
+    opacity: 0.55;
+    transform: rotateX(-34deg) rotateZ(var(--flap-lean, 0deg));
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0) rotateZ(0);
+  }
+}
+
+@keyframes font-grow {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.035); }
+}
+
+@keyframes font-shrink {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(0.965); }
+}
+
 @media (max-width: 40rem) {
   :root {
     --space-lg: 3rem;
@@ -740,8 +1161,33 @@ main {
   }
 
   .dated-list li {
+    gap: 0.15rem 0.6rem;
+  }
+
+  .works-index,
+  .writings-index {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: var(--space-md);
+  }
+
+  .catalog-rail {
+    position: static;
+  }
+
+  .catalog-rail ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem var(--space-sm);
+  }
+
+  .header-row,
+  .header-row .nav-list,
+  .header-tools {
+    gap: 0.35rem;
+  }
+
+  .header-row {
+    font-size: 0.8rem;
   }
 
   .preference-options {
@@ -755,7 +1201,14 @@ main {
     scroll-behavior: auto;
   }
 
-  .disclosure-triangle {
+  .glyph-arrow,
+  .theme-glyph {
     transition: none;
+  }
+
+  :root[data-theme-transition] body,
+  .flap-glyph,
+  :root[data-font-size-transition] .site-shell {
+    animation-duration: 1ms;
   }
 }

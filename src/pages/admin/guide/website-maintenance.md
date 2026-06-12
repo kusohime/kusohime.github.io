@@ -1,146 +1,165 @@
 ---
 layout: ../../../layouts/AdminGuideLayout.astro
-title: "Website Maintenance / 网站维护"
-description: "A plain-language map of the project, Studio tools, design system, and publishing checks. / 项目结构、管理工具、设计系统与发布检查的直白说明。"
+title: "Website Maintenance / 網站維護"
+description: "A plain-language map of the project, Studio tools, design system, and publishing checks. / 專案結構、管理工具、設計系統與釋出檢查的直白說明。"
 slug: "website-maintenance"
 ---
 
 <!--
-  中文：从非程序员视角解释网站结构、管理器工具和安全维护流程。
+  中文：從非程式設計師視角解釋網站結構、管理器工具和安全維護流程。
   English: Explains project structure, Studio tools, and safe maintenance from a non-programmer perspective.
-  Caveat / 注意：涉及结构性修改前先保存备份，并运行检查与构建。
+  Caveat / 注意：涉及結構性修改前先儲存備份，並執行檢查與構建。
   Caveat: Back up the project and run checks/builds before structural changes.
 -->
 
-## What the website is / 这个网站是什么
+## What the website is / 這個網站是什麼
 
 This is an Astro static website. Astro reads Markdown and source files, then
 builds ordinary HTML, CSS, JavaScript, and images. There is no database or
 online CMS. The Website Studio is a local editing surface for the same files.
 
-这是一个 Astro 静态网站。Astro 读取 Markdown 和源文件，再生成普通的 HTML、
-CSS、JavaScript 与图片。网站没有数据库或线上 CMS；Website Studio 只是这些
-本地文件的编辑界面。
+這是一個 Astro 靜態網站。Astro 讀取 Markdown 和原始檔，再生成普通的 HTML、
+CSS、JavaScript 與圖片。網站沒有資料庫或線上 CMS；Website Studio 只是這些
+本地檔案的編輯介面。
 
-## Project map / 项目地图
+## Project map / 專案地圖
 
-| Folder or file / 文件夹或文件 | What it controls / 控制内容 |
+| Folder or file / 資料夾或檔案 | What it controls / 控制內容 |
 | --- | --- |
-| `content/works/` | Work information and program notes / 作品资料与说明 |
-| `content/writings/` | Writings, title pages, and chapters / 文章、标题页与章节 |
-| `public/images/` | Images served directly by the site / 网站直接使用的图片 |
-| `src/pages/` | Website addresses and page structures / 网站地址与页面结构 |
-| `src/components/` | Reusable header, footer, and interface pieces / 页眉页脚等共用部件 |
-| `src/layouts/` | Shared page shells / 共用页面外壳 |
-| `src/styles/global.css` | Public typography, colors, spacing, and layout / 公开网站的字体、颜色、间距与布局 |
-| `src/styles/admin.css` | Studio appearance only / 仅管理器外观 |
+| `content/works/` | Work information and program notes / 作品資料與說明 |
+| `content/writings/` | Writings, title pages, and chapters / 文章、標題頁與章節 |
+| `public/images/` | Images served directly by the site / 網站直接使用的圖片 |
+| `src/pages/` | Website addresses and page structures / 網站地址與頁面結構 |
+| `src/components/` | Reusable header, footer, and interface pieces / 頁首頁尾等共用部件 |
+| `src/layouts/` | Shared page shells / 共用頁面外殼 |
+| `src/styles/global.css` | Public typography, colors, spacing, and layout / 公開網站的字型、顏色、間距與佈局 |
+| `src/styles/admin.css` | Studio appearance only / 僅管理器外觀 |
 | `src/scripts/admin.ts` | Studio behavior / 管理器功能 |
-| `src/data/` | Small shared lists and site settings / 小型共用列表与网站设置 |
-| `src/content.config.ts` | Valid content fields and folder rules / 合法内容字段与文件夹规则 |
-| `astro.config.mjs` | Astro, Markdown mathematics, and local file API / Astro、数学公式与本地文件接口 |
+| `src/config/locales.ts` | Shared translations, localized category names, and date formats / 共用翻譯、分類名稱與日期格式 |
+| `src/config/motion.json` | Optional animation switches / 可選動畫開關 |
+| `src/config/typography.json` | East Asian character spacing / 東亞文字字距 |
+| `src/config/` | Other site identity, taxonomies, and guide order / 其他網站資料、分類與指南順序 |
+| `src/utils/` | Small reusable source helpers / 小型共用原始碼工具 |
+| `src/content.config.ts` | Valid content fields and folder rules / 合法內容欄位與資料夾規則 |
+| `astro.config.mjs` | Astro, Markdown mathematics, and local file API / Astro、數學公式與本地檔案介面 |
 
 Files beginning with a dot, `node_modules`, `.astro`, and `dist` are generated
 or technical folders. Do not use them for ordinary content work.
 
-以点开头的文件，以及 `node_modules`、`.astro`、`dist`，都是生成文件或技术
-文件夹。日常内容维护不要在其中操作。
+以點開頭的檔案，以及 `node_modules`、`.astro`、`dist`，都是生成檔案或技術
+資料夾。日常內容維護不要在其中操作。
 
-## Studio panes / 管理器区域
+## Studio panes / 管理器區域
 
-**Files / 文件** displays the project as folders. Select a text file to edit
+**Files / 檔案** displays the project as folders. Select a text file to edit
 it. **Wrap lines** changes only the editor display and does not change the
 file.
 
-**Files / 文件** 以文件夹形式显示项目。选择文本文件即可编辑。
-**Wrap lines** 只改变编辑器中的显示，不修改文件内容。
+**Files / 檔案** 以資料夾形式顯示專案。選擇文字檔案即可編輯。
+**Wrap lines** 只改變編輯器中的顯示，不修改檔案內容。
 
-**Images / 图片** previews image files and can copy a public URL or insert
+**Images / 圖片** previews image files and can copy a public URL or insert
 Markdown. Images normally belong in `public/images/`.
 
-**Images / 图片** 用于预览图片、复制公开网址或插入 Markdown。图片通常放在
+**Images / 圖片** 用於預覽圖片、複製公開網址或插入 Markdown。圖片通常放在
 `public/images/`。
 
-**Find / 查找** searches the whole project. Use it before renaming a class,
+**Find / 查詢** searches the whole project. Use it before renaming a class,
 URL, field, or component. The shortcut is <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> +
 <kbd>Shift</kbd> + <kbd>F</kbd>.
 
-**Find / 查找** 搜索整个项目。重命名 class、网址、字段或组件前应先查找。
-快捷键是 <kbd>Ctrl</kbd> 或 <kbd>Cmd</kbd> + <kbd>Shift</kbd> +
+**Find / 查詢** 搜尋整個專案。重新命名 class、網址、欄位或元件前應先查詢。
+快捷鍵是 <kbd>Ctrl</kbd> 或 <kbd>Cmd</kbd> + <kbd>Shift</kbd> +
 <kbd>F</kbd>。
 
-**Design / 设计** edits documented variables near the top of
-`src/styles/global.css`. It is a convenience dashboard, not a separate design
-system. Manual CSS changes and dashboard changes edit the same file.
+**Design / 設計** contains one **CSS** button. It opens
+`src/styles/global.css`, where the documented variables near the beginning of
+the file control color, typography, spacing, widths, header height, and footer
+height.
 
-**Design / 设计** 修改 `src/styles/global.css` 顶部已经说明的变量。它只是一个
-方便面板，并不是另一套设计系统；手动修改 CSS 与点击面板修改的是同一个文件。
+**Design / 設計** 中只保留一個 **CSS** 按鈕。它會開啟
+`src/styles/global.css`；檔案開頭附近已經說明的變數用於控制顏色、字型、間距、
+寬度、頁首高度和頁尾高度。
 
-## Design dashboard / 设计面板
+The five animation switches below **CSS** edit `src/config/motion.json`.
+Language flaps, theme fading, font-size scaling, glyph rotation, and interface
+motion can be enabled independently. They are all off by default.
 
-- **Theme color / 主题色** controls links, underlines, triangles, and accents.
-- **Font / 字体** chooses the global body font.
-- **Base text size / 基础字号** controls the medium text setting.
-- **Global spacing / 全局间距** changes the shared spacing scale.
-- **Line height / 行距** controls prose leading.
-- **Paragraph spacing / 段落间距** controls the space after prose paragraphs
-  without adding gaps between poetry lines.
-- **Reading width / 阅读宽度** changes the page and text-column widths together.
-- **Paragraph indentation / 段落首行缩进** turns the prose indent on or off.
+**CSS** 下方的五個動畫開關會修改 `src/config/motion.json`。逐字翻頁、主題淡入
+淡出、字號縮放、圖形旋轉和介面動畫可以分別開啟；目前預設全部關閉。
 
-- **Line height / 行距** 控制正文行距。
-- **Paragraph spacing / 段落间距** 控制正文段落后的距离，不会增加诗行之间的距离。
-- **Reading width / 阅读宽度** 同时改变页面和正文栏宽度。
-- **Paragraph indentation / 段落首行缩进** 开启或关闭正文首行缩进。
+The East Asian typography slider edits `src/config/typography.json`. It
+controls character spacing when the public site is shown in Traditional
+Chinese or Japanese.
 
-The three preset slots are stored in this browser. **Save** captures every
-Design dashboard value, **Apply** restores the chosen slot, and **Clear**
-empties it. Presets do not travel with the website project to another browser
-or computer.
+東亞排版滑桿會修改 `src/config/typography.json`，用來調整公開網站切換至繁體中文
+或日文時的字距。
 
-三个预设槽位保存在当前浏览器中。**Save / 保存** 会记录设计面板的全部数值，
-**Apply / 应用** 会恢复所选槽位，**Clear / 清除** 会清空它。预设不会随网站
-项目自动转移到另一台电脑或另一个浏览器。
-
-Font choices include system sans serif, Source Sans 3, Times/system serif,
-EB Garamond, a classic typewriter stack, and IBM Plex Mono. Google-hosted fonts
-require an internet connection on first load; system fonts do not.
-
-字体包括系统无衬线、Source Sans 3、Times/系统衬线、EB Garamond、经典打字机
-字体组合和 IBM Plex Mono。Google 托管字体首次载入需要网络；系统字体不需要。
-
-Use **Open global CSS** when the dashboard is too general. The documented
-variables are near the beginning of the file and are intended for manual fine
-adjustment.
-
-当面板的控制过于笼统时，使用 **Open global CSS**。文件开头附近已经记录了这些
-变量，适合进一步手动微调。
-
-## Preview inspector / 预览检查器
+## Preview inspector / 預覽檢查器
 
 Turn on **Inspect** above the preview. Moving the pointer over the website draws
 a dim frame around a meaningful block.
 
-打开预览上方的 **Inspect**。将鼠标移过网页时，会在有意义的内容区块周围显示
-淡色边框。
+開啟預覽上方的 **Inspect**。將滑鼠移過網頁時，會在有意義的內容區塊周圍顯示
+淡色邊框。
 
 - **Style** opens `src/styles/global.css` near the first shared selector that
   appears to control the block.
 - **Content** opens the unique Markdown, Astro, or component file registered
   for that block and searches for its visible text.
 
-- **Style** 会打开 `src/styles/global.css`，定位到可能控制该区块的第一个共用
-  选择器附近。
-- **Content** 会打开为该区块登记的唯一 Markdown、Astro 或组件文件，并寻找其
-  可见文字。
+- **Style** 會開啟 `src/styles/global.css`，定位到可能控制該區塊的第一個共用
+  選擇器附近。
+- **Content** 會開啟為該區塊登記的唯一 Markdown、Astro 或元件檔案，並尋找其
+  可見文字。
 
 The inspector is a locator, not a browser developer tool. A block may inherit
 styles from several selectors, and generated text may not have an exact
 one-line source match. When the first result is not enough, use global Find.
 
-检查器是定位工具，不是完整的浏览器开发工具。一个区块可能从多个选择器继承
-样式，生成文字也不一定对应某一行源代码。首次定位不够准确时，请使用全局查找。
+檢查器是定位工具，不是完整的瀏覽器開發工具。一個區塊可能從多個選擇器繼承
+樣式，生成文字也不一定對應某一行原始碼。首次定位不夠準確時，請使用全域性查詢。
 
-## A safe editing routine / 稳妥的编辑流程
+## Visual text editing / 可視文字編輯
+
+Turn on **Edit text** above the preview, then click a paragraph, heading,
+caption, or list item. Markdown blocks can change heading level, add bold,
+italic, inline code, ruby, LaTeX, quotes, and lists. **Add above** and
+**Add below** create blocks; **Delete block** requires a second confirming
+click. Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> to apply, or
+<kbd>Esc</kbd> to cancel. A blank line creates a separate Markdown block.
+
+開啟預覽上方的 **Edit text**，再點選段落、標題、圖注或列表專案。Markdown
+區塊可以調整標題層級，並加入粗體、斜體、行內程式碼、ruby、LaTeX、引用和列表。
+**Add above** 與 **Add below** 新建區塊；**Delete block** 需要再次點選確認。按
+<kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> 應用，按
+<kbd>Esc</kbd> 取消；空行會分隔 Markdown 區塊。
+
+Simple Astro text remains plain-text-only so component structure cannot be
+damaged from the preview. For styles, links, code, and component changes, use
+**Inspect**, **Content**, **Design**, or the code editor. The preview path,
+desktop/phone size, and active preview mode are remembered while the Studio
+refreshes after a save.
+
+此模式有意不修改樣式、連結、程式程式碼或元件結構。此類修改請使用
+**Inspect**、**Content**、**Design** 或程式碼編輯器。儲存後管理器重新整理時，預覽
+路徑、桌面/手機尺寸和當前預覽模式會被保留。
+
+Drag the narrow separators between **Project**, **Code**, and **Preview** to
+resize the panes. The minus button folds a pane horizontally; the plus button
+opens it again. Widths and folded states are remembered in this browser.
+
+拖動 **Project**、**Code** 與 **Preview** 之間的窄分隔條即可調整寬度。減號會將
+區域橫向摺疊，加號會重新展開；寬度與摺疊狀態會儲存在當前瀏覽器中。
+
+Heading size, header height, and footer height remain available as
+`--heading-size`, `--header-padding`, and `--footer-min-height` in
+`src/styles/global.css`.
+
+標題字號、頁首高度和頁尾高度仍可透過 `src/styles/global.css` 中的
+`--heading-size`、`--header-padding` 與 `--footer-min-height` 修改。
+
+## A safe editing routine / 穩妥的編輯流程
 
 1. Open the relevant content or source file.
 2. Make one understandable group of changes.
@@ -149,51 +168,51 @@ one-line source match. When the first result is not enough, use global Find.
 5. Run `npm run check`.
 6. Run `npm run build`.
 
-1. 打开相关内容或源文件。
-2. 一次完成一组容易理解的修改。
-3. 保存后检查桌面和手机预览。
-4. 检查使用相同组件或 CSS 的附近页面。
-5. 运行 `npm run check`。
-6. 运行 `npm run build`。
+1. 開啟相關內容或原始檔。
+2. 一次完成一組容易理解的修改。
+3. 儲存後檢查桌面和手機預覽。
+4. 檢查使用相同元件或 CSS 的附近頁面。
+5. 執行 `npm run check`。
+6. 執行 `npm run build`。
 
 Auto-save is convenient for prose. For broad CSS or code experiments, manual
 save is easier to control. The line-wrap switch affects only how code appears
 in the editor.
 
-自动保存适合文字编辑。大范围实验 CSS 或程序代码时，手动保存更容易控制。
-自动换行开关只影响代码在编辑器中的显示。
+自動儲存適合文字編輯。大範圍實驗 CSS 或程式程式碼時，手動儲存更容易控制。
+自動換行開關隻影響程式碼在編輯器中的顯示。
 
-## Common caveats / 常见注意事项
+## Common caveats / 常見注意事項
 
 Changing `global.css`, a layout, or a component can affect many pages at once.
 Changing Markdown usually affects only that work, writing, or chapter.
 
-修改 `global.css`、布局或组件可能同时影响很多页面；修改 Markdown 通常只影响
-对应的作品、文章或章节。
+修改 `global.css`、佈局或元件可能同時影響很多頁面；修改 Markdown 通常隻影響
+對應的作品、文章或章節。
 
 Do not edit `package-lock.json`, generated `.astro` files, `dist`, or
 `node_modules` by hand. Do not place private information in the repository:
 static website source can be copied when published.
 
-不要手动编辑 `package-lock.json`、生成的 `.astro` 文件、`dist` 或
-`node_modules`。不要把私人信息放进项目：静态网站发布后，源内容可能被复制。
+不要手動編輯 `package-lock.json`、生成的 `.astro` 檔案、`dist` 或
+`node_modules`。不要把私人資訊放進專案：靜態網站釋出後，源內容可能被複制。
 
 The passcode protects the local Studio file API from casual access. It is not
 a hosted user account, encrypted vault, or production CMS login. The guide is
 hidden from public navigation and requires a local unlocked Studio, but its
 source still belongs to the project.
 
-口令用于防止随意访问本地管理器文件接口，并不是托管账户、加密保险库或线上 CMS
-登录。本指南不出现在公开导航中，并要求本地管理器已经解锁，但其源文件仍属于
-项目的一部分。
+口令用於防止隨意訪問本地管理器檔案介面，並不是託管賬戶、加密保險庫或線上 CMS
+登入。本指南不出現在公開導航中，並要求本地管理器已經解鎖，但其原始檔仍屬於
+專案的一部分。
 
-## Publishing / 发布
+## Publishing / 釋出
 
 The repository currently provides build commands, not a carrier-specific
 publishing button. Run the checks above, then use the deployment method
 configured for the hosting service. A successful local build produces `dist/`;
 that folder is generated and should not be edited.
 
-项目目前提供构建命令，并没有与特定托管商绑定的发布按钮。运行上述检查后，再
-使用托管服务所配置的部署方式。成功的本地构建会生成 `dist/`；该文件夹由程序
-生成，不应手动编辑。
+專案目前提供構建命令，並沒有與特定託管商繫結的釋出按鈕。執行上述檢查後，再
+使用託管服務所配置的部署方式。成功的本地構建會生成 `dist/`；該資料夾由程式
+生成，不應手動編輯。

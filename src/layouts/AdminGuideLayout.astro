@@ -1,10 +1,10 @@
 ---
-// 中文：管理指南章节的共用布局，自动显示总目录和前后章节。
+// 中文：管理指南章節的共用佈局，自動顯示總目錄和前後章節。
 // English: Shared layout for Admin Guide chapters with contents and previous/next links.
-// Caveat / 注意：页面仍是静态文件；本地口令仅用于阻止普通访问，不是线上保密系统。
+// Caveat / 注意：頁面仍是靜態檔案；本地口令僅用於阻止普通訪問，不是線上保密系統。
 // Caveat: Pages remain static files; the local passcode prevents casual access, not online secrecy.
 import BaseLayout from "./BaseLayout.astro";
-import { adminGuideChapters } from "../data/adminGuide";
+import { adminGuideChapters } from "../config/adminGuide";
 
 const { frontmatter } = Astro.props;
 const currentIndex = adminGuideChapters.findIndex(
@@ -38,17 +38,17 @@ const description = bilingual(frontmatter.description ?? "");
     <header class="detail-header">
       <p class="detail-kicker">
         <span data-guide-language="en">Website Studio Admin Guide</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>网站管理指南</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>網站管理指南</span>
       </p>
       <h1>
         <span data-guide-language="en">{title.en}</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>{title.zh}</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>{title.zh}</span>
       </h1>
       {
         frontmatter.description && (
           <p>
             <span data-guide-language="en">{description.en}</span>
-            <span data-guide-language="zh" lang="zh-Hans" hidden>{description.zh}</span>
+            <span data-guide-language="zh" lang="zh-Hant-TW" hidden>{description.zh}</span>
           </p>
         )
       }
@@ -57,7 +57,7 @@ const description = bilingual(frontmatter.description ?? "");
     <nav class="writing-contents admin-guide-contents" aria-label="Admin Guide contents">
       <h2>
         <span data-guide-language="en">Contents</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>目录</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>目錄</span>
       </h2>
       <ol>
         {
@@ -70,7 +70,7 @@ const description = bilingual(frontmatter.description ?? "");
                   aria-current={chapter.slug === frontmatter.slug ? "page" : undefined}
                 >
                   <span data-guide-language="en">{chapterTitle.en}</span>
-                  <span data-guide-language="zh" lang="zh-Hans" hidden>{chapterTitle.zh}</span>
+                  <span data-guide-language="zh" lang="zh-Hant-TW" hidden>{chapterTitle.zh}</span>
                 </a>
               </li>
             );
@@ -87,9 +87,13 @@ const description = bilingual(frontmatter.description ?? "");
       {
         previousChapter ? (
           <a href={`/admin/guide/${previousChapter.slug}/`}>
-            <span class="back-triangle" aria-hidden="true"></span>
+            <span
+              class="glyph-arrow glyph-arrow--back"
+              data-arrow-glyph
+              aria-hidden="true"
+            ></span>
             <span data-guide-language="en">{bilingual(previousChapter.title).en}</span>
-            <span data-guide-language="zh" lang="zh-Hans" hidden>
+            <span data-guide-language="zh" lang="zh-Hant-TW" hidden>
               {bilingual(previousChapter.title).zh}
             </span>
           </a>
@@ -101,10 +105,14 @@ const description = bilingual(frontmatter.description ?? "");
         nextChapter && (
           <a href={`/admin/guide/${nextChapter.slug}/`}>
             <span data-guide-language="en">{bilingual(nextChapter.title).en}</span>
-            <span data-guide-language="zh" lang="zh-Hans" hidden>
+            <span data-guide-language="zh" lang="zh-Hant-TW" hidden>
               {bilingual(nextChapter.title).zh}
             </span>
-            <span class="forward-triangle" aria-hidden="true"></span>
+            <span
+              class="glyph-arrow glyph-arrow--forward"
+              data-arrow-glyph
+              aria-hidden="true"
+            ></span>
           </a>
         )
       }
@@ -112,9 +120,13 @@ const description = bilingual(frontmatter.description ?? "");
 
     <p class="back-link">
       <a href="/admin/guide/">
-        <span class="back-triangle" aria-hidden="true"></span>
+        <span
+          class="glyph-arrow glyph-arrow--back"
+          data-arrow-glyph
+          aria-hidden="true"
+        ></span>
         <span data-guide-language="en">Guide contents</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>指南目录</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>指南目錄</span>
       </a>
     </p>
   </article>

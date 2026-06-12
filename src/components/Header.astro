@@ -1,23 +1,39 @@
 ---
-// 中文：公开网站页眉、主导航与三个偏好菜单。
+// 中文：公開網站頁首、主導覽與三個偏好選單。
 // English: Public header, primary navigation, and three preference menus.
-// Caveat / 注意：选择性翻译依赖 data-i18n-en / data-i18n-zh。
-// Caveat: Selective translation depends on paired data-i18n-en / data-i18n-zh values.
+import NamePronunciation from "./NamePronunciation.astro";
+import {
+  localeCodes,
+  localeInfo,
+  translate,
+  type TranslationKey,
+} from "../config/locales";
+
 const { pathname } = Astro.url;
 const currentPath = pathname.replace(/\/$/, "") || "/";
 
-// 导航文字分别保存英文和中文；只有带 data-i18n 的元素会被切换。
-// Navigation stores both languages; only elements marked data-i18n are translated.
 const navItems = [
-  { label: "Works", labelZh: "作品", href: "/works" },
-  { label: "Writings", labelZh: "文字", href: "/writings" },
+  {
+    key: "nav.works" as TranslationKey,
+    href: "/works",
+  },
+  {
+    key: "nav.writings" as TranslationKey,
+    href: "/writings",
+  },
 ];
 ---
 
 <header class="site-header" data-source-file="src/components/Header.astro">
   <div class="header-row">
     <p class="site-name">
-      <a href="/" aria-label="Yixin Cui, home">Yixin Cui</a>
+      <a
+        href="/"
+        aria-label="Yixin Cui, home"
+        aria-current={currentPath === "/" ? "page" : undefined}
+      >
+        <NamePronunciation focusable={false} translate />
+      </a>
     </p>
 
     <nav aria-label="Primary navigation">
@@ -29,12 +45,7 @@ const navItems = [
                 href={item.href}
                 aria-current={currentPath.startsWith(item.href) ? "page" : undefined}
               >
-                <span
-                  data-i18n-en={item.label}
-                  data-i18n-zh={item.labelZh}
-                >
-                  {item.label}
-                </span>
+                <span data-i18n-key={item.key}>{translate("en", item.key)}</span>
               </a>
             </li>
           ))
@@ -43,61 +54,64 @@ const navItems = [
     </nav>
 
     <div class="header-tools" aria-label="Site preferences">
-      <!-- keep everything you already have here -->
+      <details
+        class="preference-menu"
+        data-preference-menu
+        data-preference-type="language"
+      >
+        <summary>
+          <span
+            class="glyph-arrow glyph-arrow--disclosure"
+            data-arrow-glyph
+            aria-hidden="true"
+          ></span>
+          <span class="preference-value" data-current-language>EN</span>
+        </summary>
+        <div class="preference-options" role="group" aria-label="Language">
+          {
+            localeCodes.map((locale) => (
+              <button type="button" data-language-option={locale}>
+                {localeInfo[locale].name}
+              </button>
+            ))
+          }
+        </div>
+      </details>
+
+      <details
+        class="preference-menu font-size-menu"
+        data-preference-menu
+        data-preference-type="font-size"
+      >
+        <summary>
+          <span
+            class="glyph-arrow glyph-arrow--disclosure"
+            data-arrow-glyph
+            aria-hidden="true"
+          ></span>
+          <span class="preference-value" data-current-font-size>M</span>
+        </summary>
+        <div class="preference-options font-size-options" role="group" aria-label="Font size">
+          <button type="button" data-font-size-option="s" aria-label="Small text">S</button>
+          <button type="button" data-font-size-option="m" aria-label="Medium text">M</button>
+          <button type="button" data-font-size-option="l" aria-label="Large text">L</button>
+        </div>
+      </details>
+
+      <button
+        type="button"
+        class="theme-toggle"
+        data-theme-toggle
+        aria-label="Switch to dark theme"
+        title="Switch to dark theme"
+      >
+        <span
+          class="theme-glyph"
+          data-theme-glyph
+          aria-hidden="true"
+        ></span>
+      </button>
     </div>
-  </div>
-</header>
-
-  <div class="header-tools" aria-label="Site preferences">
-    <!--
-      三个偏好菜单共用同一套脚本和 CSS，新增选项时保持 data-* 命名一致。
-      All preference menus share one script and style system; keep data-* names consistent.
-    -->
-    <details
-      class="preference-menu"
-      data-preference-menu
-      data-preference-type="language"
-    >
-      <summary>
-        <span class="disclosure-triangle" aria-hidden="true"></span>
-        <span data-current-language>EN</span>
-      </summary>
-      <div class="preference-options" role="group" aria-label="Language">
-        <button type="button" data-language-option="en">English</button>
-        <button type="button" data-language-option="zh">中文</button>
-      </div>
-    </details>
-
-    <details
-      class="preference-menu"
-      data-preference-menu
-      data-preference-type="theme"
-    >
-      <summary>
-        <span class="disclosure-triangle" aria-hidden="true"></span>
-        <span data-current-theme>Light</span>
-      </summary>
-      <div class="preference-options" role="group" aria-label="Color theme">
-        <button type="button" data-theme-option="light">Light</button>
-        <button type="button" data-theme-option="dark">Dark</button>
-      </div>
-    </details>
-
-    <details
-      class="preference-menu"
-      data-preference-menu
-      data-preference-type="font-size"
-    >
-      <summary>
-        <span class="disclosure-triangle" aria-hidden="true"></span>
-        <span data-current-font-size>M</span>
-      </summary>
-      <div class="preference-options" role="group" aria-label="Font size">
-        <button type="button" data-font-size-option="s">S</button>
-        <button type="button" data-font-size-option="m">M</button>
-        <button type="button" data-font-size-option="l">L</button>
-      </div>
-    </details>
   </div>
 </header>
 

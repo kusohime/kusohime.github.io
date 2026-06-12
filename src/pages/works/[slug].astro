@@ -5,6 +5,12 @@
 // Caveat: The public URL uses the frontmatter slug, not the folder name.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
+import {
+  formatDate,
+  formatDuration,
+  translate,
+} from "../../config/locales";
 
 export async function getStaticPaths() {
   const works = await getCollection("works");
@@ -25,10 +31,11 @@ const {
   title,
   subtitle,
   year,
-  category,
   instrumentation,
   duration,
-  collaborators,
+  dedication,
+  commission,
+  credits,
   premiere,
   recordingUrl,
   scoreUrl,
@@ -43,61 +50,51 @@ const {
     class="detail-page work-detail"
     data-source-file={`content/works/${work.id}/index.md`}
   >
-    <header class="detail-header">
-      <h1>{title}</h1>
+    <header class="detail-header work-detail-header">
+      <div class="work-title-line">
+        <h1>{title}</h1>
+        <p class="work-year">
+          <time datetime={String(year)} data-i18n-date={String(year)}>
+            {formatDate(year, "en")}
+          </time>
+        </p>
+      </div>
       {subtitle && <p>{subtitle}</p>}
-      <p>{year}</p>
+      <p class="work-facts">
+        <span><LocalizedText value={instrumentation} /></span>
+        <span
+          data-i18n-duration
+          data-duration-minutes={duration.minutes}
+          data-duration-continuous={String(duration.continuous)}
+          data-duration-approximate={String(duration.approximate)}
+        >
+          {formatDuration(duration, "en")}
+        </span>
+      </p>
+
+      {
+        (recordingUrl || scoreUrl) && (
+          <nav class="resource-links" aria-label="Work resources">
+            <ul>
+              {recordingUrl && (
+                <li>
+                  <a href={recordingUrl} data-i18n-key="resource.recording">
+                    {translate("en", "resource.recording")}
+                  </a>
+                </li>
+              )}
+              {scoreUrl && (
+                <li>
+                  <a href={scoreUrl} data-i18n-key="resource.score">
+                    {translate("en", "resource.score")}
+                  </a>
+                </li>
+              )}
+            </ul>
+          </nav>
+        )
+      }
     </header>
-
-    <dl class="metadata-list">
-      <div>
-        <dt>Category</dt>
-        <dd>{category}</dd>
-      </div>
-      <div>
-        <dt>Instrumentation</dt>
-        <dd>{instrumentation}</dd>
-      </div>
-      <div>
-        <dt>Duration</dt>
-        <dd>{duration}</dd>
-      </div>
-      {
-        collaborators && (
-          <div>
-            <dt>Collaborators</dt>
-            <dd>
-              <ul>
-                {collaborators.map((collaborator) => <li>{collaborator}</li>)}
-              </ul>
-            </dd>
-          </div>
-        )
-      }
-      {
-        premiere && (
-          <div>
-            <dt>Premiere</dt>
-            <dd>{premiere}</dd>
-          </div>
-        )
-      }
-    </dl>
-
-    {
-      (recordingUrl || scoreUrl) && (
-        <nav class="resource-links" aria-label="Work resources">
-          <ul>
-            {recordingUrl && (
-              <li><a href={recordingUrl}>Recording</a></li>
-            )}
-            {scoreUrl && (
-              <li><a href={scoreUrl}>Score</a></li>
-            )}
-          </ul>
-        </nav>
-      )
-    }
 
     <figure class="media-placeholder">
       {
@@ -116,8 +113,87 @@ const {
       <Content />
     </div>
 
+    {
+      (dedication || commission || credits || premiere) && (
+        <footer class="work-credits">
+          {dedication && (
+            <p>
+              <em>
+                <span data-i18n-key="metadata.dedication">
+                  {translate("en", "metadata.dedication")}
+                </span>
+                <span data-i18n-key="metadata.labelSeparator">
+                  {translate("en", "metadata.labelSeparator")}
+                </span>
+                <LocalizedText value={dedication} />
+              </em>
+            </p>
+          )}
+          {commission && (
+            <p>
+              <em>
+                <span data-i18n-key="metadata.commission">
+                  {translate("en", "metadata.commission")}
+                </span>
+                <span data-i18n-key="metadata.labelSeparator">
+                  {translate("en", "metadata.labelSeparator")}
+                </span>
+                <LocalizedText value={commission} />
+              </em>
+            </p>
+          )}
+          {credits?.map((credit) => (
+            <p>
+              <em>
+                <span data-i18n-key="metadata.credits">
+                  {translate("en", "metadata.credits")}
+                </span>
+                <span data-i18n-key="metadata.labelSeparator">
+                  {translate("en", "metadata.labelSeparator")}
+                </span>
+                <LocalizedText value={credit} />
+              </em>
+            </p>
+          ))}
+          {premiere && (
+            <p>
+              <em>
+                <span data-i18n-key="metadata.premiere">
+                  {translate("en", "metadata.premiere")}
+                </span>
+                <span data-i18n-key="metadata.labelSeparator">
+                  {translate("en", "metadata.labelSeparator")}
+                </span>
+                <LocalizedText value={premiere.details} />
+                {premiere.date && (
+                  <>
+                    <span class="metadata-divider" aria-hidden="true"></span>
+                    <time
+                      datetime={String(premiere.date)}
+                      data-i18n-date={String(premiere.date)}
+                    >
+                      {formatDate(premiere.date, "en")}
+                    </time>
+                  </>
+                )}
+              </em>
+            </p>
+          )}
+        </footer>
+      )
+    }
+
     <p class="back-link">
-      <a href="/works/"><span class="back-triangle" aria-hidden="true"></span>Back to Works</a>
+      <a href="/works/">
+        <span
+          class="glyph-arrow glyph-arrow--back"
+          data-arrow-glyph
+          aria-hidden="true"
+        ></span>
+        <span data-i18n-key="common.backWorks">
+          {translate("en", "common.backWorks")}
+        </span>
+      </a>
     </p>
   </article>
 </BaseLayout>

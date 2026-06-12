@@ -1,14 +1,19 @@
 ---
 // 中文：按文本类型整理并列出全部文章。
 // English: Groups and lists all writings by type.
-// Caveat / 注意：类型与显示顺序来自 data/contentTaxonomy.ts。
-// Caveat: Types and their display order come from data/contentTaxonomy.ts.
+// Caveat / 注意：类型与显示顺序来自 config/contentTaxonomy.ts。
+// Caveat: Types and their display order come from config/contentTaxonomy.ts.
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
-  writingTypeHeadings,
+  toAnchor,
   writingTypes,
-} from "../../data/contentTaxonomy";
+} from "../../config/contentTaxonomy";
+import {
+  formatDate,
+  translate,
+  writingTypeLabel,
+} from "../../config/locales";
 
 const writings = (await getCollection("writings")).sort(
   (a, b) => a.data.order - b.data.order,
@@ -16,7 +21,7 @@ const writings = (await getCollection("writings")).sort(
 
 const writingGroups = writingTypes.map((type) => ({
   type,
-  heading: writingTypeHeadings[type],
+  heading: writingTypeLabel(type, "en", "plural"),
   writings: writings.filter((writing) => writing.data.type === type),
 }));
 ---
@@ -29,25 +34,58 @@ const writingGroups = writingTypes.map((type) => ({
     class="index-page writings-index"
     data-source-file="src/pages/writings/index.astro"
   >
-    <header class="page-introduction">
-      <h1 data-i18n-en="Writings" data-i18n-zh="文字">Writings</h1>
-    </header>
+    <h1
+      class="visually-hidden"
+      data-i18n-key="nav.writings"
+    >
+      {translate("en", "nav.writings")}
+    </h1>
 
-    <div class="writing-groups">
+    <nav class="catalog-rail" aria-label="Browse writings by type">
+      <ul>
+        {
+          writingGroups.map(({ type, heading, writings: groupedWritings }) => (
+            <li>
+              <a href={`#${toAnchor(heading)}`}>
+                <span
+                  data-i18n-writing-type={type}
+                  data-writing-type-form="plural"
+                >
+                  {heading}
+                </span>{" "}
+                ({groupedWritings.length})
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="catalog-groups writing-groups">
       {
         writingGroups.map(({ type, heading, writings: groupedWritings }) => (
           <section
             class="writing-group"
+            id={toAnchor(heading)}
             aria-labelledby={`writing-type-${type.toLowerCase().replaceAll(" ", "-")}`}
           >
-            <h2 id={`writing-type-${type.toLowerCase().replaceAll(" ", "-")}`}>
+            <h2
+              id={`writing-type-${type.toLowerCase().replaceAll(" ", "-")}`}
+              data-i18n-writing-type={type}
+              data-writing-type-form="plural"
+            >
               {heading}
             </h2>
             {groupedWritings.length > 0 ? (
-              <ul class="dated-list">
+              <ul class="catalog-list dated-list">
                 {groupedWritings.map((writing) => (
                   <li data-source-file={`content/writings/${writing.id}/index.md`}>
-                    <time>{writing.data.date}</time>
+                    <time
+                      datetime={String(writing.data.date)}
+                      data-i18n-date={String(writing.data.date)}
+                    >
+                      {formatDate(writing.data.date, "en")}
+                    </time>
                     <a href={`/writings/${writing.data.slug}/`}>
                       {writing.data.title}
                     </a>
@@ -55,7 +93,9 @@ const writingGroups = writingTypes.map((type) => ({
                 ))}
               </ul>
             ) : (
-              <p>No entries yet.</p>
+              <p data-i18n-key="common.noEntries">
+                {translate("en", "common.noEntries")}
+              </p>
             )}
           </section>
         ))

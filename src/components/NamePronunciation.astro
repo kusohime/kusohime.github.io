@@ -1,0 +1,82 @@
+---
+// 中文：統一顯示姓名，並在游標停留或鍵盤聚焦時提供普通話讀音。
+// English: Renders the name with a shared Mandarin pronunciation tooltip.
+interface Props {
+  focusable?: boolean;
+  translate?: boolean;
+}
+
+const { focusable = true, translate = false } = Astro.props;
+const pronunciation = "崔浥新 · Cuī Yìxīn · [tsʰweɪ˥ i˥˩ ɕin˥]";
+---
+
+<span
+  class="name-pronunciation"
+  data-pronunciation={pronunciation}
+  data-i18n-en={translate ? "Yixin Cui" : undefined}
+  data-i18n-zh={translate ? "崔浥新" : undefined}
+  data-i18n-de={translate ? "Yixin Cui" : undefined}
+  data-i18n-fr={translate ? "Yixin Cui" : undefined}
+  data-i18n-ja={translate ? "Yixin Cui" : undefined}
+  tabindex={focusable ? "0" : undefined}
+  aria-label="Yixin Cui, 崔浥新, pronounced Cuī Yìxīn"
+>Yixin Cui</span>
+
+<style>
+  .name-pronunciation {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+  }
+
+  .name-pronunciation::after {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    width: max-content;
+    max-width: calc(100vw - 2.5rem);
+    padding: 0.25rem 0.4rem;
+    border: 1px solid var(--theme-color, #c81e1e);
+    background: var(--color-background, #fff);
+    color: var(--color-text, #000);
+    content: attr(data-pronunciation);
+    font-family: var(--font-body, serif);
+    font-size: 0.75rem;
+    font-weight: normal;
+    line-height: 1.25;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.15rem);
+    white-space: nowrap;
+  }
+
+  :global(:root[data-motion-interface="true"]) .name-pronunciation::after {
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease;
+  }
+
+  .name-pronunciation:hover::after,
+  .name-pronunciation:focus-visible::after,
+  :global(a:focus-visible) .name-pronunciation::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .name-pronunciation::after {
+      transition: none;
+    }
+  }
+
+  /* 中文：中文介面直接顯示「崔浥新」，不需要讀音提示。 */
+  /* English: The Chinese UI shows 崔浥新 directly, so the pronunciation tooltip is unnecessary. */
+  :global(:root:lang(zh-Hant-TW)) .name-pronunciation {
+    cursor: inherit;
+  }
+
+  :global(:root:lang(zh-Hant-TW)) .name-pronunciation::after {
+    content: none;
+  }
+</style>

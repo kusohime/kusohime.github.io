@@ -1,23 +1,23 @@
 ---
 layout: ../../../layouts/AdminGuideLayout.astro
-title: "Content Library / 内容资料库"
-description: "How to maintain works, writings, and writing chapters without editing application code. / 如何在不修改程序代码的情况下维护作品、文章与章节。"
+title: "Content Library / 內容資料庫"
+description: "How to maintain works, writings, and writing chapters without editing application code. / 如何在不修改程式程式碼的情況下維護作品、文章與章節。"
 slug: "content-library"
 ---
 
 <!--
-  中文：面向非程序员的内容资料库说明，对应根目录 content/README.md。
+  中文：面向非程式設計師的內容資料庫說明，對應根目錄 content/README.md。
   English: Non-programmer guide to the content library, corresponding to content/README.md.
-  Caveat / 注意：字段名称必须与示例一致，否则 Astro 检查会报错。
+  Caveat / 注意：欄位名稱必須與示例一致，否則 Astro 檢查會報錯。
   Caveat: Field names must match the examples or Astro validation will report an error.
 -->
 
-## The simple rule / 最简单的规则
+## The simple rule / 最簡單的規則
 
 Ordinary content lives in the top-level `content` folder. You normally do not
 need to enter `src` when adding a work or writing.
 
-日常内容都放在项目最外层的 `content` 文件夹。新增作品或文章时，通常不需要进入
+日常內容都放在專案最外層的 `content` 資料夾。新增作品或文章時，通常不需要進入
 `src`。
 
 ```text
@@ -36,11 +36,11 @@ content/
 ```
 
 - One folder equals one public work or writing.
-- 一个文件夹就是一个公开作品或一篇文章。
+- 一個資料夾就是一個公開作品或一篇文章。
 - `index.md` is always the main file.
-- `index.md` 永远是主文件。
+- `index.md` 永遠是主檔案。
 - Only create `chapters/` when a writing actually has separate chapters.
-- 只有文章确实分章时才建立 `chapters/`。
+- 只有文章確實分章時才建立 `chapters/`。
 
 ## Add a work / 新增作品
 
@@ -49,30 +49,51 @@ content/
 3. Open `index.md` and replace its frontmatter and body.
 4. Give it a unique `slug`; this becomes `/works/your-slug/`.
 
-1. 复制 `content/works/` 中现有的作品文件夹。
-2. 用简短的小写英文和连字符重命名文件夹。
-3. 打开 `index.md`，替换顶部资料和正文。
-4. 设置唯一的 `slug`；它会成为 `/works/your-slug/`。
+1. 複製 `content/works/` 中現有的作品資料夾。
+2. 用簡短的小寫英文和連字元重新命名資料夾。
+3. 開啟 `index.md`，替換頂部資料和正文。
+4. 設定唯一的 `slug`；它會成為 `/works/your-slug/`。
 
 ```yaml
 ---
 title: "Work title"
 year: 2026
 category: "Chamber"
-instrumentation: "Violin and piano"
-duration: "10 minutes"
+instrumentation:
+  en: "Violin and piano"
+  zh: "小提琴與鋼琴"
+  de: "Violine und Klavier"
+  fr: "Violon et piano"
+  ja: "ヴァイオリンとピアノ"
+duration:
+  minutes: 10
+  continuous: false
+  approximate: false
 description: "Short description used on lists and in page metadata."
 slug: "work-title"
 ---
 ```
 
-Optional work fields / 作品可选字段:
+Optional work fields / 作品可選欄位:
 
 ```yaml
 subtitle: "Optional subtitle"
-collaborators:
-  - "Name and role"
-premiere: "Premiere information"
+dedication:
+  en: "For Name"
+  zh: "獻給某人"
+  ja: "某氏に捧ぐ"
+commission:
+  en: "Commissioned by Organization"
+credits:
+  - en: "Performer Name, instrument"
+    zh: "演出者姓名，樂器"
+    ja: "演奏者名、楽器"
+premiere:
+  date: "2026-06-11"
+  details:
+    en: "First performed by Name at Venue, City"
+    zh: "由某人於某地首演"
+    ja: "某氏により会場名で初演"
 recordingUrl: "https://example.com/recording"
 scoreUrl: "https://example.com/score"
 image: "/images/example.jpg"
@@ -80,17 +101,26 @@ imageAlt: "Description of the image"
 order: 1
 ```
 
-Valid categories / 可用分类:
+Valid categories / 可用分類:
 
 `Solo`, `Chamber`, `Orchestral`, `Vocal / Choral`, `Music Theatre`, `Other`
 
-## Add a one-page writing / 新增单篇文章
+Keep those category values in English; their visible names are translated
+automatically. Localized fields use `en`, `zh`, `de`, `fr`, and `ja`, with
+English as the required fallback. Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD` for
+dates so each language receives its own date format.
+
+分類值請保留上述英文拼法，公開名稱會自動翻譯。本地化欄位使用 `en`、`zh`、
+`de`、`fr`、`ja`，其中英文是必填的備援文字。日期請使用 `YYYY`、`YYYY-MM`
+或 `YYYY-MM-DD`，網站便會依語言顯示適當格式。
+
+## Add a one-page writing / 新增單篇文章
 
 Copy a writing folder that contains only `index.md`, rename the folder, and
 edit the file. Do not create a `chapters` folder.
 
-复制一个只有 `index.md` 的文章文件夹，重命名后编辑该文件。不要建立
-`chapters` 文件夹。
+複製一個只有 `index.md` 的文章資料夾，重新命名後編輯該檔案。不要建立
+`chapters` 資料夾。
 
 ```yaml
 ---
@@ -104,10 +134,17 @@ order: 1
 ---
 ```
 
-Valid types / 可用类型:
+Valid types / 可用型別:
 
 `Translation`, `Essay`, `Fiction`, `Blog`, `Poem`, `Program Note`, `Review`,
 `Other`
+
+Shared category names, writing types, language labels, and interface text live
+in `src/config/locales.ts`. Edit that one file when adding or changing a
+translation.
+
+共用分類名稱、文章類型、語言名稱與介面文字集中在 `src/config/locales.ts`。
+新增或修改翻譯時，只需編輯該檔案。
 
 ## Add a chaptered writing / 新增分章文章
 
@@ -115,15 +152,15 @@ Keep the title, metadata, brief, and optional introduction in `index.md`.
 Create a `chapters` folder beside it and place one Markdown file inside for
 each chapter. The website generates the contents list automatically.
 
-标题、资料、简介和可选导言放在 `index.md`。在旁边建立 `chapters` 文件夹，
-每章使用一个 Markdown 文件。网站会自动生成目录。
+標題、資料、簡介和可選導言放在 `index.md`。在旁邊建立 `chapters` 資料夾，
+每章使用一個 Markdown 檔案。網站會自動生成目錄。
 
 Use filenames such as `01-introduction.md`, `02-listening.md`, and
 `03-conclusion.md`. The number keeps the files easy to browse. The `order`
 field controls the final website order.
 
-建议使用 `01-introduction.md`、`02-listening.md`、`03-conclusion.md`
-这样的文件名。数字方便浏览；`order` 字段决定网页中的最终顺序。
+建議使用 `01-introduction.md`、`02-listening.md`、`03-conclusion.md`
+這樣的檔名。數字方便瀏覽；`order` 欄位決定網頁中的最終順序。
 
 ```yaml
 ---
@@ -136,39 +173,39 @@ order: 1
 
 The parent writing is inferred from its folder. Do not add `writingSlug`.
 
-父文章由所在文件夹自动判断；不要添加 `writingSlug`。
+父文章由所在資料夾自動判斷；不要新增 `writingSlug`。
 
-## Images / 图片
+## Images / 圖片
 
 Place website images in `public/images/`. In Markdown, `/images/name.jpg`
 refers to `public/images/name.jpg`. Use the Studio's **Images** tab to browse
 images, copy a URL, or insert Markdown.
 
-网站图片放在 `public/images/`。Markdown 中的 `/images/name.jpg` 对应
-`public/images/name.jpg`。可以在管理器的 **Images** 标签中浏览、复制网址或
+網站圖片放在 `public/images/`。Markdown 中的 `/images/name.jpg` 對應
+`public/images/name.jpg`。可以在管理器的 **Images** 標籤中瀏覽、複製網址或
 插入 Markdown。
 
 Always add meaningful alternative text. A caption and alternative text do
 different jobs: the caption is visible context; alternative text describes the
 image for people who cannot see it.
 
-一定要写有意义的替代文字。图片说明是可见的语境；替代文字则为无法看到图片的
-读者描述图像，两者作用不同。
+一定要寫有意義的替代文字。圖片說明是可見的語境；替代文字則為無法看到圖片的
+讀者描述影象，兩者作用不同。
 
-## Remove or rename content / 删除或重命名内容
+## Remove or rename content / 刪除或重新命名內容
 
 Renaming a folder or changing a `slug` changes its address. Existing external
 links may stop working. Before deleting a folder, verify that no public page,
 image, or internal link still depends on it.
 
-重命名文件夹或修改 `slug` 会改变网址，已有外部链接可能失效。删除文件夹前，
-确认没有公开页面、图片或内部链接仍然依赖它。
+重新命名資料夾或修改 `slug` 會改變網址，已有外部連結可能失效。刪除資料夾前，
+確認沒有公開頁面、圖片或內部連結仍然依賴它。
 
-## Validate changes / 检查修改
+## Validate changes / 檢查修改
 
 Watch the preview after saving. Before publishing, run `npm run check` and
 `npm run build`. A frontmatter typo, unsupported category, duplicate slug, or
 broken import should appear there.
 
-保存后观察预览。发布前运行 `npm run check` 和 `npm run build`。顶部资料拼写
-错误、不支持的分类、重复网址或损坏的引用通常会在这里显示。
+儲存後觀察預覽。釋出前執行 `npm run check` 和 `npm run build`。頂部資料拼寫
+錯誤、不支援的分類、重複網址或損壞的引用通常會在這裡顯示。

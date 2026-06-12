@@ -1,11 +1,16 @@
 ---
 // 中文：按类别整理并列出全部作品。
 // English: Groups and lists all works by category.
-// Caveat / 注意：类别顺序来自 data/contentTaxonomy.ts。
-// Caveat: Category order comes from data/contentTaxonomy.ts.
+// Caveat / 注意：类别顺序来自 config/contentTaxonomy.ts。
+// Caveat: Category order comes from config/contentTaxonomy.ts.
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { toAnchor, workCategories } from "../../data/contentTaxonomy";
+import { toAnchor, workCategories } from "../../config/contentTaxonomy";
+import {
+  formatDate,
+  translate,
+  workCategoryLabel,
+} from "../../config/locales";
 
 const works = (await getCollection("works")).sort(
   (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
@@ -25,22 +30,23 @@ const worksByCategory = workCategories.map((category) => ({
     class="index-page works-index"
     data-source-file="src/pages/works/index.astro"
   >
-    <header class="page-introduction">
-      <h1>Works</h1>
-      <p>
-        Selected compositions for soloists, voices, ensembles, orchestra,
-        theatre, and other formats.
-      </p>
-    </header>
+    <h1
+      class="visually-hidden"
+      data-i18n-key="nav.works"
+    >
+      {translate("en", "nav.works")}
+    </h1>
 
-    <nav class="category-navigation" aria-label="Browse works by category">
-      <p>Browse by category:</p>
+    <nav class="catalog-rail" aria-label="Browse works by category">
       <ul>
         {
           worksByCategory.map(({ category, works: categoryWorks }) => (
             <li>
               <a href={`#${toAnchor(category)}`}>
-                {category} ({categoryWorks.length})
+                <span data-i18n-work-category={category}>
+                  {workCategoryLabel(category, "en")}
+                </span>{" "}
+                ({categoryWorks.length})
               </a>
             </li>
           ))
@@ -48,7 +54,7 @@ const worksByCategory = workCategories.map((category) => ({
       </ul>
     </nav>
 
-    <div class="category-groups">
+    <div class="catalog-groups category-groups">
       {
         worksByCategory.map(({ category, works: categoryWorks }) => (
           <section
@@ -56,32 +62,44 @@ const worksByCategory = workCategories.map((category) => ({
             id={toAnchor(category)}
             aria-labelledby={`${toAnchor(category)}-heading`}
           >
-            <h2 id={`${toAnchor(category)}-heading`}>{category}</h2>
+            <h2
+              id={`${toAnchor(category)}-heading`}
+              data-i18n-work-category={category}
+            >
+              {workCategoryLabel(category, "en")}
+            </h2>
             {categoryWorks.length > 0 ? (
-              <ol class="entry-list works-list">
+              <ol class="catalog-list entry-list works-list dated-list">
                 {categoryWorks.map((work) => (
                   <li>
+                    <time
+                      datetime={String(work.data.year)}
+                      data-i18n-date={String(work.data.year)}
+                    >
+                      {formatDate(work.data.year, "en")}
+                    </time>
                     <article
                       class="entry-summary work-summary"
                       data-source-file={`content/works/${work.id}/index.md`}
                     >
-                      <h3>
-                        <a href={`/works/${work.data.slug}/`}>
-                          {work.data.title}
-                        </a>
-                      </h3>
-                      {work.data.subtitle && <p>{work.data.subtitle}</p>}
-                      <p>
-                        {work.data.year}. {work.data.instrumentation}.{" "}
-                        {work.data.duration}.
-                      </p>
-                      <p>{work.data.description}</p>
+                      <div class="catalog-entry-line">
+                        <h3>
+                          <a href={`/works/${work.data.slug}/`}>
+                            {work.data.title}
+                          </a>
+                        </h3>
+                        {work.data.subtitle && (
+                          <p class="catalog-entry-subtitle">{work.data.subtitle}</p>
+                        )}
+                      </div>
                     </article>
                   </li>
                 ))}
               </ol>
             ) : (
-              <p>No works in this category yet.</p>
+              <p data-i18n-key="common.noWorks">
+                {translate("en", "common.noWorks")}
+              </p>
             )}
           </section>
         ))

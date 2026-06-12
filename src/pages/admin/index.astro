@@ -1,19 +1,20 @@
 ---
-// 中文：本地 Website Studio 的界面结构；功能逻辑在 scripts/admin.ts。
+// 中文：本地 Website Studio 的介面結構；功能邏輯在 scripts/admin.ts。
 // English: Markup for the local Website Studio; behavior lives in scripts/admin.ts.
-// Caveat / 注意：这是本地工具，不是部署后的线上 CMS。
+// Caveat / 注意：這是本地工具，不是部署後的線上 CMS。
 // Caveat: This is a local tool, not a deployed online CMS.
+import NamePronunciation from "../../components/NamePronunciation.astro";
 import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
 <AdminLayout title="Website Studio | Yixin Cui">
   <!--
-    本地管理入口：通过后只在当前浏览器标签页内记住口令。
+    本地管理入口：透過後只在當前瀏覽器標籤頁內記住口令。
     Local admin gate: the passcode is remembered only for this browser tab.
   -->
   <section class="admin-gate" data-admin-gate>
     <form class="gate-card" data-passcode-form>
-      <p class="gate-kicker">Yixin Cui</p>
+      <p class="gate-kicker"><NamePronunciation /></p>
       <h1>Website Studio</h1>
       <label>
         Passcode
@@ -32,11 +33,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
   <main class="studio" data-admin-studio hidden>
     <header class="studio-toolbar">
-      <div class="studio-identity">
-        <h1>Website Studio</h1>
-        <p>Local editing workspace for content, code, design, and images.</p>
-      </div>
-
       <div class="toolbar-actions">
         <button type="button" data-open-folder>Connect project</button>
         <button type="button" data-save-file disabled>Save</button>
@@ -51,19 +47,33 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         <button type="button" data-lock-studio>Lock</button>
       </div>
 
+      <p class="studio-status" data-status>
+        Connecting to the local project…
+      </p>
+
       <div class="studio-links">
         <a href="/admin/guide/" target="studio-preview">
           Admin guide / 管理指南
         </a>
       </div>
-
-      <p class="studio-status" data-status>
-        Connecting to the local project…
-      </p>
     </header>
 
-    <section class="studio-workspace" aria-label="Website editing workspace">
-      <aside class="studio-sidebar">
+    <section
+      class="studio-workspace"
+      aria-label="Website editing workspace"
+      data-studio-workspace
+    >
+      <aside class="studio-sidebar" data-studio-pane="sidebar">
+        <header class="pane-heading pane-title">
+          <strong>Project</strong>
+          <button
+            type="button"
+            class="pane-toggle"
+            data-pane-toggle="sidebar"
+            aria-label="Collapse project pane"
+            title="Collapse project pane"
+          >-</button>
+        </header>
         <div class="sidebar-tabs" role="tablist" aria-label="Project browser">
           <button
             type="button"
@@ -100,7 +110,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         </div>
 
         <!--
-          文件树按目录分组；输入框只筛选文件名和路径。
+          檔案樹按目錄分組；輸入框只篩選檔名和路徑。
           The directory tree groups files by folder; this filter searches paths and names.
         -->
         <section class="sidebar-panel" data-sidebar-panel="files">
@@ -123,7 +133,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         </section>
 
         <!--
-          Find 会在整个项目的可编辑文本文件中查找内容。
+          Find 會在整個專案的可編輯文字檔案中查詢內容。
           Find searches the contents of every editable text file in the project.
         -->
         <section class="sidebar-panel" data-sidebar-panel="find" hidden>
@@ -144,164 +154,116 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <ol class="search-results" data-search-results></ol>
         </section>
 
-        <!--
-          设计面板只编辑 global.css 顶部已记录的变量。
-          The Design dashboard edits only the documented variables near the top of global.css.
-        -->
         <section class="sidebar-panel design-panel" data-sidebar-panel="design" hidden>
-          <header class="panel-introduction">
-            <h2>Design / 设计</h2>
-            <p>Changes save immediately to the public site.</p>
-            <div class="design-mode" aria-label="Design editing mode">
-              <button type="button" aria-pressed="true">
-                Dashboard / 面板
-              </button>
-              <button type="button" data-open-theme-css disabled>
-                Manual CSS / 手动 CSS
-              </button>
-            </div>
-          </header>
-
-          <form class="design-dashboard" data-design-dashboard>
+          <button type="button" class="css-file-button" data-open-theme-css disabled>
+            CSS
+          </button>
+          <fieldset class="motion-settings" data-motion-settings disabled>
+            <legend>Animations</legend>
             <label>
-              Theme color / 主题色
-              <span class="color-control">
-                <input type="color" value="#c81e1e" data-theme-color />
-                <output data-theme-color-output>#c81e1e</output>
-              </span>
+              <input type="checkbox" data-motion-setting="languageFlap" />
+              Language glyph flaps
             </label>
-
             <label>
-              Font / 字体
-              <select data-design-font>
-                <option value="system-sans">System Sans / 系统无衬线</option>
-                <option value="humanist-sans">Source Sans 3</option>
-                <option value="system-serif">Times / 系统衬线</option>
-                <option value="garamond">EB Garamond</option>
-                <option value="typewriter">Classic Typewriter / 经典打字机</option>
-                <option value="modern-mono">IBM Plex Mono</option>
-              </select>
+              <input type="checkbox" data-motion-setting="themeFade" />
+              Theme dim/fade
             </label>
-
             <label>
-              Base text size / 基础字号
+              <input type="checkbox" data-motion-setting="fontSizeScale" />
+              Font-size swell/shrink
+            </label>
+            <label>
+              <input type="checkbox" data-motion-setting="glyphRotation" />
+              Arrow and sun/moon rotation
+            </label>
+            <label>
+              <input type="checkbox" data-motion-setting="interfaceMotion" />
+              Tooltip and smooth-scroll motion
+            </label>
+            <p data-motion-settings-status>All animations are off.</p>
+          </fieldset>
+          <fieldset class="typography-settings" data-typography-settings disabled>
+            <legend>East Asian typography</legend>
+            <label for="cjk-letter-spacing">
+              Character spacing
               <span class="range-control">
                 <input
+                  id="cjk-letter-spacing"
                   type="range"
-                  min="14"
-                  max="22"
-                  step="1"
-                  value="17"
-                  data-design-font-size
+                  min="-0.08"
+                  max="0.08"
+                  step="0.005"
+                  value="-0.03"
+                  data-cjk-letter-spacing
                 />
-                <output data-design-font-size-output>17px</output>
+                <output for="cjk-letter-spacing" data-cjk-letter-spacing-output>
+                  -0.030em
+                </output>
               </span>
             </label>
-
-            <label>
-              Global spacing / 全局间距
-              <select data-design-spacing>
-                <option value="compact">Compact / 紧凑</option>
-                <option value="standard" selected>Standard / 标准</option>
-                <option value="open">Open / 舒展</option>
-                <option value="generous">Generous / 宽松</option>
-              </select>
-            </label>
-
-            <label>
-              Line height / 行距
-              <span class="range-control">
-                <input
-                  type="range"
-                  min="1.3"
-                  max="1.9"
-                  step="0.05"
-                  value="1.55"
-                  data-design-line-height
-                />
-                <output data-design-line-height-output>1.55</output>
-              </span>
-            </label>
-
-            <label>
-              Paragraph spacing / 段落间距
-              <span class="range-control">
-                <input
-                  type="range"
-                  min="0"
-                  max="2"
-                  step="0.1"
-                  value="0"
-                  data-design-paragraph-spacing
-                />
-                <output data-design-paragraph-spacing-output>0rem</output>
-              </span>
-            </label>
-
-            <label>
-              Reading width / 阅读宽度
-              <select data-design-width>
-                <option value="narrow">Narrow / 窄</option>
-                <option value="standard" selected>Standard / 标准</option>
-                <option value="wide">Wide / 宽</option>
-              </select>
-            </label>
-
-            <label class="design-check">
-              <input type="checkbox" data-design-indent checked />
-              Paragraph indentation / 段落首行缩进
-            </label>
-
-            <fieldset class="design-presets">
-              <legend>Presets / 预设</legend>
-              <label>
-                Slot / 槽位
-                <select data-design-preset-slot>
-                  <option value="1">Preset 1 / 预设 1</option>
-                  <option value="2">Preset 2 / 预设 2</option>
-                  <option value="3">Preset 3 / 预设 3</option>
-                </select>
-              </label>
-              <p data-design-preset-status>Preset 1 is empty. / 预设 1 为空。</p>
-              <div>
-                <button type="button" data-design-preset-save>Save / 保存</button>
-                <button type="button" data-design-preset-apply>Apply / 应用</button>
-                <button type="button" data-design-preset-clear>Clear / 清除</button>
-              </div>
-            </fieldset>
-
-            <div class="design-actions">
-              <button type="button" data-design-reset>
-                Reset dashboard defaults / 恢复面板默认值
-              </button>
-            </div>
-          </form>
+            <p>Applies when the site is shown in Traditional Chinese or Japanese.</p>
+          </fieldset>
         </section>
       </aside>
 
+      <div
+        class="pane-resizer"
+        role="separator"
+        aria-label="Resize project and code panes"
+        aria-orientation="vertical"
+        tabindex="0"
+        data-pane-resizer="sidebar"
+      ></div>
+
       <!--
-        CodeMirror 自己滚动；页面不会随着长文件继续向下增长。
+        CodeMirror 自己滾動；頁面不會隨著長檔案繼續向下增長。
         CodeMirror owns the scrolling, so long files do not extend the whole page.
       -->
-      <section class="studio-editor-pane" aria-label="Code editor">
+      <section
+        class="studio-editor-pane"
+        aria-label="Code editor"
+        data-studio-pane="editor"
+      >
         <header class="pane-heading editor-heading">
           <div class="editor-file-state">
             <strong data-current-file>No file selected</strong>
             <span data-dirty-state></span>
           </div>
-          <label class="editor-option">
-            <input type="checkbox" data-line-wrap />
-            Wrap lines
-          </label>
+          <div class="pane-actions">
+            <label class="editor-option">
+              <input type="checkbox" data-line-wrap />
+              Wrap lines
+            </label>
+            <button
+              type="button"
+              class="pane-toggle"
+              data-pane-toggle="editor"
+              aria-label="Collapse code pane"
+              title="Collapse code pane"
+            >-</button>
+          </div>
         </header>
         <div class="code-editor" data-code-editor></div>
       </section>
 
+      <div
+        class="pane-resizer"
+        role="separator"
+        aria-label="Resize code and preview panes"
+        aria-orientation="vertical"
+        tabindex="0"
+        data-pane-resizer="editor"
+      ></div>
+
       <!--
-        预览可切换为完整宽度或常见手机视口。
+        預覽可切換為完整寬度或常見手機視口。
         The preview switches between the full pane and a common phone viewport.
       -->
-      <section class="studio-preview-pane" aria-label="Website preview">
+      <section
+        class="studio-preview-pane"
+        aria-label="Website preview"
+        data-studio-pane="preview"
+      >
         <header class="pane-heading preview-controls">
           <label>
             Preview path
@@ -312,6 +274,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <label class="inspect-control">
             <input type="checkbox" data-preview-inspector />
             Inspect
+          </label>
+          <label class="inspect-control">
+            <input type="checkbox" data-preview-visual-editor />
+            Edit text
           </label>
           <div class="preview-size" aria-label="Preview size">
             <button
@@ -330,6 +296,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             </button>
           </div>
           <a href="/" target="_blank" data-open-preview>Open tab</a>
+          <button
+            type="button"
+            class="pane-toggle"
+            data-pane-toggle="preview"
+            aria-label="Collapse preview pane"
+            title="Collapse preview pane"
+          >-</button>
         </header>
         <div class="preview-stage" data-preview-stage="desktop">
           <iframe

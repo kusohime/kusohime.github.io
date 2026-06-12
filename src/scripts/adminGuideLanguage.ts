@@ -1,7 +1,7 @@
 /**
- * 中文：为管理指南的 Markdown 输出标记英文、中文和共用示例区块。
+ * 中文：為管理指南的 Markdown 輸出標記英文、中文和共用示例區塊。
  * English: Marks rendered Admin Guide Markdown as English, Chinese, or shared examples.
- * Caveat / 注意：双语标题使用 “ / ” 分隔；代码、公式、图片和表格默认两种语言都显示。
+ * Caveat / 注意：雙語標題使用 “ / ” 分隔；程式碼、公式、圖片和表格預設兩種語言都顯示。
  * Caveat: Bilingual headings use “ / ”; code, mathematics, figures, and tables remain shared.
  */
 const HAN_TEXT = /[\u3400-\u9fff]/u;
@@ -23,7 +23,7 @@ function splitBilingualLabel(element: HTMLElement) {
 
   const chineseSpan = document.createElement("span");
   chineseSpan.dataset.guideLanguage = "zh";
-  chineseSpan.lang = "zh-Hans";
+  chineseSpan.lang = "zh-Hant-TW";
   chineseSpan.hidden = true;
   chineseSpan.innerHTML = chinese;
 
@@ -51,13 +51,13 @@ export function prepareAdminGuideLanguage() {
     if (!text) return;
     element.dataset.guideLanguage = HAN_TEXT.test(text) ? "zh" : "en";
     if (element.dataset.guideLanguage === "zh") {
-      element.lang = "zh-Hans";
+      element.lang = "zh-Hant-TW";
       element.hidden = true;
     }
   });
 
   // BaseLayout restores the stored language before paint; mirror that value after marking.
-  const language = document.documentElement.lang === "zh-Hans" ? "zh" : "en";
+  const language = document.documentElement.lang === "zh-Hant-TW" ? "zh" : "en";
   guide.querySelectorAll<HTMLElement>("[data-guide-language]").forEach((element) => {
     element.hidden = element.dataset.guideLanguage !== language;
   });

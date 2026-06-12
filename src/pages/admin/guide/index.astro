@@ -1,10 +1,10 @@
 ---
-// 中文：私有管理指南的标题页与章节目录。
+// 中文：私有管理指南的標題頁與章節目錄。
 // English: Title page and chapter contents for the private Admin Guide.
-// Caveat / 注意：只从本地 Studio 进入，不加入公开网站导航。
+// Caveat / 注意：只從本地 Studio 進入，不加入公開網站導航。
 // Caveat: Enter through the local Studio; this page is absent from public navigation.
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { adminGuideChapters } from "../../../data/adminGuide";
+import { adminGuideChapters } from "../../../config/adminGuide";
 
 const bilingual = (value: string) => {
   const [en, ...zhParts] = value.split(" / ");
@@ -25,25 +25,25 @@ const bilingual = (value: string) => {
     <header class="detail-header">
       <p class="detail-kicker">
         <span data-guide-language="en">Private reference</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>私人参考</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>私人參考</span>
       </p>
       <h1>
         <span data-guide-language="en">Website Studio Admin Guide</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>网站管理指南</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>網站管理指南</span>
       </h1>
       <p data-guide-language="en">
         A practical bilingual manual for editing content, using Markdown,
         adjusting design, and understanding the project.
       </p>
-      <p data-guide-language="zh" lang="zh-Hans" hidden>
-        一份实用的双语手册，用于编辑内容、使用 Markdown、调整设计以及理解项目结构。
+      <p data-guide-language="zh" lang="zh-Hant-TW" hidden>
+        一份實用的雙語手冊，用於編輯內容、使用 Markdown、調整設計以及理解專案結構。
       </p>
     </header>
 
     <nav class="writing-contents admin-guide-contents" aria-label="Admin Guide chapters">
       <h2>
         <span data-guide-language="en">Contents</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>目录</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>目錄</span>
       </h2>
       <ol>
         {
@@ -54,9 +54,9 @@ const bilingual = (value: string) => {
               <li>
                 <a href={`/admin/guide/${chapter.slug}/`}>
                   <strong data-guide-language="en">{title.en}</strong>
-                  <strong data-guide-language="zh" lang="zh-Hans" hidden>{title.zh}</strong>
+                  <strong data-guide-language="zh" lang="zh-Hant-TW" hidden>{title.zh}</strong>
                   <span data-guide-language="en">{description.en}</span>
-                  <span data-guide-language="zh" lang="zh-Hans" hidden>{description.zh}</span>
+                  <span data-guide-language="zh" lang="zh-Hant-TW" hidden>{description.zh}</span>
                 </a>
               </li>
             );
@@ -68,31 +68,35 @@ const bilingual = (value: string) => {
     <div class="prose writing-body chicago-prose">
       <h2>
         <span data-guide-language="en">How to use this guide</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>如何使用本指南</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>如何使用本指南</span>
       </h2>
       <p data-guide-language="en">
         Keep this guide open in the preview pane while editing a file on the
         left. The first chapter handles ordinary content work, the second is a
         visual Markdown reference, and the third explains the whole website.
       </p>
-      <p data-guide-language="zh" lang="zh-Hans" hidden>
-        可以在右侧预览区打开本指南，同时在左侧编辑文件。第一章处理日常内容，
-        第二章是 Markdown 视觉参考，第三章解释整个网站的结构和维护方法。
+      <p data-guide-language="zh" lang="zh-Hant-TW" hidden>
+        可以在右側預覽區開啟本指南，同時在左側編輯檔案。第一章處理日常內容，
+        第二章是 Markdown 視覺參考，第三章解釋整個網站的結構和維護方法。
       </p>
       <p data-guide-language="en">
         The Studio and this guide are local tools. They are not a hosted CMS or
         an online security system.
       </p>
-      <p data-guide-language="zh" lang="zh-Hans" hidden>
-        管理器和本指南都是本地工具，并不是托管式 CMS，也不是线上安全系统。
+      <p data-guide-language="zh" lang="zh-Hant-TW" hidden>
+        管理器和本指南都是本地工具，並不是託管式 CMS，也不是線上安全系統。
       </p>
     </div>
 
     <p class="back-link">
       <a href="/admin/">
-        <span class="back-triangle" aria-hidden="true"></span>
+        <span
+          class="glyph-arrow glyph-arrow--back"
+          data-arrow-glyph
+          aria-hidden="true"
+        ></span>
         <span data-guide-language="en">Back to Studio</span>
-        <span data-guide-language="zh" lang="zh-Hans" hidden>返回管理器</span>
+        <span data-guide-language="zh" lang="zh-Hant-TW" hidden>返回管理器</span>
       </a>
     </p>
   </article>

@@ -7,11 +7,13 @@
 :root {
   color-scheme: light;
   --admin-accent: #cc0000;
-  --admin-background: #f3f2ef;
+  --admin-background: #f4f3ef;
   --admin-panel: #fff;
   --admin-text: #171717;
   --admin-muted: #666;
   --admin-border: #c8c6c0;
+  --studio-sidebar-width: 17rem;
+  --studio-editor-width: 40vw;
   font-family: Arial, Helvetica, sans-serif;
   color: var(--admin-text);
   background: var(--admin-background);
@@ -50,7 +52,8 @@ button,
 
 button {
   border: 1px solid var(--admin-border);
-  padding: 0.4rem 0.65rem;
+  border-radius: 0.15rem;
+  padding: 0.35rem 0.6rem;
   background: var(--admin-panel);
   cursor: pointer;
 }
@@ -130,31 +133,22 @@ button:disabled {
 
 .studio-toolbar {
   display: grid;
-  grid-template-columns: minmax(13rem, 0.8fr) minmax(28rem, auto) auto;
-  gap: 0.65rem 1.5rem;
+  grid-template-columns: auto minmax(10rem, 1fr) auto;
+  gap: 0.5rem 1rem;
   align-items: center;
-  padding: 0.7rem 0.85rem 0.55rem;
+  padding: 0.45rem 0.65rem;
   border-bottom: 1px solid var(--admin-border);
   background: var(--admin-panel);
 }
 
-.studio-toolbar h1,
 .studio-toolbar p {
   margin: 0;
 }
 
-.studio-toolbar h1 {
-  font-size: 1rem;
-}
-
-.studio-toolbar > div:first-child p,
 .studio-status {
   color: var(--admin-muted);
-  font-size: 0.8rem;
-}
-
-.studio-identity {
-  min-width: 0;
+  font-size: 0.75rem;
+  text-align: center;
 }
 
 .toolbar-actions,
@@ -174,18 +168,18 @@ button:disabled {
   font-size: 0.8rem;
 }
 
-.studio-status {
-  grid-column: 1 / -1;
-  min-height: 1em;
-}
-
 .studio-status[data-kind="error"] {
   color: var(--admin-accent);
 }
 
 .studio-workspace {
   display: grid;
-  grid-template-columns: minmax(14rem, 17rem) minmax(24rem, 1.1fr) minmax(24rem, 1fr);
+  grid-template-columns:
+    var(--studio-sidebar-width)
+    0.35rem
+    var(--studio-editor-width)
+    0.35rem
+    minmax(18rem, 1fr);
   min-height: 0;
   overflow: hidden;
 }
@@ -195,7 +189,6 @@ button:disabled {
 .studio-preview-pane {
   min-width: 0;
   min-height: 0;
-  border-right: 1px solid var(--admin-border);
   background: var(--admin-panel);
 }
 
@@ -207,6 +200,89 @@ button:disabled {
 .studio-sidebar {
   display: flex;
   flex-direction: column;
+}
+
+.pane-resizer {
+  position: relative;
+  z-index: 3;
+  min-width: 0;
+  background: var(--admin-background);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.pane-resizer::after {
+  position: absolute;
+  inset: 0 0 0 50%;
+  width: 1px;
+  background: var(--admin-border);
+  content: "";
+}
+
+.pane-resizer:hover,
+.pane-resizer:focus-visible,
+.pane-resizer[data-dragging="true"] {
+  background: color-mix(in srgb, var(--admin-accent) 12%, var(--admin-background));
+  outline: none;
+}
+
+.pane-title,
+.pane-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pane-toggle {
+  display: inline-grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.pane-actions {
+  gap: 0.65rem;
+}
+
+.studio-workspace[data-pane-collapsed-sidebar="true"] {
+  --studio-sidebar-width: 2.65rem;
+}
+
+.studio-workspace[data-pane-collapsed-editor="true"] {
+  --studio-editor-width: 2.65rem;
+}
+
+.studio-workspace[data-pane-collapsed-preview="true"] {
+  grid-template-columns:
+    var(--studio-sidebar-width)
+    0.35rem
+    var(--studio-editor-width)
+    0.35rem
+    2.65rem;
+}
+
+.studio-workspace[data-pane-collapsed-sidebar="true"] .studio-sidebar > :not(.pane-title),
+.studio-workspace[data-pane-collapsed-editor="true"] .studio-editor-pane > :not(.pane-heading),
+.studio-workspace[data-pane-collapsed-preview="true"] .studio-preview-pane > :not(.pane-heading) {
+  display: none;
+}
+
+.studio-workspace[data-pane-collapsed-sidebar="true"] .pane-title strong,
+.studio-workspace[data-pane-collapsed-editor="true"] .editor-file-state,
+.studio-workspace[data-pane-collapsed-editor="true"] .editor-option,
+.studio-workspace[data-pane-collapsed-preview="true"] .preview-controls > :not(.pane-toggle) {
+  display: none;
+}
+
+.studio-workspace[data-pane-collapsed-sidebar="true"] .pane-title,
+.studio-workspace[data-pane-collapsed-editor="true"] .editor-heading,
+.studio-workspace[data-pane-collapsed-preview="true"] .preview-controls {
+  justify-content: center;
+  padding-inline: 0.5rem;
 }
 
 .sidebar-tabs {
@@ -353,151 +429,6 @@ button:disabled {
   white-space: nowrap;
 }
 
-.panel-introduction {
-  margin-bottom: 0.85rem;
-}
-
-.panel-introduction h2,
-.panel-introduction p {
-  margin: 0;
-}
-
-.panel-introduction h2 {
-  font-size: 0.85rem;
-}
-
-.panel-introduction p {
-  margin-top: 0.25rem;
-  color: var(--admin-muted);
-  font-size: 0.72rem;
-}
-
-.design-mode {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 0.65rem;
-}
-
-.design-mode button {
-  padding-inline: 0.35rem;
-  font-size: 0.7rem;
-}
-
-.design-mode button + button {
-  border-left: 0;
-}
-
-.design-mode button[aria-pressed="true"] {
-  color: var(--admin-accent);
-  border-color: var(--admin-accent);
-}
-
-.design-dashboard {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.design-dashboard > label {
-  display: grid;
-  gap: 0.35rem;
-  color: var(--admin-muted);
-  font-size: 0.75rem;
-}
-
-.design-dashboard select {
-  width: 100%;
-  min-width: 0;
-  border: 1px solid var(--admin-border);
-  padding: 0.42rem 0.45rem;
-  color: var(--admin-text);
-  background: var(--admin-panel);
-}
-
-.color-control,
-.range-control {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.color-control input[type="color"] {
-  width: 100%;
-  height: 2rem;
-  border: 1px solid var(--admin-border);
-  padding: 0.1rem;
-  background: transparent;
-}
-
-.color-control output,
-.range-control output {
-  min-width: 3.2rem;
-  color: var(--admin-text);
-  font-family: Consolas, "Courier New", monospace;
-  font-size: 0.72rem;
-  text-align: right;
-}
-
-.range-control input {
-  width: 100%;
-}
-
-.design-dashboard .design-check {
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-  color: var(--admin-text);
-}
-
-.design-presets {
-  display: grid;
-  gap: 0.45rem;
-  min-width: 0;
-  margin: 0;
-  border: 1px solid var(--admin-border);
-  padding: 0.65rem;
-}
-
-.design-presets legend {
-  padding-inline: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.design-presets label {
-  display: grid;
-  gap: 0.3rem;
-  color: var(--admin-muted);
-  font-size: 0.72rem;
-}
-
-.design-presets p {
-  margin: 0;
-  color: var(--admin-muted);
-  font-size: 0.68rem;
-}
-
-.design-presets > div {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.3rem;
-}
-
-.design-presets button {
-  padding-inline: 0.25rem;
-  font-size: 0.68rem;
-}
-
-.design-actions {
-  display: block;
-}
-
-.design-actions button {
-  width: 100%;
-  padding-inline: 0.4rem;
-  font-size: 0.72rem;
-}
-
 .studio-editor-pane,
 .studio-preview-pane {
   display: grid;
@@ -505,8 +436,8 @@ button:disabled {
 }
 
 .pane-heading {
-  min-height: 2.8rem;
-  padding: 0.65rem 0.75rem;
+  min-height: 2.55rem;
+  padding: 0.5rem 0.65rem;
   border-bottom: 1px solid var(--admin-border);
   background: var(--admin-background);
   font-size: 0.8rem;
@@ -571,7 +502,75 @@ button:disabled {
 
 .preview-controls {
   display: grid;
-  grid-template-columns: minmax(8rem, 1fr) auto auto auto auto auto;
+  grid-template-columns: minmax(8rem, 1fr) repeat(7, auto);
+}
+
+.css-file-button {
+  width: 100%;
+  min-height: 3rem;
+  border: 1px solid var(--admin-accent);
+  background: transparent;
+  color: var(--admin-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.css-file-button:hover,
+.css-file-button:focus-visible {
+  background: color-mix(in srgb, var(--admin-accent) 8%, white);
+}
+
+.motion-settings,
+.typography-settings {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.85rem 0 0;
+  border: 1px solid var(--admin-border);
+  padding: 0.7rem;
+}
+
+.motion-settings legend,
+.typography-settings legend {
+  padding-inline: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.motion-settings label,
+.typography-settings label {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.motion-settings p,
+.typography-settings p {
+  margin: 0.15rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.68rem;
+}
+
+.typography-settings label {
+  display: grid;
+}
+
+.range-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5rem;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.range-control input {
+  width: 100%;
+}
+
+.range-control output {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.7rem;
+  text-align: right;
 }
 
 .preview-controls label {
@@ -687,19 +686,11 @@ button:disabled {
   }
 
   .studio-status {
-    grid-column: auto;
+    text-align: left;
   }
 
   .studio-workspace {
-    grid-template-columns: 14rem minmax(20rem, 1fr);
-    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  .studio-sidebar {
-    grid-row: 1 / 3;
-  }
-
-  .studio-preview-pane {
-    grid-column: 2;
+    --studio-sidebar-width: 13rem;
+    --studio-editor-width: 36vw;
   }
 }

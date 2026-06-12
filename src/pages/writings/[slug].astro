@@ -5,7 +5,13 @@
 // Caveat: Chapters must remain inside that writing's chapters/ folder.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { contentFolder } from "../../data/contentPaths";
+import { contentFolder } from "../../utils/contentPaths";
+import {
+  contentLanguageLabel,
+  formatDate,
+  translate,
+  writingTypeLabel,
+} from "../../config/locales";
 
 export async function getStaticPaths() {
   const writings = await getCollection("writings");
@@ -40,11 +46,23 @@ const hasChapters = chapters.length > 0;
     <header class="detail-header">
       <h1>{title}</h1>
       {subtitle && <p>{subtitle}</p>}
-      <p>{type}. {date}. {language}.</p>
+      <p class="writing-metadata">
+        <span data-i18n-writing-type={type}>
+          {writingTypeLabel(type, "en")}
+        </span>
+        <time datetime={String(date)} data-i18n-date={String(date)}>
+          {formatDate(date, "en")}
+        </time>
+        <span data-i18n-content-language={language}>
+          {contentLanguageLabel(language, "en")}
+        </span>
+      </p>
     </header>
 
     <section class="writing-brief" aria-labelledby="brief-heading">
-      <h2 id="brief-heading">Brief</h2>
+      <h2 id="brief-heading" data-i18n-key="common.brief">
+        {translate("en", "common.brief")}
+      </h2>
       <p>{excerpt}</p>
       <div class:list={["prose", "chicago-prose", { "writing-body": !hasChapters }]}>
         <Content />
@@ -54,7 +72,9 @@ const hasChapters = chapters.length > 0;
     {
       hasChapters && (
         <nav class="writing-contents" aria-labelledby="contents-heading">
-          <h2 id="contents-heading">Contents</h2>
+          <h2 id="contents-heading" data-i18n-key="common.contents">
+            {translate("en", "common.contents")}
+          </h2>
           <ol>
             {chapters.map((chapter) => (
               <li>
@@ -70,7 +90,16 @@ const hasChapters = chapters.length > 0;
     }
 
     <p class="back-link">
-      <a href="/writings/"><span class="back-triangle" aria-hidden="true"></span>Back to Writings</a>
+      <a href="/writings/">
+        <span
+          class="glyph-arrow glyph-arrow--back"
+          data-arrow-glyph
+          aria-hidden="true"
+        ></span>
+        <span data-i18n-key="common.backWritings">
+          {translate("en", "common.backWritings")}
+        </span>
+      </a>
     </p>
   </article>
 </BaseLayout>

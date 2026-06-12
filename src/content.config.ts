@@ -7,13 +7,21 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
-import { workCategories, writingTypes } from "./data/contentTaxonomy";
+import { workCategories, writingTypes } from "./config/contentTaxonomy";
 
 const folderId = ({ entry }: { entry: string }) =>
   entry.replaceAll("\\", "/").replace(/\/index\.md$/, "");
 
 const filePathId = ({ entry }: { entry: string }) =>
   entry.replaceAll("\\", "/").replace(/\.md$/, "");
+
+const localizedText = z.object({
+  en: z.string(),
+  zh: z.string().optional(),
+  de: z.string().optional(),
+  fr: z.string().optional(),
+  ja: z.string().optional(),
+});
 
 // 中文：定义内容文件的位置与 frontmatter 结构。
 // English: Defines content locations and validates their frontmatter.
@@ -32,10 +40,19 @@ const works = defineCollection({
     subtitle: z.string().optional(),
     year: z.number().int(),
     category: z.enum(workCategories),
-    instrumentation: z.string(),
-    duration: z.string(),
-    collaborators: z.array(z.string()).optional(),
-    premiere: z.string().optional(),
+    instrumentation: localizedText,
+    duration: z.object({
+      minutes: z.number().positive().optional(),
+      continuous: z.boolean().default(false),
+      approximate: z.boolean().default(false),
+    }),
+    dedication: localizedText.optional(),
+    commission: localizedText.optional(),
+    credits: z.array(localizedText).optional(),
+    premiere: z.object({
+      date: z.union([z.string(), z.number()]).optional(),
+      details: localizedText,
+    }).optional(),
     recordingUrl: z.url().optional(),
     scoreUrl: z.url().optional(),
     image: z.string().optional(),

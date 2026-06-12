@@ -1,7 +1,7 @@
-# Content Library / 内容资料库
+# Content Library / 內容資料庫
 
-**中文：** 这个文件夹只放作品与文章内容。平时新增、修改或删除内容时，
-从这里开始；通常不需要进入 `src/`。
+**中文：** 這個資料夾只放作品與文章內容。平時新增、修改或刪除內容時，
+從這裡開始；通常不需要進入 `src/`。
 
 **English:** This folder contains the works and writings. Start here when
 adding, editing, or removing content; ordinary content maintenance should not
@@ -25,15 +25,15 @@ content/
 ```
 
 - One folder equals one public work or writing.
-- 一个文件夹就是一个公开作品或一篇文章。
+- 一個資料夾就是一個公開作品或一篇文章。
 - `index.md` is always the main file.
-- `index.md` 永远是主文件。
+- `index.md` 永遠是主檔案。
 - A writing without chapters needs only `index.md`.
-- 没有章节的文章只需要 `index.md`。
+- 沒有章節的文章只需要 `index.md`。
 - Add a `chapters/` folder only when a writing has separate chapters.
-- 只有需要分章时才添加 `chapters/` 文件夹。
+- 只有需要分章時才新增 `chapters/` 資料夾。
 - The website automatically builds the contents list from chapter files.
-- 网站会根据章节文件自动生成目录。
+- 網站會根據章節檔案自動生成目錄。
 
 ## Add A Work / 新增作品
 
@@ -42,30 +42,51 @@ content/
 3. Open its `index.md` and replace the information and program notes.
 4. Give it a unique `slug`; this becomes `/works/your-slug/`.
 
-1. 复制 `content/works/` 中已有的作品文件夹。
-2. 重命名复制出的文件夹。
-3. 打开里面的 `index.md`，替换资料与作品说明。
-4. 设置唯一的 `slug`；它会成为 `/works/your-slug/`。
+1. 複製 `content/works/` 中已有的作品資料夾。
+2. 重新命名複製出的資料夾。
+3. 開啟裡面的 `index.md`，替換資料與作品說明。
+4. 設定唯一的 `slug`；它會成為 `/works/your-slug/`。
 
-Required fields / 必填字段:
+Required fields / 必填欄位:
 
 ```yaml
 title: "Work title"
 year: 2026
 category: "Chamber"
-instrumentation: "Violin and piano"
-duration: "10 minutes"
+instrumentation:
+  en: "Violin and piano"
+  zh: "小提琴與鋼琴"
+  de: "Violine und Klavier"
+  fr: "Violon et piano"
+  ja: "ヴァイオリンとピアノ"
+duration:
+  minutes: 10
+  continuous: false
+  approximate: false
 description: "Short description used on lists and in page metadata."
 slug: "work-title"
 ```
 
-Optional fields / 可选字段:
+Optional fields / 可選欄位:
 
 ```yaml
 subtitle: "Optional subtitle"
-collaborators:
-  - "Name and role"
-premiere: "Premiere information"
+dedication:
+  en: "For Name"
+  zh: "獻給某人"
+  ja: "某氏に捧ぐ"
+commission:
+  en: "Commissioned by Organization"
+credits:
+  - en: "Performer Name, instrument"
+    zh: "演出者姓名，樂器"
+    ja: "演奏者名、楽器"
+premiere:
+  date: "2026-06-11"
+  details:
+    en: "First performed by Name at Venue, City"
+    zh: "由某人於某地首演"
+    ja: "某氏により会場名で初演"
 recordingUrl: "https://example.com/recording"
 scoreUrl: "https://example.com/score"
 image: "/images/example.jpg"
@@ -73,23 +94,33 @@ imageAlt: "Description of the image"
 order: 1
 ```
 
-Valid categories / 可用分类:
+Valid categories / 可用分類:
 
 `Solo`, `Chamber`, `Orchestral`, `Vocal / Choral`, `Music Theatre`, `Other`
 
-## Add A Short Writing / 新增单篇文章
+Keep the category values above in English; the website translates their
+visible labels automatically. Instrumentation and credit fields use the same
+language keys: `en`, `zh`, `de`, `fr`, and `ja`. English is the required
+fallback. Dates should use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`; the site formats
+them for each language automatically.
+
+分類值請保留上述英文拼法；網站會自動翻譯公開顯示的名稱。編制與演出資料皆使用
+相同的語言代碼：`en`、`zh`、`de`、`fr`、`ja`，其中英文是必填的備援文字。
+日期請寫成 `YYYY`、`YYYY-MM` 或 `YYYY-MM-DD`；網站會依語言自動調整格式。
+
+## Add A Short Writing / 新增單篇文章
 
 1. Copy an existing one-file folder inside `content/writings/`.
 2. Rename the folder.
 3. Edit `index.md`.
 4. Do not create a `chapters/` folder.
 
-1. 复制 `content/writings/` 中只有一个文件的文章文件夹。
-2. 重命名文件夹。
-3. 编辑 `index.md`。
-4. 不要创建 `chapters/` 文件夹。
+1. 複製 `content/writings/` 中只有一個檔案的文章資料夾。
+2. 重新命名資料夾。
+3. 編輯 `index.md`。
+4. 不要建立 `chapters/` 資料夾。
 
-Required fields / 必填字段:
+Required fields / 必填欄位:
 
 ```yaml
 title: "Writing title"
@@ -100,17 +131,24 @@ excerpt: "Short description shown on the writing title page."
 slug: "writing-title"
 ```
 
-Optional fields / 可选字段:
+Optional fields / 可選欄位:
 
 ```yaml
 subtitle: "Optional subtitle"
 order: 1
 ```
 
-Valid types / 可用类型:
+Valid types / 可用型別:
 
 `Translation`, `Essay`, `Fiction`, `Blog`, `Poem`, `Program Note`, `Review`,
 `Other`
+
+Writing types, content-language labels, and dates are translated centrally in
+`src/config/locales.ts`. Add or revise shared translations there instead of
+copying them into individual pages.
+
+文章類型、內容語言名稱與日期格式集中在 `src/config/locales.ts`。新增或修改共用
+翻譯時，請在該檔案處理，不要把同一翻譯複製到各個頁面。
 
 ## Add A Writing With Chapters / 新增分章文章
 
@@ -122,14 +160,14 @@ Valid types / 可用类型:
    the human-visible order in the Studio, while the `order` field determines
    the website order.
 
-1. 创建或复制一个文章文件夹。
-2. 在 `index.md` 中保留标题、资料、简介和可选引言。
-3. 在 `index.md` 旁边创建 `chapters/` 文件夹。
-4. 每个章节单独使用一个 Markdown 文件。
-5. 建议文件名使用 `01-introduction.md`；文件名方便在管理器中排序，
-   `order` 字段决定网站中的顺序。
+1. 建立或複製一個文章資料夾。
+2. 在 `index.md` 中保留標題、資料、簡介和可選引言。
+3. 在 `index.md` 旁邊建立 `chapters/` 資料夾。
+4. 每個章節單獨使用一個 Markdown 檔案。
+5. 建議檔名使用 `01-introduction.md`；檔名方便在管理器中排序，
+   `order` 欄位決定網站中的順序。
 
-Chapter frontmatter / 章节开头资料:
+Chapter frontmatter / 章節開頭資料:
 
 ```yaml
 ---
@@ -142,11 +180,11 @@ order: 1
 
 The parent writing is inferred from the folder. Do not add `writingSlug`.
 
-父文章会根据文件夹自动判断；章节中不再需要填写 `writingSlug`。
+父文章會根據資料夾自動判斷；章節中不再需要填寫 `writingSlug`。
 
 ## Markdown Features / Markdown 功能
 
-Footnotes / 脚注:
+Footnotes / 腳註:
 
 ```markdown
 Text with a note.[^1]
@@ -154,7 +192,7 @@ Text with a note.[^1]
 [^1]: The note may contain a [link](https://example.com).
 ```
 
-Inline and display mathematics / 行内与独立数学公式:
+Inline and display mathematics / 行內與獨立數學公式:
 
 ```markdown
 Inline: $a^2 + b^2 = c^2$
@@ -164,7 +202,7 @@ E = mc^2
 $$
 ```
 
-Figure with caption / 带说明的图片:
+Figure with caption / 帶說明的圖片:
 
 ```html
 <figure>
@@ -179,7 +217,7 @@ Ruby annotation / Ruby 注音:
 <ruby>漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby>
 ```
 
-Poetry without paragraph indentation / 无首行缩进的诗歌:
+Poetry without paragraph indentation / 無首行縮排的詩歌:
 
 ```html
 <blockquote class="no-indent poetry">
@@ -198,11 +236,10 @@ Run `npm run dev`, then open `/admin/`. The Studio provides a folder tree,
 project-wide Find, syntax highlighting, line wrapping, image browsing, and
 desktop/phone previews. The current local passcode is `0592`.
 
-运行 `npm run dev` 后打开 `/admin/`。管理器提供文件夹目录、全局搜索、
-语法高亮、自动换行、图片浏览，以及桌面和手机预览。目前本地口令是 `0592`。
+執行 `npm run dev` 後開啟 `/admin/`。管理器提供資料夾目錄、全域性搜尋、
+語法高亮、自動換行、圖片瀏覽，以及桌面和手機預覽。目前本地口令是 `0592`。
 
 The Studio is intentionally local-only. It is not a writable administration
 service on the published static website.
 
-管理器仅供本地使用；发布后的静态网站不会开放文件写入管理功能。
-
+管理器僅供本地使用；釋出後的靜態網站不會開放檔案寫入管理功能。

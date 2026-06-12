@@ -1,11 +1,12 @@
 ---
-// 中文：公开页面共用的 HTML 外壳，包含页眉、主体、页脚和偏好预加载。
+// 中文：公開頁面共用的 HTML 外殼，包含頁首、主體、頁尾和偏好預載。
 // English: Shared public-page shell with header, body, footer, and preference preload.
-// Caveat / 注意：此处改动会影响除管理器之外的全部公开页面。
+// Caveat / 注意：此處改動會影響除管理器之外的全部公開頁面。
 // Caveat: Changes here affect every public page except the Studio.
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import { site } from "../data/site";
+import { translate } from "../config/locales";
+import { site } from "../config/site";
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
 
@@ -42,7 +43,7 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name;
             html {"{"} visibility: hidden; {"}"}
           </style>
           <script is:inline>
-            // 管理指南只在本地 Studio 解锁后显示；这不是线上账户系统。
+            // 管理指南只在本地 Studio 解鎖後顯示；這不是線上帳戶系統。
             // The guide appears only after the local Studio is unlocked; this is not online authentication.
             try {
               const isLocal =
@@ -64,7 +65,7 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name;
       )
     }
     <script is:inline>
-      // 在页面绘制前恢复偏好设置，避免深浅色或字号短暂闪烁。
+      // 在頁面繪製前恢復偏好設定，避免深淺色或字號短暫閃爍。
       // Restore preferences before paint to prevent a theme or font-size flash.
       try {
         const theme = localStorage.getItem("yc-theme");
@@ -81,8 +82,14 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name;
           document.documentElement.dataset.fontSize = fontSize;
         }
 
-        if (language === "en" || language === "zh") {
-          document.documentElement.lang = language === "zh" ? "zh-Hans" : "en";
+        if (
+          language === "en" ||
+          language === "zh" ||
+          language === "de" ||
+          language === "fr" ||
+          language === "ja"
+        ) {
+          document.documentElement.lang = language === "zh" ? "zh-Hant-TW" : language;
         }
 
         if (noticeDismissed) {
@@ -93,11 +100,13 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name;
     <title>{pageTitle}</title>
   </head>
   <body data-style-source="src/styles/global.css">
-    <a class="skip-link" href="#main-content">Skip to content</a>
+    <a class="skip-link" href="#main-content" data-i18n-key="common.skip">
+      {translate("en", "common.skip")}
+    </a>
     {
       !adminOnly && (
         <aside class="site-notice" role="status" aria-label="Website status">
-          <p>This site is under construction and all contents are placeholders.</p>
+          <p data-i18n-key="common.notice">{translate("en", "common.notice")}</p>
           <button
             type="button"
             class="site-notice-dismiss"
@@ -125,5 +134,10 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name;
         </script>
       )
     }
+    <script>
+      import { initializeDecorativeGlyphs } from "../scripts/decorativeGlyphs";
+
+      initializeDecorativeGlyphs();
+    </script>
   </body>
 </html>

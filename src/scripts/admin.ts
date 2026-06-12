@@ -50,82 +50,34 @@ interface FileTreeNode {
 const ADMIN_PASSCODE = "0592";
 const PASSCODE_SESSION_KEY = "yixin-cui-studio-passcode";
 const LINE_WRAP_STORAGE_KEY = "yixin-cui-studio-line-wrap";
-const DESIGN_PRESET_STORAGE_KEY = "yixin-cui-studio-design-presets";
+const PREVIEW_PATH_SESSION_KEY = "yixin-cui-studio-preview-path";
+const PREVIEW_MODE_SESSION_KEY = "yixin-cui-studio-preview-mode";
+const PREVIEW_SIZE_SESSION_KEY = "yixin-cui-studio-preview-size";
+const PANE_LAYOUT_STORAGE_KEY = "yixin-cui-studio-pane-layout";
 const GLOBAL_CSS_PATH = "src/styles/global.css";
+const MOTION_SETTINGS_PATH = "src/config/motion.json";
+const TYPOGRAPHY_SETTINGS_PATH = "src/config/typography.json";
 
-const designFonts = {
-  "system-sans": "var(--font-system-sans)",
-  "humanist-sans": "var(--font-humanist-sans)",
-  "system-serif": "var(--font-system-serif)",
-  garamond: "var(--font-garamond)",
-  typewriter: "var(--font-typewriter)",
-  "modern-mono": "var(--font-modern-mono)",
-} as const;
+type MotionSetting =
+  | "languageFlap"
+  | "themeFade"
+  | "fontSizeScale"
+  | "glyphRotation"
+  | "interfaceMotion";
 
-const spacingPresets = {
-  compact: {
-    "--space-xs": "0.35rem",
-    "--space-sm": "0.7rem",
-    "--space-md": "1.4rem",
-    "--space-lg": "2.8rem",
-    "--space-xl": "4rem",
-  },
-  standard: {
-    "--space-xs": "0.5rem",
-    "--space-sm": "1rem",
-    "--space-md": "2rem",
-    "--space-lg": "4rem",
-    "--space-xl": "6rem",
-  },
-  open: {
-    "--space-xs": "0.65rem",
-    "--space-sm": "1.3rem",
-    "--space-md": "2.6rem",
-    "--space-lg": "5rem",
-    "--space-xl": "7.5rem",
-  },
-  generous: {
-    "--space-xs": "0.8rem",
-    "--space-sm": "1.6rem",
-    "--space-md": "3.2rem",
-    "--space-lg": "6.4rem",
-    "--space-xl": "9rem",
-  },
-} as const;
+type MotionSettings = Record<MotionSetting, boolean>;
 
-const widthPresets = {
-  narrow: {
-    "--page-width": "56rem",
-    "--content-width": "38rem",
-    "--reading-width": "32rem",
-  },
-  standard: {
-    "--page-width": "64rem",
-    "--content-width": "44rem",
-    "--reading-width": "38rem",
-  },
-  wide: {
-    "--page-width": "76rem",
-    "--content-width": "54rem",
-    "--reading-width": "46rem",
-  },
-} as const;
+interface TypographySettings {
+  cjkLetterSpacingEm: number;
+}
 
-const defaultDesign = {
-  "--theme-color": "#c81e1e",
-  "--font-body": designFonts.garamond,
-  "--base-font-size": "17px",
-  "--line-height": "1.3",
-  "--paragraph-indent": "1.5em",
-  "--paragraph-spacing": "0rem",
-  ...spacingPresets.standard,
-  ...widthPresets.standard,
-} as const;
-
-type DesignValues = Record<string, string>;
-type DesignPresetSlots = Record<string, DesignValues>;
-
-const designVariableNames = Object.keys(defaultDesign);
+const defaultMotionSettings: MotionSettings = {
+  languageFlap: false,
+  themeFade: false,
+  fontSizeScale: false,
+  glyphRotation: false,
+  interfaceMotion: false,
+};
 
 const ignoredDirectories = new Set([
   ".astro",
@@ -167,24 +119,6 @@ function extensionOf(path: string) {
 
 function publicImageUrl(path: string) {
   return path.startsWith("public/") ? `/${path.slice("public/".length)}` : path;
-}
-
-function cssVariableValue(text: string, variable: string) {
-  const escaped = variable.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return text.match(new RegExp(`${escaped}:\\s*([^;]+);`))?.[1].trim();
-}
-
-function replaceCssVariables(
-  text: string,
-  updates: Record<string, string>,
-) {
-  return Object.entries(updates).reduce((nextText, [variable, value]) => {
-    const escaped = variable.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return nextText.replace(
-      new RegExp(`(${escaped}:\\s*)[^;]+;`),
-      `$1${value};`,
-    );
-  }, text);
 }
 
 async function responseError(response: Response) {
@@ -390,46 +324,20 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLButtonElement>("[data-refresh-preview]");
   const openPreviewLink =
     studio.querySelector<HTMLAnchorElement>("[data-open-preview]");
-  const themeColorInput =
-    studio.querySelector<HTMLInputElement>("[data-theme-color]");
-  const themeColorOutput =
-    studio.querySelector<HTMLOutputElement>("[data-theme-color-output]");
   const openThemeCssButton =
     studio.querySelector<HTMLButtonElement>("[data-open-theme-css]");
-  const designFontInput =
-    studio.querySelector<HTMLSelectElement>("[data-design-font]");
-  const designFontSizeInput =
-    studio.querySelector<HTMLInputElement>("[data-design-font-size]");
-  const designFontSizeOutput =
-    studio.querySelector<HTMLOutputElement>("[data-design-font-size-output]");
-  const designSpacingInput =
-    studio.querySelector<HTMLSelectElement>("[data-design-spacing]");
-  const designLineHeightInput =
-    studio.querySelector<HTMLInputElement>("[data-design-line-height]");
-  const designLineHeightOutput =
-    studio.querySelector<HTMLOutputElement>("[data-design-line-height-output]");
-  const designParagraphSpacingInput =
-    studio.querySelector<HTMLInputElement>("[data-design-paragraph-spacing]");
-  const designParagraphSpacingOutput =
-    studio.querySelector<HTMLOutputElement>(
-      "[data-design-paragraph-spacing-output]",
-    );
-  const designWidthInput =
-    studio.querySelector<HTMLSelectElement>("[data-design-width]");
-  const designIndentInput =
-    studio.querySelector<HTMLInputElement>("[data-design-indent]");
-  const designResetButton =
-    studio.querySelector<HTMLButtonElement>("[data-design-reset]");
-  const designPresetSlotInput =
-    studio.querySelector<HTMLSelectElement>("[data-design-preset-slot]");
-  const designPresetStatus =
-    studio.querySelector<HTMLElement>("[data-design-preset-status]");
-  const designPresetSaveButton =
-    studio.querySelector<HTMLButtonElement>("[data-design-preset-save]");
-  const designPresetApplyButton =
-    studio.querySelector<HTMLButtonElement>("[data-design-preset-apply]");
-  const designPresetClearButton =
-    studio.querySelector<HTMLButtonElement>("[data-design-preset-clear]");
+  const motionSettingsFieldset =
+    studio.querySelector<HTMLFieldSetElement>("[data-motion-settings]");
+  const motionSettingsStatus =
+    studio.querySelector<HTMLElement>("[data-motion-settings-status]");
+  const motionSettingInputs =
+    studio.querySelectorAll<HTMLInputElement>("[data-motion-setting]");
+  const typographySettingsFieldset =
+    studio.querySelector<HTMLFieldSetElement>("[data-typography-settings]");
+  const cjkLetterSpacingInput =
+    studio.querySelector<HTMLInputElement>("[data-cjk-letter-spacing]");
+  const cjkLetterSpacingOutput =
+    studio.querySelector<HTMLOutputElement>("[data-cjk-letter-spacing-output]");
   const lockStudioButton =
     studio.querySelector<HTMLButtonElement>("[data-lock-studio]");
   const searchForm =
@@ -446,6 +354,10 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLInputElement>("[data-line-wrap]");
   const previewInspectorInput =
     studio.querySelector<HTMLInputElement>("[data-preview-inspector]");
+  const previewVisualEditorInput =
+    studio.querySelector<HTMLInputElement>("[data-preview-visual-editor]");
+  const studioWorkspace =
+    studio.querySelector<HTMLElement>("[data-studio-workspace]");
 
   if (
     !openFolderButton ||
@@ -464,25 +376,12 @@ export async function initializeAdminStudio() {
     !loadPreviewButton ||
     !refreshPreviewButton ||
     !openPreviewLink ||
-    !themeColorInput ||
-    !themeColorOutput ||
     !openThemeCssButton ||
-    !designFontInput ||
-    !designFontSizeInput ||
-    !designFontSizeOutput ||
-    !designSpacingInput ||
-    !designLineHeightInput ||
-    !designLineHeightOutput ||
-    !designParagraphSpacingInput ||
-    !designParagraphSpacingOutput ||
-    !designWidthInput ||
-    !designIndentInput ||
-    !designResetButton ||
-    !designPresetSlotInput ||
-    !designPresetStatus ||
-    !designPresetSaveButton ||
-    !designPresetApplyButton ||
-    !designPresetClearButton ||
+    !motionSettingsFieldset ||
+    !motionSettingsStatus ||
+    !typographySettingsFieldset ||
+    !cjkLetterSpacingInput ||
+    !cjkLetterSpacingOutput ||
     !lockStudioButton ||
     !searchForm ||
     !globalSearchInput ||
@@ -490,7 +389,9 @@ export async function initializeAdminStudio() {
     !searchResults ||
     !previewStage ||
     !lineWrapInput ||
-    !previewInspectorInput
+    !previewInspectorInput ||
+    !previewVisualEditorInput ||
+    !studioWorkspace
   ) {
     return;
   }
@@ -499,6 +400,98 @@ export async function initializeAdminStudio() {
   // Stable non-null references preserve the DOM checks inside later nested helpers.
   const fileListElement = fileList;
   const fileFilterInput = fileFilter;
+
+  type PaneName = "sidebar" | "editor" | "preview";
+  interface PaneLayout {
+    sidebarWidth: number;
+    editorWidth: number;
+    collapsed: PaneName[];
+  }
+
+  const readPaneLayout = (): PaneLayout => {
+    try {
+      const stored = localStorage.getItem(PANE_LAYOUT_STORAGE_KEY);
+      if (!stored) {
+        return { sidebarWidth: 272, editorWidth: 560, collapsed: [] };
+      }
+      const parsed = JSON.parse(stored) as Partial<PaneLayout>;
+      return {
+        sidebarWidth: Number(parsed.sidebarWidth) || 272,
+        editorWidth: Number(parsed.editorWidth) || 560,
+        collapsed: Array.isArray(parsed.collapsed)
+          ? parsed.collapsed.filter(
+              (pane): pane is PaneName =>
+                pane === "sidebar" || pane === "editor" || pane === "preview",
+            )
+          : [],
+      };
+    } catch {
+      return { sidebarWidth: 272, editorWidth: 560, collapsed: [] };
+    }
+  };
+
+  let paneLayout = readPaneLayout();
+
+  const applyPaneLayout = () => {
+    studioWorkspace.style.setProperty(
+      "--studio-sidebar-width",
+      `${paneLayout.sidebarWidth}px`,
+    );
+    studioWorkspace.style.setProperty(
+      "--studio-editor-width",
+      `${paneLayout.editorWidth}px`,
+    );
+
+    (["sidebar", "editor", "preview"] as PaneName[]).forEach((pane) => {
+      const collapsed = paneLayout.collapsed.includes(pane);
+      studioWorkspace.dataset[
+        `paneCollapsed${pane[0].toUpperCase()}${pane.slice(1)}` as
+          | "paneCollapsedSidebar"
+          | "paneCollapsedEditor"
+          | "paneCollapsedPreview"
+      ] = String(collapsed);
+      const button = studio.querySelector<HTMLButtonElement>(
+        `[data-pane-toggle="${pane}"]`,
+      );
+      if (button) {
+        const label = `${collapsed ? "Expand" : "Collapse"} ${
+          pane === "sidebar" ? "project" : pane === "editor" ? "code" : "preview"
+        } pane`;
+        button.textContent = collapsed ? "+" : "-";
+        button.setAttribute("aria-label", label);
+        button.title = label;
+        button.setAttribute("aria-expanded", String(!collapsed));
+      }
+    });
+  };
+
+  const storePaneLayout = () => {
+    localStorage.setItem(PANE_LAYOUT_STORAGE_KEY, JSON.stringify(paneLayout));
+  };
+
+  applyPaneLayout();
+
+  const storedPreviewPath =
+    sessionStorage.getItem(PREVIEW_PATH_SESSION_KEY) ?? "/";
+  const storedPreviewMode =
+    sessionStorage.getItem(PREVIEW_MODE_SESSION_KEY) ?? "";
+  const storedPreviewSize =
+    sessionStorage.getItem(PREVIEW_SIZE_SESSION_KEY) === "phone"
+      ? "phone"
+      : "desktop";
+  previewPath.value = storedPreviewPath;
+  openPreviewLink.href = storedPreviewPath;
+  previewInspectorInput.checked = storedPreviewMode === "inspect";
+  previewVisualEditorInput.checked = storedPreviewMode === "visual";
+  previewStage.dataset.previewStage = storedPreviewSize;
+  studio
+    .querySelectorAll<HTMLButtonElement>("[data-preview-size]")
+    .forEach((button) => {
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.previewSize === storedPreviewSize),
+      );
+    });
 
   const fileHandles = new Map<string, ProjectFileHandle>();
   const imageHandles = new Map<string, ProjectFileHandle>();
@@ -566,6 +559,7 @@ export async function initializeAdminStudio() {
 
   const refreshPreview = () => {
     const path = previewPath.value.trim() || "/";
+    sessionStorage.setItem(PREVIEW_PATH_SESSION_KEY, path);
     const url = new URL(path, window.location.origin);
     url.searchParams.set("_studio", Date.now().toString());
     previewFrame.src = url.toString();
@@ -588,6 +582,14 @@ export async function initializeAdminStudio() {
       const writable = await handle.createWritable();
       await writable.write(editor.state.doc.toString());
       await writable.close();
+      if (currentPath === MOTION_SETTINGS_PATH) {
+        syncMotionControls(parseMotionSettings(editor.state.doc.toString()));
+      }
+      if (currentPath === TYPOGRAPHY_SETTINGS_PATH) {
+        syncTypographyControls(
+          parseTypographySettings(editor.state.doc.toString()),
+        );
+      }
       setDirty(false);
       setStatus(`Saved ${currentPath}.`);
       schedulePreviewRefresh();
@@ -662,118 +664,64 @@ export async function initializeAdminStudio() {
     }),
   });
 
-  const findPreset = (
-    text: string,
-    presets: Record<string, Record<string, string>>,
-    fallback: string,
-  ) =>
-    Object.entries(presets).find(([, variables]) =>
-      Object.entries(variables).every(
-        ([variable, value]) => cssVariableValue(text, variable) === value,
-      ),
-    )?.[0] ?? fallback;
-
-  const readDesignValues = (text: string): DesignValues =>
-    Object.fromEntries(
-      designVariableNames.map((variable) => [
-        variable,
-        cssVariableValue(text, variable) ??
-          defaultDesign[variable as keyof typeof defaultDesign],
-      ]),
-    );
-
-  const readDesignPresetSlots = (): DesignPresetSlots => {
-    try {
-      const stored = localStorage.getItem(DESIGN_PRESET_STORAGE_KEY);
-      return stored ? JSON.parse(stored) as DesignPresetSlots : {};
-    } catch {
-      return {};
-    }
+  const parseMotionSettings = (text: string): MotionSettings => {
+    const parsed = JSON.parse(text) as Partial<MotionSettings>;
+    return {
+      languageFlap: parsed.languageFlap === true,
+      themeFade: parsed.themeFade === true,
+      fontSizeScale: parsed.fontSizeScale === true,
+      glyphRotation: parsed.glyphRotation === true,
+      interfaceMotion: parsed.interfaceMotion === true,
+    };
   };
 
-  const writeDesignPresetSlots = (slots: DesignPresetSlots) => {
-    localStorage.setItem(DESIGN_PRESET_STORAGE_KEY, JSON.stringify(slots));
-  };
-
-  const updateDesignPresetStatus = () => {
-    const slot = designPresetSlotInput.value;
-    const exists = Boolean(readDesignPresetSlots()[slot]);
-    designPresetStatus.textContent = exists
-      ? `Preset ${slot} is saved. / 预设 ${slot} 已保存。`
-      : `Preset ${slot} is empty. / 预设 ${slot} 为空。`;
-    designPresetApplyButton.disabled = !exists;
-    designPresetClearButton.disabled = !exists;
-  };
-
-  const syncDesignControls = (text: string) => {
-    const themeColor = cssVariableValue(text, "--theme-color") ?? "#c81e1e";
-    const fontBody =
-      cssVariableValue(text, "--font-body") ?? designFonts["system-sans"];
-    const baseFontSize =
-      cssVariableValue(text, "--base-font-size") ?? "17px";
-    const lineHeight = cssVariableValue(text, "--line-height") ?? "1.55";
-    const paragraphIndent =
-      cssVariableValue(text, "--paragraph-indent") ?? "1.5em";
-    const paragraphSpacing =
-      cssVariableValue(text, "--paragraph-spacing") ?? "0rem";
-
-    themeColorInput.value = themeColor;
-    themeColorOutput.value = themeColor;
-    document.documentElement.style.setProperty("--admin-accent", themeColor);
-    designFontInput.value =
-      Object.entries(designFonts).find(([, value]) => value === fontBody)?.[0] ??
-      "system-sans";
-    designFontSizeInput.value = baseFontSize.replace("px", "");
-    designFontSizeOutput.value = baseFontSize;
-    designLineHeightInput.value = lineHeight;
-    designLineHeightOutput.value = lineHeight;
-    designParagraphSpacingInput.value = paragraphSpacing.replace("rem", "");
-    designParagraphSpacingOutput.value = paragraphSpacing;
-    designIndentInput.checked = paragraphIndent !== "0" && paragraphIndent !== "0em";
-    designSpacingInput.value = findPreset(
-      text,
-      spacingPresets,
-      "standard",
-    );
-    designWidthInput.value = findPreset(text, widthPresets, "standard");
-    updateDesignPresetStatus();
-  };
-
-  const applyDesignToPreview = (updates: Record<string, string>) => {
-    const root = previewFrame.contentDocument?.documentElement;
-    if (!root) return;
-    Object.entries(updates).forEach(([variable, value]) => {
-      root.style.setProperty(variable, value);
+  const syncMotionControls = (settings: MotionSettings) => {
+    let enabledCount = 0;
+    motionSettingInputs.forEach((input) => {
+      const key = input.dataset.motionSetting as MotionSetting;
+      input.checked = settings[key] ?? defaultMotionSettings[key];
+      if (input.checked) enabledCount += 1;
     });
+    motionSettingsStatus.textContent =
+      enabledCount === 0
+        ? "All animations are off."
+        : `${enabledCount} of ${motionSettingInputs.length} animation groups enabled.`;
   };
 
-  // Dashboard writes the same documented CSS variables a person would edit manually.
-  // 设计面板写入的就是人工编辑时会修改的同一组 CSS 变量。
-  const saveDesignVariables = async (
-    updates: Record<string, string>,
-    message: string,
-  ) => {
-    const handle = fileHandles.get(GLOBAL_CSS_PATH);
-    if (!handle) {
-      setStatus("Connect the project before changing design settings.", "error");
-      return;
+  const loadMotionSettings = async () => {
+    const handle = fileHandles.get(MOTION_SETTINGS_PATH);
+    motionSettingsFieldset.disabled = !handle;
+    if (!handle) return;
+
+    try {
+      const text = await (await handle.getFile()).text();
+      syncMotionControls(parseMotionSettings(text));
+    } catch {
+      motionSettingsFieldset.disabled = true;
+      motionSettingsStatus.textContent = "Motion settings could not be read.";
     }
+  };
+
+  const saveMotionSetting = async (
+    key: MotionSetting,
+    enabled: boolean,
+  ) => {
+    const handle = fileHandles.get(MOTION_SETTINGS_PATH);
+    if (!handle) return;
 
     try {
       const currentText =
-        currentPath === GLOBAL_CSS_PATH
+        currentPath === MOTION_SETTINGS_PATH
           ? editor.state.doc.toString()
           : await (await handle.getFile()).text();
-      const nextText = replaceCssVariables(currentText, updates);
-      if (nextText === currentText) {
-        throw new Error("One or more design variables could not be found.");
-      }
-
+      const settings = parseMotionSettings(currentText);
+      settings[key] = enabled;
+      const nextText = `${JSON.stringify(settings, null, 2)}\n`;
       const writable = await handle.createWritable();
       await writable.write(nextText);
       await writable.close();
 
-      if (currentPath === GLOBAL_CSS_PATH) {
+      if (currentPath === MOTION_SETTINGS_PATH) {
         loadingDocument = true;
         editor.dispatch({
           changes: {
@@ -786,16 +734,94 @@ export async function initializeAdminStudio() {
         setDirty(false);
       }
 
-      applyDesignToPreview(updates);
-      syncDesignControls(nextText);
-      setStatus(message);
+      syncMotionControls(settings);
+      setStatus(`${enabled ? "Enabled" : "Disabled"} ${key}.`);
       schedulePreviewRefresh();
     } catch (error) {
-      loadingDocument = false;
       setStatus(
-        error instanceof Error ? error.message : "Unable to save design settings.",
+        error instanceof Error ? error.message : "Unable to save motion settings.",
         "error",
       );
+      await loadMotionSettings();
+    }
+  };
+
+  const parseTypographySettings = (text: string): TypographySettings => {
+    const parsed = JSON.parse(text) as Partial<TypographySettings>;
+    const value = Number(parsed.cjkLetterSpacingEm);
+    return {
+      cjkLetterSpacingEm: Number.isFinite(value)
+        ? Math.min(Math.max(value, -0.08), 0.08)
+        : -0.03,
+    };
+  };
+
+  const applyTypographyPreview = (value: number) => {
+    previewFrame.contentDocument?.documentElement.style.setProperty(
+      "--cjk-letter-spacing",
+      `${value}em`,
+    );
+  };
+
+  const syncTypographyControls = (settings: TypographySettings) => {
+    const value = settings.cjkLetterSpacingEm;
+    cjkLetterSpacingInput.value = String(value);
+    cjkLetterSpacingOutput.value = `${value.toFixed(3)}em`;
+    applyTypographyPreview(value);
+  };
+
+  const loadTypographySettings = async () => {
+    const handle = fileHandles.get(TYPOGRAPHY_SETTINGS_PATH);
+    typographySettingsFieldset.disabled = !handle;
+    if (!handle) return;
+
+    try {
+      const text = await (await handle.getFile()).text();
+      syncTypographyControls(parseTypographySettings(text));
+    } catch {
+      typographySettingsFieldset.disabled = true;
+      cjkLetterSpacingOutput.value = "unavailable";
+    }
+  };
+
+  const saveTypographySettings = async (value: number) => {
+    const handle = fileHandles.get(TYPOGRAPHY_SETTINGS_PATH);
+    if (!handle) return;
+
+    const settings: TypographySettings = {
+      cjkLetterSpacingEm: Math.min(Math.max(value, -0.08), 0.08),
+    };
+
+    try {
+      const nextText = `${JSON.stringify(settings, null, 2)}\n`;
+      const writable = await handle.createWritable();
+      await writable.write(nextText);
+      await writable.close();
+
+      if (currentPath === TYPOGRAPHY_SETTINGS_PATH) {
+        loadingDocument = true;
+        editor.dispatch({
+          changes: {
+            from: 0,
+            to: editor.state.doc.length,
+            insert: nextText,
+          },
+        });
+        loadingDocument = false;
+        setDirty(false);
+      }
+
+      syncTypographyControls(settings);
+      setStatus(`East Asian character spacing set to ${settings.cjkLetterSpacingEm.toFixed(3)}em.`);
+      schedulePreviewRefresh();
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : "Unable to save typography settings.",
+        "error",
+      );
+      await loadTypographySettings();
     }
   };
 
@@ -827,6 +853,12 @@ export async function initializeAdminStudio() {
       setDirty(false);
       setStatus(`Editing ${path}.`);
       revealFileInTree(path);
+      if (path === MOTION_SETTINGS_PATH) {
+        syncMotionControls(parseMotionSettings(text));
+      }
+      if (path === TYPOGRAPHY_SETTINGS_PATH) {
+        syncTypographyControls(parseTypographySettings(text));
+      }
 
       if (targetLine) {
         const line = Math.min(Math.max(targetLine, 1), editor.state.doc.lines);
@@ -836,10 +868,6 @@ export async function initializeAdminStudio() {
           effects: EditorView.scrollIntoView(position, { y: "center" }),
         });
         editor.focus();
-      }
-
-      if (path === GLOBAL_CSS_PATH) {
-        syncDesignControls(text);
       }
     } finally {
       loadingDocument = false;
@@ -933,13 +961,409 @@ export async function initializeAdminStudio() {
     await loadFile(path, line);
   };
 
+  const projectEditableText = (value: string, ignoreMarkdown: boolean) => {
+    const text: string[] = [];
+    const starts: number[] = [];
+    const ends: number[] = [];
+    let index = 0;
+
+    while (index < value.length) {
+      const character = value[index];
+
+      if (
+        ignoreMarkdown &&
+        character === "]" &&
+        value[index + 1] === "("
+      ) {
+        const destinationEnd = value.indexOf(")", index + 2);
+        if (destinationEnd >= 0) {
+          index = destinationEnd + 1;
+          continue;
+        }
+      }
+
+      if (ignoreMarkdown && /[*_`~#[\]>]/.test(character)) {
+        index += 1;
+        continue;
+      }
+
+      if (/\s/.test(character)) {
+        const whitespaceStart = index;
+        while (index < value.length && /\s/.test(value[index])) index += 1;
+        if (text.length > 0 && text.at(-1) !== " ") {
+          text.push(" ");
+          starts.push(whitespaceStart);
+          ends.push(index);
+        }
+        continue;
+      }
+
+      const normalizedCharacter = character
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .toLocaleLowerCase();
+      text.push(normalizedCharacter);
+      starts.push(index);
+      ends.push(index + 1);
+      index += 1;
+    }
+
+    if (text.at(-1) === " ") {
+      text.pop();
+      starts.pop();
+      ends.pop();
+    }
+
+    return { text: text.join(""), starts, ends };
+  };
+
+  const findVisualTextRange = async (
+    path: string,
+    source: string,
+    oldText: string,
+    element: Element,
+  ) => {
+    const needle = normalizedSourceText(oldText);
+    if (!needle) return null;
+
+    const extension = extensionOf(path);
+    const projections = [
+      projectEditableText(source, false),
+      ...(extension === ".md" ? [projectEditableText(source, true)] : []),
+    ];
+    const ranges = new Map<string, { start: number; end: number }>();
+
+    projections.forEach((projection) => {
+      let matchIndex = projection.text.indexOf(needle);
+      while (matchIndex >= 0) {
+        const lastIndex = matchIndex + needle.length - 1;
+        const start = projection.starts[matchIndex];
+        const end = projection.ends[lastIndex];
+        if (start !== undefined && end !== undefined) {
+          ranges.set(`${start}:${end}`, { start, end });
+        }
+        matchIndex = projection.text.indexOf(needle, matchIndex + 1);
+      }
+    });
+
+    const astroBodyStart =
+      extension === ".astro"
+        ? source.indexOf("---", source.indexOf("---") + 3) + 3
+        : 0;
+    const candidates = [...ranges.values()].filter(({ start, end }) => {
+      if (extension === ".astro") {
+        if (astroBodyStart > 2 && start < astroBodyStart) return false;
+        const lastOpen = source.lastIndexOf("<", start);
+        const lastClose = source.lastIndexOf(">", start);
+        if (lastOpen > lastClose) return false;
+        if (/[<>{}]/.test(source.slice(start, end))) return false;
+      }
+      return true;
+    });
+
+    if (candidates.length === 0) return null;
+
+    const targetLine = await findContentLine(path, element);
+    let targetOffset = 0;
+    for (let line = 1; line < targetLine; line += 1) {
+      const nextBreak = source.indexOf("\n", targetOffset);
+      if (nextBreak < 0) break;
+      targetOffset = nextBreak + 1;
+    }
+
+    candidates.sort(
+      (a, b) =>
+        Math.abs(a.start - targetOffset) - Math.abs(b.start - targetOffset),
+    );
+    return candidates[0];
+  };
+
+  interface VisualMarkdownContext {
+    path: string;
+    source: string;
+    blockStart: number;
+    blockEnd: number;
+    sourceText: string;
+    canManageBlocks: boolean;
+  }
+
+  const visualMarkdownContext = async (
+    element: Element,
+    renderedText: string,
+  ): Promise<VisualMarkdownContext | null> => {
+    const sourceElement = element.closest<HTMLElement>("[data-source-file]");
+    const path = sourceElement?.dataset.sourceFile;
+    const handle = path ? fileHandles.get(path) : undefined;
+    if (!path || !handle || extensionOf(path) !== ".md") return null;
+
+    const source =
+      currentPath === path
+        ? editor.state.doc.toString()
+        : await (await handle.getFile()).text();
+    let range = await findVisualTextRange(path, source, renderedText, element);
+    if (!range) {
+      const target = normalizedSourceText(renderedText);
+      let lineStart = 0;
+      for (const line of source.split(/\r?\n/)) {
+        const simplified = normalizedSourceText(
+          line
+            .replace(/^#{1,6}\s+/, "")
+            .replace(/^[-*>]\s+/, "")
+            .replace(/[*_`~]/g, ""),
+        );
+        if (simplified === target) {
+          const visibleStart = line
+            .toLocaleLowerCase()
+            .indexOf(renderedText.slice(0, 12).toLocaleLowerCase());
+          range = {
+            start: lineStart + Math.max(visibleStart, 0),
+            end: lineStart + line.length,
+          };
+          break;
+        }
+        lineStart += line.length + (source.includes("\r\n") ? 2 : 1);
+      }
+    }
+    if (!range) return null;
+
+    const closingFrontmatter = source.startsWith("---")
+      ? source.indexOf("\n---", 3)
+      : -1;
+    const bodyStart =
+      closingFrontmatter >= 0
+        ? source.indexOf("\n", closingFrontmatter + 1) + 1
+        : 0;
+    const canManageBlocks = range.start >= bodyStart;
+    if (!canManageBlocks) {
+      return {
+        path,
+        source,
+        blockStart: range.start,
+        blockEnd: range.end,
+        sourceText: renderedText,
+        canManageBlocks: false,
+      };
+    }
+
+    const blankLinePattern = /\r?\n\r?\n/g;
+    let previousGapEnd = bodyStart;
+    let nextGapStart = source.length;
+    let gapMatch = blankLinePattern.exec(source);
+    while (gapMatch) {
+      if (gapMatch.index < range.start && gapMatch.index >= bodyStart) {
+        previousGapEnd = gapMatch.index + gapMatch[0].length;
+      }
+      if (gapMatch.index >= range.end) {
+        nextGapStart = gapMatch.index;
+        break;
+      }
+      gapMatch = blankLinePattern.exec(source);
+    }
+    let blockStart = previousGapEnd;
+    let blockEnd = nextGapStart;
+    while (source[blockStart] === "\n" || source[blockStart] === "\r") {
+      blockStart += 1;
+    }
+    while (
+      blockEnd > blockStart &&
+      (source[blockEnd - 1] === "\n" || source[blockEnd - 1] === "\r")
+    ) {
+      blockEnd -= 1;
+    }
+
+    return {
+      path,
+      source,
+      blockStart,
+      blockEnd,
+      sourceText: source.slice(blockStart, blockEnd),
+      canManageBlocks: true,
+    };
+  };
+
+  const writeVisualSource = async (
+    path: string,
+    updated: string,
+    message: string,
+  ) => {
+    const handle = fileHandles.get(path);
+    if (!handle) throw new Error("The source file is unavailable.");
+    const writable = await handle.createWritable();
+    await writable.write(updated);
+    await writable.close();
+
+    if (currentPath === path) {
+      loadingDocument = true;
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: updated,
+        },
+      });
+      loadingDocument = false;
+      setDirty(false);
+    }
+
+    setStatus(message);
+    schedulePreviewRefresh();
+  };
+
+  const applyVisualMarkdownBlock = async (
+    element: Element,
+    renderedText: string,
+    markdown: string,
+    action: "replace" | "before" | "after" | "delete",
+  ) => {
+    try {
+      const context = await visualMarkdownContext(element, renderedText);
+      if (!context) {
+        setStatus("This block could not be matched to Markdown source.", "error");
+        return false;
+      }
+      if (!context.canManageBlocks) {
+        if (action !== "replace") {
+          setStatus("Front-matter fields cannot add or delete blocks.", "error");
+          return false;
+        }
+        return applyVisualTextEdit(element, renderedText, markdown);
+      }
+
+      const lineBreak = context.source.includes("\r\n") ? "\r\n" : "\n";
+      const nextBlock = markdown.trim().replace(/\r?\n/g, lineBreak);
+      if (action !== "delete" && !nextBlock) {
+        setStatus("Enter some Markdown before applying this change.", "error");
+        return false;
+      }
+
+      const currentBlock = context.source.slice(
+        context.blockStart,
+        context.blockEnd,
+      );
+      const blockGap = `${lineBreak}${lineBreak}`;
+      let replacement = nextBlock;
+      if (action === "before") {
+        replacement = `${nextBlock}${blockGap}${currentBlock}`;
+      }
+      if (action === "after") {
+        replacement = `${currentBlock}${blockGap}${nextBlock}`;
+      }
+
+      let start = context.blockStart;
+      let end = context.blockEnd;
+      if (action === "delete") {
+        replacement = "";
+        const followingGap = context.source.slice(end).match(/^\r?\n\r?\n/);
+        const precedingGap = context.source.slice(0, start).match(/\r?\n\r?\n$/);
+        if (followingGap) {
+          end += followingGap[0].length;
+        } else if (precedingGap) {
+          start -= precedingGap[0].length;
+        }
+      }
+
+      const updated =
+        context.source.slice(0, start) +
+        replacement +
+        context.source.slice(end);
+      await writeVisualSource(
+        context.path,
+        updated,
+        action === "delete"
+          ? `Deleted a block from ${context.path}.`
+          : `Updated Markdown in ${context.path}.`,
+      );
+      return true;
+    } catch (error) {
+      loadingDocument = false;
+      setStatus(
+        error instanceof Error ? error.message : "Unable to update this block.",
+        "error",
+      );
+      return false;
+    }
+  };
+
+  const applyVisualTextEdit = async (
+    element: Element,
+    oldText: string,
+    newText: string,
+  ) => {
+    const sourceElement = element.closest<HTMLElement>("[data-source-file]");
+    const path = sourceElement?.dataset.sourceFile;
+    const handle = path ? fileHandles.get(path) : undefined;
+    if (!path || !handle) {
+      setStatus("This text block has no registered source file.", "error");
+      return false;
+    }
+
+    const extension = extensionOf(path);
+    if (extension !== ".md" && extension !== ".astro") {
+      setStatus("Visual text editing supports Markdown and Astro pages.", "error");
+      return false;
+    }
+
+    if (extension === ".astro" && /[<>{}]/.test(newText)) {
+      setStatus(
+        "Astro visual edits cannot contain <, >, {, or }. Use Content for code.",
+        "error",
+      );
+      return false;
+    }
+
+    try {
+      const source =
+        currentPath === path
+          ? editor.state.doc.toString()
+          : await (await handle.getFile()).text();
+      const range = await findVisualTextRange(path, source, oldText, element);
+      if (!range) {
+        setStatus(
+          "This block contains generated or structured markup. Use Content instead.",
+          "error",
+        );
+        return false;
+      }
+
+      let replacement = newText.trim();
+      const quote = source[range.start - 1];
+      if (
+        extension === ".md" &&
+        (quote === '"' || quote === "'") &&
+        source[range.end] === quote
+      ) {
+        if (replacement.includes("\n")) {
+          setStatus("Front-matter fields must remain on one line.", "error");
+          return false;
+        }
+        replacement =
+          quote === '"'
+            ? replacement.replaceAll("\\", "\\\\").replaceAll('"', '\\"')
+            : replacement.replaceAll("'", "''");
+      }
+
+      const updated =
+        source.slice(0, range.start) + replacement + source.slice(range.end);
+      await writeVisualSource(path, updated, `Updated text in ${path}.`);
+      return true;
+    } catch (error) {
+      loadingDocument = false;
+      setStatus(
+        error instanceof Error ? error.message : "Unable to update this text.",
+        "error",
+      );
+      return false;
+    }
+  };
+
   let removePreviewInspector = () => {};
+  let removePreviewVisualEditor = () => {};
 
   // Inspector markup is injected only into the same-origin preview iframe.
   // 检查器只注入同源预览，不会写入或发布到公开页面。
   const installPreviewInspector = () => {
     removePreviewInspector();
-    if (!previewInspectorInput.checked) return;
+    if (!previewInspectorInput.checked || previewVisualEditorInput.checked) return;
 
     const frameDocument = previewFrame.contentDocument;
     const frameWindow = previewFrame.contentWindow;
@@ -1067,6 +1491,448 @@ export async function initializeAdminStudio() {
       frame.remove();
       toolbar.remove();
       removePreviewInspector = () => {};
+    };
+  };
+
+  const installPreviewVisualEditor = () => {
+    removePreviewVisualEditor();
+    if (!previewVisualEditorInput.checked) return;
+
+    const frameDocument = previewFrame.contentDocument;
+    if (!frameDocument) return;
+
+    const style = frameDocument.createElement("style");
+    style.dataset.studioVisualEditorUi = "true";
+    style.textContent = `
+      [data-studio-visual-hover] {
+        outline: 1px dashed #c81e1e !important;
+        outline-offset: 3px;
+        cursor: text !important;
+      }
+      [data-studio-visual-selected] {
+        outline: 2px solid #c81e1e !important;
+        outline-offset: 3px;
+      }
+      [data-studio-visual-panel] {
+        position: fixed;
+        z-index: 2147483647;
+        right: 0.75rem;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        display: none;
+        width: min(38rem, calc(100vw - 1.5rem));
+        max-height: min(30rem, calc(100vh - 1.5rem));
+        margin-inline: auto;
+        gap: 0.4rem;
+        overflow: auto;
+        border: 1px solid #c81e1e;
+        padding: 0.6rem;
+        background: #fff;
+        color: #111;
+        font: 12px/1.35 Arial, sans-serif;
+        box-shadow: 0 3px 16px rgb(0 0 0 / 22%);
+      }
+      [data-studio-visual-panel][data-open="true"] {
+        display: grid;
+      }
+      [data-studio-visual-panel] strong,
+      [data-studio-visual-panel] small {
+        display: block;
+      }
+      [data-studio-visual-panel] small {
+        color: #666;
+      }
+      [data-studio-visual-panel] textarea {
+        width: 100%;
+        min-height: 7rem;
+        resize: vertical;
+        border: 1px solid #aaa;
+        padding: 0.5rem;
+        color: #111;
+        background: #fff;
+        font: 14px/1.4 Georgia, serif;
+      }
+      [data-studio-visual-toolbar],
+      [data-studio-visual-block-actions] {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+      }
+      [data-studio-visual-toolbar] button,
+      [data-studio-visual-block-actions] button {
+        min-width: 2rem;
+        border: 1px solid #bbb;
+        padding: 0.25rem 0.4rem;
+        background: #f8f8f8;
+        color: #111;
+        font: 12px/1.2 Arial, sans-serif;
+        cursor: pointer;
+      }
+      [data-studio-visual-toolbar][hidden],
+      [data-studio-visual-block-actions][hidden] {
+        display: none !important;
+      }
+      [data-studio-visual-block-actions] button[data-danger] {
+        margin-left: auto;
+        color: #a00000;
+      }
+      [data-studio-visual-actions] {
+        display: flex;
+        gap: 0.4rem;
+        justify-content: flex-end;
+      }
+      [data-studio-visual-actions] button {
+        border: 1px solid #aaa;
+        padding: 0.3rem 0.55rem;
+        background: #fff;
+        color: #111;
+        font: inherit;
+        cursor: pointer;
+      }
+      [data-studio-visual-actions] button[data-primary] {
+        border-color: #c81e1e;
+        color: #c81e1e;
+      }
+    `;
+
+    const panel = frameDocument.createElement("div");
+    panel.dataset.studioVisualPanel = "true";
+    panel.dataset.studioInspectorUi = "true";
+    const heading = frameDocument.createElement("strong");
+    heading.textContent = "Edit text";
+    const sourceLabel = frameDocument.createElement("small");
+    const formatToolbar = frameDocument.createElement("div");
+    formatToolbar.dataset.studioVisualToolbar = "true";
+    const textarea = frameDocument.createElement("textarea");
+    textarea.setAttribute("aria-label", "Selected website text");
+    const guidance = frameDocument.createElement("small");
+    const blockActions = frameDocument.createElement("div");
+    blockActions.dataset.studioVisualBlockActions = "true";
+    const editBlockButton = frameDocument.createElement("button");
+    editBlockButton.type = "button";
+    editBlockButton.textContent = "Edit block";
+    const addAboveButton = frameDocument.createElement("button");
+    addAboveButton.type = "button";
+    addAboveButton.textContent = "Add above";
+    const addBelowButton = frameDocument.createElement("button");
+    addBelowButton.type = "button";
+    addBelowButton.textContent = "Add below";
+    const deleteBlockButton = frameDocument.createElement("button");
+    deleteBlockButton.type = "button";
+    deleteBlockButton.dataset.danger = "true";
+    deleteBlockButton.textContent = "Delete block";
+    blockActions.append(
+      editBlockButton,
+      addAboveButton,
+      addBelowButton,
+      deleteBlockButton,
+    );
+    const actions = frameDocument.createElement("div");
+    actions.dataset.studioVisualActions = "true";
+    const cancelButton = frameDocument.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.textContent = "Cancel";
+    const applyButton = frameDocument.createElement("button");
+    applyButton.type = "button";
+    applyButton.dataset.primary = "true";
+    applyButton.textContent = "Apply";
+    actions.append(cancelButton, applyButton);
+    panel.append(
+      heading,
+      sourceLabel,
+      formatToolbar,
+      textarea,
+      guidance,
+      blockActions,
+      actions,
+    );
+    frameDocument.head.append(style);
+    frameDocument.body.append(panel);
+
+    let hoveredElement: HTMLElement | null = null;
+    let selectedElement: HTMLElement | null = null;
+    let originalText = "";
+    let originalSourceText = "";
+    let selectedIsMarkdown = false;
+    let canManageBlocks = false;
+    let editAction: "replace" | "before" | "after" = "replace";
+    let deleteArmed = false;
+
+    const insertAroundSelection = (
+      before: string,
+      after: string,
+      placeholder: string,
+    ) => {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selected = textarea.value.slice(start, end) || placeholder;
+      textarea.setRangeText(`${before}${selected}${after}`, start, end, "end");
+      textarea.focus();
+    };
+
+    const setHeadingLevel = (level: number) => {
+      const lines = textarea.value.split("\n");
+      const first = (lines[0] ?? "").replace(/^#{1,6}\s+/, "");
+      lines[0] = level > 0 ? `${"#".repeat(level)} ${first}` : first;
+      textarea.value = lines.join("\n");
+      textarea.focus();
+    };
+
+    const formatCommands = [
+      { label: "P", title: "Paragraph", run: () => setHeadingLevel(0) },
+      { label: "H1", title: "Heading 1", run: () => setHeadingLevel(1) },
+      { label: "H2", title: "Heading 2", run: () => setHeadingLevel(2) },
+      { label: "H3", title: "Heading 3", run: () => setHeadingLevel(3) },
+      { label: "H4", title: "Heading 4", run: () => setHeadingLevel(4) },
+      {
+        label: "B",
+        title: "Bold",
+        run: () => insertAroundSelection("**", "**", "bold text"),
+      },
+      {
+        label: "I",
+        title: "Italic",
+        run: () => insertAroundSelection("*", "*", "italic text"),
+      },
+      {
+        label: "Code",
+        title: "Inline code",
+        run: () => insertAroundSelection("`", "`", "code"),
+      },
+      {
+        label: "Ruby",
+        title: "Ruby annotation",
+        run: () =>
+          insertAroundSelection(
+            "<ruby>",
+            "<rt>reading</rt></ruby>",
+            "text",
+          ),
+      },
+      {
+        label: "Math",
+        title: "Inline LaTeX",
+        run: () => insertAroundSelection("$", "$", "formula"),
+      },
+      {
+        label: "Quote",
+        title: "Block quote",
+        run: () => {
+          textarea.value = textarea.value
+            .split("\n")
+            .map((line) => (line ? `> ${line.replace(/^>\s?/, "")}` : line))
+            .join("\n");
+          textarea.focus();
+        },
+      },
+      {
+        label: "List",
+        title: "Bulleted list",
+        run: () => {
+          textarea.value = textarea.value
+            .split("\n")
+            .map((line) => (line ? `- ${line.replace(/^[-*]\s+/, "")}` : line))
+            .join("\n");
+          textarea.focus();
+        },
+      },
+    ];
+
+    formatCommands.forEach((command) => {
+      const button = frameDocument.createElement("button");
+      button.type = "button";
+      button.textContent = command.label;
+      button.title = command.title;
+      button.setAttribute("aria-label", command.title);
+      button.addEventListener("click", command.run);
+      formatToolbar.append(button);
+    });
+
+    const clearHover = () => {
+      hoveredElement?.removeAttribute("data-studio-visual-hover");
+      hoveredElement = null;
+    };
+
+    const closePanel = () => {
+      selectedElement?.removeAttribute("data-studio-visual-selected");
+      selectedElement = null;
+      originalText = "";
+      originalSourceText = "";
+      selectedIsMarkdown = false;
+      canManageBlocks = false;
+      editAction = "replace";
+      deleteArmed = false;
+      deleteBlockButton.textContent = "Delete block";
+      panel.removeAttribute("data-open");
+    };
+
+    const editableElementFor = (target: Element) => {
+      const element = target.closest<HTMLElement>(
+        "p, h1, h2, h3, h4, h5, h6, figcaption, blockquote, dt, dd, li",
+      );
+      if (!element || element.closest("[data-studio-inspector-ui]")) return null;
+      return element.closest("[data-source-file]") ? element : null;
+    };
+
+    const handlePointerOver = (event: PointerEvent) => {
+      const target = event.target;
+      if (!target || (target as Node).nodeType !== Node.ELEMENT_NODE) return;
+      const element = editableElementFor(target as Element);
+      if (element === hoveredElement) return;
+      clearHover();
+      if (!element || element === selectedElement) return;
+      hoveredElement = element;
+      hoveredElement.dataset.studioVisualHover = "true";
+    };
+
+    const handleClick = async (event: MouseEvent) => {
+      const target = event.target;
+      if (!target || (target as Node).nodeType !== Node.ELEMENT_NODE) return;
+      const targetElement = target as Element;
+      if (targetElement.closest("[data-studio-inspector-ui]")) return;
+
+      const element = editableElementFor(targetElement);
+      if (!element) return;
+      event.preventDefault();
+      event.stopPropagation();
+      clearHover();
+      selectedElement?.removeAttribute("data-studio-visual-selected");
+      selectedElement = element;
+      selectedElement.dataset.studioVisualSelected = "true";
+      originalText = (selectedElement.innerText || selectedElement.textContent || "")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+      const sourcePath =
+        selectedElement.closest<HTMLElement>("[data-source-file]")?.dataset
+          .sourceFile ?? "Unknown source";
+      sourceLabel.textContent = sourcePath;
+      selectedIsMarkdown = extensionOf(sourcePath) === ".md";
+      canManageBlocks = false;
+      originalSourceText = originalText;
+      if (selectedIsMarkdown) {
+        const context = await visualMarkdownContext(
+          selectedElement,
+          originalText,
+        );
+        if (context) {
+          originalSourceText = context.sourceText;
+          canManageBlocks = context.canManageBlocks;
+        }
+      }
+      editAction = "replace";
+      deleteArmed = false;
+      deleteBlockButton.textContent = "Delete block";
+      heading.textContent = selectedIsMarkdown
+        ? "Edit Markdown block"
+        : "Edit plain text";
+      textarea.value = originalSourceText;
+      formatToolbar.hidden = !selectedIsMarkdown || !canManageBlocks;
+      blockActions.hidden = !selectedIsMarkdown || !canManageBlocks;
+      guidance.textContent =
+        selectedIsMarkdown && canManageBlocks
+          ? "Markdown is supported. Blank lines create separate blocks."
+          : "Plain text only. Structured Astro markup stays protected.";
+      applyButton.textContent = "Apply";
+      panel.dataset.open = "true";
+      textarea.focus();
+      textarea.select();
+    };
+    const handleDocumentClick = (event: MouseEvent) => {
+      void handleClick(event);
+    };
+
+    const applyEdit = async () => {
+      if (!selectedElement) return;
+      applyButton.disabled = true;
+      const applied = selectedIsMarkdown
+        ? await applyVisualMarkdownBlock(
+            selectedElement,
+            originalText,
+            textarea.value,
+            editAction,
+          )
+        : await applyVisualTextEdit(
+            selectedElement,
+            originalText,
+            textarea.value,
+          );
+      applyButton.disabled = false;
+      if (applied) closePanel();
+    };
+
+    editBlockButton.addEventListener("click", () => {
+      editAction = "replace";
+      deleteArmed = false;
+      deleteBlockButton.textContent = "Delete block";
+      heading.textContent = "Edit Markdown block";
+      textarea.value = originalSourceText;
+      applyButton.textContent = "Apply";
+      textarea.focus();
+    });
+    addAboveButton.addEventListener("click", () => {
+      editAction = "before";
+      deleteArmed = false;
+      deleteBlockButton.textContent = "Delete block";
+      heading.textContent = "Add Markdown block above";
+      textarea.value = "";
+      applyButton.textContent = "Add";
+      textarea.focus();
+    });
+    addBelowButton.addEventListener("click", () => {
+      editAction = "after";
+      deleteArmed = false;
+      deleteBlockButton.textContent = "Delete block";
+      heading.textContent = "Add Markdown block below";
+      textarea.value = "";
+      applyButton.textContent = "Add";
+      textarea.focus();
+    });
+    deleteBlockButton.addEventListener("click", () => {
+      if (!selectedElement) return;
+      if (!deleteArmed) {
+        deleteArmed = true;
+        deleteBlockButton.textContent = "Confirm delete";
+        return;
+      }
+      void (async () => {
+        deleteBlockButton.disabled = true;
+        const deleted = await applyVisualMarkdownBlock(
+          selectedElement,
+          originalText,
+          "",
+          "delete",
+        );
+        deleteBlockButton.disabled = false;
+        if (deleted) closePanel();
+      })();
+    });
+    cancelButton.addEventListener("click", closePanel);
+    applyButton.addEventListener("click", () => {
+      void applyEdit();
+    });
+    textarea.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        event.preventDefault();
+        void applyEdit();
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closePanel();
+      }
+    });
+    frameDocument.addEventListener("pointerover", handlePointerOver, true);
+    frameDocument.addEventListener("click", handleDocumentClick, true);
+    frameDocument.addEventListener("pointerleave", clearHover);
+
+    removePreviewVisualEditor = () => {
+      clearHover();
+      closePanel();
+      frameDocument.removeEventListener("pointerover", handlePointerOver, true);
+      frameDocument.removeEventListener("click", handleDocumentClick, true);
+      frameDocument.removeEventListener("pointerleave", clearHover);
+      style.remove();
+      panel.remove();
+      removePreviewVisualEditor = () => {};
     };
   };
 
@@ -1382,10 +2248,8 @@ export async function initializeAdminStudio() {
       renderFileList();
       await renderImages();
       openThemeCssButton.disabled = !fileHandles.has(GLOBAL_CSS_PATH);
-      const globalCssHandle = fileHandles.get(GLOBAL_CSS_PATH);
-      if (globalCssHandle) {
-        syncDesignControls(await (await globalCssHandle.getFile()).text());
-      }
+      await loadMotionSettings();
+      await loadTypographySettings();
       setStatus(
         `Connected: ${fileHandles.size} editable files and ${imageHandles.size} images.`,
       );
@@ -1435,10 +2299,8 @@ export async function initializeAdminStudio() {
       renderFileList();
       await renderImages();
       openThemeCssButton.disabled = !fileHandles.has(GLOBAL_CSS_PATH);
-      const globalCssHandle = fileHandles.get(GLOBAL_CSS_PATH);
-      if (globalCssHandle) {
-        syncDesignControls(await (await globalCssHandle.getFile()).text());
-      }
+      await loadMotionSettings();
+      await loadTypographySettings();
       setStatus(
         `Opened ${directory.name}: ${fileHandles.size} editable files and ${imageHandles.size} images.`,
       );
@@ -1478,18 +2340,58 @@ export async function initializeAdminStudio() {
   });
   loadPreviewButton.addEventListener("click", refreshPreview);
   refreshPreviewButton.addEventListener("click", refreshPreview);
-  previewInspectorInput.addEventListener("change", installPreviewInspector);
-  previewFrame.addEventListener("load", () => {
+  previewInspectorInput.addEventListener("change", () => {
+    if (previewInspectorInput.checked) {
+      previewVisualEditorInput.checked = false;
+      removePreviewVisualEditor();
+    }
+    sessionStorage.setItem(
+      PREVIEW_MODE_SESSION_KEY,
+      previewInspectorInput.checked ? "inspect" : "",
+    );
     installPreviewInspector();
+  });
+  previewVisualEditorInput.addEventListener("change", () => {
+    if (previewVisualEditorInput.checked) {
+      previewInspectorInput.checked = false;
+      removePreviewInspector();
+      setStatus("Visual text mode: click a text block in the preview.");
+    }
+    sessionStorage.setItem(
+      PREVIEW_MODE_SESSION_KEY,
+      previewVisualEditorInput.checked ? "visual" : "",
+    );
+    installPreviewVisualEditor();
+  });
+  previewFrame.addEventListener("load", () => {
+    applyTypographyPreview(Number(cjkLetterSpacingInput.value));
+    installPreviewInspector();
+    installPreviewVisualEditor();
   });
   previewPath.addEventListener("keydown", (event) => {
     if (event.key === "Enter") refreshPreview();
   });
   previewPath.addEventListener("input", () => {
-    openPreviewLink.href = previewPath.value.trim() || "/";
+    const path = previewPath.value.trim() || "/";
+    openPreviewLink.href = path;
+    sessionStorage.setItem(PREVIEW_PATH_SESSION_KEY, path);
   });
   openThemeCssButton.addEventListener("click", () => {
     void loadFile(GLOBAL_CSS_PATH);
+  });
+  motionSettingInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      const key = input.dataset.motionSetting as MotionSetting;
+      void saveMotionSetting(key, input.checked);
+    });
+  });
+  cjkLetterSpacingInput.addEventListener("input", () => {
+    const value = Number(cjkLetterSpacingInput.value);
+    cjkLetterSpacingOutput.value = `${value.toFixed(3)}em`;
+    applyTypographyPreview(value);
+  });
+  cjkLetterSpacingInput.addEventListener("change", () => {
+    void saveTypographySettings(Number(cjkLetterSpacingInput.value));
   });
   lockStudioButton.addEventListener("click", () => {
     if (
@@ -1509,6 +2411,7 @@ export async function initializeAdminStudio() {
       button.addEventListener("click", () => {
         const size = button.dataset.previewSize ?? "desktop";
         previewStage.dataset.previewStage = size;
+        sessionStorage.setItem(PREVIEW_SIZE_SESSION_KEY, size);
         studio
           .querySelectorAll<HTMLButtonElement>("[data-preview-size]")
           .forEach((sizeButton) => {
@@ -1520,153 +2423,83 @@ export async function initializeAdminStudio() {
       });
     });
 
-  themeColorInput.addEventListener("input", () => {
-    themeColorOutput.value = themeColorInput.value;
-    document.documentElement.style.setProperty(
-      "--admin-accent",
-      themeColorInput.value,
-    );
-    applyDesignToPreview({ "--theme-color": themeColorInput.value });
-  });
-  themeColorInput.addEventListener("change", () => {
-    void saveDesignVariables(
-      { "--theme-color": themeColorInput.value },
-      `Theme color changed to ${themeColorInput.value}.`,
-    );
-  });
-  designFontInput.addEventListener("change", () => {
-    const font =
-      designFonts[designFontInput.value as keyof typeof designFonts] ??
-      designFonts["system-sans"];
-    void saveDesignVariables(
-      { "--font-body": font },
-      `Font changed to ${designFontInput.selectedOptions[0]?.textContent ?? designFontInput.value}.`,
-    );
-  });
-  designFontSizeInput.addEventListener("input", () => {
-    designFontSizeOutput.value = `${designFontSizeInput.value}px`;
-    applyDesignToPreview({
-      "--base-font-size": `${designFontSizeInput.value}px`,
+  studio
+    .querySelectorAll<HTMLButtonElement>("[data-pane-toggle]")
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        const pane = button.dataset.paneToggle as PaneName;
+        const collapsed = paneLayout.collapsed.includes(pane);
+        paneLayout.collapsed = collapsed
+          ? paneLayout.collapsed.filter((item) => item !== pane)
+          : [...paneLayout.collapsed, pane];
+        applyPaneLayout();
+        storePaneLayout();
+      });
     });
-  });
-  designFontSizeInput.addEventListener("change", () => {
-    void saveDesignVariables(
-      { "--base-font-size": `${designFontSizeInput.value}px` },
-      `Base text size changed to ${designFontSizeInput.value}px.`,
-    );
-  });
-  designSpacingInput.addEventListener("change", () => {
-    const preset =
-      spacingPresets[
-        designSpacingInput.value as keyof typeof spacingPresets
-      ] ?? spacingPresets.standard;
-    void saveDesignVariables(
-      { ...preset },
-      `Global spacing changed to ${designSpacingInput.value}.`,
-    );
-  });
-  designLineHeightInput.addEventListener("input", () => {
-    designLineHeightOutput.value = designLineHeightInput.value;
-    applyDesignToPreview({ "--line-height": designLineHeightInput.value });
-  });
-  designLineHeightInput.addEventListener("change", () => {
-    void saveDesignVariables(
-      { "--line-height": designLineHeightInput.value },
-      `Line height changed to ${designLineHeightInput.value}.`,
-    );
-  });
-  designParagraphSpacingInput.addEventListener("input", () => {
-    const value = `${designParagraphSpacingInput.value}rem`;
-    designParagraphSpacingOutput.value = value;
-    applyDesignToPreview({ "--paragraph-spacing": value });
-  });
-  designParagraphSpacingInput.addEventListener("change", () => {
-    const value = `${designParagraphSpacingInput.value}rem`;
-    void saveDesignVariables(
-      { "--paragraph-spacing": value },
-      `Paragraph spacing changed to ${value}.`,
-    );
-  });
-  designWidthInput.addEventListener("change", () => {
-    const preset =
-      widthPresets[designWidthInput.value as keyof typeof widthPresets] ??
-      widthPresets.standard;
-    void saveDesignVariables(
-      { ...preset },
-      `Reading width changed to ${designWidthInput.value}.`,
-    );
-  });
-  designIndentInput.addEventListener("change", () => {
-    void saveDesignVariables(
-      {
-        "--paragraph-indent": designIndentInput.checked ? "1.5em" : "0em",
-      },
-      designIndentInput.checked
-        ? "Paragraph indentation enabled."
-        : "Paragraph indentation disabled.",
-    );
-  });
-  designResetButton.addEventListener("click", () => {
-    document.documentElement.style.setProperty(
-      "--admin-accent",
-      defaultDesign["--theme-color"],
-    );
-    void saveDesignVariables(
-      { ...defaultDesign },
-      "Design dashboard reset to defaults.",
-    );
-  });
-  designPresetSlotInput.addEventListener("change", updateDesignPresetStatus);
-  designPresetSaveButton.addEventListener("click", async () => {
-    const handle = fileHandles.get(GLOBAL_CSS_PATH);
-    if (!handle) {
-      setStatus("Connect the project before saving a preset.", "error");
-      return;
-    }
 
-    try {
-      const text =
-        currentPath === GLOBAL_CSS_PATH
-          ? editor.state.doc.toString()
-          : await (await handle.getFile()).text();
-      const slot = designPresetSlotInput.value;
-      const slots = readDesignPresetSlots();
-      slots[slot] = readDesignValues(text);
-      writeDesignPresetSlots(slots);
-      updateDesignPresetStatus();
-      setStatus(`Saved the current design to preset ${slot}.`);
-    } catch (error) {
-      setStatus(
-        error instanceof Error ? error.message : "Unable to save the preset.",
-        "error",
-      );
-    }
-  });
-  designPresetApplyButton.addEventListener("click", () => {
-    const slot = designPresetSlotInput.value;
-    const preset = readDesignPresetSlots()[slot];
-    if (!preset) {
-      updateDesignPresetStatus();
-      return;
-    }
+  studio
+    .querySelectorAll<HTMLElement>("[data-pane-resizer]")
+    .forEach((resizer) => {
+      const resize = (clientX: number) => {
+        const bounds = studioWorkspace.getBoundingClientRect();
+        const pane = resizer.dataset.paneResizer;
+        if (pane === "sidebar") {
+          paneLayout.sidebarWidth = Math.round(
+            Math.min(Math.max(clientX - bounds.left, 150), bounds.width - 520),
+          );
+        }
+        if (pane === "editor") {
+          const sidebarWidth = paneLayout.collapsed.includes("sidebar")
+            ? 42
+            : paneLayout.sidebarWidth;
+          paneLayout.editorWidth = Math.round(
+            Math.min(
+              Math.max(clientX - bounds.left - sidebarWidth - 6, 260),
+              bounds.width - sidebarWidth - 270,
+            ),
+          );
+        }
+        applyPaneLayout();
+      };
 
-    document.documentElement.style.setProperty(
-      "--admin-accent",
-      preset["--theme-color"] ?? defaultDesign["--theme-color"],
-    );
-    void saveDesignVariables(
-      preset,
-      `Applied design preset ${slot}.`,
-    );
-  });
-  designPresetClearButton.addEventListener("click", () => {
-    const slot = designPresetSlotInput.value;
-    const slots = readDesignPresetSlots();
-    delete slots[slot];
-    writeDesignPresetSlots(slots);
-    updateDesignPresetStatus();
-    setStatus(`Cleared design preset ${slot}.`);
-  });
+      resizer.addEventListener("pointerdown", (event) => {
+        const pane = resizer.dataset.paneResizer as PaneName;
+        paneLayout.collapsed = paneLayout.collapsed.filter(
+          (item) => item !== pane,
+        );
+        resizer.dataset.dragging = "true";
+        resizer.setPointerCapture(event.pointerId);
+        resize(event.clientX);
+      });
+      resizer.addEventListener("pointermove", (event) => {
+        if (resizer.dataset.dragging !== "true") return;
+        resize(event.clientX);
+      });
+      resizer.addEventListener("pointerup", (event) => {
+        if (resizer.dataset.dragging !== "true") return;
+        delete resizer.dataset.dragging;
+        resizer.releasePointerCapture(event.pointerId);
+        storePaneLayout();
+      });
+      resizer.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        if (resizer.dataset.paneResizer === "sidebar") {
+          paneLayout.sidebarWidth = Math.max(
+            150,
+            paneLayout.sidebarWidth + direction * 16,
+          );
+        } else {
+          paneLayout.editorWidth = Math.max(
+            260,
+            paneLayout.editorWidth + direction * 16,
+          );
+        }
+        applyPaneLayout();
+        storePaneLayout();
+      });
+    });
 
   const selectSidebarTab = (selected: string) => {
     studio
@@ -1709,6 +2542,7 @@ export async function initializeAdminStudio() {
   });
 
   const connected = await connectDevProject();
+  refreshPreview();
   if (!connected) {
     setStatus(
       window.showDirectoryPicker

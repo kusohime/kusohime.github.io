@@ -1,31 +1,36 @@
 /**
- * 中文：管理公开网站的语言、明暗主题和字号偏好。
- * English: Manages language, light/dark theme, and font-size preferences.
- * Caveat / 注意：只有带 data-i18n-en 与 data-i18n-zh 的元素会被翻译。
- * Caveat: Only elements with both data-i18n-en and data-i18n-zh are translated.
+ * 中文：管理公開網站的語言、明暗主題、字號和可選動畫。
+ * English: Manages language, theme, font size, and optional public-site motion.
  */
-type Language = "en" | "zh";
+import motionSettings from "../config/motion.json";
+import typographySettings from "../config/typography.json";
+import type {
+  WorkCategory,
+  WritingType,
+} from "../config/contentTaxonomy";
+import {
+  contentLanguageLabel,
+  formatDate,
+  formatDuration,
+  localeCodes,
+  localeInfo,
+  translate,
+  workCategoryLabel,
+  writingTypeLabel,
+  type Locale,
+  type TranslationKey,
+} from "../config/locales";
+
 type Theme = "light" | "dark";
 type FontSize = "s" | "m" | "l";
 
-const controlLabels = {
-  en: {
-    language: "Language",
-    theme: "Theme",
-    size: "Size",
-    light: "Light",
-    dark: "Dark",
-  },
-  zh: {
-    language: "语言",
-    theme: "主题",
-    size: "字号",
-    light: "浅色",
-    dark: "深色",
-  },
-} as const;
+const flapTimers = new WeakMap<HTMLElement, number>();
 
-function readStored<T extends string>(key: string, allowed: readonly T[], fallback: T): T {
+function readStored<T extends string>(
+  key: string,
+  allowed: readonly T[],
+  fallback: T,
+): T {
   try {
     const value = localStorage.getItem(key) as T | null;
     return value && allowed.includes(value) ? value : fallback;
@@ -50,78 +55,238 @@ function updatePressedState(selector: string, activeValue: string) {
   });
 }
 
-// 管理指南包含整段双语正文；与短标签替换分开处理，代码示例始终保留。
-// The Admin Guide has full bilingual passages; switch those separately while keeping shared code examples.
-function applyGuideLanguage(language: Language) {
+function applyGuideLanguage(language: Locale) {
+  const guideLanguage = language === "zh" ? "zh" : "en";
   document
     .querySelectorAll<HTMLElement>("[data-guide-language]")
     .forEach((element) => {
-      const elementLanguage = element.dataset.guideLanguage;
-      element.hidden = elementLanguage !== language;
+      element.hidden = element.dataset.guideLanguage !== guideLanguage;
     });
 }
 
-function applyLanguage(language: Language) {
-  document.documentElement.lang = language === "zh" ? "zh-Hans" : "en";
+function translationFor(element: HTMLElement, language: Locale) {
+  if (language === "zh") return element.dataset.i18nZh ?? element.dataset.i18nEn;
+  if (language === "de") return element.dataset.i18nDe ?? element.dataset.i18nEn;
+  if (language === "fr") return element.dataset.i18nFr ?? element.dataset.i18nEn;
+  if (language === "ja") return element.dataset.i18nJa ?? element.dataset.i18nEn;
+  return element.dataset.i18nEn;
+}
+
+function setFlapText(element: HTMLElement, text: string) {
+  const existingTimer = flapTimers.get(element);
+  if (existingTimer) window.clearTimeout(existingTimer);
+
+  const glyphs = Array.from(text);
+  const fragment = document.createDocumentFragment();
+  const accessibleText = document.createElement("span");
+  accessibleText.className = "visually-hidden";
+  accessibleText.textContent = text;
+  fragment.append(accessibleText);
+
+  let longestDelay = 0;
+  glyphs.forEach((glyph, index) => {
+    const flap = document.createElement("span");
+    const patternedDelay = Math.min(index * 4, 110);
+    const laneDelay = (index % 6) * 5;
+    const jitter = Math.random() * 65;
+    const delay = Math.round(patternedDelay + laneDelay + jitter);
+    longestDelay = Math.max(longestDelay, delay);
+
+    flap.className = "flap-glyph";
+    flap.ariaHidden = "true";
+    flap.textContent = glyph === " " ? "\u00a0" : glyph;
+    flap.style.setProperty("--flap-delay", `${delay}ms`);
+    flap.style.setProperty(
+      "--flap-lean",
+      `${(Math.random() * 4 - 2).toFixed(2)}deg`,
+    );
+    fragment.append(flap);
+  });
+
+  element.replaceChildren(fragment);
+  element.dataset.flapping = "true";
+  const timer = window.setTimeout(() => {
+    element.textContent = text;
+    delete element.dataset.flapping;
+    flapTimers.delete(element);
+  }, longestDelay + 190);
+  flapTimers.set(element, timer);
+}
+
+function setLocalizedText(element: HTMLElement, text: string, animate: boolean) {
+  if (animate) {
+    setFlapText(element, text);
+  } else {
+    const existingTimer = flapTimers.get(element);
+    if (existingTimer) window.clearTimeout(existingTimer);
+    flapTimers.delete(element);
+    element.textContent = text;
+    delete element.dataset.flapping;
+  }
+}
+
+function applyLanguage(language: Locale, animate = false) {
+  const shouldAnimate = animate && motionSettings.languageFlap;
+  const root = document.documentElement;
+  root.lang = localeInfo[language].htmlLang;
+  root.dataset.locale = language;
+  root.style.setProperty(
+    "--cjk-letter-spacing",
+    `${typographySettings.cjkLetterSpacingEm}em`,
+  );
+
+  document.querySelectorAll<HTMLElement>("[data-i18n-key]").forEach((element) => {
+    const key = element.dataset.i18nKey as TranslationKey;
+    setLocalizedText(element, translate(language, key), shouldAnimate);
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-i18n-en]").forEach((element) => {
+    const translation = translationFor(element, language);
+    if (translation !== undefined) {
+      setLocalizedText(element, translation, shouldAnimate);
+    }
+  });
 
   document
-    .querySelectorAll<HTMLElement>("[data-i18n-en][data-i18n-zh]")
+    .querySelectorAll<HTMLElement>("[data-i18n-work-category]")
     .forEach((element) => {
-      const translation =
-        language === "zh" ? element.dataset.i18nZh : element.dataset.i18nEn;
-      if (translation) element.textContent = translation;
+      const category = element.dataset.i18nWorkCategory as WorkCategory;
+      setLocalizedText(
+        element,
+        workCategoryLabel(category, language),
+        shouldAnimate,
+      );
     });
 
-  const labels = controlLabels[language];
-  document.querySelectorAll<HTMLElement>("[data-control-label]").forEach((element) => {
-    const key = element.dataset.controlLabel as keyof typeof labels;
-    if (labels[key]) element.textContent = labels[key];
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-writing-type]")
+    .forEach((element) => {
+      const type = element.dataset.i18nWritingType as WritingType;
+      const form =
+        element.dataset.writingTypeForm === "plural" ? "plural" : "singular";
+      setLocalizedText(
+        element,
+        writingTypeLabel(type, language, form),
+        shouldAnimate,
+      );
+    });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-content-language]")
+    .forEach((element) => {
+      const contentLanguage = element.dataset.i18nContentLanguage ?? "";
+      setLocalizedText(
+        element,
+        contentLanguageLabel(contentLanguage, language),
+        shouldAnimate,
+      );
+    });
+
+  document.querySelectorAll<HTMLElement>("[data-i18n-date]").forEach((element) => {
+    const date = element.dataset.i18nDate ?? "";
+    setLocalizedText(element, formatDate(date, language), shouldAnimate);
+  });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-duration]")
+    .forEach((element) => {
+      const minutes = element.dataset.durationMinutes
+        ? Number(element.dataset.durationMinutes)
+        : undefined;
+      setLocalizedText(
+        element,
+        formatDuration(
+          {
+            minutes,
+            continuous: element.dataset.durationContinuous === "true",
+            approximate: element.dataset.durationApproximate === "true",
+          },
+          language,
+        ),
+        shouldAnimate,
+      );
   });
 
   document.querySelectorAll<HTMLElement>("[data-current-language]").forEach((element) => {
-    element.textContent = language === "zh" ? "中" : "EN";
+    setLocalizedText(element, localeInfo[language].short, shouldAnimate);
   });
 
   const currentTheme = (document.documentElement.dataset.theme ?? "light") as Theme;
-  document.querySelectorAll<HTMLElement>("[data-current-theme]").forEach((element) => {
-    element.textContent = labels[currentTheme];
-  });
-
-  document.querySelectorAll<HTMLButtonElement>("[data-theme-option]").forEach((button) => {
-    const theme = button.dataset.themeOption as Theme;
-    button.textContent = labels[theme];
-  });
-
+  updateThemeToggleLabel(currentTheme, language);
   applyGuideLanguage(language);
   updatePressedState("[data-language-option]", language);
   store("yc-language", language);
 }
 
-function applyTheme(theme: Theme, language: Language) {
-  document.documentElement.dataset.theme = theme;
-  const labels = controlLabels[language];
+function updateThemeToggleLabel(theme: Theme, language: Locale) {
+  const label = translate(
+    language,
+    theme === "light" ? "theme.toDark" : "theme.toLight",
+  );
 
-  document.querySelectorAll<HTMLElement>("[data-current-theme]").forEach((element) => {
-    element.textContent = labels[theme];
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((button) => {
+    button.setAttribute("aria-label", label);
+    button.title = label;
   });
+}
 
-  updatePressedState("[data-theme-option]", theme);
+function activeLanguage(): Locale {
+  const language = document.documentElement.lang;
+  if (language === "zh-Hant-TW") return "zh";
+  if (language === "de") return "de";
+  if (language === "fr") return "fr";
+  if (language === "ja") return "ja";
+  return "en";
+}
+
+function applyTheme(theme: Theme, language: Locale, animate = false) {
+  const shouldAnimate = animate && motionSettings.themeFade;
+  if (shouldAnimate) {
+    document.documentElement.dataset.themeTransition = "true";
+    window.setTimeout(() => {
+      delete document.documentElement.dataset.themeTransition;
+    }, 360);
+  }
+
+  document.documentElement.dataset.theme = theme;
+  document.dispatchEvent(
+    new CustomEvent("yc-theme-change", {
+      detail: { theme, animate: animate && motionSettings.glyphRotation },
+    }),
+  );
+  updateThemeToggleLabel(theme, language);
   store("yc-theme", theme);
 }
 
-function applyFontSize(fontSize: FontSize) {
-  document.documentElement.dataset.fontSize = fontSize;
+function applyFontSize(fontSize: FontSize, animate = false) {
+  const currentSize =
+    (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "m";
+  if (animate && motionSettings.fontSizeScale && currentSize !== fontSize) {
+    const sizes: FontSize[] = ["s", "m", "l"];
+    document.documentElement.dataset.fontSizeTransition =
+      sizes.indexOf(fontSize) > sizes.indexOf(currentSize) ? "grow" : "shrink";
+    window.setTimeout(() => {
+      delete document.documentElement.dataset.fontSizeTransition;
+    }, 280);
+  }
 
+  document.documentElement.dataset.fontSize = fontSize;
   document.querySelectorAll<HTMLElement>("[data-current-font-size]").forEach((element) => {
     element.textContent = fontSize.toUpperCase();
   });
-
   updatePressedState("[data-font-size-option]", fontSize);
   store("yc-font-size", fontSize);
 }
 
 export function initializePreferences() {
-  const language = readStored<Language>("yc-language", ["en", "zh"], "en");
+  const root = document.documentElement;
+  root.dataset.motionLanguage = String(motionSettings.languageFlap);
+  root.dataset.motionTheme = String(motionSettings.themeFade);
+  root.dataset.motionFontSize = String(motionSettings.fontSizeScale);
+  root.dataset.motionGlyphs = String(motionSettings.glyphRotation);
+  root.dataset.motionInterface = String(motionSettings.interfaceMotion);
+
+  const language = readStored<Locale>("yc-language", localeCodes, "en");
   const theme = readStored<Theme>("yc-theme", ["light", "dark"], "light");
   const fontSize = readStored<FontSize>("yc-font-size", ["s", "m", "l"], "m");
 
@@ -131,25 +296,26 @@ export function initializePreferences() {
 
   document.querySelectorAll<HTMLButtonElement>("[data-language-option]").forEach((button) => {
     button.addEventListener("click", () => {
-      const nextLanguage = button.dataset.languageOption as Language;
-      applyLanguage(nextLanguage);
+      applyLanguage(button.dataset.languageOption as Locale, true);
       button.closest("details")?.removeAttribute("open");
     });
   });
 
-  document.querySelectorAll<HTMLButtonElement>("[data-theme-option]").forEach((button) => {
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
-      const nextTheme = button.dataset.themeOption as Theme;
-      const activeLanguage =
-        document.documentElement.lang === "zh-Hans" ? "zh" : "en";
-      applyTheme(nextTheme, activeLanguage);
-      button.closest("details")?.removeAttribute("open");
+      const currentTheme =
+        document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+      applyTheme(
+        currentTheme === "light" ? "dark" : "light",
+        activeLanguage(),
+        true,
+      );
     });
   });
 
   document.querySelectorAll<HTMLButtonElement>("[data-font-size-option]").forEach((button) => {
     button.addEventListener("click", () => {
-      applyFontSize(button.dataset.fontSizeOption as FontSize);
+      applyFontSize(button.dataset.fontSizeOption as FontSize, true);
       button.closest("details")?.removeAttribute("open");
     });
   });

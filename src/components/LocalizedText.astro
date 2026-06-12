@@ -1,0 +1,19 @@
+---
+import type { LocalizedText } from "../config/locales";
+
+interface Props {
+  value: LocalizedText;
+}
+
+const { value } = Astro.props;
+---
+
+<span
+  data-i18n-en={value.en}
+  data-i18n-zh={value.zh}
+  data-i18n-de={value.de}
+  data-i18n-fr={value.fr}
+  data-i18n-ja={value.ja}
+>
+  {value.en}
+</span>

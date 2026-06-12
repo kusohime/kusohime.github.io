@@ -3,9 +3,22 @@ title: "Still Water, Turning"
 subtitle: "Three studies in resonance"
 year: 2025
 category: "Solo"
-instrumentation: "Solo piano"
-duration: "9 minutes"
-premiere: "First performed by Lin Qiao at the New Music Room, Boston, 18 April 2025."
+instrumentation:
+  en: "Solo piano"
+  zh: "鋼琴獨奏"
+  de: "Klavier solo"
+  fr: "Piano seul"
+  ja: "ピアノ独奏"
+duration:
+  minutes: 9
+premiere:
+  date: "2025-04-18"
+  details:
+    en: "Lin Qiao; New Music Room, Boston"
+    zh: "Lin Qiao；波士頓 New Music Room"
+    de: "Lin Qiao; New Music Room, Boston"
+    fr: "Lin Qiao ; New Music Room, Boston"
+    ja: "Lin Qiao、ボストン New Music Room"
 recordingUrl: "https://example.com/recording"
 scoreUrl: "https://example.com/score"
 image: "/images/work-03.svg"

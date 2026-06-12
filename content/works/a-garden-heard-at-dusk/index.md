@@ -2,11 +2,28 @@
 title: "A Garden Heard at Dusk"
 year: 2024
 category: "Chamber"
-instrumentation: "Flute, viola, percussion, and piano"
-duration: "12 minutes"
-collaborators:
-  - "Written for the Meridian Quartet"
-premiere: "Premiered by the Meridian Quartet at East Window Series, New York, 7 November 2024."
+instrumentation:
+  en: "Flute, viola, percussion, and piano"
+  zh: "長笛、中提琴、打擊樂與鋼琴"
+  de: "Flöte, Viola, Schlagzeug und Klavier"
+  fr: "Flûte, alto, percussion et piano"
+  ja: "フルート、ヴィオラ、打楽器、ピアノ"
+duration:
+  minutes: 12
+dedication:
+  en: "For the Meridian Quartet"
+  zh: "獻給 Meridian Quartet"
+  de: "Für das Meridian Quartet"
+  fr: "Pour le Meridian Quartet"
+  ja: "Meridian Quartetのために"
+premiere:
+  date: "2024-11-07"
+  details:
+    en: "Meridian Quartet; East Window Series, New York"
+    zh: "Meridian Quartet；紐約 East Window Series"
+    de: "Meridian Quartet; East Window Series, New York"
+    fr: "Meridian Quartet ; East Window Series, New York"
+    ja: "Meridian Quartet、ニューヨーク East Window Series"
 recordingUrl: "https://example.com/recording"
 image: "/images/work-01.svg"
 imageAlt: "Placeholder drawing of thin horizontal lines"

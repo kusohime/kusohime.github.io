@@ -283,6 +283,9 @@ function localStudioPlugin() {
 export default defineConfig({
   site: "https://yixincui.com",
   output: "static",
+  devToolbar: {
+    enabled: false,
+  },
   vite: {
     plugins: [localStudioPlugin()],
   },

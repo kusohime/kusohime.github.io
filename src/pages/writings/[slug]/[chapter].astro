@@ -5,7 +5,8 @@
 // Caveat: The parent writing is inferred from the shared content/writings folder.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { contentFolder } from "../../../data/contentPaths";
+import { contentFolder } from "../../../utils/contentPaths";
+import { translate } from "../../../config/locales";
 
 export async function getStaticPaths() {
   const [writings, chapters] = await Promise.all([
@@ -38,6 +39,15 @@ interface Props {
 
 const { writing, chapter } = Astro.props;
 const { Content } = await render(chapter);
+const chapters = (await getCollection("writingChapters"))
+  .filter((entry) => contentFolder(entry.id) === contentFolder(chapter.id))
+  .sort((a, b) => a.data.order - b.data.order);
+const currentIndex = chapters.findIndex((entry) => entry.id === chapter.id);
+const previousChapter = currentIndex > 0 ? chapters[currentIndex - 1] : undefined;
+const nextChapter =
+  currentIndex >= 0 && currentIndex < chapters.length - 1
+    ? chapters[currentIndex + 1]
+    : undefined;
 ---
 
 <BaseLayout
@@ -57,10 +67,45 @@ const { Content } = await render(chapter);
       <Content />
     </div>
 
+    <nav class="guide-chapter-navigation" aria-label="Adjacent chapters">
+      {
+        previousChapter ? (
+          <a href={`/writings/${writing.data.slug}/${previousChapter.data.slug}/`}>
+            <span
+              class="glyph-arrow glyph-arrow--back"
+              data-arrow-glyph
+              aria-hidden="true"
+            ></span>
+            {previousChapter.data.title}
+          </a>
+        ) : (
+          <span></span>
+        )
+      }
+      {
+        nextChapter && (
+          <a href={`/writings/${writing.data.slug}/${nextChapter.data.slug}/`}>
+            {nextChapter.data.title}
+            <span
+              class="glyph-arrow glyph-arrow--forward"
+              data-arrow-glyph
+              aria-hidden="true"
+            ></span>
+          </a>
+        )
+      }
+    </nav>
+
     <p class="back-link">
       <a href={`/writings/${writing.data.slug}/`}>
-        <span class="back-triangle" aria-hidden="true"></span>
-        Back to Contents
+        <span
+          class="glyph-arrow glyph-arrow--back"
+          data-arrow-glyph
+          aria-hidden="true"
+        ></span>
+        <span data-i18n-key="common.backContents">
+          {translate("en", "common.backContents")}
+        </span>
       </a>
     </p>
   </article>
