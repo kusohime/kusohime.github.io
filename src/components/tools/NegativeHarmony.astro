@@ -1,0 +1,139 @@
+---
+// 中文：广义轴反射引擎（“负和声”是其特例）。
+// English: Generalized axis-reflection engine ("negative harmony" is the
+// special case).
+---
+
+<section class="tool-panel" aria-label="Axis reflection">
+  <span class="tool-panel-label">Reflection</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Material (note names)</span>
+      <input type="text" id="nh-input" value="C4 E4 G4 B4 D5" size="26" />
+    </label>
+    <label class="tool-field">
+      <span>Domain</span>
+      <select id="nh-domain">
+        <option value="pc">pitch classes (mod 12)</option>
+        <option value="midi">absolute pitch (registral mirror)</option>
+      </select>
+    </label>
+  </div>
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
+    <label class="tool-field">
+      <span>Axis preset: “negative harmony” in key of…</span>
+      <select id="nh-tonic"></select>
+    </label>
+    <label class="tool-field">
+      <span>…or manual axis sum (0–11)</span>
+      <input type="number" id="nh-sum" min="0" max="11" placeholder="auto" />
+    </label>
+    <label class="tool-field">
+      <span>Mirror note (absolute mode)</span>
+      <input type="text" id="nh-axis-note" value="E4" size="6" />
+    </label>
+    <button type="button" class="tool-primary" id="nh-go">Reflect</button>
+    <button type="button" id="nh-play-a">Hear original</button>
+    <button type="button" id="nh-play-b">Hear reflection</button>
+  </div>
+  <p class="tool-error" id="nh-error" hidden></p>
+
+  <div class="tool-result" id="nh-result" hidden>
+    <p class="tool-result-figure" id="nh-output"></p>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption>Chromatic mapping under the chosen axis</caption>
+        <tbody id="nh-map"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="nh-note"></p>
+  </div>
+</section>
+
+<script>
+  import { negativeHarmonySum, pcMappingTable, reflectMidi, reflectPc } from "../../lib/reflect.js";
+  import { parseNoteList } from "../../lib/parse.js";
+  import { PC_NAMES, midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
+  import { blip, audioContext } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  let resultNotes: number[] = [];
+  let sourceNotes: number[] = [];
+
+  const tonicSelect = byId("nh-tonic");
+  PC_NAMES.forEach((name, pc) => {
+    const option = document.createElement("option");
+    option.value = String(pc);
+    option.textContent = `${name} (axis ${name === "D#" ? "" : ""}sum ${negativeHarmonySum(pc)})`;
+    tonicSelect.append(option);
+  });
+
+  function reflect() {
+    const parsed = parseNoteList(byId("nh-input").value);
+    const error = byId("nh-error");
+    if (!parsed.ok) {
+      error.hidden = false;
+      error.textContent = `Could not read: ${parsed.bad.join(", ") || "input"}. Use note names with octaves.`;
+      return;
+    }
+    error.hidden = true;
+    sourceNotes = parsed.midis;
+    const domain = byId("nh-domain").value;
+
+    if (domain === "pc") {
+      const manual = byId("nh-sum").value;
+      const sum = manual === "" ? negativeHarmonySum(Number(tonicSelect.value)) : Number(manual) % 12;
+      // map each note's pc, keep it near its source register
+      resultNotes = sourceNotes.map((m) => {
+        const targetPc = reflectPc(m % 12, sum);
+        const base = m - (m % 12) + targetPc;
+        const candidates = [base - 12, base, base + 12];
+        return candidates.reduce((best, candidate) =>
+          Math.abs(candidate - m) < Math.abs(best - m) ? candidate : best);
+      });
+      byId("nh-map").innerHTML =
+        `<tr>${pcMappingTable(sum).map((row) => `<th>${PC_NAMES[row.from]}</th>`).join("")}</tr>` +
+        `<tr>${pcMappingTable(sum).map((row) => `<td${row.fixed ? ' class="is-accent"' : ""}>${PC_NAMES[row.to]}</td>`).join("")}</tr>`;
+      byId("nh-note").textContent =
+        `Axis sum ${sum}: ${sum % 2 === 0
+          ? `fixed points on ${PC_NAMES[sum / 2]} and ${PC_NAMES[(sum / 2 + 6) % 12]}.`
+          : "the axis falls between pitch classes — no pc maps to itself."} ` +
+        "Reflected notes are respelled to stay near the source register; double reflection returns the original.";
+    } else {
+      const axis = nameToMidi(byId("nh-axis-note").value.trim());
+      if (axis === null) {
+        error.hidden = false;
+        error.textContent = "Enter a mirror note, e.g. E4.";
+        return;
+      }
+      resultNotes = sourceNotes.map((m) => reflectMidi(m, axis));
+      byId("nh-map").innerHTML =
+        `<tr>${sourceNotes.map((m) => `<th>${midiToName(m)}</th>`).join("")}</tr>` +
+        `<tr>${resultNotes.map((m) => `<td>${midiToName(m)}</td>`).join("")}</tr>`;
+      byId("nh-note").textContent =
+        `Registral mirror around ${byId("nh-axis-note").value.trim()}: intervals invert exactly; contour flips upside-down ` +
+        "(the strict inversion of dodecaphonic practice, not the tonal answer of fugue).";
+    }
+
+    byId("nh-output").innerHTML =
+      `${sourceNotes.map((m) => midiToName(m)).join(" ")} → <strong>${resultNotes.map((m) => midiToName(m)).join(" ")}</strong>`;
+    byId("nh-result").hidden = false;
+  }
+
+  function play(series: number[]) {
+    const ctx = audioContext();
+    const t0 = ctx.currentTime + 0.08;
+    series.forEach((m, index) => blip(midiToHz(m), t0 + index * 0.3, { dur: 0.28, gain: 0.45 }));
+  }
+
+  byId("nh-go").addEventListener("click", reflect);
+  byId("nh-play-a").addEventListener("click", () => {
+    reflect();
+    play(sourceNotes);
+  });
+  byId("nh-play-b").addEventListener("click", () => {
+    reflect();
+    play(resultNotes);
+  });
+  reflect();
+</script>

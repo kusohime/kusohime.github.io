@@ -21,6 +21,8 @@ export const messages = {
   en: {
     "nav.works": "Works",
     "nav.writings": "Writings",
+    "nav.tools": "Tools",
+    "common.backTools": "Back to Tools",
     "common.skip": "Skip to content",
     "common.notice":
       "This site is under construction and all contents are placeholders.",
@@ -49,6 +51,8 @@ export const messages = {
   zh: {
     "nav.works": "作品",
     "nav.writings": "文字",
+    "nav.tools": "工具",
+    "common.backTools": "返回工具",
     "common.skip": "跳至正文",
     "common.notice": "本站正在建置中，所有內容均為暫用文字。",
     "common.noWorks": "此類別目前尚無作品。",
@@ -75,6 +79,8 @@ export const messages = {
   de: {
     "nav.works": "Werke",
     "nav.writings": "Texte",
+    "nav.tools": "Werkzeuge",
+    "common.backTools": "Zurück zu den Werkzeugen",
     "common.skip": "Zum Inhalt springen",
     "common.notice":
       "Diese Website befindet sich im Aufbau; alle Inhalte sind Platzhalter.",
@@ -103,6 +109,8 @@ export const messages = {
   fr: {
     "nav.works": "Œuvres",
     "nav.writings": "Écrits",
+    "nav.tools": "Outils",
+    "common.backTools": "Retour aux outils",
     "common.skip": "Aller au contenu",
     "common.notice":
       "Ce site est en construction ; tous les contenus sont provisoires.",
@@ -131,6 +139,8 @@ export const messages = {
   ja: {
     "nav.works": "作品",
     "nav.writings": "文章",
+    "nav.tools": "ツール",
+    "common.backTools": "ツール一覧へ戻る",
     "common.skip": "本文へ移動",
     "common.notice": "このサイトは制作中です。掲載内容はすべて仮のものです。",
     "common.noWorks": "このカテゴリーには、まだ作品がありません。",

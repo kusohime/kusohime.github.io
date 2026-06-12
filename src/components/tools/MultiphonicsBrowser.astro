@@ -1,0 +1,111 @@
+---
+// 中文：复音/扩展技法资源浏览器（数据待补，先建严格 schema）。
+// English: Multiphonic / extended-technique browser (schema-first;
+// data pending verification).
+---
+
+<section class="tool-panel" aria-label="Editorial notice">
+  <span class="tool-panel-label">Editorial policy</span>
+  <p class="tool-error" style="margin:0;">
+    Entries marked UNVERIFIED are schema demonstrations only — they cite the
+    literature where the real fingering belongs, but their pitch content has
+    not yet been checked against those sources. Do not copy them into scores.
+    Verified data will replace them as the catalogue is checked entry by entry
+    against the cited references.
+  </p>
+</section>
+
+<section class="tool-panel" aria-label="Technique browser">
+  <span class="tool-panel-label">Browser</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Instrument</span>
+      <select id="mb-instrument"><option value="">all</option></select>
+    </label>
+    <label class="tool-field">
+      <span>Technique</span>
+      <select id="mb-technique"><option value="">all</option></select>
+    </label>
+    <label class="tool-field">
+      <span>Search</span>
+      <input type="text" id="mb-search" placeholder="e.g. underblown" size="16" />
+    </label>
+  </div>
+  <p class="tool-note" id="mb-count"></p>
+  <div class="tool-cards" id="mb-cards"></div>
+</section>
+
+<section class="tool-panel" aria-label="Bibliography">
+  <span class="tool-panel-label">Standard references</span>
+  <ul class="tool-note" id="mb-biblio" style="margin:0; padding-left:1.2rem;"></ul>
+</section>
+
+<script>
+  import {
+    BIBLIOGRAPHY, ENTRIES, INSTRUMENTS, TECHNIQUES,
+  } from "../../lib/multiphonics-data.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+
+  const instrumentSelect = byId("mb-instrument");
+  for (const instrument of INSTRUMENTS) {
+    const option = document.createElement("option");
+    option.value = instrument.id;
+    option.textContent = instrument.label;
+    instrumentSelect.append(option);
+  }
+  const techniqueSelect = byId("mb-technique");
+  for (const technique of TECHNIQUES) {
+    const option = document.createElement("option");
+    option.value = technique;
+    option.textContent = technique;
+    techniqueSelect.append(option);
+  }
+  byId("mb-biblio").innerHTML = BIBLIOGRAPHY.map((entry) => `<li>${entry}</li>`).join("");
+
+  const instrumentLabel = (id: string) =>
+    INSTRUMENTS.find((instrument) => instrument.id === id)?.label ?? id;
+
+  function render() {
+    const instrument = instrumentSelect.value;
+    const technique = techniqueSelect.value;
+    const query = byId("mb-search").value.trim().toLowerCase();
+    const matches = ENTRIES.filter((entry) => {
+      if (instrument && entry.instrument !== instrument) return false;
+      if (technique && entry.technique !== technique) return false;
+      if (query) {
+        const haystack = JSON.stringify(entry).toLowerCase();
+        if (!haystack.includes(query)) return false;
+      }
+      return true;
+    });
+    byId("mb-count").textContent =
+      `${matches.length} of ${ENTRIES.length} entries · every entry carries its provenance; filtering never invents data.`;
+    byId("mb-cards").innerHTML = matches
+      .map((entry) => {
+        const stability = entry.stability
+          ? `${"●".repeat(entry.stability)}${"○".repeat(5 - entry.stability)}`
+          : "—";
+        return (
+          `<article class="tool-card">` +
+          (entry.verified ? "" : `<span class="unverified">unverified</span>`) +
+          `<h3>${instrumentLabel(entry.instrument)} · ${entry.technique}${entry.subtype ? ` (${entry.subtype})` : ""}</h3>` +
+          `<p class="tool-card-meta">written: ${(entry.writtenPitches ?? []).join(", ") || "—"} · sounding: ${(entry.soundingPitches ?? []).join(", ") || "—"}</p>` +
+          `<p>${entry.fingering ?? ""}</p>` +
+          `<p class="tool-card-meta">dynamics ${entry.dynamics ?? "—"} · stability ${stability}</p>` +
+          (entry.response ? `<p class="tool-card-meta">${entry.response}</p>` : "") +
+          (entry.notes ? `<p class="tool-card-meta">${entry.notes}</p>` : "") +
+          `<p class="tool-card-meta">${entry.source.url
+            ? `<a href="${entry.source.url}">${entry.source.citation}</a>`
+            : entry.source.citation}</p>` +
+          `</article>`
+        );
+      })
+      .join("");
+  }
+
+  instrumentSelect.addEventListener("change", render);
+  techniqueSelect.addEventListener("change", render);
+  byId("mb-search").addEventListener("input", render);
+  render();
+</script>

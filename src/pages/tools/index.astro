@@ -1,0 +1,97 @@
+---
+// 中文：工具總覽頁，按組別列出全部作曲工具。
+// English: Tools index, grouping all composer tools by area.
+// Caveat / 注意：工具的互動介面在 src/components/tools/；此頁只列目錄。
+// Caveat: Interactive UIs live in src/components/tools/; this page is a catalogue.
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { toAnchor, toolGroups } from "../../config/contentTaxonomy";
+import { translate } from "../../config/locales";
+import "../../styles/tools.css";
+
+const tools = (await getCollection("tools")).sort(
+  (a, b) => a.data.number - b.data.number,
+);
+
+const toolsByGroup = toolGroups.map((group) => ({
+  group,
+  tools: tools.filter((tool) => tool.data.group === group),
+}));
+---
+
+<BaseLayout
+  title="Tools"
+  description="Working tools for contemporary composers: rhythm, tuning, set theory, spectra, and performance resources."
+>
+  <div
+    class="index-page tools-index"
+    data-source-file="src/pages/tools/index.astro"
+  >
+    <h1 class="visually-hidden" data-i18n-key="nav.tools">
+      {translate("en", "nav.tools")}
+    </h1>
+
+    <p class="tool-note">
+      A workbench of small, exact instruments for composition and analysis.
+      Everything runs in the browser; nothing is stored or sent anywhere.
+      Each tool documents its own conventions and sources.
+    </p>
+
+    <nav class="catalog-rail" aria-label="Browse tools by group">
+      <ul>
+        {
+          toolsByGroup.map(({ group, tools: groupTools }) =>
+            groupTools.length > 0 ? (
+              <li>
+                <a href={`#${toAnchor(group)}`}>
+                  {group} ({groupTools.length})
+                </a>
+              </li>
+            ) : null,
+          )
+        }
+      </ul>
+    </nav>
+
+    <div class="catalog-groups">
+      {
+        toolsByGroup.map(({ group, tools: groupTools }) =>
+          groupTools.length > 0 ? (
+            <section
+              class="category-group"
+              id={toAnchor(group)}
+              aria-labelledby={`${toAnchor(group)}-heading`}
+            >
+              <h2 id={`${toAnchor(group)}-heading`} class="tool-group-heading">
+                {group}
+              </h2>
+              <ol class="tools-list">
+                {groupTools.map((tool) => (
+                  <li>
+                    <article
+                      class="tool-entry"
+                      data-source-file={`content/tools/${tool.id}/index.md`}
+                    >
+                      <span class="tool-entry-number">
+                        No. {String(tool.data.number).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <h3>
+                          <a href={`/tools/${tool.data.slug}/`}>{tool.data.title}</a>
+                        </h3>
+                        <p>{tool.data.summary}</p>
+                        {tool.data.status !== "stable" && (
+                          <p class="tool-status">{tool.data.status}</p>
+                        )}
+                      </div>
+                    </article>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null,
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

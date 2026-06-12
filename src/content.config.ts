@@ -7,7 +7,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
-import { workCategories, writingTypes } from "./config/contentTaxonomy";
+import { toolGroups, workCategories, writingTypes } from "./config/contentTaxonomy";
 
 const folderId = ({ entry }: { entry: string }) =>
   entry.replaceAll("\\", "/").replace(/\/index\.md$/, "");
@@ -97,4 +97,24 @@ const writingChapters = defineCollection({
   }),
 });
 
-export const collections = { works, writings, writingChapters };
+const tools = defineCollection({
+  // 中文：每个工具一个文件夹；互动界面在 src/components/tools/ 中按 slug 对应。
+  // English: One folder per tool; the interactive UI lives in
+  // src/components/tools/ and is matched by slug in src/pages/tools/[slug].astro.
+  loader: glob({
+    base: "./content/tools",
+    pattern: "*/index.md",
+    generateId: folderId,
+  }),
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string().optional(),
+    number: z.number().int(),
+    group: z.enum(toolGroups),
+    summary: z.string(),
+    status: z.enum(["stable", "beta", "data-pending"]).default("stable"),
+    slug: z.string(),
+  }),
+});
+
+export const collections = { works, writings, writingChapters, tools };

@@ -1,0 +1,163 @@
+---
+// 中文：复节奏与重合点实验台。
+// English: Polyrhythm and coincidence-cycle workbench.
+---
+
+<section class="tool-panel" aria-label="Polyrhythm laboratory">
+  <span class="tool-panel-label">Layers</span>
+
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Attacks per cycle (up to 4 layers)</span>
+      <input type="text" id="pr-counts" value="3, 4" size="14" />
+    </label>
+    <label class="tool-field">
+      <span>Cycle length (seconds)</span>
+      <input type="number" id="pr-seconds" value="3" min="0.5" max="20" step="0.5" />
+    </label>
+    <label class="tool-field">
+      <span>Repeats</span>
+      <input type="number" id="pr-repeats" value="2" min="1" max="8" />
+    </label>
+    <button type="button" class="tool-primary" id="pr-play">Play</button>
+    <button type="button" id="pr-play-coincidence">Coincidences only</button>
+    <button type="button" id="pr-stop">Stop</button>
+  </div>
+
+  <p class="tool-error" id="pr-error" hidden></p>
+
+  <div class="tool-result">
+    <p class="tool-note" id="pr-summary"></p>
+    <svg id="pr-linear" class="tool-svg" viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Linear attack grid"></svg>
+    <svg id="pr-circle" class="tool-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="max-width: 16rem; margin-top: var(--space-md);" role="img" aria-label="Cyclic view"></svg>
+  </div>
+</section>
+
+<script>
+  import { cycleAttacks } from "../../lib/tempo.js";
+  import { fnum } from "../../lib/fraction.js";
+  import { parseCountList } from "../../lib/parse.js";
+  import { playEvents, stopAll } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const LAYER_FREQS = [880, 587.33, 392, 261.63];
+
+  function el(name: string, attrs: Record<string, string | number>) {
+    const node = document.createElementNS(SVG_NS, name);
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+    return node;
+  }
+
+  function currentCounts() {
+    const parsed = parseCountList(byId("pr-counts").value, { min: 1, max: 48 });
+    const error = byId("pr-error");
+    if (!parsed.ok || parsed.values.length > 4) {
+      error.hidden = false;
+      error.textContent = parsed.values.length > 4
+        ? "Use at most 4 layers."
+        : `Could not read: ${parsed.bad.join(", ") || "input"}. Enter integers like “3, 4, 5”.`;
+      return null;
+    }
+    error.hidden = true;
+    return parsed.values;
+  }
+
+  function draw() {
+    const counts = currentCounts();
+    if (!counts) return;
+    const { positions, coincidences } = cycleAttacks(counts);
+
+    const lcm = counts.reduce((a, b) => {
+      const gcd = (x: number, y: number): number => (y ? gcd(y, x % y) : x);
+      return (a / gcd(a, b)) * b;
+    });
+    byId("pr-summary").textContent =
+      `${counts.join(" : ")} — smallest common grid: ${lcm} divisions; ` +
+      `${positions.length} distinct attack points; ${coincidences.length} coincidence${coincidences.length === 1 ? "" : "s"} per cycle.`;
+
+    // Linear grid
+    const linear = byId("pr-linear");
+    linear.innerHTML = "";
+    const left = 30, right = 700, top = 18, rowGap = 30;
+    counts.forEach((count, layer) => {
+      const y = top + layer * rowGap;
+      linear.append(el("line", { x1: left, y1: y, x2: right, y2: y, stroke: "currentColor", "stroke-width": 0.6, opacity: 0.45 }));
+      for (let k = 0; k < count; k++) {
+        const x = left + ((right - left) * k) / count;
+        linear.append(el("circle", { cx: x, cy: y, r: 4.2, fill: "currentColor" }));
+      }
+      const label = el("text", { x: 6, y: y + 3.5, "font-size": 10, fill: "currentColor" });
+      label.textContent = String(count);
+      linear.append(label);
+    });
+    const axisY = top + counts.length * rowGap;
+    linear.append(el("line", { x1: left, y1: axisY, x2: right, y2: axisY, stroke: "currentColor", "stroke-width": 1 }));
+    for (const c of coincidences) {
+      const x = left + (right - left) * fnum(c.at);
+      linear.append(el("line", { x1: x, y1: top - 10, x2: x, y2: axisY, stroke: "#c81e1e", "stroke-width": 1 }));
+      linear.append(el("circle", { cx: x, cy: axisY, r: 4.8, fill: "#c81e1e" }));
+    }
+    linear.setAttribute("viewBox", `0 0 720 ${axisY + 18}`);
+
+    // Circular view
+    const circle = byId("pr-circle");
+    circle.innerHTML = "";
+    const cx = 120, cy = 120;
+    circle.append(el("circle", { cx, cy, r: 95, fill: "none", stroke: "currentColor", "stroke-width": 0.6, opacity: 0.4 }));
+    counts.forEach((count, layer) => {
+      const r = 95 - layer * 18;
+      circle.append(el("circle", { cx, cy, r, fill: "none", stroke: "currentColor", "stroke-width": 0.5, opacity: 0.25 }));
+      for (let k = 0; k < count; k++) {
+        const angle = (2 * Math.PI * k) / count - Math.PI / 2;
+        circle.append(el("circle", {
+          cx: cx + r * Math.cos(angle),
+          cy: cy + r * Math.sin(angle),
+          r: 3.6,
+          fill: "currentColor",
+        }));
+      }
+    });
+    for (const c of coincidences) {
+      const angle = 2 * Math.PI * fnum(c.at) - Math.PI / 2;
+      circle.append(el("line", {
+        x1: cx, y1: cy,
+        x2: cx + 100 * Math.cos(angle),
+        y2: cy + 100 * Math.sin(angle),
+        stroke: "#c81e1e", "stroke-width": 1,
+      }));
+    }
+  }
+
+  function play(onlyCoincidences: boolean) {
+    const counts = currentCounts();
+    if (!counts) return;
+    const seconds = Number(byId("pr-seconds").value) || 3;
+    const repeats = Math.min(8, Math.max(1, Number(byId("pr-repeats").value) || 1));
+    const { positions } = cycleAttacks(counts);
+    const events = [];
+    for (let cycle = 0; cycle < repeats; cycle++) {
+      for (const position of positions) {
+        const isCoincidence = position.layers.length > 1;
+        if (onlyCoincidences && !isCoincidence) continue;
+        for (const layer of position.layers) {
+          events.push({
+            time: (cycle + fnum(position.at)) * seconds,
+            freq: LAYER_FREQS[layer % LAYER_FREQS.length],
+            gain: isCoincidence ? 0.65 : 0.4,
+            dur: 0.12,
+            type: layer % 2 === 0 ? "sine" : "triangle",
+          });
+        }
+      }
+    }
+    stopAll();
+    playEvents(events);
+  }
+
+  byId("pr-counts").addEventListener("input", draw);
+  byId("pr-play").addEventListener("click", () => play(false));
+  byId("pr-play-coincidence").addEventListener("click", () => play(true));
+  byId("pr-stop").addEventListener("click", () => stopAll());
+  draw();
+</script>

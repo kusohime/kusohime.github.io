@@ -1,0 +1,149 @@
+---
+// 中文：十二音序列实验台：矩阵、行形式、全音程检测、互补性。
+// English: Twelve-tone lab: matrix, row forms, all-interval test,
+// combinatoriality.
+---
+
+<section class="tool-panel" aria-label="Twelve-tone row laboratory">
+  <span class="tool-panel-label">Row</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>12 pitch classes (0–11, T/E) or note names</span>
+      <input type="text" id="tt-row" value="5 4 0 9 7 2 8 1 3 6 T E" size="34" />
+    </label>
+    <label class="tool-field">
+      <span>Historical rows</span>
+      <select id="tt-historical">
+        <option value="">—</option>
+      </select>
+    </label>
+    <button type="button" class="tool-primary" id="tt-go">Build matrix</button>
+  </div>
+  <p class="tool-error" id="tt-error" hidden></p>
+
+  <div class="tool-result" id="tt-result" hidden>
+    <p class="tool-note" id="tt-facts"></p>
+    <div class="tool-table-wrap">
+      <table class="tool-matrix" id="tt-matrix"></table>
+    </div>
+    <div class="tool-controls" style="margin-top: var(--space-md);">
+      <label class="tool-field">
+        <span>Form</span>
+        <select id="tt-kind">
+          <option>P</option><option>I</option><option>R</option><option>RI</option>
+        </select>
+      </label>
+      <label class="tool-field">
+        <span>Index</span>
+        <select id="tt-index"></select>
+      </label>
+      <button type="button" id="tt-show">Show form</button>
+      <button type="button" id="tt-play">Hear form</button>
+    </div>
+    <p class="tool-result-figure" id="tt-form"></p>
+    <details>
+      <summary class="tool-note" style="cursor:pointer;">Hexachordally combinatorial forms (with P's first hexachord)</summary>
+      <p class="tool-note" id="tt-comb"></p>
+    </details>
+  </div>
+</section>
+
+<script>
+  import {
+    HISTORICAL_ROWS, combinatorialForms, intervalString, isAllInterval,
+    rowForm, rowMatrix, validateRow,
+  } from "../../lib/rows.js";
+  import { parsePcList } from "../../lib/parse.js";
+  import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
+  import { blip, audioContext } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  let row: number[] | null = null;
+
+  const historical = byId("tt-historical");
+  for (const entry of HISTORICAL_ROWS) {
+    const option = document.createElement("option");
+    option.value = entry.id;
+    option.textContent = entry.label;
+    historical.append(option);
+  }
+  historical.addEventListener("change", () => {
+    const entry = HISTORICAL_ROWS.find((r) => r.id === historical.value);
+    if (entry) {
+      byId("tt-row").value = entry.pcs.map((p) => (p === 10 ? "T" : p === 11 ? "E" : p)).join(" ");
+      build();
+    }
+  });
+
+  const indexSelect = byId("tt-index");
+  for (let n = 0; n < 12; n++) {
+    const option = document.createElement("option");
+    option.value = String(n);
+    option.textContent = String(n);
+    indexSelect.append(option);
+  }
+
+  function build() {
+    const parsed = parsePcList(byId("tt-row").value);
+    const error = byId("tt-error");
+    const validation = parsed.ok ? validateRow(parsed.pcs) : { ok: false, error: `Could not read: ${parsed.bad.join(", ") || "input"}.` };
+    if (!validation.ok) {
+      error.hidden = false;
+      error.textContent = (validation as any).error;
+      byId("tt-result").hidden = true;
+      return;
+    }
+    error.hidden = true;
+    row = parsed.pcs;
+
+    const ints = intervalString(row);
+    const allInterval = isAllInterval(row);
+    byId("tt-facts").innerHTML =
+      `Ordered intervals: &lt;${ints.join(" ")}&gt;` +
+      (allInterval ? ` — <span style="color:#c81e1e;">all-interval row</span>` : "");
+
+    const matrix = rowMatrix(row);
+    const table = byId("tt-matrix");
+    const headerCells = matrix[0]
+      .map((_, col) => `<th class="axis">I${matrix[0][col]}</th>`)
+      .join("");
+    let html = `<tr><th class="axis"></th>${headerCells}<th class="axis"></th></tr>`;
+    matrix.forEach((matrixRow) => {
+      html += `<tr><th class="axis">P${matrixRow[0]}</th>`;
+      html += matrixRow.map((pc) => `<td data-pc="${pc}">${pc === 10 ? "T" : pc === 11 ? "E" : pc}</td>`).join("");
+      html += `<th class="axis">R${matrixRow[0]}</th></tr>`;
+    });
+    html += `<tr><th class="axis"></th>${matrix[0].map((pc) => `<th class="axis">RI${pc}</th>`).join("")}<th class="axis"></th></tr>`;
+    table.innerHTML = html;
+
+    const comb = combinatorialForms(row);
+    byId("tt-comb").textContent = comb.length
+      ? comb.map((c) => c.label).join(", ")
+      : "None (this row is not hexachordally combinatorial).";
+
+    byId("tt-result").hidden = false;
+    showForm();
+  }
+
+  function showForm() {
+    if (!row) return null;
+    const kind = byId("tt-kind").value;
+    const n = Number(byId("tt-index").value);
+    const form = rowForm(row, kind, n);
+    byId("tt-form").innerHTML =
+      `${kind}${n}: <strong>${form.map((p) => (p === 10 ? "T" : p === 11 ? "E" : p)).join(" ")}</strong>` +
+      ` <span class="tool-note">(${form.map((p) => PC_NAMES[p]).join(" ")})</span>`;
+    return form;
+  }
+
+  byId("tt-go").addEventListener("click", build);
+  byId("tt-show").addEventListener("click", showForm);
+  byId("tt-play").addEventListener("click", () => {
+    const form = showForm();
+    if (!form) return;
+    const ctx = audioContext();
+    const t0 = ctx.currentTime + 0.08;
+    form.forEach((pc, index) => blip(midiToHz(60 + pc), t0 + index * 0.32, { dur: 0.3, gain: 0.45 }));
+  });
+  build();
+</script>

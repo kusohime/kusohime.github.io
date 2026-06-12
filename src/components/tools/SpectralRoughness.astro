@@ -1,0 +1,155 @@
+---
+// 中文：感官粗糙度计算器：不协和曲线与和弦粗糙度矩阵。
+// English: Sensory roughness calculator: dissonance curve and chord matrix.
+---
+
+<section class="tool-panel" aria-label="Dissonance curve">
+  <span class="tool-panel-label">Dissonance curve (fixed tone vs. swept tone)</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Lower tone</span>
+      <input type="text" id="sr-base" value="C4" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Partials per tone</span>
+      <input type="number" id="sr-partials" value="6" min="1" max="12" />
+    </label>
+    <label class="tool-field">
+      <span>Amplitude rolloff</span>
+      <input type="number" id="sr-rolloff" value="0.88" min="0.5" max="1" step="0.01" />
+    </label>
+    <button type="button" class="tool-primary" id="sr-curve-go">Draw curve</button>
+  </div>
+  <div class="tool-result">
+    <svg id="sr-curve" class="tool-svg" viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roughness against interval size"></svg>
+    <p class="tool-note">
+      Minima fall at small-integer ratios <em>of this spectrum</em>; with fewer
+      partials or a faster rolloff the valleys flatten out — consonance here is
+      a property of timbre, not of the interval alone.
+    </p>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Chord roughness">
+  <span class="tool-panel-label">Voicing comparison</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Voicing A (note names)</span>
+      <input type="text" id="sr-chord-a" value="C4 E4 G4" size="22" />
+    </label>
+    <label class="tool-field">
+      <span>Voicing B</span>
+      <input type="text" id="sr-chord-b" value="C3 E4 G5" size="22" />
+    </label>
+    <button type="button" class="tool-primary" id="sr-chords-go">Compare</button>
+    <button type="button" id="sr-play-a">Hear A</button>
+    <button type="button" id="sr-play-b">Hear B</button>
+  </div>
+  <p class="tool-error" id="sr-error" hidden></p>
+  <div class="tool-result" id="sr-chord-result" hidden>
+    <p class="tool-result-figure" id="sr-figures"></p>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption>Pairwise contributions, voicing A</caption>
+        <tbody id="sr-matrix"></tbody>
+      </table>
+    </div>
+    <p class="tool-note">
+      Values are unitless (Plomp–Levelt/Sethares model); only comparisons within
+      one spectrum model are meaningful. Register matters: the same interval is
+      rougher low than high because critical bandwidth widens (in Hz) downward.
+    </p>
+  </div>
+</section>
+
+<script>
+  import { dyadSweep, chordRoughness, pairMatrix } from "../../lib/roughness.js";
+  import { midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
+  import { parseNoteList } from "../../lib/parse.js";
+  import { sustain } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+  const spectrumOptions = () => ({
+    partials: Math.max(1, Math.min(12, Number(byId("sr-partials").value) || 6)),
+    rolloff: Math.max(0.5, Math.min(1, Number(byId("sr-rolloff").value) || 0.88)),
+  });
+
+  function drawCurve() {
+    const baseMidi = nameToMidi(byId("sr-base").value.trim()) ?? 60;
+    const points = dyadSweep(midiToHz(baseMidi), { ...spectrumOptions(), steps: 360 });
+    const svg = byId("sr-curve");
+    svg.innerHTML = "";
+    const el = (name: string, attrs: Record<string, string | number>) => {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+      return node;
+    };
+    const left = 36, right = 706, bottom = 168, top = 14;
+    const max = Math.max(...points.map((p) => p.value)) || 1;
+    svg.append(el("line", { x1: left, y1: bottom, x2: right, y2: bottom, stroke: "currentColor", "stroke-width": 0.8 }));
+    // reference interval marks
+    for (const [cents, label] of [[0, "1/1"], [386, "5/4"], [498, "4/3"], [702, "3/2"], [884, "5/3"], [1200, "2/1"]] as [number, string][]) {
+      const x = left + ((right - left) * cents) / 1200;
+      svg.append(el("line", { x1: x, y1: top, x2: x, y2: bottom, stroke: "currentColor", "stroke-width": 0.4, opacity: 0.25 }));
+      const text = el("text", { x, y: bottom + 12, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+      text.textContent = label;
+      svg.append(text);
+    }
+    const path = points
+      .map((p, index) => {
+        const x = left + ((right - left) * p.cents) / 1200;
+        const y = bottom - ((bottom - top) * p.value) / max;
+        return `${index === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(" ");
+    svg.append(el("path", { d: path, fill: "none", stroke: "#c81e1e", "stroke-width": 1.4 }));
+  }
+
+  function compare() {
+    const parsedA = parseNoteList(byId("sr-chord-a").value);
+    const parsedB = parseNoteList(byId("sr-chord-b").value);
+    const error = byId("sr-error");
+    if (!parsedA.ok || !parsedB.ok) {
+      error.hidden = false;
+      error.textContent = `Could not read: ${[...parsedA.bad, ...parsedB.bad].join(", ") || "input"}. Use note names with octaves, e.g. “C4 E4 G4”.`;
+      return null;
+    }
+    error.hidden = true;
+    const options = spectrumOptions();
+    const a = chordRoughness(parsedA.midis, options);
+    const b = chordRoughness(parsedB.midis, options);
+    byId("sr-figures").innerHTML =
+      `A: <strong>${a.toFixed(4)}</strong> &nbsp; B: <strong>${b.toFixed(4)}</strong> &nbsp; ` +
+      `<span class="tool-note">${a < b ? "A is smoother." : b < a ? "B is smoother." : "Equal."}</span>`;
+    const matrix = pairMatrix(parsedA.midis, options);
+    const names = parsedA.midis.map((m) => midiToName(m));
+    let html = `<tr><th></th>${names.map((n) => `<th>${n}</th>`).join("")}</tr>`;
+    matrix.forEach((row, i) => {
+      html += `<tr><th scope="row">${names[i]}</th>${row
+        .map((value) => (value === null ? "<td>—</td>" : `<td>${value.toFixed(4)}</td>`))
+        .join("")}</tr>`;
+    });
+    byId("sr-matrix").innerHTML = html;
+    byId("sr-chord-result").hidden = false;
+    return { a: parsedA.midis, b: parsedB.midis };
+  }
+
+  function playChord(midis: number[]) {
+    sustain(midis.map((m) => ({ hz: midiToHz(m), amp: 0.9 / Math.sqrt(midis.length) })), { dur: 2.2 });
+  }
+
+  byId("sr-curve-go").addEventListener("click", drawCurve);
+  byId("sr-chords-go").addEventListener("click", compare);
+  byId("sr-play-a").addEventListener("click", () => {
+    const result = compare();
+    if (result) playChord(result.a);
+  });
+  byId("sr-play-b").addEventListener("click", () => {
+    const result = compare();
+    if (result) playChord(result.b);
+  });
+  drawCurve();
+  compare();
+</script>

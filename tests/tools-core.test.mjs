@@ -1,0 +1,294 @@
+/**
+ * Core-library tests. Run: node tests/tools-core.test.mjs
+ * Golden values come from Forte (1973), Rahn (1980), Straus (2016),
+ * Sethares (2005), Messiaen (1944), and standard acoustics texts.
+ */
+import assert from "node:assert/strict";
+import { frac, fadd, fmul, fdiv, fnum, fstr, flcm, parseFrac } from "../src/lib/fraction.js";
+import { unitValue, solveModulation, cycleAttacks } from "../src/lib/tempo.js";
+import {
+  midiToHz, hzToMidi, ratioToCents, nameToMidi, midiToName, nearest12, edoStep,
+} from "../src/lib/pitch.js";
+import {
+  analyzeSet, primeForm, normalOrder, intervalVector, catalog, pfString,
+} from "../src/lib/pcset.js";
+import {
+  validateRow, rowForm, rowMatrix, isAllInterval, combinatorialForms, HISTORICAL_ROWS,
+} from "../src/lib/rows.js";
+import { MESSIAEN_MODES, uniqueTranspositions, symmetryAxes } from "../src/lib/modes.js";
+import { partialFreq, partialTable, harmonicNodes, reduceToOctave } from "../src/lib/partials.js";
+import { chordRoughness, dyadSweep, pairRoughness } from "../src/lib/roughness.js";
+import { applyOp, applyChain, triadPcs, hexatonicCycle, commonTones } from "../src/lib/triads.js";
+import { reflectPc, reflectMidi, negativeHarmonySum, pcMappingTable } from "../src/lib/reflect.js";
+import { validateEntry, ENTRIES } from "../src/lib/multiphonics-data.js";
+
+let passed = 0;
+function test(name, fn) {
+  try {
+    fn();
+    passed++;
+  } catch (error) {
+    console.error(`FAIL  ${name}`);
+    console.error(`      ${error.message}`);
+    process.exitCode = 1;
+  }
+}
+const approx = (a, b, eps = 1e-6) =>
+  assert.ok(Math.abs(a - b) < eps, `${a} !~ ${b} (eps ${eps})`);
+
+/* ---------- fractions ---------- */
+test("fraction arithmetic and reduction", () => {
+  assert.equal(fstr(fadd(frac(1n, 4n), frac(1n, 6n))), "5/12");
+  assert.equal(fstr(fmul(frac(3n, 2n), frac(4n, 9n))), "2/3");
+  assert.equal(fstr(fdiv(frac(1n, 4n), frac(3n, 16n))), "4/3");
+  assert.equal(fstr(parseFrac("81/64")), "81/64");
+});
+test("fraction lcm gives polyrhythm cycle", () => {
+  // periods 1/3 and 1/4 -> attacks align every 1 whole cycle
+  assert.equal(fstr(flcm([frac(1n, 3n), frac(1n, 4n)])), "1");
+});
+
+/* ---------- tempo / metric modulation ---------- */
+test("Carter equivalence: quarter=120, old dotted eighth = new quarter -> 160", () => {
+  // Old dotted eighth lasts 0.375 s at q=120; the new quarter inherits it: 60/0.375 = 160.
+  const result = solveModulation({
+    oldBpm: 120,
+    oldBeat: unitValue("quarter"),
+    oldVal: unitValue("eighth", 1),
+    newVal: unitValue("quarter"),
+    newBeat: unitValue("quarter"),
+  });
+  assert.equal(result.bpmText, "160");
+  assert.equal(result.ratioText, "4/3");
+});
+test("modulation: old triplet quarter = new quarter (q=90 -> 135)", () => {
+  // Triplet quarter = 1/6 whole = 4/9 s at q=90; new quarter inherits it: 60/(4/9) = 135.
+  const result = solveModulation({
+    oldBpm: 90,
+    oldBeat: unitValue("quarter"),
+    oldVal: unitValue("quarter", 0, { actual: 3, normal: 2 }),
+    newVal: unitValue("quarter"),
+    newBeat: unitValue("quarter"),
+  });
+  approx(result.bpm, 135, 1e-9);
+});
+test("identity modulation leaves tempo unchanged", () => {
+  const result = solveModulation({
+    oldBpm: 72,
+    oldBeat: unitValue("quarter"),
+    oldVal: unitValue("half"),
+    newVal: unitValue("half"),
+    newBeat: unitValue("quarter"),
+  });
+  approx(result.bpm, 72, 1e-9);
+});
+test("polyrhythm 3:4 coincides only at zero", () => {
+  const { coincidences, positions } = cycleAttacks([3, 4]);
+  assert.equal(positions.length, 6); // 0, 1/4, 1/3, 1/2, 2/3, 3/4
+  assert.equal(coincidences.length, 1);
+  assert.equal(fstr(coincidences[0].at), "0");
+});
+
+/* ---------- pitch ---------- */
+test("440 Hz <-> MIDI 69 <-> A4", () => {
+  approx(hzToMidi(440), 69);
+  approx(midiToHz(69), 440);
+  assert.equal(nameToMidi("A4"), 69);
+  assert.equal(midiToName(69), "A4");
+  assert.equal(nameToMidi("Bb3"), 58);
+  assert.equal(nameToMidi("C#4"), 61);
+});
+test("ratio 3/2 = 701.955 cents; 81/64 = 407.82 cents", () => {
+  approx(ratioToCents(3, 2), 701.955, 1e-3);
+  approx(ratioToCents(81, 64), 407.82, 1e-2);
+});
+test("31-EDO step 18 above A4", () => {
+  const { cents, hz } = edoStep(18, 31, 440);
+  approx(cents, 696.7741935, 1e-6);
+  approx(hz, 440 * Math.pow(2, 18 / 31), 1e-9);
+});
+
+/* ---------- pc sets ---------- */
+test("[0,3,7]: prime (037), iv <001110>, Forte 3-11", () => {
+  const a = analyzeSet([0, 3, 7]);
+  assert.equal(a.primeFormString, "(037)");
+  assert.equal(a.intervalVectorString, "<001110>");
+  assert.equal(a.forte, "3-11");
+});
+test("all-interval tetrachord [0,1,4,6]: iv <111111>, Z-partner 4-Z29", () => {
+  const a = analyzeSet([0, 1, 4, 6]);
+  assert.equal(a.intervalVectorString, "<111111>");
+  assert.equal(a.forte, "4-Z15");
+  assert.equal(a.zPartners.length, 1);
+  assert.equal(a.zPartners[0].forte, "4-Z29");
+});
+test("set-class counts match Forte's catalogue", () => {
+  const counts = {};
+  for (const entry of catalog().values()) counts[entry.card] = (counts[entry.card] ?? 0) + 1;
+  assert.equal(counts[3], 12);
+  assert.equal(counts[4], 29);
+  assert.equal(counts[5], 38);
+  assert.equal(counts[6], 50);
+});
+test("every catalogue class has a Forte name; prime forms idempotent", () => {
+  for (const entry of catalog().values()) {
+    assert.ok(entry.forte, `missing name for ${entry.key}`);
+    assert.equal(pfString(primeForm(entry.pf)), pfString(entry.pf));
+  }
+});
+test("complement convention: 4-Z15 complement is 8-Z15", () => {
+  const a = analyzeSet([0, 1, 4, 6]);
+  assert.equal(a.complement.forte, "8-Z15");
+});
+test("normal order packs from the right (Rahn)", () => {
+  assert.deepEqual(normalOrder([0, 4, 8, 9]), [8, 9, 0, 4]);
+  assert.deepEqual(intervalVector([0, 1, 2]), [2, 1, 0, 0, 0, 0]);
+});
+
+/* ---------- rows ---------- */
+test("Berg Lyric Suite row is all-interval", () => {
+  const berg = HISTORICAL_ROWS.find((r) => r.id === "berg-lyric-suite");
+  assert.ok(isAllInterval(berg.pcs));
+});
+test("row validation rejects bad rows", () => {
+  assert.equal(validateRow([0, 1, 2]).ok, false);
+  assert.equal(validateRow([0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).ok, false);
+});
+test("matrix rows are P forms; P/R/I/RI consistency", () => {
+  const row = HISTORICAL_ROWS[2].pcs; // Schoenberg op.25
+  const matrix = rowMatrix(row);
+  assert.deepEqual(matrix[0], row);
+  const p4 = rowForm(row, "P", 4);
+  assert.equal(p4[0], 4);
+  const r4 = rowForm(row, "R", 4);
+  assert.deepEqual([...r4].reverse(), p4);
+  const i4 = rowForm(row, "I", 4);
+  assert.equal(i4[0], 4);
+});
+test("Webern op.24 hexachords are combinatorial with some form", () => {
+  const webern = HISTORICAL_ROWS.find((r) => r.id === "webern-op24");
+  assert.ok(combinatorialForms(webern.pcs).length > 0);
+});
+
+/* ---------- Messiaen modes ---------- */
+test("mode transposition counts: 2, 3, 4, 6, 6, 6, 6", () => {
+  const expected = [2, 3, 4, 6, 6, 6, 6];
+  MESSIAEN_MODES.forEach((mode, index) => {
+    assert.equal(uniqueTranspositions(mode.pcs), expected[index], mode.name);
+  });
+});
+test("mode 1 is whole-tone, mode 2 is octatonic", () => {
+  assert.equal(analyzeSet(MESSIAEN_MODES[0].pcs).forte, "6-35");
+  assert.equal(analyzeSet(MESSIAEN_MODES[1].pcs).forte, "8-28");
+});
+test("modes are inversionally symmetric (nonretrogradable in pc space)", () => {
+  for (const mode of MESSIAEN_MODES) {
+    assert.ok(symmetryAxes(mode.pcs).length > 0, mode.name);
+  }
+});
+
+/* ---------- partials ---------- */
+test("f0=110: 7th partial 770 Hz; A4 3rd harmonic ~ E6+2c", () => {
+  approx(partialFreq(110, 7), 770);
+  const table = partialTable(440, 8);
+  const third = table.find((p) => p.n === 3);
+  assert.equal(third.name, "E6");
+  approx(third.cents, 1.955, 0.01);
+  const fifth = table.find((p) => p.n === 5);
+  assert.equal(fifth.name, "C#7");
+  approx(fifth.cents, -13.686, 0.01);
+  const seventh = table.find((p) => p.n === 7);
+  assert.equal(seventh.name, "G7");
+  approx(seventh.cents, -31.174, 0.01);
+});
+test("inharmonicity raises partials monotonically", () => {
+  for (let n = 2; n <= 10; n++) {
+    assert.ok(partialFreq(100, n, 0.0004) > partialFreq(100, n, 0));
+  }
+});
+test("harmonic nodes: partial 3 has nodes 1/3, 2/3; reduce 7 -> 7/4", () => {
+  assert.deepEqual(harmonicNodes(3).map((node) => node.position), [1 / 3, 2 / 3]);
+  const r = reduceToOctave(7);
+  assert.equal(r.num, 7);
+  assert.equal(r.den, 4);
+});
+
+/* ---------- roughness ---------- */
+test("fifth is smoother than tritone; unison smoothest (C4 register)", () => {
+  const fifth = chordRoughness([60, 67]);
+  const tritone = chordRoughness([60, 66]);
+  const unison = chordRoughness([60, 60]);
+  assert.ok(fifth < tritone, `fifth ${fifth} !< tritone ${tritone}`);
+  assert.ok(unison < fifth);
+});
+test("dissonance curve has local minimum near the fifth (700c)", () => {
+  const curve = dyadSweep(261.63, { steps: 1200 });
+  const at = (cents) => curve.reduce((best, p) =>
+    Math.abs(p.cents - cents) < Math.abs(best.cents - cents) ? p : best);
+  const v650 = at(650).value;
+  const v700 = at(702).value;
+  const v750 = at(750).value;
+  assert.ok(v700 < v650 && v700 < v750, `no minimum near fifth: ${v650} ${v700} ${v750}`);
+});
+test("pair roughness vanishes at unison and at large distance", () => {
+  approx(pairRoughness(440, 440), 0);
+  assert.ok(pairRoughness(440, 440 * 4) < 0.02);
+});
+
+/* ---------- neo-Riemannian ---------- */
+test("P(C)=c, R(C)=a, L(C)=e; P is an involution", () => {
+  const C = { root: 0, quality: "M" };
+  assert.deepEqual(applyOp("P", C), { root: 0, quality: "m" });
+  assert.deepEqual(applyOp("R", C), { root: 9, quality: "m" });
+  assert.deepEqual(applyOp("L", C), { root: 4, quality: "m" });
+  assert.deepEqual(applyOp("P", applyOp("P", C)), C);
+  assert.deepEqual(applyOp("L", applyOp("L", C)), C);
+  assert.deepEqual(applyOp("R", applyOp("R", C)), C);
+});
+test("hexatonic cycle from C contains Ab and E major", () => {
+  const cycle = hexatonicCycle({ root: 0, quality: "M" });
+  const labels = cycle.map((t) => `${t.root}${t.quality}`);
+  assert.ok(labels.includes("8M"));
+  assert.ok(labels.includes("4M"));
+  assert.equal(commonTones({ root: 0, quality: "M" }, { root: 0, quality: "m" }).length, 2);
+});
+test("chain parsing applies left to right", () => {
+  const steps = applyChain("PLR", { root: 0, quality: "M" });
+  assert.equal(steps.length, 4);
+  assert.deepEqual(steps[1].triad, { root: 0, quality: "m" });
+});
+
+/* ---------- reflection ---------- */
+test("double reflection is identity; axis pcs are fixed", () => {
+  for (let pc = 0; pc < 12; pc++) {
+    assert.equal(reflectPc(reflectPc(pc, 5), 5), pc);
+  }
+  assert.equal(reflectPc(2, 4), 2); // axis on pc 2 when sum=4
+  assert.equal(reflectMidi(reflectMidi(64, 60), 60), 64);
+});
+test("classic negative harmony in C: C->G, E->Eb (sum 7)", () => {
+  const sum = negativeHarmonySum(0);
+  assert.equal(sum, 7);
+  assert.equal(reflectPc(0, sum), 7);
+  assert.equal(reflectPc(4, sum), 3);
+  assert.equal(pcMappingTable(sum).filter((r) => r.fixed).length, 0); // odd sum: no fixed pcs
+});
+
+/* ---------- input parsing ---------- */
+test("pc parsing disambiguates T/E numerals from note names", async () => {
+  const { parsePcList, parseNoteList } = await import("../src/lib/parse.js");
+  assert.deepEqual(parsePcList("C E G B").pcs, [0, 4, 7, 11]); // note context
+  assert.deepEqual(parsePcList("5 4 0 9 7 2 8 1 3 6 T E").pcs, [5, 4, 0, 9, 7, 2, 8, 1, 3, 6, 10, 11]);
+  assert.deepEqual(parsePcList("T E").pcs, [10, 11]); // numeral mode
+  assert.deepEqual(parsePcList("A C E").pcs, [9, 0, 4]); // C forces note context
+  assert.equal(parsePcList("0 1 banana").ok, false);
+  assert.deepEqual(parseNoteList("C4 Bb3").midis, [60, 58]);
+});
+
+/* ---------- multiphonics schema ---------- */
+test("all seed entries validate; missing provenance rejected", () => {
+  for (const entry of ENTRIES) assert.ok(validateEntry(entry).ok, entry.id);
+  assert.equal(validateEntry({ id: "x", instrument: "y", technique: "z" }).ok, false);
+});
+
+console.log(`${passed} tests passed${process.exitCode ? " (with failures)" : ""}`);

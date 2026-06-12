@@ -1,0 +1,354 @@
+/*
+ * 中文：Tools 區的儀器面板樣式：等寬字、細線框、克制的紅色強調。
+ * English: Instrument-panel styling for the Tools section: monospace,
+ * hairline rules, restrained red accents. No decorative animation —
+ * the aesthetic is a paper worksheet next to a piece of lab equipment.
+ */
+
+.tool-page {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.tool-header {
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: var(--space-md);
+}
+
+.tool-number {
+  color: var(--theme-color);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tool-header h1 {
+  margin: 0.25rem 0 0.35rem;
+  font-size: 1.35rem;
+  line-height: var(--heading-line-height);
+}
+
+.tool-header .tool-subtitle {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.tool-status {
+  display: inline-block;
+  margin-top: 0.5rem;
+  border: 1px solid var(--theme-color);
+  padding: 0.05rem 0.45rem;
+  color: var(--theme-color);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ---- Instrument panels ---- */
+
+.tool-panel {
+  border: 1px solid var(--color-rule);
+  padding: var(--space-md);
+}
+
+.tool-panel + .tool-panel {
+  margin-top: var(--space-md);
+}
+
+.tool-panel-label {
+  display: block;
+  margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-md)) var(--space-md);
+  border-bottom: 1px solid var(--color-rule);
+  padding: 0.35rem var(--space-md);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* ---- Controls ---- */
+
+.tool-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-md);
+  align-items: flex-end;
+}
+
+.tool-field {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.tool-field > span {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.tool-page input[type="text"],
+.tool-page input[type="number"],
+.tool-page select,
+.tool-page textarea {
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 0.3rem 0.45rem;
+  min-width: 0;
+}
+
+.tool-page input[type="range"] {
+  accent-color: var(--theme-color);
+}
+
+.tool-page input:focus-visible,
+.tool-page select:focus-visible,
+.tool-page button:focus-visible,
+.tool-page textarea:focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 1px;
+}
+
+.tool-page button {
+  border: 1px solid var(--color-text);
+  border-radius: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  padding: 0.32rem 0.85rem;
+  cursor: pointer;
+}
+
+.tool-page button:hover {
+  border-color: var(--theme-color);
+  color: var(--theme-color);
+}
+
+.tool-page button[aria-pressed="true"] {
+  background: var(--color-text);
+  color: var(--color-background);
+}
+
+.tool-page button.tool-primary {
+  border-color: var(--theme-color);
+  color: var(--theme-color);
+}
+
+.tool-page button.tool-primary:hover {
+  background: var(--theme-color);
+  color: var(--color-background);
+}
+
+/* ---- Results ---- */
+
+.tool-result {
+  margin-top: var(--space-md);
+  border-top: 1px dashed var(--color-rule);
+  padding-top: var(--space-md);
+}
+
+.tool-result-figure {
+  font-size: 1.3rem;
+}
+
+.tool-result-figure strong {
+  color: var(--theme-color);
+  font-weight: 600;
+}
+
+.tool-note {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+.tool-error {
+  color: var(--theme-color);
+  font-size: 0.88rem;
+}
+
+/* ---- Tables ---- */
+
+.tool-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.tool-table caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  padding-bottom: 0.4rem;
+}
+
+.tool-table th,
+.tool-table td {
+  border-bottom: 1px solid var(--color-rule);
+  padding: 0.3rem 0.6rem 0.3rem 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tool-table th {
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tool-table td.is-accent,
+.tool-table .is-accent td {
+  color: var(--theme-color);
+}
+
+.tool-table-wrap {
+  overflow-x: auto;
+}
+
+/* ---- Matrix (12x12) ---- */
+
+.tool-matrix {
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.tool-matrix td,
+.tool-matrix th {
+  border: 1px solid var(--color-rule);
+  width: 2.1em;
+  height: 2.1em;
+  text-align: center;
+  padding: 0;
+}
+
+.tool-matrix .axis {
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  border: none;
+}
+
+.tool-matrix td.hl {
+  background: var(--theme-color);
+  color: var(--color-background);
+}
+
+/* ---- SVG diagrams ---- */
+
+.tool-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--color-text);
+}
+
+.tool-svg .accent {
+  color: var(--theme-color);
+}
+
+/* ---- Cards (multiphonic browser) ---- */
+
+.tool-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-md);
+}
+
+.tool-card {
+  border: 1px solid var(--color-rule);
+  padding: var(--space-sm) var(--space-md);
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+}
+
+.tool-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.tool-card .tool-card-meta {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.tool-card .unverified {
+  border: 1px solid var(--theme-color);
+  color: var(--theme-color);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.05rem 0.4rem;
+  justify-self: start;
+}
+
+/* ---- Docs below the instrument ---- */
+
+.tool-docs {
+  max-width: var(--content-width);
+}
+
+.tool-docs h2 {
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 0.3rem;
+  font-size: 1.02rem;
+}
+
+.tool-docs h3 {
+  font-size: 0.95rem;
+}
+
+/* ---- Tools index ---- */
+
+.tools-index .tool-group-heading {
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 0.3rem;
+  font-size: 1.02rem;
+}
+
+.tools-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-md);
+}
+
+.tools-list .tool-entry {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr;
+  gap: var(--space-sm);
+  align-items: baseline;
+}
+
+.tools-list .tool-entry-number {
+  color: var(--theme-color);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+}
+
+.tools-list .tool-entry h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.tools-list .tool-entry p {
+  margin: 0.15rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+}
+
+@media (max-width: 40rem) {
+  .tool-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

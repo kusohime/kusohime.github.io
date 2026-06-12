@@ -1,0 +1,134 @@
+---
+// 中文：钢琴泛音定位器：触点比例、实际音高、弦图。
+// English: Piano harmonics mapper: node fractions, sounding pitches,
+// string diagram.
+---
+
+<section class="tool-panel" aria-label="Piano harmonics mapper">
+  <span class="tool-panel-label">String &amp; partial</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Key (sounding pitch)</span>
+      <input type="text" id="ph-key" value="C2" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Partial</span>
+      <select id="ph-partial">
+        <option value="2">2 (octave)</option>
+        <option value="3" selected>3 (octave + fifth)</option>
+        <option value="4">4 (two octaves)</option>
+        <option value="5">5 (two octaves + major third)</option>
+        <option value="6">6 (two octaves + fifth)</option>
+        <option value="7">7 (two octaves + flat seventh)</option>
+        <option value="8">8 (three octaves)</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Inharmonicity B</span>
+      <input type="number" id="ph-b" value="0" min="0" max="0.005" step="0.0001" />
+    </label>
+    <button type="button" class="tool-primary" id="ph-go">Map nodes</button>
+    <button type="button" id="ph-play">Hear (approx.)</button>
+  </div>
+  <p class="tool-error" id="ph-error" hidden></p>
+
+  <div class="tool-result" id="ph-result" hidden>
+    <p class="tool-result-figure" id="ph-figure"></p>
+    <svg id="ph-string" class="tool-svg" viewBox="0 0 720 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="String diagram with touch nodes"></svg>
+    <div class="tool-table-wrap" style="margin-top: var(--space-sm);">
+      <table class="tool-table">
+        <caption>Touch points (fractions of speaking length from the agraffe)</caption>
+        <thead><tr><th>Node</th><th>Fraction</th><th>% of string</th></tr></thead>
+        <tbody id="ph-table"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="ph-note"></p>
+  </div>
+</section>
+
+<script>
+  import { harmonicNodes, partialFreq } from "../../lib/partials.js";
+  import { describeHz, formatCents, midiToHz, nameToMidi } from "../../lib/pitch.js";
+  import { sustain } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  let current: { f0: number; n: number; B: number } | null = null;
+
+  function map() {
+    const midi = nameToMidi(byId("ph-key").value.trim());
+    const error = byId("ph-error");
+    if (midi === null) {
+      error.hidden = false;
+      error.textContent = "Enter the key as a note name, e.g. C2 (low strings work best).";
+      return;
+    }
+    error.hidden = true;
+    const n = Number(byId("ph-partial").value);
+    const B = Math.max(0, Number(byId("ph-b").value) || 0);
+    const f0 = midiToHz(midi);
+    const hz = partialFreq(f0, n, B);
+    const d = describeHz(hz);
+    current = { f0, n, B };
+
+    byId("ph-figure").innerHTML =
+      `Partial ${n} sounds <strong>${d.nearestName}</strong> ${formatCents(d.centsFromNearest)} (${hz.toFixed(2)} Hz)`;
+
+    const nodes = harmonicNodes(n);
+    byId("ph-table").innerHTML = nodes
+      .map((node) =>
+        `<tr><td>${node.k}/${node.n}</td><td>${node.k}/${node.n}</td><td>${(node.position * 100).toFixed(2)}%</td></tr>`)
+      .join("");
+
+    const svg = byId("ph-string");
+    svg.innerHTML = "";
+    const el = (name: string, attrs: Record<string, string | number>) => {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+      return node;
+    };
+    const left = 30, right = 690, y = 40;
+    // bridge and agraffe
+    svg.append(el("line", { x1: left, y1: y - 18, x2: left, y2: y + 18, stroke: "currentColor", "stroke-width": 2 }));
+    svg.append(el("line", { x1: right, y1: y - 18, x2: right, y2: y + 18, stroke: "currentColor", "stroke-width": 2 }));
+    svg.append(el("line", { x1: left, y1: y, x2: right, y2: y, stroke: "currentColor", "stroke-width": 1 }));
+    for (const node of nodes) {
+      const x = left + (right - left) * node.position;
+      svg.append(el("circle", { cx: x, cy: y, r: 5, fill: "#c81e1e" }));
+      const label = el("text", { x, y: y - 12, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+      label.textContent = `${node.k}/${node.n}`;
+      svg.append(label);
+    }
+    const agraffe = el("text", { x: left, y: y + 32, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+    agraffe.textContent = "agraffe";
+    const bridge = el("text", { x: right, y: y + 32, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+    bridge.textContent = "bridge";
+    svg.append(agraffe, bridge);
+
+    byId("ph-note").textContent =
+      (B > 0
+        ? "Inharmonic mode: real piano strings sound this partial slightly sharp of the ideal; the node positions also shift marginally toward the ends. "
+        : "") +
+      "Practical range on a grand: partials 2–5 on bass and low-tenor strings (clear access over the dampers); " +
+      "above the capo bar the strings are too short to touch reliably. Mark the touch point in the score as a " +
+      "fraction of speaking length, never in centimeters — lengths differ between models.";
+    byId("ph-result").hidden = false;
+  }
+
+  byId("ph-go").addEventListener("click", map);
+  byId("ph-play").addEventListener("click", () => {
+    map();
+    if (!current) return;
+    const { f0, n, B } = current;
+    // crude harmonic emphasis: fundamental ghost + strong selected partial
+    sustain(
+      [
+        { hz: partialFreq(f0, n, B), amp: 1 },
+        { hz: partialFreq(f0, 2 * n, B), amp: 0.18 },
+        { hz: f0, amp: 0.08 },
+      ],
+      { dur: 2.8 },
+    );
+  });
+  map();
+</script>

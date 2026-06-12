@@ -1,0 +1,168 @@
+---
+// 中文：节拍转换计算器的互动面板。
+// English: Interactive panel for the metric-modulation calculator.
+---
+
+<section class="tool-panel" aria-label="Metric modulation calculator">
+  <span class="tool-panel-label">Equivalence</span>
+
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Old tempo</span>
+      <input type="number" id="mm-bpm" value="120" min="10" max="400" step="0.5" />
+    </label>
+    <label class="tool-field">
+      <span>…counting</span>
+      <select id="mm-old-beat"></select>
+    </label>
+  </div>
+
+  <div class="tool-controls" style="margin-top: var(--space-md);">
+    <label class="tool-field">
+      <span>Old value</span>
+      <select id="mm-old-unit"></select>
+    </label>
+    <label class="tool-field">
+      <span>Dots</span>
+      <select id="mm-old-dots">
+        <option value="0">none</option>
+        <option value="1">·</option>
+        <option value="2">··</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Tuplet (n : m)</span>
+      <input type="text" id="mm-old-tuplet" placeholder="e.g. 3:2" size="6" />
+    </label>
+    <span aria-hidden="true" style="font-size:1.3rem;">=</span>
+    <label class="tool-field">
+      <span>New value</span>
+      <select id="mm-new-unit"></select>
+    </label>
+    <label class="tool-field">
+      <span>Dots</span>
+      <select id="mm-new-dots">
+        <option value="0">none</option>
+        <option value="1">·</option>
+        <option value="2">··</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Tuplet (n : m)</span>
+      <input type="text" id="mm-new-tuplet" placeholder="e.g. 5:4" size="6" />
+    </label>
+  </div>
+
+  <div class="tool-controls" style="margin-top: var(--space-md);">
+    <label class="tool-field">
+      <span>New tempo counts</span>
+      <select id="mm-new-beat"></select>
+    </label>
+    <button type="button" class="tool-primary" id="mm-solve">Solve</button>
+    <button type="button" id="mm-chain" disabled>Use result as next start</button>
+  </div>
+
+  <div class="tool-result" id="mm-result" hidden>
+    <p class="tool-result-figure" id="mm-figure"></p>
+    <p class="tool-note" id="mm-explain"></p>
+  </div>
+
+  <div class="tool-result" id="mm-log-wrap" hidden>
+    <table class="tool-table">
+      <caption>Modulation chain</caption>
+      <thead>
+        <tr><th>#</th><th>Equivalence</th><th>Ratio</th><th>Resulting tempo</th></tr>
+      </thead>
+      <tbody id="mm-log"></tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  import { BASE_UNITS, unitValue, solveModulation } from "../../lib/tempo.js";
+  import { fnum } from "../../lib/fraction.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+
+  const unitSelects = ["mm-old-beat", "mm-old-unit", "mm-new-unit", "mm-new-beat"];
+  for (const id of unitSelects) {
+    const select = byId(id);
+    if (!select) continue;
+    for (const unit of BASE_UNITS) {
+      const option = document.createElement("option");
+      option.value = unit.id;
+      option.textContent = unit.label;
+      select.append(option);
+    }
+    select.value = "quarter";
+  }
+  byId("mm-old-unit").value = "eighth";
+  byId("mm-old-dots").value = "1";
+
+  function parseTuplet(text: string) {
+    const m = String(text).trim().match(/^(\d+)\s*[:\/]\s*(\d+)$/);
+    if (!m) return null;
+    return { actual: Number(m[1]), normal: Number(m[2]) };
+  }
+
+  function describeUnit(unitId: string, dots: string, tupletText: string) {
+    const base = BASE_UNITS.find((u) => u.id === unitId)?.label ?? unitId;
+    const dotMark = dots === "1" ? " dotted" : dots === "2" ? " double-dotted" : "";
+    const tuplet = parseTuplet(tupletText);
+    const tupletMark = tuplet ? ` (${tuplet.actual}:${tuplet.normal} tuplet)` : "";
+    return `${dotMark}${dotMark ? " " : ""}${base}${tupletMark}`.trim();
+  }
+
+  let lastResult: { bpm: number; beat: string } | null = null;
+  let step = 0;
+
+  function solve() {
+    const oldBpm = Number(byId("mm-bpm").value);
+    if (!(oldBpm > 0)) return;
+    const read = (prefix: string) =>
+      unitValue(
+        byId(`${prefix}-unit`).value,
+        Number(byId(`${prefix}-dots`).value),
+        parseTuplet(byId(`${prefix}-tuplet`).value),
+      );
+    const oldBeat = unitValue(byId("mm-old-beat").value);
+    const newBeat = unitValue(byId("mm-new-beat").value);
+    const result = solveModulation({
+      oldBpm,
+      oldBeat,
+      oldVal: read("mm-old"),
+      newVal: read("mm-new"),
+      newBeat,
+    });
+
+    const newBeatLabel = BASE_UNITS.find((u) => u.id === byId("mm-new-beat").value)?.label;
+    const oldDesc = describeUnit(byId("mm-old-unit").value, byId("mm-old-dots").value, byId("mm-old-tuplet").value);
+    const newDesc = describeUnit(byId("mm-new-unit").value, byId("mm-new-dots").value, byId("mm-new-tuplet").value);
+
+    byId("mm-result").hidden = false;
+    byId("mm-figure").innerHTML =
+      `new ${newBeatLabel} = <strong>${result.bpm.toFixed(3).replace(/\.?0+$/, "")}</strong>` +
+      (result.bpmText.includes("/") ? ` <span class="tool-note">(exactly ${result.bpmText})</span>` : "");
+    byId("mm-explain").textContent =
+      `Old ${oldDesc} (at ${BASE_UNITS.find((u) => u.id === byId("mm-old-beat").value)?.label} = ${oldBpm}) ` +
+      `carries its duration into the new ${newDesc}. Tempo ratio new:old = ${result.ratioText}.`;
+
+    step += 1;
+    const row = document.createElement("tr");
+    row.innerHTML =
+      `<td>${step}</td><td>${oldDesc} = ${newDesc}</td>` +
+      `<td>${result.ratioText}</td><td class="is-accent">${newBeatLabel} = ${result.bpm.toFixed(3).replace(/\.?0+$/, "")}</td>`;
+    byId("mm-log").append(row);
+    byId("mm-log-wrap").hidden = false;
+
+    lastResult = { bpm: result.bpm, beat: byId("mm-new-beat").value };
+    byId("mm-chain").disabled = false;
+  }
+
+  byId("mm-solve").addEventListener("click", solve);
+  byId("mm-chain").addEventListener("click", () => {
+    if (!lastResult) return;
+    byId("mm-bpm").value = String(Math.round(lastResult.bpm * 1000) / 1000);
+    byId("mm-old-beat").value = lastResult.beat;
+  });
+</script>

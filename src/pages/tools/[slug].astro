@@ -1,0 +1,97 @@
+---
+// 中文：单个工具页：上方是互动仪器，下方是 Markdown 说明与参考文献。
+// English: One tool page: interactive instrument on top, Markdown
+// instructions and references below.
+// Caveat / 注意：新工具 = content/tools/<slug>/index.md + components/tools 中的同名组件。
+// Caveat: A new tool needs content/tools/<slug>/index.md plus a component
+// registered in the map below.
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { translate } from "../../config/locales";
+import "../../styles/tools.css";
+
+import MetricModulation from "../../components/tools/MetricModulation.astro";
+import PolyrhythmCycles from "../../components/tools/PolyrhythmCycles.astro";
+import PitchTuningLab from "../../components/tools/PitchTuningLab.astro";
+import HarmonicPartials from "../../components/tools/HarmonicPartials.astro";
+import SpectralRoughness from "../../components/tools/SpectralRoughness.astro";
+import PianoHarmonics from "../../components/tools/PianoHarmonics.astro";
+import PcSetAnalysis from "../../components/tools/PcSetAnalysis.astro";
+import TwelveToneLab from "../../components/tools/TwelveToneLab.astro";
+import MessiaenModes from "../../components/tools/MessiaenModes.astro";
+import MelodyTransformer from "../../components/tools/MelodyTransformer.astro";
+import NeoRiemannian from "../../components/tools/NeoRiemannian.astro";
+import NegativeHarmony from "../../components/tools/NegativeHarmony.astro";
+import MultiphonicsBrowser from "../../components/tools/MultiphonicsBrowser.astro";
+
+const registry: Record<string, any> = {
+  "metric-modulation": MetricModulation,
+  "polyrhythm-cycles": PolyrhythmCycles,
+  "pitch-tuning-lab": PitchTuningLab,
+  "harmonic-partials": HarmonicPartials,
+  "spectral-roughness": SpectralRoughness,
+  "piano-harmonics": PianoHarmonics,
+  "pc-set-analysis": PcSetAnalysis,
+  "twelve-tone-lab": TwelveToneLab,
+  "messiaen-modes": MessiaenModes,
+  "melody-transformer": MelodyTransformer,
+  "neo-riemannian": NeoRiemannian,
+  "negative-harmony": NegativeHarmony,
+  "multiphonics-browser": MultiphonicsBrowser,
+};
+
+export async function getStaticPaths() {
+  const tools = await getCollection("tools");
+  return tools.map((tool) => ({
+    params: { slug: tool.data.slug },
+    props: { tool },
+  }));
+}
+
+interface Props {
+  tool: CollectionEntry<"tools">;
+}
+
+const { tool } = Astro.props;
+const { Content } = await render(tool);
+const Instrument = registry[tool.data.slug];
+---
+
+<BaseLayout title={tool.data.title} description={tool.data.summary}>
+  <article
+    class="detail-page tool-page"
+    data-source-file={`content/tools/${tool.id}/index.md`}
+  >
+    <header class="tool-header">
+      <p class="tool-number">
+        Tool No. {String(tool.data.number).padStart(2, "0")} · {tool.data.group}
+      </p>
+      <h1>{tool.data.title}</h1>
+      {tool.data.subtitle && <p class="tool-subtitle">{tool.data.subtitle}</p>}
+      {
+        tool.data.status !== "stable" && (
+          <p class="tool-status">{tool.data.status}</p>
+        )
+      }
+    </header>
+
+    {Instrument && <Instrument />}
+
+    <div class="prose tool-docs">
+      <Content />
+    </div>
+
+    <p class="back-link">
+      <a href="/tools/">
+        <span
+          class="glyph-arrow glyph-arrow--back"
+          data-arrow-glyph
+          aria-hidden="true"
+        ></span>
+        <span data-i18n-key="common.backTools">
+          {translate("en", "common.backTools")}
+        </span>
+      </a>
+    </p>
+  </article>
+</BaseLayout>

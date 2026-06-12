@@ -1,0 +1,140 @@
+---
+// 中文：旋律/和弦变换器：移调、倒影、逆行、旋转，带完整变换链记录。
+// English: Melody/chord transformer: transpose, invert, retrograde,
+// rotate, with a full provenance chain.
+---
+
+<section class="tool-panel" aria-label="Melody and chord transformer">
+  <span class="tool-panel-label">Material</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Notes (with octaves)</span>
+      <input type="text" id="tr-input" value="C4 D4 F4 E4 G4" size="30" />
+    </label>
+    <button type="button" class="tool-primary" id="tr-load">Load</button>
+  </div>
+
+  <div class="tool-controls" style="margin-top: var(--space-md);">
+    <label class="tool-field">
+      <span>Transpose (semitones)</span>
+      <input type="number" id="tr-t" value="2" min="-24" max="24" />
+    </label>
+    <button type="button" id="tr-apply-t">T</button>
+    <label class="tool-field">
+      <span>Invert around</span>
+      <input type="text" id="tr-axis" value="C4" size="6" />
+    </label>
+    <button type="button" id="tr-apply-i">I</button>
+    <button type="button" id="tr-apply-r">Retrograde</button>
+    <button type="button" id="tr-apply-rot">Rotate ←</button>
+    <button type="button" id="tr-undo">Undo</button>
+    <button type="button" id="tr-reset">Reset</button>
+  </div>
+
+  <div class="tool-result">
+    <p class="tool-note" id="tr-chain"></p>
+    <p class="tool-result-figure" id="tr-output"></p>
+    <svg id="tr-svg" class="tool-svg" viewBox="0 0 720 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Original and transformed contour"></svg>
+    <div class="tool-controls" style="margin-top: var(--space-sm);">
+      <button type="button" id="tr-play-a">Hear original</button>
+      <button type="button" id="tr-play-b">Hear result</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { parseNoteList } from "../../lib/parse.js";
+  import { midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
+  import { blip, audioContext } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+  let original: number[] = [];
+  let history: { label: string; notes: number[] }[] = [];
+
+  const current = () => (history.length ? history[history.length - 1].notes : original);
+
+  function load() {
+    const parsed = parseNoteList(byId("tr-input").value);
+    if (!parsed.ok) {
+      byId("tr-output").textContent = `Could not read: ${parsed.bad.join(", ") || "input"}. Use note names with octaves.`;
+      return;
+    }
+    original = parsed.midis;
+    history = [];
+    render();
+  }
+
+  function push(label: string, notes: number[]) {
+    history.push({ label, notes });
+    render();
+  }
+
+  function render() {
+    const notes = current();
+    byId("tr-chain").textContent = history.length
+      ? `Chain: ${history.map((step) => step.label).join(" → ")}`
+      : "Chain: (identity)";
+    byId("tr-output").innerHTML = `<strong>${notes.map((m) => midiToName(m)).join(" ")}</strong>`;
+
+    const svg = byId("tr-svg");
+    svg.innerHTML = "";
+    const el = (name: string, attrs: Record<string, string | number>) => {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+      return node;
+    };
+    const all = [...original, ...notes];
+    if (!all.length) return;
+    const min = Math.min(...all) - 2;
+    const max = Math.max(...all) + 2;
+    const left = 30, right = 700, top = 12, bottom = 168;
+    const x = (index: number, count: number) => left + ((right - left) * index) / Math.max(1, count - 1);
+    const y = (midi: number) => bottom - ((bottom - top) * (midi - min)) / (max - min || 1);
+    const drawLine = (series: number[], color: string, dashed: boolean) => {
+      if (series.length > 1) {
+        const path = series.map((m, i) => `${i === 0 ? "M" : "L"}${x(i, series.length).toFixed(1)},${y(m).toFixed(1)}`).join(" ");
+        svg.append(el("path", { d: path, fill: "none", stroke: color, "stroke-width": 1, ...(dashed ? { "stroke-dasharray": "4 3" } : {}), opacity: dashed ? 0.55 : 1 }));
+      }
+      series.forEach((m, i) =>
+        svg.append(el("circle", { cx: x(i, series.length), cy: y(m), r: 3.6, fill: color, opacity: dashed ? 0.55 : 1 })));
+    };
+    drawLine(original, "currentColor", true);
+    drawLine(notes, "#c81e1e", false);
+  }
+
+  byId("tr-load").addEventListener("click", load);
+  byId("tr-apply-t").addEventListener("click", () => {
+    const t = Number(byId("tr-t").value) || 0;
+    push(`T${t >= 0 ? "+" : ""}${t}`, current().map((m) => m + t));
+  });
+  byId("tr-apply-i").addEventListener("click", () => {
+    const axis = nameToMidi(byId("tr-axis").value.trim());
+    if (axis === null) return;
+    push(`I(${byId("tr-axis").value.trim()})`, current().map((m) => 2 * axis - m));
+  });
+  byId("tr-apply-r").addEventListener("click", () => push("R", [...current()].reverse()));
+  byId("tr-apply-rot").addEventListener("click", () => {
+    const notes = current();
+    push("rot", [...notes.slice(1), notes[0]]);
+  });
+  byId("tr-undo").addEventListener("click", () => {
+    history.pop();
+    render();
+  });
+  byId("tr-reset").addEventListener("click", () => {
+    history = [];
+    render();
+  });
+
+  function play(series: number[]) {
+    const ctx = audioContext();
+    const t0 = ctx.currentTime + 0.08;
+    series.forEach((m, index) => blip(midiToHz(m), t0 + index * 0.3, { dur: 0.28, gain: 0.45 }));
+  }
+  byId("tr-play-a").addEventListener("click", () => play(original));
+  byId("tr-play-b").addEventListener("click", () => play(current()));
+
+  load();
+</script>

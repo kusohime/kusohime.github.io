@@ -1,0 +1,185 @@
+---
+// 中文：音高与调律实验台：换算、JI 比例、EDO 浏览。
+// English: Pitch & tuning lab: converter, JI ratios, EDO explorer.
+---
+
+<section class="tool-panel" aria-label="Pitch converter">
+  <span class="tool-panel-label">Converter</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Pitch (name, Hz, or MIDI)</span>
+      <input type="text" id="pt-input" value="A4" size="12" />
+    </label>
+    <label class="tool-field">
+      <span>A4 reference (Hz)</span>
+      <input type="number" id="pt-a4" value="440" min="380" max="480" step="0.1" />
+    </label>
+    <button type="button" class="tool-primary" id="pt-convert">Convert</button>
+    <button type="button" id="pt-play">Hear it</button>
+  </div>
+  <p class="tool-error" id="pt-error" hidden></p>
+  <div class="tool-result" id="pt-result" hidden>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <tbody id="pt-table"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Just intonation ratios">
+  <span class="tool-panel-label">Just-intonation ratio</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Ratio</span>
+      <input type="text" id="pt-ratio" value="3/2" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Above</span>
+      <input type="text" id="pt-ratio-ref" value="C4" size="8" />
+    </label>
+    <button type="button" class="tool-primary" id="pt-ratio-go">Compute</button>
+    <button type="button" id="pt-ratio-play">Hear dyad</button>
+  </div>
+  <div class="tool-result" id="pt-ratio-result" hidden>
+    <p class="tool-result-figure" id="pt-ratio-figure"></p>
+    <p class="tool-note" id="pt-ratio-note"></p>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="EDO explorer">
+  <span class="tool-panel-label">EDO explorer</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Divisions of the octave</span>
+      <input type="number" id="pt-edo" value="19" min="2" max="96" />
+    </label>
+    <label class="tool-field">
+      <span>Reference</span>
+      <input type="text" id="pt-edo-ref" value="C4" size="8" />
+    </label>
+    <button type="button" class="tool-primary" id="pt-edo-go">Table</button>
+    <button type="button" id="pt-edo-play">Hear scale</button>
+  </div>
+  <div class="tool-result" id="pt-edo-result" hidden>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption id="pt-edo-caption"></caption>
+        <thead>
+          <tr><th>Step</th><th>Cents</th><th>Hz</th><th>Nearest 12-EDO</th><th>Dev.</th></tr>
+        </thead>
+        <tbody id="pt-edo-table"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    describeHz, edoStep, formatCents, hzToMidi, midiToHz, nameToMidi, ratioToCents,
+  } from "../../lib/pitch.js";
+  import { parseFrac } from "../../lib/fraction.js";
+  import { sustain, blip, audioContext } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const a4 = () => Number(byId("pt-a4").value) || 440;
+
+  function readPitch(text: string): number | null {
+    const trimmed = String(text).trim();
+    const asName = nameToMidi(trimmed);
+    if (asName !== null) return midiToHz(asName, a4());
+    const numeric = trimmed.match(/^(\d+(?:\.\d+)?)\s*(hz)?$/i);
+    if (!numeric) return null;
+    const value = Number(numeric[1]);
+    if (numeric[2] || value > 130) return value;
+    return midiToHz(value, a4());
+  }
+
+  let lastHz: number | null = null;
+
+  function convert() {
+    const hz = readPitch(byId("pt-input").value);
+    const error = byId("pt-error");
+    if (hz === null || !(hz > 0)) {
+      error.hidden = false;
+      error.textContent = "Enter a note name (C4, F#3, Bb5), a frequency (440 or 440Hz), or a MIDI number.";
+      byId("pt-result").hidden = true;
+      return;
+    }
+    error.hidden = true;
+    lastHz = hz;
+    const d = describeHz(hz, a4());
+    const rows: [string, string][] = [
+      ["Frequency", `${hz.toFixed(3).replace(/\.?0+$/, "")} Hz`],
+      ["MIDI (fractional)", d.midiFloat.toFixed(3)],
+      ["Nearest 12-EDO", `${d.nearestName} (= ${d.nearestNameFlat})`],
+      ["Deviation", formatCents(d.centsFromNearest)],
+      ["Octave-down spellings", `${describeHz(hz / 2, a4()).nearestName} ${formatCents(describeHz(hz / 2, a4()).centsFromNearest)}`],
+    ];
+    byId("pt-table").innerHTML = rows
+      .map(([k, v]) => `<tr><th scope="row">${k}</th><td>${v}</td></tr>`)
+      .join("");
+    byId("pt-result").hidden = false;
+  }
+
+  byId("pt-convert").addEventListener("click", convert);
+  byId("pt-play").addEventListener("click", () => {
+    convert();
+    if (lastHz) sustain([{ hz: lastHz, amp: 1 }], { dur: 1.4 });
+  });
+
+  function ratioCompute() {
+    const ratio = parseFrac(byId("pt-ratio").value);
+    const refMidi = nameToMidi(byId("pt-ratio-ref").value.trim());
+    if (!ratio || ratio.n <= 0n || refMidi === null) return;
+    const cents = ratioToCents(ratio.n, ratio.d);
+    const refHz = midiToHz(refMidi, a4());
+    const targetHz = refHz * (Number(ratio.n) / Number(ratio.d));
+    const d = describeHz(targetHz, a4());
+    byId("pt-ratio-result").hidden = false;
+    byId("pt-ratio-figure").innerHTML =
+      `${byId("pt-ratio").value.trim()} = <strong>${cents.toFixed(3)}¢</strong>`;
+    byId("pt-ratio-note").textContent =
+      `Above ${byId("pt-ratio-ref").value.trim()}: ${targetHz.toFixed(2)} Hz, ` +
+      `nearest 12-EDO ${d.nearestName} ${formatCents(d.centsFromNearest)}. ` +
+      `The exact ratio is kept as written — only the readout is rounded.`;
+    return { refHz, targetHz };
+  }
+
+  byId("pt-ratio-go").addEventListener("click", ratioCompute);
+  byId("pt-ratio-play").addEventListener("click", () => {
+    const result = ratioCompute();
+    if (result) sustain([{ hz: result.refHz, amp: 0.8 }, { hz: result.targetHz, amp: 0.8 }], { dur: 2.2 });
+  });
+
+  function edoTable() {
+    const divisions = Math.max(2, Math.min(96, Number(byId("pt-edo").value) || 12));
+    const refMidi = nameToMidi(byId("pt-edo-ref").value.trim());
+    if (refMidi === null) return null;
+    const refHz = midiToHz(refMidi, a4());
+    const rows = [];
+    for (let step = 0; step <= divisions; step++) {
+      const { cents, hz } = edoStep(step, divisions, refHz);
+      const d = describeHz(hz, a4());
+      rows.push({ step, cents, hz, name: d.nearestName, dev: formatCents(d.centsFromNearest) });
+    }
+    byId("pt-edo-caption").textContent = `${divisions}-EDO above ${byId("pt-edo-ref").value.trim()}`;
+    byId("pt-edo-table").innerHTML = rows
+      .map((r) =>
+        `<tr><td>${r.step}</td><td>${r.cents.toFixed(2)}</td><td>${r.hz.toFixed(2)}</td><td>${r.name}</td><td>${r.dev}</td></tr>`)
+      .join("");
+    byId("pt-edo-result").hidden = false;
+    return rows;
+  }
+
+  byId("pt-edo-go").addEventListener("click", edoTable);
+  byId("pt-edo-play").addEventListener("click", () => {
+    const rows = edoTable();
+    if (!rows) return;
+    const ctx = audioContext();
+    const t0 = ctx.currentTime + 0.08;
+    rows.forEach((row, index) => {
+      blip(row.hz, t0 + index * 0.28, { dur: 0.26, gain: 0.4 });
+    });
+  });
+</script>

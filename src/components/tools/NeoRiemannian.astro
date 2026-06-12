@@ -1,0 +1,114 @@
+---
+// 中文：新里曼变换实验台：L/P/R/S/N 链与六声循环。
+// English: Neo-Riemannian lab: L/P/R/S/N chains and hexatonic cycles.
+---
+
+<section class="tool-panel" aria-label="Neo-Riemannian transformations">
+  <span class="tool-panel-label">Triad &amp; chain</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Start triad</span>
+      <select id="nr-root"></select>
+    </label>
+    <label class="tool-field">
+      <span>Quality</span>
+      <select id="nr-quality">
+        <option value="M">major</option>
+        <option value="m">minor</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Chain (P, L, R, S, N)</span>
+      <input type="text" id="nr-chain" value="PLR" size="12" />
+    </label>
+    <button type="button" class="tool-primary" id="nr-go">Apply</button>
+    <button type="button" id="nr-play">Hear chain</button>
+    <button type="button" id="nr-hex">Hexatonic cycle</button>
+  </div>
+
+  <div class="tool-result" id="nr-result" hidden>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption id="nr-caption"></caption>
+        <thead>
+          <tr><th>Step</th><th>Op</th><th>Triad</th><th>Pitch classes</th><th>Common tones kept</th></tr>
+        </thead>
+        <tbody id="nr-steps"></tbody>
+      </table>
+    </div>
+    <p class="tool-note">
+      Conventions: P = parallel, R = relative, L = leittonwechsel,
+      S = slide (shared third), N = nebenverwandt. Domain is major/minor
+      triads only — that restriction is the theory, not a limitation of the tool.
+    </p>
+  </div>
+</section>
+
+<script>
+  import {
+    applyChain, commonTones, hexatonicCycle, nearestVoicing, triadLabel, triadPcs,
+  } from "../../lib/triads.js";
+  import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
+  import { sustain, audioContext, blip } from "../../lib/audio.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  let lastSteps: any[] = [];
+
+  const rootSelect = byId("nr-root");
+  PC_NAMES.forEach((name, pc) => {
+    const option = document.createElement("option");
+    option.value = String(pc);
+    option.textContent = name;
+    rootSelect.append(option);
+  });
+
+  function startTriad() {
+    return { root: Number(rootSelect.value), quality: byId("nr-quality").value };
+  }
+
+  function renderSteps(steps: any[], caption: string) {
+    lastSteps = steps;
+    byId("nr-caption").textContent = caption;
+    byId("nr-steps").innerHTML = steps
+      .map((step, index) => {
+        const previous = index > 0 ? steps[index - 1].triad : null;
+        const kept = previous ? commonTones(previous, step.triad).map((pc) => PC_NAMES[pc]).join(" ") : "—";
+        return (
+          `<tr><td>${index}</td><td>${step.op ?? "start"}</td>` +
+          `<td class="is-accent">${triadLabel(step.triad)}</td>` +
+          `<td>${triadPcs(step.triad).map((pc) => PC_NAMES[pc]).join(" ")}</td>` +
+          `<td>${kept}</td></tr>`
+        );
+      })
+      .join("");
+    byId("nr-result").hidden = false;
+  }
+
+  byId("nr-go").addEventListener("click", () => {
+    const chainText = byId("nr-chain").value;
+    renderSteps(applyChain(chainText, startTriad()), `Chain ${chainText.toUpperCase()} from ${triadLabel(startTriad())}`);
+  });
+
+  byId("nr-hex").addEventListener("click", () => {
+    const cycle = hexatonicCycle(startTriad());
+    renderSteps(
+      cycle.map((triad, index) => ({ op: index === 0 ? null : index % 2 === 1 ? "P" : "L", triad })),
+      `Hexatonic cycle from ${triadLabel(startTriad())}`,
+    );
+  });
+
+  byId("nr-play").addEventListener("click", () => {
+    if (!lastSteps.length) byId("nr-go").click();
+    const ctx = audioContext();
+    const t0 = ctx.currentTime + 0.08;
+    let voices: number[] | null = null;
+    lastSteps.forEach((step, index) => {
+      voices = nearestVoicing(voices, step.triad);
+      for (const note of voices) {
+        blip(midiToHz(note), t0 + index * 0.85, { dur: 0.8, gain: 0.3 });
+      }
+    });
+  });
+
+  byId("nr-go").click();
+</script>

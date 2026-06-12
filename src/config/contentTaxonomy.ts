@@ -24,8 +24,17 @@ export const writingTypes = [
   "Other",
 ] as const;
 
+export const toolGroups = [
+  "Rhythm & Time",
+  "Pitch & Spectrum",
+  "Sets & Series",
+  "Transformation",
+  "Performance Resources",
+] as const;
+
 export type WorkCategory = (typeof workCategories)[number];
 export type WritingType = (typeof writingTypes)[number];
+export type ToolGroup = (typeof toolGroups)[number];
 
 export function toAnchor(value: string) {
   return value
