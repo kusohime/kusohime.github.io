@@ -18,6 +18,7 @@
       </select>
     </label>
     <button type="button" class="tool-primary" id="tt-go">Build matrix</button>
+    <div id="tt-kb" style="width: 100%;"></div>
   </div>
   <p class="tool-error" id="tt-error" hidden></p>
 
@@ -56,6 +57,7 @@
   import { parsePcList } from "../../lib/parse.js";
   import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
   import { blip, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   let row: number[] | null = null;
@@ -136,6 +138,7 @@
     return form;
   }
 
+  mountKeyboard(byId("tt-kb"), { inputs: [byId("tt-row")], withOctave: false });
   byId("tt-go").addEventListener("click", build);
   byId("tt-show").addEventListener("click", showForm);
   byId("tt-play").addEventListener("click", () => {

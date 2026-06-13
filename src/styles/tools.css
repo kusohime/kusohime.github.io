@@ -290,6 +290,94 @@
   justify-self: start;
 }
 
+/* ---- Pitch-entry keyboard ---- */
+
+.pk {
+  width: 100%;
+  margin-top: var(--space-sm);
+}
+
+.pk summary {
+  cursor: pointer;
+  color: var(--color-muted);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pk-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-md);
+  align-items: flex-start;
+  margin-top: var(--space-sm);
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.pk-keys {
+  position: relative;
+  height: 5.4rem;
+  flex: none;
+}
+
+.pk-key {
+  position: absolute;
+  top: 0;
+  margin: 0;
+  padding: 0 0 0.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  border-radius: 0;
+}
+
+/* .tool-page button 的底色规则特异性更高，这里要再加一层前缀盖回来。 */
+/* .tool-page button outranks bare class selectors, so key colors are
+   declared with the same prefix. */
+.tool-page .pk-white {
+  width: 1.7rem;
+  height: 5.2rem;
+  border: 1px solid var(--color-rule);
+  background: var(--color-background);
+  color: var(--color-muted);
+  z-index: 1;
+}
+
+.tool-page .pk-black {
+  width: 1.05rem;
+  height: 3.1rem;
+  border: 1px solid var(--color-text);
+  background: var(--color-text);
+  color: var(--color-background);
+  z-index: 2;
+}
+
+.tool-page .pk-key:hover {
+  border-color: var(--theme-color);
+  color: var(--theme-color);
+}
+
+.tool-page .pk-black:hover {
+  background: var(--theme-color);
+  color: var(--color-background);
+}
+
+.pk-controls {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.pk-controls button {
+  font-size: 0.74rem;
+  padding: 0.2rem 0.5rem;
+}
+
 /* ---- Docs below the instrument ---- */
 
 .tool-docs {

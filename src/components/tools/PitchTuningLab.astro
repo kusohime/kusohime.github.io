@@ -16,6 +16,7 @@
     </label>
     <button type="button" class="tool-primary" id="pt-convert">Convert</button>
     <button type="button" id="pt-play">Hear it</button>
+    <div id="pt-kb" style="width: 100%;"></div>
   </div>
   <p class="tool-error" id="pt-error" hidden></p>
   <div class="tool-result" id="pt-result" hidden>
@@ -39,7 +40,7 @@
       <input type="text" id="pt-ratio-ref" value="C4" size="8" />
     </label>
     <button type="button" class="tool-primary" id="pt-ratio-go">Compute</button>
-    <button type="button" id="pt-ratio-play">Hear dyad</button>
+    <button type="button" id="pt-ratio-play" aria-pressed="false">Sustain dyad</button>
   </div>
   <div class="tool-result" id="pt-ratio-result" hidden>
     <p class="tool-result-figure" id="pt-ratio-figure"></p>
@@ -79,7 +80,8 @@
     describeHz, edoStep, formatCents, hzToMidi, midiToHz, nameToMidi, ratioToCents,
   } from "../../lib/pitch.js";
   import { parseFrac } from "../../lib/fraction.js";
-  import { sustain, blip, audioContext } from "../../lib/audio.js";
+  import { sustain, blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const a4 = () => Number(byId("pt-a4").value) || 440;
@@ -146,11 +148,30 @@
     return { refHz, targetHz };
   }
 
-  byId("pt-ratio-go").addEventListener("click", ratioCompute);
-  byId("pt-ratio-play").addEventListener("click", () => {
+  // 比例二重音持续发声；改比例或参考音时即时改调，直到再次点击。
+  // The ratio dyad sustains, retuning live as the ratio or reference
+  // changes, until the toggle is clicked off.
+  const dyadDrone = createDrone();
+  let dyadActive = false;
+  const dyadButton = byId("pt-ratio-play");
+  const syncDyad = () => {
+    if (!dyadActive) return;
     const result = ratioCompute();
-    if (result) sustain([{ hz: result.refHz, amp: 0.8 }, { hz: result.targetHz, amp: 0.8 }], { dur: 2.2 });
+    if (!result) return;
+    dyadDrone.set("ref", { hz: result.refHz, amp: 0.22 });
+    dyadDrone.set("target", { hz: result.targetHz, amp: 0.22 });
+  };
+  byId("pt-ratio-go").addEventListener("click", ratioCompute);
+  dyadButton.addEventListener("click", () => {
+    dyadActive = !dyadActive;
+    dyadButton.setAttribute("aria-pressed", String(dyadActive));
+    dyadButton.textContent = dyadActive ? "Stop dyad" : "Sustain dyad";
+    if (dyadActive) syncDyad();
+    else dyadDrone.stop();
   });
+  byId("pt-ratio").addEventListener("input", syncDyad);
+  byId("pt-ratio-ref").addEventListener("input", syncDyad);
+  byId("pt-a4").addEventListener("input", syncDyad);
 
   function edoTable() {
     const divisions = Math.max(2, Math.min(96, Number(byId("pt-edo").value) || 12));
@@ -172,6 +193,9 @@
     return rows;
   }
 
+  mountKeyboard(byId("pt-kb"), {
+    inputs: [byId("pt-input"), byId("pt-ratio-ref"), byId("pt-edo-ref")],
+  });
   byId("pt-edo-go").addEventListener("click", edoTable);
   byId("pt-edo-play").addEventListener("click", () => {
     const rows = edoTable();

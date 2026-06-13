@@ -15,7 +15,7 @@
       <select id="mm2-trans"></select>
     </label>
     <button type="button" id="mm2-play">Hear ascending</button>
-    <button type="button" id="mm2-play-chord">Hear as field</button>
+    <button type="button" id="mm2-play-chord" aria-pressed="false">Hold as field</button>
   </div>
 
   <div class="tool-result">
@@ -38,6 +38,7 @@
       <input type="text" id="mm2-material" value="C D E F# G# A#" size="26" />
     </label>
     <button type="button" class="tool-primary" id="mm2-check">Check</button>
+    <div id="mm2-kb" style="width: 100%;"></div>
   </div>
   <p class="tool-note" id="mm2-overlap"></p>
 </section>
@@ -49,7 +50,8 @@
   import { transposePcs } from "../../lib/pcset.js";
   import { parsePcList } from "../../lib/parse.js";
   import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
-  import { sustain, blip, audioContext } from "../../lib/audio.js";
+  import { blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -154,10 +156,32 @@
     [...pcs, pcs[0] + 12].forEach((pc, index) =>
       blip(midiToHz(60 + pc), t0 + index * 0.27, { dur: 0.26, gain: 0.42 }));
   });
-  byId("mm2-play-chord").addEventListener("click", () => {
+  // 调式音场可持续按住；换调式或移位即时换声。
+  // The mode field can be held; changing mode or transposition re-voices live.
+  const fieldDrone = createDrone();
+  let fieldHeld = false;
+  const fieldButton = byId("mm2-play-chord");
+  const syncField = () => {
+    if (!fieldHeld) return;
     const pcs = currentPcs();
-    sustain(pcs.map((pc) => ({ hz: midiToHz(60 + pc), amp: 0.7 / Math.sqrt(pcs.length) })), { dur: 2.6 });
+    const keep = new Set(pcs.map((pc) => `pc${pc}`));
+    for (let pc = 0; pc < 12; pc++) {
+      if (!keep.has(`pc${pc}`)) fieldDrone.remove(`pc${pc}`);
+    }
+    for (const pc of pcs) {
+      fieldDrone.set(`pc${pc}`, { hz: midiToHz(60 + pc), amp: 0.18 / Math.sqrt(pcs.length) });
+    }
+  };
+  fieldButton.addEventListener("click", () => {
+    fieldHeld = !fieldHeld;
+    fieldButton.setAttribute("aria-pressed", String(fieldHeld));
+    fieldButton.textContent = fieldHeld ? "Release field" : "Hold as field";
+    if (fieldHeld) syncField();
+    else fieldDrone.stop();
   });
+  modeSelect.addEventListener("change", syncField);
+  byId("mm2-trans").addEventListener("change", syncField);
+  mountKeyboard(byId("mm2-kb"), { inputs: [byId("mm2-material")], withOctave: false });
 
   refreshTranspositions();
   render();

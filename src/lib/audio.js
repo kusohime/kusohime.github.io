@@ -144,6 +144,49 @@ export function createClock({ lookAhead = 0.2, interval = 60 } = {}) {
   };
 }
 
+/**
+ * A keyed set of sustained oscillators that play until removed.
+ * `set(key, …)` starts or retunes a voice; `remove(key)` fades it out;
+ * `stop()` clears everything. For drones whose membership the user
+ * toggles live (partial stacks, held chords, dyads).
+ */
+export function createDrone() {
+  const voices = new Map();
+  return {
+    size: () => voices.size,
+    has: (key) => voices.has(key),
+    set(key, { hz, amp = 0.2, type = "sine" }) {
+      const ctx = audioContext();
+      const existing = voices.get(key);
+      if (existing) {
+        existing.osc.frequency.setTargetAtTime(hz, ctx.currentTime, 0.02);
+        existing.env.gain.setTargetAtTime(amp, ctx.currentTime, 0.05);
+        return;
+      }
+      const osc = ctx.createOscillator();
+      const env = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = hz;
+      env.gain.setValueAtTime(0.0001, ctx.currentTime);
+      env.gain.setTargetAtTime(amp, ctx.currentTime, 0.06);
+      osc.connect(env).connect(master);
+      osc.start();
+      voices.set(key, { osc, env });
+    },
+    remove(key) {
+      const voice = voices.get(key);
+      if (!voice) return;
+      voices.delete(key);
+      const ctx = audioContext();
+      voice.env.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.08);
+      voice.osc.stop(ctx.currentTime + 0.5);
+    },
+    stop() {
+      for (const key of [...voices.keys()]) this.remove(key);
+    },
+  };
+}
+
 export function stopAll() {
   for (const node of liveNodes) {
     try {

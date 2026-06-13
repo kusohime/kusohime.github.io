@@ -20,8 +20,11 @@ cents, and octave-reduced ratio. Red dots in the ladder mark partials
 more than 20¢ from 12-EDO — the 7th, 11th, 13th and their octaves — the
 ones that need microtonal notation or retuned instruments.
 
-Check any subset of partials and **Hear selected** to audition the stack
-as an additive chord; **Hear series** arpeggiates the whole table.
+Check any subset of partials and **Sustain selected** to hold the stack
+as an additive drone: while it sounds, checking and unchecking partials
+adds and removes them live, and changing the fundamental or B retunes
+the sounding stack — it plays until you stop it. **Hear series**
+arpeggiates the whole table.
 Defaults select partials 4–7, the dominant-seventh-like cell from which
 much spectral harmony grows.
 

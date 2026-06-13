@@ -29,6 +29,7 @@
     </label>
     <button type="button" class="tool-primary" id="ph-go">Map nodes</button>
     <button type="button" id="ph-play">Hear (approx.)</button>
+    <div id="ph-kb" style="width: 100%;"></div>
   </div>
   <p class="tool-error" id="ph-error" hidden></p>
 
@@ -50,6 +51,7 @@
   import { harmonicNodes, partialFreq } from "../../lib/partials.js";
   import { describeHz, formatCents, midiToHz, nameToMidi } from "../../lib/pitch.js";
   import { sustain } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -130,5 +132,6 @@
       { dur: 2.8 },
     );
   });
+  mountKeyboard(byId("ph-kb"), { inputs: [byId("ph-key")], baseOctave: 1 });
   map();
 </script>

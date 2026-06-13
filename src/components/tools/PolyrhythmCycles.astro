@@ -46,6 +46,7 @@
       <span>Preset</span>
       <select id="cn-preset"><option value="">—</option></select>
     </label>
+    <div id="cn-kb" style="width: 100%;"></div>
   </div>
 
   <div class="tool-controls" style="margin-top: var(--space-sm);">
@@ -108,8 +109,9 @@
     <svg id="cn-rings" class="tool-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="max-width: 16rem;" role="img" aria-label="Two voices on the cycle; the inner ring is rotated by the current offset"></svg>
     <p class="tool-note">
       Voice 1 above (or outer ring), voice 2 below (or inner ring), slid by
-      the current displacement. During playback the red playhead sweeps the
-      cycle; in phasing mode the displacement itself drifts as you listen.
+      the current displacement; the hollow halo marks where voice 2's
+      pattern begins. While playing, a red line sweeps the cycle — the
+      playhead is the only line in these views.
     </p>
   </div>
 </section>
@@ -154,6 +156,7 @@
   import { parsePattern, driftPeriodSeconds, attackDurationSteps, PRESETS } from "../../lib/canon.js";
   import { midiToHz } from "../../lib/pitch.js";
   import { blip, tone, createClock, stopAll, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -194,6 +197,18 @@
       `${counts.join(" : ")} — smallest common grid: ${lcm} divisions; ` +
       `${positions.length} distinct attack points; ${coincidences.length} coincidence${coincidences.length === 1 ? "" : "s"} per cycle.`;
 
+    // 重合点不再画成竖线（避免与播放指针混淆）：参与重合的点本身
+    // 涂红，时间轴上加红色菱形。线条只属于播放指针。
+    // Coincidences are no longer vertical lines (those read as playheads):
+    // the coinciding attack dots themselves turn red, with a red diamond
+    // on the time axis. Lines belong to the playhead alone.
+    const redSteps = counts.map(() => new Set<number>());
+    for (const c of coincidences) {
+      for (const layer of c.layers) {
+        redSteps[layer].add(Math.round(fnum(c.at) * counts[layer]));
+      }
+    }
+
     const linear = byId("pr-linear");
     linear.innerHTML = "";
     const left = 30, right = 700, top = 18, rowGap = 30;
@@ -202,7 +217,8 @@
       linear.append(el("line", { x1: left, y1: y, x2: right, y2: y, stroke: "currentColor", "stroke-width": 0.6, opacity: 0.45 }));
       for (let k = 0; k < count; k++) {
         const x = left + ((right - left) * k) / count;
-        linear.append(el("circle", { cx: x, cy: y, r: 4.2, fill: "currentColor" }));
+        const coincides = redSteps[layer].has(k);
+        linear.append(el("circle", { cx: x, cy: y, r: coincides ? 4.8 : 4.2, fill: coincides ? "#c81e1e" : "currentColor" }));
       }
       const label = el("text", { x: 6, y: y + 3.5, "font-size": 10, fill: "currentColor" });
       label.textContent = String(count);
@@ -212,8 +228,10 @@
     linear.append(el("line", { x1: left, y1: axisY, x2: right, y2: axisY, stroke: "currentColor", "stroke-width": 1 }));
     for (const c of coincidences) {
       const x = left + (right - left) * fnum(c.at);
-      linear.append(el("line", { x1: x, y1: top - 10, x2: x, y2: axisY, stroke: "#c81e1e", "stroke-width": 1 }));
-      linear.append(el("circle", { cx: x, cy: axisY, r: 4.8, fill: "#c81e1e" }));
+      linear.append(el("rect", {
+        x: x - 4.4, y: axisY - 4.4, width: 8.8, height: 8.8,
+        fill: "#c81e1e", transform: `rotate(45 ${x} ${axisY})`,
+      }));
     }
     linear.setAttribute("viewBox", `0 0 720 ${axisY + 18}`);
 
@@ -226,23 +244,15 @@
       circle.append(el("circle", { cx, cy, r, fill: "none", stroke: "currentColor", "stroke-width": 0.5, opacity: 0.25 }));
       for (let k = 0; k < count; k++) {
         const angle = (2 * Math.PI * k) / count - Math.PI / 2;
+        const coincides = redSteps[layer].has(k);
         circle.append(el("circle", {
           cx: cx + r * Math.cos(angle),
           cy: cy + r * Math.sin(angle),
-          r: 3.6,
-          fill: "currentColor",
+          r: coincides ? 4.2 : 3.6,
+          fill: coincides ? "#c81e1e" : "currentColor",
         }));
       }
     });
-    for (const c of coincidences) {
-      const angle = 2 * Math.PI * fnum(c.at) - Math.PI / 2;
-      circle.append(el("line", {
-        x1: cx, y1: cy,
-        x2: cx + 100 * Math.cos(angle),
-        y2: cy + 100 * Math.sin(angle),
-        stroke: "#c81e1e", "stroke-width": 1,
-      }));
-    }
 
     // 播放指针：线性图上一条可拖动的竖线，圆图上一条转动的半径。
     // Playheads: a draggable vertical line on the grid, a turning radius
@@ -570,12 +580,14 @@
     };
     drawRing(96, 0, false);
     drawRing(66, phase, true);
-    // displacement marker
-    const angle = 2 * Math.PI * phase - Math.PI / 2;
-    svg.append(el("line", {
-      x1: cx, y1: cy,
-      x2: cx + 52 * Math.cos(angle), y2: cy + 52 * Math.sin(angle),
-      stroke: "#c81e1e", "stroke-width": 1,
+    // 声部二起点用空心光环标记，而非中心射线（易被误读为指针）。
+    // Voice 2's pattern start is haloed, not drawn as a center radius
+    // (which read as a stray playhead).
+    const startAngle = 2 * Math.PI * phase - Math.PI / 2;
+    svg.append(el("circle", {
+      cx: cx + 66 * Math.cos(startAngle),
+      cy: cy + 66 * Math.sin(startAngle),
+      r: 8, fill: "none", stroke: "#c81e1e", "stroke-width": 1,
     }));
     // playhead radius (voice 1's position in its cycle)
     const playhead = canonPlayheadPhase();
@@ -621,6 +633,11 @@
     const v2 = el("text", { x: 4, y: 95, "font-size": 9, fill: "#c81e1e" });
     v2.textContent = "V2";
     svg.append(v1, v2);
+    // halo on voice 2's pattern start
+    const startX = left + (((rows[1].rotation % 1) + 1) % 1) * width;
+    svg.append(el("circle", {
+      cx: startX, cy: 92, r: 8.5, fill: "none", stroke: "#c81e1e", "stroke-width": 1,
+    }));
     // playhead sweeping voice 1's cycle
     const playhead = canonPlayheadPhase();
     if (playhead !== null) {
@@ -697,6 +714,7 @@
     drawCanonViz();
   });
   presetSelect.addEventListener("change", drawCanonViz);
+  mountKeyboard(byId("cn-kb"), { inputs: [byId("cn-pattern")] });
   updateCanonReadout();
   setCanonView("lines");
 

@@ -26,7 +26,8 @@ continuum, and fully independent tempo streams.
 **Layers & coincidences.** Enter the attack counts of up to four layers —
 `3, 4` is the familiar hemiola; `5, 7, 11` is already a texture. The
 linear grid shows each layer's attacks across one cycle; the circle shows
-the same cycle bent round. Red verticals mark coincidences. Playback
+the same cycle bent round. Attacks that coincide turn red, with a red
+diamond on the time axis — lines are reserved for the playhead. Playback
 loops until Stop, with a playhead sweeping the grid and a radius turning
 on the circle; **drag the linear grid while playing** to move the
 playhead and the loop continues from there. **Coincidences only** plays

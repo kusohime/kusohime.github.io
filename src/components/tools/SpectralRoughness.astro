@@ -42,8 +42,9 @@
       <input type="text" id="sr-chord-b" value="C3 E4 G5" size="22" />
     </label>
     <button type="button" class="tool-primary" id="sr-chords-go">Compare</button>
-    <button type="button" id="sr-play-a">Hear A</button>
-    <button type="button" id="sr-play-b">Hear B</button>
+    <button type="button" id="sr-play-a" aria-pressed="false">Hold A</button>
+    <button type="button" id="sr-play-b" aria-pressed="false">Hold B</button>
+    <div id="sr-kb" style="width: 100%;"></div>
   </div>
   <p class="tool-error" id="sr-error" hidden></p>
   <div class="tool-result" id="sr-chord-result" hidden>
@@ -66,7 +67,8 @@
   import { dyadSweep, chordRoughness, pairMatrix } from "../../lib/roughness.js";
   import { midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
   import { parseNoteList } from "../../lib/parse.js";
-  import { sustain } from "../../lib/audio.js";
+  import { createDrone } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -137,19 +139,52 @@
     return { a: parsedA.midis, b: parsedB.midis };
   }
 
-  function playChord(midis: number[]) {
-    sustain(midis.map((m) => ({ hz: midiToHz(m), amp: 0.9 / Math.sqrt(midis.length) })), { dur: 2.2 });
+  // 两个声部排列可持续按住对比；同一时间只响一个。
+  // Either voicing can be held for comparison; one sounds at a time.
+  const chordDrone = createDrone();
+  let holding: "a" | "b" | null = null;
+
+  function syncHold() {
+    const buttonA = byId("sr-play-a");
+    const buttonB = byId("sr-play-b");
+    buttonA.setAttribute("aria-pressed", String(holding === "a"));
+    buttonA.textContent = holding === "a" ? "Stop A" : "Hold A";
+    buttonB.setAttribute("aria-pressed", String(holding === "b"));
+    buttonB.textContent = holding === "b" ? "Stop B" : "Hold B";
+    if (!holding) {
+      chordDrone.stop();
+      return;
+    }
+    const result = compare();
+    if (!result) {
+      holding = null;
+      chordDrone.stop();
+      return;
+    }
+    const midis = holding === "a" ? result.a : result.b;
+    const keep = new Set(midis.map((m: number) => `n${m}`));
+    for (let m = 0; m < 128; m++) {
+      if (!keep.has(`n${m}`)) chordDrone.remove(`n${m}`);
+    }
+    for (const m of midis) {
+      chordDrone.set(`n${m}`, { hz: midiToHz(m), amp: 0.24 / Math.sqrt(midis.length) });
+    }
   }
 
   byId("sr-curve-go").addEventListener("click", drawCurve);
   byId("sr-chords-go").addEventListener("click", compare);
   byId("sr-play-a").addEventListener("click", () => {
-    const result = compare();
-    if (result) playChord(result.a);
+    holding = holding === "a" ? null : "a";
+    syncHold();
   });
   byId("sr-play-b").addEventListener("click", () => {
-    const result = compare();
-    if (result) playChord(result.b);
+    holding = holding === "b" ? null : "b";
+    syncHold();
+  });
+  byId("sr-chord-a").addEventListener("input", () => holding === "a" && syncHold());
+  byId("sr-chord-b").addEventListener("input", () => holding === "b" && syncHold());
+  mountKeyboard(byId("sr-kb"), {
+    inputs: [byId("sr-chord-a"), byId("sr-chord-b"), byId("sr-base")],
   });
   drawCurve();
   compare();

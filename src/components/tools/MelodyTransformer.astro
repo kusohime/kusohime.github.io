@@ -12,6 +12,7 @@
       <input type="text" id="tr-input" value="C4 D4 F4 E4 G4" size="30" />
     </label>
     <button type="button" class="tool-primary" id="tr-load">Load</button>
+    <div id="tr-kb" style="width: 100%;"></div>
   </div>
 
   <div class="tool-controls" style="margin-top: var(--space-md);">
@@ -46,6 +47,7 @@
   import { parseNoteList } from "../../lib/parse.js";
   import { midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
   import { blip, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -135,6 +137,7 @@
   }
   byId("tr-play-a").addEventListener("click", () => play(original));
   byId("tr-play-b").addEventListener("click", () => play(current()));
+  mountKeyboard(byId("tr-kb"), { inputs: [byId("tr-input"), byId("tr-axis")] });
 
   load();
 </script>

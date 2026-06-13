@@ -20,8 +20,9 @@
       <input type="number" id="hp-b" value="0" min="0" max="0.01" step="0.0001" />
     </label>
     <button type="button" class="tool-primary" id="hp-go">Compute</button>
-    <button type="button" id="hp-play-sel">Hear selected</button>
+    <button type="button" id="hp-play-sel" aria-pressed="false">Sustain selected</button>
     <button type="button" id="hp-play-seq">Hear series</button>
+    <div id="hp-kb" style="width: 100%;"></div>
   </div>
   <p class="tool-error" id="hp-error" hidden></p>
 
@@ -29,7 +30,7 @@
     <svg id="hp-ladder" class="tool-svg" viewBox="0 0 720 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Partial ladder"></svg>
     <div class="tool-table-wrap" style="margin-top: var(--space-md);">
       <table class="tool-table">
-        <caption>Check partials to build a chord; deviations are from 12-EDO.</caption>
+        <caption>Check partials to build a chord; while Sustain is on, checking and unchecking changes the sound live.</caption>
         <thead>
           <tr><th></th><th>n</th><th>Hz</th><th>Nearest</th><th>Dev.</th><th>Reduced to octave</th></tr>
         </thead>
@@ -43,7 +44,8 @@
 <script>
   import { partialTable, reduceToOctave } from "../../lib/partials.js";
   import { midiToHz, nameToMidi } from "../../lib/pitch.js";
-  import { sustain, blip, audioContext } from "../../lib/audio.js";
+  import { blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -108,18 +110,48 @@
         ? "Inharmonic mode: upper partials stretch sharp, as on real piano strings."
         : "Ideal harmonic mode (B = 0).");
     byId("hp-result").hidden = false;
+    // 持续发声时，改变基频或 B 会让在响的分音即时改调。
+    // While sustaining, changing f0 or B retunes the sounding partials live.
+    syncDrone();
+  }
+
+  // 持续发声：勾选/取消分音时即时加入或退出，直到再次点击停止。
+  // Sustained drone: partials join and leave the sound live as their
+  // checkboxes change, until the toggle is clicked off.
+  const drone = createDrone();
+  let droneActive = false;
+  const droneButton = byId("hp-play-sel");
+
+  function syncDrone() {
+    if (!droneActive) return;
+    const checked = new Set(
+      [...document.querySelectorAll<HTMLInputElement>("[data-partial]:checked")]
+        .map((box) => Number(box.dataset.partial)),
+    );
+    for (let n = 1; n <= 32; n++) {
+      const row = table.find((entry) => entry.n === n);
+      if (row && checked.has(n)) {
+        drone.set(`p${n}`, { hz: row.hz, amp: 0.22 / Math.sqrt(n) });
+      } else {
+        drone.remove(`p${n}`);
+      }
+    }
+  }
+
+  function setDroneActive(active: boolean) {
+    droneActive = active;
+    droneButton.setAttribute("aria-pressed", String(active));
+    droneButton.textContent = active ? "Stop sustain" : "Sustain selected";
+    if (active) syncDrone();
+    else drone.stop();
   }
 
   byId("hp-go").addEventListener("click", compute);
-  byId("hp-play-sel").addEventListener("click", () => {
+  droneButton.addEventListener("click", () => {
     if (!table.length) compute();
-    const checked = [...document.querySelectorAll<HTMLInputElement>("[data-partial]:checked")]
-      .map((box) => Number(box.dataset.partial));
-    const partials = table.filter((row) => checked.includes(row.n));
-    if (partials.length) {
-      sustain(partials.map((row) => ({ hz: row.hz, amp: 1 / Math.sqrt(row.n) })), { dur: 2.5 });
-    }
+    setDroneActive(!droneActive);
   });
+  byId("hp-table").addEventListener("change", syncDrone);
   byId("hp-play-seq").addEventListener("click", () => {
     if (!table.length) compute();
     const ctx = audioContext();
@@ -128,5 +160,6 @@
       blip(row.hz, t0 + index * 0.22, { dur: 0.3, gain: 0.5 / Math.sqrt(row.n) });
     });
   });
+  mountKeyboard(byId("hp-kb"), { inputs: [byId("hp-f0")], baseOctave: 2 });
   compute();
 </script>

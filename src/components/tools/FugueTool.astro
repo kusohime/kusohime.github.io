@@ -23,6 +23,7 @@
       <span>Countersubject (optional — as it should sound against entry 2)</span>
       <input type="text" id="fg-cs" value="" size="56" placeholder="e.g. F4:q E4:e D4 C#4:q D4:e E4 F4:q." />
     </label>
+    <div id="fg-kb" style="width: 100%;"></div>
   </div>
 </section>
 
@@ -75,6 +76,7 @@
   } from "../../lib/fugue.js";
   import { midiToHz, midiToName } from "../../lib/pitch.js";
   import { tone, stopAll, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -279,6 +281,12 @@
     });
   });
   byId("fg-stop").addEventListener("click", () => stopAll());
+  // 键盘只输入音名；时值沿用上一个 token 的（解析器的惯例）。
+  // The keyboard enters note names; durations carry over from the
+  // previous token, per the parser's convention.
+  mountKeyboard(byId("fg-kb"), {
+    inputs: [byId("fg-subject"), byId("fg-answer"), byId("fg-cs")],
+  });
 
   build();
 </script>

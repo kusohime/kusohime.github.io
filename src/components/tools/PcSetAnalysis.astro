@@ -12,8 +12,9 @@
       <input type="text" id="pcs-input" value="0 1 4 6" size="24" />
     </label>
     <button type="button" class="tool-primary" id="pcs-go">Analyze</button>
-    <button type="button" id="pcs-play-chord">Hear as chord</button>
+    <button type="button" id="pcs-play-chord" aria-pressed="false">Hold as chord</button>
     <button type="button" id="pcs-play-asc">Hear ascending</button>
+    <div id="pcs-kb" style="width: 100%;"></div>
   </div>
   <p class="tool-error" id="pcs-error" hidden></p>
 
@@ -33,7 +34,8 @@
   import { analyzeSet } from "../../lib/pcset.js";
   import { parsePcList } from "../../lib/parse.js";
   import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
-  import { sustain, blip, audioContext } from "../../lib/audio.js";
+  import { blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -104,13 +106,35 @@
     byId("pcs-result").hidden = false;
   }
 
-  byId("pcs-go").addEventListener("click", analyze);
-  byId("pcs-play-chord").addEventListener("click", () => {
-    analyze();
-    if (currentPcs.length) {
-      sustain(currentPcs.map((pc) => ({ hz: midiToHz(60 + pc), amp: 0.8 / Math.sqrt(currentPcs.length) })), { dur: 2 });
+  // 集合可作为和弦持续按住；改动输入即时换声。
+  // The set can be held as a chord, re-voicing live as the input changes.
+  const setDrone = createDrone();
+  let setHeld = false;
+  const holdButton = byId("pcs-play-chord");
+  const syncSetDrone = () => {
+    if (!setHeld) return;
+    const keep = new Set(currentPcs.map((pc) => `pc${pc}`));
+    for (let pc = 0; pc < 12; pc++) {
+      if (!keep.has(`pc${pc}`)) setDrone.remove(`pc${pc}`);
     }
+    for (const pc of currentPcs) {
+      setDrone.set(`pc${pc}`, { hz: midiToHz(60 + pc), amp: 0.22 / Math.sqrt(currentPcs.length || 1) });
+    }
+  };
+  byId("pcs-go").addEventListener("click", analyze);
+  holdButton.addEventListener("click", () => {
+    analyze();
+    setHeld = !setHeld;
+    holdButton.setAttribute("aria-pressed", String(setHeld));
+    holdButton.textContent = setHeld ? "Release chord" : "Hold as chord";
+    if (setHeld) syncSetDrone();
+    else setDrone.stop();
   });
+  byId("pcs-input").addEventListener("input", () => {
+    analyze();
+    syncSetDrone();
+  });
+  mountKeyboard(byId("pcs-kb"), { inputs: [byId("pcs-input")], withOctave: false });
   byId("pcs-play-asc").addEventListener("click", () => {
     analyze();
     const ctx = audioContext();
