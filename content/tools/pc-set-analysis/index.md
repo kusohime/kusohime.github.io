@@ -2,7 +2,7 @@
 title: "Pitch-Class Set Analyzer"
 subtitle: "Normal order, prime form, Forte class, interval vector"
 number: 7
-group: "Sets & Series"
+group: "Composition"
 summary: "Identifies the set class of any pitch-class collection, with Z-relation, complement, and clockface display."
 status: "stable"
 slug: "pc-set-analysis"

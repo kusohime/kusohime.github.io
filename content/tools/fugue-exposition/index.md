@@ -2,7 +2,7 @@
 title: "Fugue Exposition Builder"
 subtitle: "Subject, answer, entries, stretto"
 number: 14
-group: "Transformation"
+group: "Composition"
 summary: "Lays out a fugue exposition for up to four voices from your subject — answer at the fifth by default, tonal answer and countersubject optional, entry distance adjustable down to stretto."
 status: "stable"
 slug: "fugue-exposition"

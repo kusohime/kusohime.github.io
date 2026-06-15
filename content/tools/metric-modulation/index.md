@@ -2,7 +2,7 @@
 title: "Metric Modulation Calculator"
 subtitle: "Tempo equivalence solver with chaining"
 number: 1
-group: "Rhythm & Time"
+group: "Composition"
 summary: "Computes the new tempo from an old-value = new-value equivalence, with dots, tuplets, and chained steps. Results are exact."
 status: "stable"
 slug: "metric-modulation"

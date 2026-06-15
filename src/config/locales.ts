@@ -153,7 +153,7 @@ export const messages = {
     "metadata.commission": "Commande",
     "metadata.credits": "Collaborations",
     "metadata.premiere": "Création",
-    "metadata.labelSeparator": " : ",
+    "metadata.labelSeparator": " : ",
     "theme.toLight": "Passer au thème clair",
     "theme.toDark": "Passer au thème sombre",
   },
@@ -382,40 +382,19 @@ const writingTypeTranslations: Record<
 };
 
 const toolGroupTranslations: Record<ToolGroup, Record<Locale, string>> = {
-  "Rhythm & Time": {
-    en: "Rhythm & Time",
-    zh: "節奏與時間",
-    de: "Rhythmus & Zeit",
-    fr: "Rythme et temps",
-    ja: "リズムと時間",
+  Composition: {
+    en: "Composition",
+    zh: "作曲",
+    de: "Komposition",
+    fr: "Composition",
+    ja: "作曲",
   },
-  "Pitch & Spectrum": {
-    en: "Pitch & Spectrum",
-    zh: "音高與頻譜",
-    de: "Tonhöhe & Spektrum",
-    fr: "Hauteur et spectre",
-    ja: "音高とスペクトル",
-  },
-  "Sets & Series": {
-    en: "Sets & Series",
-    zh: "集合與序列",
-    de: "Mengen & Reihen",
-    fr: "Ensembles et séries",
-    ja: "集合とセリー",
-  },
-  Transformation: {
-    en: "Transformation",
-    zh: "變換",
-    de: "Transformation",
-    fr: "Transformation",
-    ja: "変換",
-  },
-  "Performance Resources": {
-    en: "Performance Resources",
-    zh: "演奏資源",
-    de: "Aufführungsressourcen",
-    fr: "Ressources d’interprétation",
-    ja: "演奏リソース",
+  Linguistics: {
+    en: "Linguistics",
+    zh: "語言學",
+    de: "Linguistik",
+    fr: "Linguistique",
+    ja: "言語学",
   },
 };
 

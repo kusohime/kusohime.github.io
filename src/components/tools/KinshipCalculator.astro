@@ -1,0 +1,497 @@
+---
+// 中文：亲属称谓「家谱树」：在一棵可互动的家谱树上，点选任一位亲属即显示其
+//       亲属关系与所选语言的称谓；可沿语法方向加分支，提供三种视图（谱系图／
+//       缩排大纲／祖先扇形）。语言只是查阅选择，任何语言都可作为主显示语言，
+//       不偏袒任何一种。
+// English: Kinship "family tree". On an interactive genealogy tree, click any
+// relative to see its relation and the term in the chosen language. Grow
+// branches along the grammar, in three views (pedigree chart, indented
+// outline, ancestor fan). The language picker is a neutral lookup — any
+// language can be the main one; none is privileged.
+---
+
+<section class="tool-panel kin" aria-label="Family tree">
+  <span class="tool-panel-label">Family tree</span>
+
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Language</span>
+      <select id="kin-lang"></select>
+    </label>
+    <label class="tool-field">
+      <span>Show</span>
+      <select id="kin-roman">
+        <option value="1">script + romanization</option>
+        <option value="0">script only</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>You are</span>
+      <select id="kin-ego">
+        <option value="F">female speaker</option>
+        <option value="M">male speaker</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Selected vs you</span>
+      <select id="kin-elder">
+        <option value="">age unspecified</option>
+        <option value="1">older than me</option>
+        <option value="0">younger than me</option>
+      </select>
+    </label>
+    <div class="tool-field kin-viewfield">
+      <span>View</span>
+      <div class="kin-viewtabs" id="kin-viewtabs" role="tablist">
+        <button type="button" data-view="chart" role="tab">chart</button>
+        <button type="button" data-view="outline" role="tab">outline</button>
+        <button type="button" data-view="fan" role="tab">fan</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="kin-tree" class="kin-tree" aria-label="genealogy tree — click a person"></div>
+
+  <p class="kin-pathline" id="kin-pathline" aria-live="polite"></p>
+
+  <div class="kin-addbar" id="kin-addbar" aria-label="Add a relative to the selected person"></div>
+  <div class="tool-controls kin-treebtns">
+    <button type="button" id="kin-remove">Remove selected</button>
+    <button type="button" id="kin-reset">Reset tree</button>
+  </div>
+</section>
+
+<section class="tool-panel kin" aria-label="Result">
+  <span class="tool-panel-label">Term</span>
+  <div class="kin-chips" id="kin-chips"></div>
+  <p class="kin-pathgloss" id="kin-relline"></p>
+  <div class="kin-primary">
+    <span class="kin-term" id="kin-term"></span>
+    <span class="kin-roman" id="kin-termroman"></span>
+    <a class="kin-wikt" id="kin-wikt" hidden target="_blank" rel="noopener">Wiktionary ↗</a>
+  </div>
+  <p class="kin-gloss" id="kin-gloss"></p>
+  <p class="kin-note" id="kin-etym" hidden></p>
+  <p class="kin-note" id="kin-usage" hidden></p>
+  <p class="kin-nb" id="kin-nb" hidden></p>
+  <p class="kin-chon" id="kin-chon" hidden></p>
+
+  <span class="tool-panel-label kin-sublabel">In every language</span>
+  <div class="kin-grid" id="kin-grid"></div>
+</section>
+
+<section class="tool-panel kin" aria-label="Save and export">
+  <span class="tool-panel-label">Save / export</span>
+  <div class="tool-controls">
+    <button type="button" id="kin-share">Copy share link</button>
+    <button type="button" id="kin-copycode">Copy code</button>
+    <button type="button" id="kin-importcode">Import code…</button>
+    <button type="button" id="kin-dl-tree">Tree PNG</button>
+    <button type="button" id="kin-dl-card">Card PNG</button>
+    <button type="button" id="kin-print">Print reference sheet</button>
+  </div>
+  <pre class="kin-code" id="kin-codeout" aria-live="polite"></pre>
+</section>
+
+<script>
+  import {
+    step, resolve, chonLabel, degreePhrase,
+    sigOf, genOffset, allowedAdds, appendStep,
+    serializeTree, deserializeTree,
+  } from "../../lib/kinship-core.js";
+  import { LANGUAGES, ENTRIES, RELATIONS } from "../../lib/kinship-data.js";
+  import { lookup, lookupAll, relationLabel } from "../../lib/kinship-compose.js";
+  import {
+    renderChartSvg, renderOutlineHtml, renderFanSvg, renderCardSvg, svgToPng,
+  } from "../../lib/kinship-render.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const AGE_WORD: any = { e: "elder", y: "younger" };
+
+  // ---- state: a whole tree, plus a selected node ----
+  let state: any = loadFromHash() || seedTree();
+
+  function seedTree() {
+    const ego: any[] = [];
+    const nodes: any[][] = [ego];
+    const add = (parent: any[], kind: string, age: any = null) => {
+      const p = appendStep(parent, kind, age);
+      nodes.push(p);
+      return p;
+    };
+    const fa = add(ego, "F"), mo = add(ego, "M");
+    add(fa, "F"); add(fa, "M"); add(mo, "F"); add(mo, "M");      // four grandparents
+    const fu = add(fa, "B"); add(fa, "Z"); add(mo, "B"); add(mo, "Z"); // aunts / uncles
+    const eb = add(ego, "B", "elder"); add(ego, "Z", "younger");  // siblings
+    add(fu, "S");                                                 // paternal cousin
+    const so = add(ego, "S"); add(ego, "D");                      // children
+    add(eb, "S");                                                 // nephew
+    add(so, "S");                                                 // grandchild
+    return {
+      nodes, sel: "EGO", egoSex: "F", egoElder: null,
+      language: LANGUAGES[0].id, roman: true, view: "chart",
+    };
+  }
+
+  // ---- language select ----
+  const langSel = byId("kin-lang");
+  LANGUAGES.forEach((l: any) => {
+    const o = document.createElement("option");
+    o.value = l.id; o.textContent = l.name;
+    langSel.append(o);
+  });
+
+  function themeColors() {
+    const cs = getComputedStyle(document.body);
+    const v = (n: string, f: string) => (cs.getPropertyValue(n).trim() || f);
+    const accent = v("--theme-color", "#c81e1e");
+    return {
+      ink: v("--color-text", "#000"),
+      muted: v("--color-muted", "#555"),
+      rule: v("--color-rule", "#aaa"),
+      accent, ego: accent, paper: "transparent",
+    };
+  }
+
+  function nodeBySig(sig: string) {
+    return state.nodes.find((p: any[]) => sigOf(p) === sig);
+  }
+  function selPath() {
+    return nodeBySig(state.sel) || [];
+  }
+
+  function relForNode(path: any[], egoElder: any) {
+    return resolve({ path, egoSex: state.egoSex, egoElder });
+  }
+
+  function nodeLabel(path: any[], rel: any) {
+    if (!path.length) return "you";
+    let label = rel.ok ? relationLabel(rel.relationId) : "—";
+    const last = path[path.length - 1];
+    // tag sibling seniority when it's the terminal sibling step
+    if ((last.kind === "B" || last.kind === "Z") && last.age) label += ` (${last.age})`;
+    return label;
+  }
+
+  // ---- build display descriptors for every node ----
+  function buildViewNodes() {
+    return state.nodes.map((path: any[]) => {
+      const rel = relForNode(path, null); // neutral age for tree display
+      const primary = rel.ok ? lookup(rel.relationId, state.language, rel) : { term: "?", roman: "", kind: "missing" };
+      return {
+        sig: sigOf(path), path, gen: genOffset(path), isEgo: path.length === 0,
+        relLabel: nodeLabel(path, rel),
+        term: primary.term,
+        roman: state.roman && primary.roman ? primary.roman : "",
+        missing: primary.kind === "missing" || primary.kind === "class",
+      };
+    });
+  }
+
+  // ---- draw the active view ----
+  let lastChart: any = null;
+  function drawTree() {
+    const vn = buildViewNodes();
+    const host = byId("kin-tree");
+    const colors = themeColors();
+    if (state.view === "outline") {
+      host.innerHTML = renderOutlineHtml(vn, { selectedSig: state.sel });
+    } else if (state.view === "fan") {
+      host.innerHTML = renderFanSvg(vn, { selectedSig: state.sel, colors }).svg;
+    } else {
+      lastChart = renderChartSvg(vn, { selectedSig: state.sel, colors });
+      host.innerHTML = lastChart.svg;
+    }
+    // sync view tabs
+    document.querySelectorAll<HTMLButtonElement>("#kin-viewtabs button").forEach((b) => {
+      b.classList.toggle("kin-viewtab--on", b.dataset.view === state.view);
+      b.setAttribute("aria-selected", String(b.dataset.view === state.view));
+    });
+  }
+
+  // ---- contextual add-branch bar ----
+  const ADD_SPECS = [
+    { tok: "F", label: "+ father", group: "parent" },
+    { tok: "M", label: "+ mother", group: "parent" },
+    { tok: "eB", label: "+ elder brother", group: "sibling" },
+    { tok: "yB", label: "+ younger brother", group: "sibling" },
+    { tok: "eZ", label: "+ elder sister", group: "sibling" },
+    { tok: "yZ", label: "+ younger sister", group: "sibling" },
+    { tok: "S", label: "+ son", group: "child" },
+    { tok: "D", label: "+ daughter", group: "child" },
+  ];
+
+  function renderAddBar() {
+    const path = selPath();
+    const allow: any = allowedAdds(path);
+    const bar = byId("kin-addbar");
+    const selName = state.sel === "EGO" ? "you" : (buildViewNodes().find((n: any) => n.sig === state.sel)?.relLabel || "selected");
+    const btns = ADD_SPECS.filter((s) => allow[s.group]).map((s) =>
+      `<button type="button" data-add="${s.tok}">${s.label}</button>`).join("");
+    bar.innerHTML =
+      `<span class="kin-addlabel">Add to <strong>${escapeHtml(selName)}</strong></span>${btns}` +
+      (btns ? "" : `<span class="kin-addnote">no further branch from here</span>`);
+  }
+
+  function addBranch(tok: string) {
+    const m = /^([ey]?)([FMBZSD])$/.exec(tok);
+    if (!m) return;
+    const newPath = appendStep(selPath(), m[2], AGE_WORD[m[1]] || null);
+    const sig = sigOf(newPath);
+    if (!state.nodes.some((p: any[]) => sigOf(p) === sig)) state.nodes.push(newPath);
+    state.sel = sig;
+    refresh();
+  }
+
+  function removeSelected() {
+    if (state.sel === "EGO") return;
+    const keep = state.nodes.filter((p: any[]) => {
+      const s = sigOf(p);
+      return s !== state.sel && !s.startsWith(state.sel);
+    });
+    state.nodes = keep.length ? keep : [[]];
+    const parent = sigOf(selPath().slice(0, -1));
+    state.sel = state.nodes.some((p: any[]) => sigOf(p) === parent) ? parent : "EGO";
+    refresh();
+  }
+
+  // ---- result panel for the selected node ----
+  function renderResult() {
+    const path = selPath();
+    const rel = relForNode(path, state.egoElder);
+
+    if (!rel.ok) {
+      byId("kin-relline").textContent =
+        rel.reason === "affinal"
+          ? "Affinal (marriage) links are outside this blood-relative chart."
+          : "That path isn't a simple blood relation.";
+      clearResult();
+      return;
+    }
+
+    const primary = lookup(rel.relationId, state.language, rel);
+
+    const chips: string[] = [];
+    if (rel.side && rel.side !== "mixed") chips.push(rel.side);
+    if (rel.side === "mixed") chips.push("mixed line");
+    if (rel.crossParallel) chips.push(rel.crossParallel);
+    chips.push(degreePhrase(rel));
+    if (rel.relativeSex) chips.push(rel.relativeSex === "M" ? "♂" : "♀");
+    if (!rel.lineal && state.egoElder !== null) chips.push(state.egoElder ? "elder" : "younger");
+    byId("kin-chips").innerHTML = chips.map((c) => `<span class="kin-chip">${escapeHtml(c)}</span>`).join("");
+
+    byId("kin-relline").textContent = relationLabel(rel.relationId) +
+      (rel.degree ? `  ·  ${rel.degree}° / removed ${rel.removal}` : "");
+
+    byId("kin-term").textContent = primary.term;
+    byId("kin-term").classList.toggle("kin-term--class", primary.kind === "class" || primary.kind === "missing");
+    byId("kin-termroman").textContent = state.roman ? primary.roman : "";
+    setNote("kin-gloss", primary.gloss, false);
+    setNote("kin-etym", primary.etym ? "Etymology — " + primary.etym : "");
+    setNote("kin-usage", primary.usage ? "Usage — " + primary.usage : "");
+    setNote("kin-nb", primary.nb ? "N.B. — " + primary.nb : "");
+
+    const wikt = byId("kin-wikt");
+    if (primary.wikt) { wikt.hidden = false; wikt.href = primary.wikt; } else wikt.hidden = true;
+
+    const cl = chonLabel(rel.chon);
+    const chonEl = byId("kin-chon");
+    if (cl && !rel.lineal) {
+      chonEl.hidden = false;
+      chonEl.textContent = `Korean chon — ${cl.hangul} (${cl.roman}); ${cl.n} parent–child links between you and the relative.`;
+    } else chonEl.hidden = true;
+
+    const all = lookupAll(rel.relationId, rel);
+    byId("kin-grid").innerHTML = all.map(({ lang, result }: any) => {
+      const warn = result.nb ? ' <span class="kin-warn" title="see N.B.">△</span>' : "";
+      const roman = state.roman && result.roman ? `<span class="kin-cell-roman">${escapeHtml(result.roman)}</span>` : "";
+      const cls = result.kind === "class" || result.kind === "missing" ? " kin-cell--class" : "";
+      const active = lang.id === state.language ? " kin-cell--active" : "";
+      return `<div class="kin-cell${cls}${active}" data-lang="${lang.id}" role="button" tabindex="0" ` +
+        `aria-pressed="${lang.id === state.language}" title="Show ${escapeHtml(lang.name)} as the main term">` +
+        `<span class="kin-cell-lang">${escapeHtml(lang.name)}${warn}</span>` +
+        `<span class="kin-cell-term">${escapeHtml(result.term)}</span>${roman}</div>`;
+    }).join("");
+  }
+
+  function clearResult() {
+    byId("kin-chips").innerHTML = "";
+    ["kin-term", "kin-termroman", "kin-gloss"].forEach((id) => (byId(id).textContent = ""));
+    ["kin-etym", "kin-usage", "kin-nb", "kin-chon"].forEach((id) => (byId(id).hidden = true));
+    byId("kin-wikt").hidden = true;
+    byId("kin-grid").innerHTML = "";
+  }
+
+  // ---- master refresh ----
+  function refresh() {
+    langSel.value = state.language;
+    byId("kin-roman").value = state.roman ? "1" : "0";
+    byId("kin-ego").value = state.egoSex;
+    byId("kin-elder").value = state.egoElder === null ? "" : state.egoElder ? "1" : "0";
+
+    const path = selPath();
+    byId("kin-pathline").textContent = path.length
+      ? "Selected: your " + path.map((s: any) => (s.age ? s.age + " " : "") + stepWord(s.kind)).join("’s ")
+      : "Selected: you (ego). Click any person, or add a branch.";
+
+    drawTree();
+    renderAddBar();
+    renderResult();
+    writeHash();
+  }
+
+  const STEP_WORD: any = { F: "father", M: "mother", B: "brother", Z: "sister", S: "son", D: "daughter" };
+  function stepWord(k: string) { return STEP_WORD[k] || k; }
+
+  function setNote(id: string, text: string, hideWhenEmpty = true) {
+    const el = byId(id);
+    el.textContent = text || "";
+    if (hideWhenEmpty) el.hidden = !text;
+  }
+  function escapeHtml(s: string) {
+    return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // ---- events: tree clicks (selection) ----
+  function pickNode(target: any) {
+    const node = target.closest("[data-sig]");
+    if (!node) return;
+    state.sel = node.getAttribute("data-sig");
+    refresh();
+  }
+  byId("kin-tree").addEventListener("click", (e: any) => pickNode(e.target));
+  byId("kin-tree").addEventListener("keydown", (e: any) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pickNode(e.target); }
+  });
+
+  // add-bar
+  byId("kin-addbar").addEventListener("click", (e: any) => {
+    const b = e.target.closest("button[data-add]");
+    if (b) addBranch(b.dataset.add);
+  });
+  byId("kin-remove").addEventListener("click", removeSelected);
+  byId("kin-reset").addEventListener("click", () => { state = seedTree(); refresh(); });
+
+  // view tabs
+  byId("kin-viewtabs").addEventListener("click", (e: any) => {
+    const b = e.target.closest("button[data-view]");
+    if (b) { state.view = b.dataset.view; refresh(); }
+  });
+
+  // comparison grid → switch active language
+  function pickLang(target: any) {
+    const cell = target.closest(".kin-cell[data-lang]");
+    if (!cell) return;
+    state.language = cell.dataset.lang;
+    refresh();
+  }
+  byId("kin-grid").addEventListener("click", (e: any) => pickLang(e.target));
+  byId("kin-grid").addEventListener("keydown", (e: any) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pickLang(e.target); }
+  });
+
+  // global controls
+  byId("kin-lang").addEventListener("change", () => { state.language = langSel.value; refresh(); });
+  byId("kin-roman").addEventListener("change", () => { state.roman = byId("kin-roman").value === "1"; refresh(); });
+  byId("kin-ego").addEventListener("change", () => { state.egoSex = byId("kin-ego").value; refresh(); });
+  byId("kin-elder").addEventListener("change", () => {
+    const v = byId("kin-elder").value;
+    state.egoElder = v === "" ? null : v === "1";
+    refresh();
+  });
+
+  // ---- export / save ----
+  async function copy(text: string, btn: HTMLButtonElement) {
+    try { await navigator.clipboard.writeText(text); flash(btn, "Copied"); }
+    catch { flash(btn, "Copy failed"); }
+  }
+  function flash(btn: HTMLButtonElement, msg: string) {
+    const old = btn.textContent; btn.textContent = msg;
+    setTimeout(() => { btn.textContent = old; }, 1200);
+  }
+  function download(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  byId("kin-share").addEventListener("click", (e: any) => { writeHash(); copy(location.href, e.target); });
+  byId("kin-copycode").addEventListener("click", (e: any) => {
+    const code = serializeTree(state);
+    byId("kin-codeout").textContent = code;
+    copy(code, e.target);
+  });
+  byId("kin-importcode").addEventListener("click", () => {
+    const text = prompt("Paste a kinship tree code:");
+    if (!text) return;
+    try { state = deserializeTree(text); refresh(); }
+    catch { alert("Could not read that code."); }
+  });
+
+  byId("kin-dl-tree").addEventListener("click", async () => {
+    const vn = buildViewNodes();
+    const r = renderChartSvg(vn, { selectedSig: state.sel, colors: { ...themeColors(), paper: "#ffffff", ink: "#000", muted: "#555", rule: "#aaa" } });
+    const png = await svgToPng(r.svg, r.width, r.height, 2);
+    download(png, "kinship-tree.png");
+  });
+  byId("kin-dl-card").addEventListener("click", async () => {
+    const rel = relForNode(selPath(), state.egoElder);
+    if (!rel.ok) return;
+    const primary = lookup(rel.relationId, state.language, rel);
+    const others = lookupAll(rel.relationId, rel).map(({ lang, result }: any) => ({
+      lang: lang.name, term: result.term, roman: result.roman,
+    }));
+    const chips: string[] = [rel.side, rel.crossParallel, degreePhrase(rel)].filter(Boolean) as string[];
+    const card = renderCardSvg({
+      chips, relationLabel: relationLabel(rel.relationId), primary, others,
+    }, { paper: "#ffffff", ink: "#000", muted: "#555", rule: "#aaa", accent: "#c81e1e" });
+    const png = await svgToPng(card.svg, card.width, card.height, 2);
+    download(png, "kinship-card.png");
+  });
+
+  byId("kin-print").addEventListener("click", () => printReferenceSheet());
+
+  function printReferenceSheet() {
+    const lang = LANGUAGES.find((l: any) => l.id === state.language) as any;
+    const rows = Object.keys(ENTRIES).map((rid) => {
+      const entry = (ENTRIES as any)[rid][state.language];
+      const term = entry ? (entry.t || (entry.rec ? "(composed by age/sex)" : "—")) : "—";
+      const roman = entry && entry.r ? entry.r : "";
+      const nb = entry && entry.nb ? entry.nb : "";
+      return `<tr><td>${escapeHtml((RELATIONS as any)[rid]?.label || rid)}</td><td class="s">${escapeHtml(term)}</td><td class="r">${escapeHtml(roman)}</td><td class="n">${escapeHtml(nb)}</td></tr>`;
+    }).join("");
+    const w = window.open("", "_blank", "width=820,height=900");
+    if (!w) { alert("Allow pop-ups to print the reference sheet."); return; }
+    w.document.write(
+      `<!doctype html><meta charset="utf-8"><title>Kinship terms — ${escapeHtml(lang.name)}</title>` +
+      `<style>body{font:14px/1.5 system-ui,sans-serif;margin:2rem;color:#1a1a1a}` +
+      `h1{font-size:1.2rem}small{color:#666}table{border-collapse:collapse;width:100%;margin-top:1rem}` +
+      `th,td{border:1px solid #ccc;padding:.35rem .5rem;text-align:left;vertical-align:top}` +
+      `td.s{font-size:1.1rem}td.r,td.n{color:#555;font-size:.85rem}th{background:#f3f1ea}</style>` +
+      `<h1>Kinship terms — ${escapeHtml(lang.name)}</h1>` +
+      `<small>${escapeHtml(lang.family)} · romanization: ${escapeHtml(lang.roman || "—")}. Generated from the comparative chart.</small>` +
+      `<table><thead><tr><th>Relation</th><th>Term</th><th>Romanization</th><th>N.B.</th></tr></thead><tbody>${rows}</tbody></table>`,
+    );
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 250);
+  }
+
+  // ---- hash persistence ----
+  function writeHash() {
+    try {
+      const enc = btoa(unescape(encodeURIComponent(serializeTree(state))));
+      history.replaceState(null, "", "#k=" + enc);
+    } catch { /* ignore */ }
+  }
+  function loadFromHash() {
+    const m = location.hash.match(/k=([^&]+)/);
+    if (!m) return null;
+    try { return deserializeTree(decodeURIComponent(escape(atob(m[1])))); }
+    catch { return null; }
+  }
+
+  // ---- boot ----
+  refresh();
+</script>

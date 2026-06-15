@@ -2,7 +2,7 @@
 title: "Twelve-Tone Row Calculator"
 subtitle: "Matrix, row forms, invariance checks"
 number: 8
-group: "Sets & Series"
+group: "Composition"
 summary: "Builds the 12×12 matrix, looks up P/I/R/RI forms, and tests all-interval and combinatorial properties."
 status: "stable"
 slug: "twelve-tone-lab"

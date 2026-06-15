@@ -2,7 +2,7 @@
 title: "Neo-Riemannian Transformations"
 subtitle: "L, P, R, S, N chains; hexatonic cycles"
 number: 11
-group: "Transformation"
+group: "Composition"
 summary: "Applies triadic transformations step by step, with common-tone tracking and voice-led playback."
 status: "stable"
 slug: "neo-riemannian"

@@ -23,6 +23,7 @@ import {
   type Locale,
   type TranslationKey,
 } from "../config/locales";
+import { toolTopicBlurb, toolTopicLabel } from "../config/toolTopics";
 
 type Theme = "light" | "dark";
 type FontSize = "s" | "m" | "l";
@@ -179,6 +180,20 @@ function applyLanguage(language: Locale, animate = false) {
     .forEach((element) => {
       const group = element.dataset.i18nToolGroup as ToolGroup;
       setLocalizedText(element, toolGroupLabel(group, language), shouldAnimate);
+    });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-tool-topic]")
+    .forEach((element) => {
+      const topic = element.dataset.i18nToolTopic ?? "";
+      setLocalizedText(element, toolTopicLabel(topic, language), shouldAnimate);
+    });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-tool-topic-blurb]")
+    .forEach((element) => {
+      const topic = element.dataset.i18nToolTopicBlurb ?? "";
+      setLocalizedText(element, toolTopicBlurb(topic, language), shouldAnimate);
     });
 
   document

@@ -2,7 +2,7 @@
 title: "Polyrhythm & Canon Lab"
 subtitle: "Coincidence cycles, phase canon, multi-track metronome"
 number: 2
-group: "Rhythm & Time"
+group: "Composition"
 summary: "Plots pulse streams in one cycle with their coincidence points, states a pattern in canon with a continuously adjustable entry (Reich-style phasing), and runs a metronome of independent tracks."
 status: "stable"
 slug: "polyrhythm-cycles"

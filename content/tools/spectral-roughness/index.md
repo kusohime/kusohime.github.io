@@ -2,7 +2,7 @@
 title: "Spectral Roughness Calculator"
 subtitle: "Sensory dissonance curves and chord comparison"
 number: 5
-group: "Pitch & Spectrum"
+group: "Composition"
 summary: "Computes Plomp–Levelt/Sethares roughness for swept dyads and chords, and compares two voicings under the same spectrum model."
 status: "stable"
 slug: "spectral-roughness"

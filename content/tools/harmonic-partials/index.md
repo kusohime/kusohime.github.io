@@ -2,7 +2,7 @@
 title: "Harmonic Partials Calculator"
 subtitle: "Partial frequencies with 12-EDO deviations"
 number: 4
-group: "Pitch & Spectrum"
+group: "Composition"
 summary: "Lists the partials of a fundamental with cents deviations, optional string inharmonicity, and additive playback of selected partials."
 status: "stable"
 slug: "harmonic-partials"
@@ -16,8 +16,9 @@ references:
 
 Give a fundamental (note name or Hz) and a number of partials. The table
 lists each partial's frequency, nearest tempered pitch, deviation in
-cents, and octave-reduced ratio. Red dots in the ladder mark partials
-more than 20¢ from 12-EDO — the 7th, 11th, 13th and their octaves — the
+cents, and octave-reduced ratio. An inline meter on each row plots that
+deviation against the tempered pitch (centre line, ±20¢ ticks); bars turn
+red past 20¢ from 12-EDO — the 7th, 11th, 13th and their octaves — the
 ones that need microtonal notation or retuned instruments.
 
 Check any subset of partials and **Sustain selected** to hold the stack

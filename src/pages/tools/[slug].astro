@@ -1,71 +1,50 @@
 ---
-// 中文：单个工具页：上方是互动仪器，下方是说明（Notes）与参考文献（References）。
-// English: One tool page: interactive instrument on top, Notes and
-// References below. Both headings are structural and translated.
-// Caveat / 注意：新工具 = content/tools/<slug>/index.md + components/tools 中的同名组件。
-// Caveat: A new tool needs content/tools/<slug>/index.md plus a component
-// registered in the map below.
+// 中文：单个工具页。语言学工具仍是独立页面；作曲工具已并入主题合并页，
+// 这里只生成一个跳转到 /tools/composition/<topic>/#tool-<slug> 的重定向，保留旧链接。
+// English: One tool page. Linguistics tools keep their own page; Composition tools
+// have moved into topic group pages, so this route redirects old per-tool URLs to
+// /tools/composition/<topic>/#tool-<slug>.
+// Caveat / 注意：分组映射在 src/config/toolTopics.ts；语言学工具不在其中，照常整页渲染。
+// Caveat: The slug→topic map is src/config/toolTopics.ts; Linguistics slugs are not
+// in it and render in full as before.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { toolGroupLabel, translate } from "../../config/locales";
+import { topicForSlug } from "../../config/toolTopics";
 import "../../styles/tools.css";
 
-import MetricModulation from "../../components/tools/MetricModulation.astro";
-import PolyrhythmCycles from "../../components/tools/PolyrhythmCycles.astro";
-import PitchTuningLab from "../../components/tools/PitchTuningLab.astro";
-import HarmonicPartials from "../../components/tools/HarmonicPartials.astro";
-import SpectralRoughness from "../../components/tools/SpectralRoughness.astro";
-import PianoHarmonics from "../../components/tools/PianoHarmonics.astro";
-import PcSetAnalysis from "../../components/tools/PcSetAnalysis.astro";
-import TwelveToneLab from "../../components/tools/TwelveToneLab.astro";
-import MessiaenModes from "../../components/tools/MessiaenModes.astro";
-import MelodyTransformer from "../../components/tools/MelodyTransformer.astro";
-import NeoRiemannian from "../../components/tools/NeoRiemannian.astro";
-import NegativeHarmony from "../../components/tools/NegativeHarmony.astro";
-import MultiphonicsBrowser from "../../components/tools/MultiphonicsBrowser.astro";
-import FugueTool from "../../components/tools/FugueTool.astro";
+import InterlinearGlosser from "../../components/tools/InterlinearGlosser.astro";
+import KinshipCalculator from "../../components/tools/KinshipCalculator.astro";
 
-// component + file 让预览检查器（Inspect）能直接打开工具的源文件。
-// component + file lets the Studio Inspector open the tool's source file.
 const registry: Record<string, { component: any; file: string }> = {
-  "metric-modulation": { component: MetricModulation, file: "MetricModulation.astro" },
-  "polyrhythm-cycles": { component: PolyrhythmCycles, file: "PolyrhythmCycles.astro" },
-  "pitch-tuning-lab": { component: PitchTuningLab, file: "PitchTuningLab.astro" },
-  "harmonic-partials": { component: HarmonicPartials, file: "HarmonicPartials.astro" },
-  "spectral-roughness": { component: SpectralRoughness, file: "SpectralRoughness.astro" },
-  "piano-harmonics": { component: PianoHarmonics, file: "PianoHarmonics.astro" },
-  "pc-set-analysis": { component: PcSetAnalysis, file: "PcSetAnalysis.astro" },
-  "twelve-tone-lab": { component: TwelveToneLab, file: "TwelveToneLab.astro" },
-  "messiaen-modes": { component: MessiaenModes, file: "MessiaenModes.astro" },
-  "melody-transformer": { component: MelodyTransformer, file: "MelodyTransformer.astro" },
-  "neo-riemannian": { component: NeoRiemannian, file: "NeoRiemannian.astro" },
-  "negative-harmony": { component: NegativeHarmony, file: "NegativeHarmony.astro" },
-  "multiphonics-browser": { component: MultiphonicsBrowser, file: "MultiphonicsBrowser.astro" },
-  "fugue-exposition": { component: FugueTool, file: "FugueTool.astro" },
+  "interlinear-glosser": { component: InterlinearGlosser, file: "InterlinearGlosser.astro" },
+  "kinship-calculator": { component: KinshipCalculator, file: "KinshipCalculator.astro" },
 };
 
 export async function getStaticPaths() {
   const tools = await getCollection("tools");
-  return tools.map((tool) => ({
-    params: { slug: tool.data.slug },
-    props: { tool },
-  }));
+  return tools.map((tool) => {
+    const topic = topicForSlug[tool.data.slug];
+    const redirectTo = topic
+      ? `/tools/composition/${topic}/#tool-${tool.data.slug}`
+      : null;
+    return { params: { slug: tool.data.slug }, props: { tool, redirectTo } };
+  });
 }
 
 interface Props {
   tool: CollectionEntry<"tools">;
+  redirectTo: string | null;
 }
 
-const { tool } = Astro.props;
-const { Content } = await render(tool);
+const { tool, redirectTo } = Astro.props;
+const { Content } = redirectTo ? { Content: null as any } : await render(tool);
 const entry = registry[tool.data.slug];
 const Instrument = entry?.component;
 const instrumentFile = entry ? `src/components/tools/${entry.file}` : null;
 const statusKey =
   tool.data.status === "beta" ? "tools.statusBeta" : "tools.statusDataPending";
 
-// 参考文献条目中的 *斜体* 转成 <em>；其余字符照原样转义。
-// Render *italics* in reference strings as <em>; escape everything else.
 const refHtml = (text: string) =>
   text
     .replace(/&/g, "&amp;")
@@ -73,73 +52,75 @@ const refHtml = (text: string) =>
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 ---
 
-<BaseLayout title={tool.data.title} description={tool.data.summary}>
-  <article
-    class="detail-page tool-page"
-    data-source-file={`content/tools/${tool.id}/index.md`}
-  >
-    <header class="tool-header">
-      <p class="tool-number">
-        <span data-i18n-key="tools.numberPrefix">
-          {translate("en", "tools.numberPrefix")}
-        </span>
-        {" "}{String(tool.data.number).padStart(2, "0")} ·{" "}
-        <span data-i18n-tool-group={tool.data.group}>
-          {toolGroupLabel(tool.data.group, "en")}
-        </span>
+{
+  redirectTo ? (
+    <BaseLayout title={tool.data.title} noindex>
+      <p style="padding: var(--space-lg) 0;">
+        This tool now lives in a workspace.{" "}
+        <a href={redirectTo}>Continue →</a>
       </p>
-      <h1>{tool.data.title}</h1>
-      {tool.data.subtitle && <p class="tool-subtitle">{tool.data.subtitle}</p>}
-      {
-        tool.data.status !== "stable" && (
-          <p class="tool-status" data-i18n-key={statusKey}>
-            {translate("en", statusKey)}
+      <script is:inline set:html={`location.replace(${JSON.stringify(redirectTo)});`} />
+    </BaseLayout>
+  ) : (
+    <BaseLayout title={tool.data.title} description={tool.data.summary}>
+      <article
+        class="detail-page tool-page"
+        data-source-file={`content/tools/${tool.id}/index.md`}
+      >
+        <header class="tool-header">
+          <p class="tool-number">
+            <span data-i18n-tool-group={tool.data.group}>
+              {toolGroupLabel(tool.data.group, "en")}
+            </span>
           </p>
-        )
-      }
-    </header>
+          <h1>{tool.data.title}</h1>
+          {tool.data.subtitle && <p class="tool-subtitle">{tool.data.subtitle}</p>}
+          {tool.data.status !== "stable" && (
+            <p class="tool-status" data-i18n-key={statusKey}>
+              {translate("en", statusKey)}
+            </p>
+          )}
+        </header>
 
-    {
-      Instrument && (
-        <div
-          data-source-file={instrumentFile}
-          data-style-source="src/styles/tools.css"
-        >
-          <Instrument />
+        {Instrument && (
+          <div
+            data-source-file={instrumentFile}
+            data-style-source="src/styles/tools.css"
+          >
+            <Instrument />
+          </div>
+        )}
+
+        <div class="prose tool-docs">
+          <h2 data-i18n-key="tools.notes">{translate("en", "tools.notes")}</h2>
+          <Content />
+          {tool.data.references.length > 0 && (
+            <>
+              <h2 data-i18n-key="tools.references">
+                {translate("en", "tools.references")}
+              </h2>
+              <ul>
+                {tool.data.references.map((reference) => (
+                  <li set:html={refHtml(reference)} />
+                ))}
+              </ul>
+            </>
+          )}
         </div>
-      )
-    }
 
-    <div class="prose tool-docs">
-      <h2 data-i18n-key="tools.notes">{translate("en", "tools.notes")}</h2>
-      <Content />
-      {
-        tool.data.references.length > 0 && (
-          <>
-            <h2 data-i18n-key="tools.references">
-              {translate("en", "tools.references")}
-            </h2>
-            <ul>
-              {tool.data.references.map((reference) => (
-                <li set:html={refHtml(reference)} />
-              ))}
-            </ul>
-          </>
-        )
-      }
-    </div>
-
-    <p class="back-link">
-      <a href="/tools/">
-        <span
-          class="glyph-arrow glyph-arrow--back"
-          data-arrow-glyph
-          aria-hidden="true"
-        ></span>
-        <span data-i18n-key="common.backTools">
-          {translate("en", "common.backTools")}
-        </span>
-      </a>
-    </p>
-  </article>
-</BaseLayout>
+        <p class="back-link">
+          <a href="/tools/">
+            <span
+              class="glyph-arrow glyph-arrow--back"
+              data-arrow-glyph
+              aria-hidden="true"
+            ></span>
+            <span data-i18n-key="common.backTools">
+              {translate("en", "common.backTools")}
+            </span>
+          </a>
+        </p>
+      </article>
+    </BaseLayout>
+  )
+}

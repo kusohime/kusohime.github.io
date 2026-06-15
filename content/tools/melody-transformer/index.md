@@ -2,7 +2,7 @@
 title: "Melody & Chord Transformer"
 subtitle: "Transposition, inversion, retrograde, rotation"
 number: 10
-group: "Transformation"
+group: "Composition"
 summary: "Applies chained operations to a note list and records the chain; original and result are shown and played side by side."
 status: "stable"
 slug: "melody-transformer"

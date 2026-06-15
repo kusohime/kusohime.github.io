@@ -25,11 +25,8 @@ export const writingTypes = [
 ] as const;
 
 export const toolGroups = [
-  "Rhythm & Time",
-  "Pitch & Spectrum",
-  "Sets & Series",
-  "Transformation",
-  "Performance Resources",
+  "Composition",
+  "Linguistics",
 ] as const;
 
 export type WorkCategory = (typeof workCategories)[number];

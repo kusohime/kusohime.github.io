@@ -2,7 +2,7 @@
 title: "Multiphonics & Extended Techniques"
 subtitle: "Woodwind technique browser"
 number: 13
-group: "Performance Resources"
+group: "Composition"
 summary: "Filters technique entries by instrument and type. Every entry carries a source citation; unverified entries are flagged. The data set stays small until each entry is checked."
 status: "data-pending"
 slug: "multiphonics-browser"

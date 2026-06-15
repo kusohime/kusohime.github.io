@@ -2,7 +2,7 @@
 title: "Modes of Limited Transposition"
 subtitle: "Messiaen's seven modes"
 number: 9
-group: "Sets & Series"
+group: "Composition"
 summary: "Lists each mode's distinct transpositions and symmetry axes, and checks which of your pitches fall inside a chosen transposition."
 status: "stable"
 slug: "messiaen-modes"

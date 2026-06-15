@@ -2,7 +2,7 @@
 title: "Pitch & Tuning Converter"
 subtitle: "Note name, Hz, MIDI, cents, JI ratio, EDO"
 number: 3
-group: "Pitch & Spectrum"
+group: "Composition"
 summary: "Converts between pitch representations, measures just-intonation ratios in cents, and tabulates equal divisions of the octave."
 status: "stable"
 slug: "pitch-tuning-lab"

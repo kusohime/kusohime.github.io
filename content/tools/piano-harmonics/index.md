@@ -2,7 +2,7 @@
 title: "Piano Harmonics Mapper"
 subtitle: "String touch points and sounding pitches"
 number: 6
-group: "Pitch & Spectrum"
+group: "Composition"
 summary: "Computes the touch points on a piano string for a chosen partial, the sounding pitch with cents deviation, and optional inharmonicity correction."
 status: "stable"
 slug: "piano-harmonics"

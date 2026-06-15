@@ -1,7 +1,7 @@
 {
-  "languageFlap": false,
-  "themeFade": false,
+  "languageFlap": true,
+  "themeFade": true,
   "fontSizeScale": false,
-  "glyphRotation": false,
-  "interfaceMotion": false
+  "glyphRotation": true,
+  "interfaceMotion": true
 }

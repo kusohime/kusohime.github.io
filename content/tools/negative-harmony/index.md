@@ -2,7 +2,7 @@
 title: "Axis Reflection"
 subtitle: "Negative harmony and registral inversion"
 number: 12
-group: "Transformation"
+group: "Composition"
 summary: "Reflects material around any axis, in pitch-class space or absolute pitch; the common negative-harmony mapping is one preset among twelve."
 status: "stable"
 slug: "negative-harmony"

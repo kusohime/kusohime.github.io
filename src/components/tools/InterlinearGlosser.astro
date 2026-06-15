@@ -1,0 +1,410 @@
+---
+// 中文：层间注解（interlinear gloss）生成器：IPA 键盘、智能对齐、
+//       输出纯文本／图片／LaTeX（expex、gb4e）。
+// English: Interlinear gloss builder with an IPA keyboard, smart column
+// alignment, and export to plain text, image, and LaTeX (expex / gb4e).
+---
+
+<section class="tool-panel igt" aria-label="Gloss input">
+  <span class="tool-panel-label">Example</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Label</span>
+      <input type="text" id="igt-label" value="(1)" size="6" />
+    </label>
+    <label class="tool-field">
+      <span>Judgement</span>
+      <select id="igt-judge">
+        <option value=""></option>
+        <option value="*">* ungrammatical</option>
+        <option value="?">? marginal</option>
+        <option value="#"># infelicitous</option>
+        <option value="%">% dialectal</option>
+      </select>
+    </label>
+    <label class="tool-field igt-grow">
+      <span>Language / citation</span>
+      <input type="text" id="igt-lang" size="28" />
+    </label>
+  </div>
+
+  <div id="igt-tiers" class="igt-tiers"></div>
+  <div class="tool-controls igt-tier-add">
+    <button type="button" id="igt-add-tier">+ Add tier</button>
+    <button type="button" id="igt-add-ipa">+ IPA tier</button>
+  </div>
+
+  <label class="tool-field igt-grow" style="margin-top: var(--space-sm);">
+    <span>Free translation</span>
+    <input type="text" id="igt-trans" />
+  </label>
+
+  <div id="igt-kb"></div>
+</section>
+
+<section class="tool-panel igt" aria-label="Preview">
+  <span class="tool-panel-label">Preview</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Preview font</span>
+      <select id="igt-font">
+        <option value="Gentium Plus, Charis SIL, Doulos SIL, serif">Gentium / Charis</option>
+        <option value="Charis SIL, Gentium Plus, serif">Charis SIL</option>
+        <option value="'Times New Roman', serif">Times</option>
+        <option value="system-ui, sans-serif">Sans</option>
+      </select>
+    </label>
+  </div>
+  <div id="igt-preview" class="igt-preview" aria-live="polite"></div>
+  <p class="tool-error" id="igt-errors" hidden></p>
+  <p class="tool-note" id="igt-warnings" hidden></p>
+</section>
+
+<section class="tool-panel igt" aria-label="Export">
+  <span class="tool-panel-label">Export</span>
+  <div class="igt-tabs igt-export-tabs" role="tablist">
+    <button type="button" class="igt-extab" data-tab="text" aria-pressed="true">Plain text</button>
+    <button type="button" class="igt-extab" data-tab="latex" aria-pressed="false">LaTeX</button>
+    <button type="button" class="igt-extab" data-tab="image" aria-pressed="false">Image</button>
+    <button type="button" class="igt-extab" data-tab="data" aria-pressed="false">Data</button>
+  </div>
+
+  <div class="igt-tabpane" data-pane="text">
+    <div class="tool-controls">
+      <label class="tool-field">
+        <span>Wrap width (chars)</span>
+        <input type="number" id="igt-text-width" value="80" min="20" max="200" />
+      </label>
+      <button type="button" id="igt-copy-text">Copy text</button>
+    </div>
+    <pre class="igt-output" id="igt-text-out"></pre>
+  </div>
+
+  <div class="igt-tabpane" data-pane="latex" hidden>
+    <div class="tool-controls">
+      <label class="tool-field">
+        <span>Engine</span>
+        <select id="igt-latex-engine">
+          <option value="expex">expex (recommended)</option>
+          <option value="gb4e">gb4e</option>
+          <option value="tabular">tabular (no package)</option>
+        </select>
+      </label>
+      <button type="button" id="igt-copy-latex">Copy body</button>
+      <button type="button" id="igt-copy-preamble">Copy preamble</button>
+    </div>
+    <pre class="igt-output" id="igt-preamble-out"></pre>
+    <pre class="igt-output" id="igt-latex-out"></pre>
+  </div>
+
+  <div class="igt-tabpane" data-pane="image" hidden>
+    <div class="tool-controls">
+      <label class="tool-field">
+        <span>Font size (px)</span>
+        <input type="number" id="igt-img-size" value="20" min="10" max="48" />
+      </label>
+      <label class="tool-field">
+        <span>Max width (px)</span>
+        <input type="number" id="igt-img-width" value="680" min="200" max="1600" />
+      </label>
+      <label class="tool-field">
+        <span>Background</span>
+        <select id="igt-img-bg">
+          <option value="transparent">Transparent</option>
+          <option value="#ffffff">White</option>
+        </select>
+      </label>
+      <button type="button" id="igt-dl-svg">Download SVG</button>
+      <button type="button" id="igt-dl-png">Download PNG</button>
+      <button type="button" id="igt-copy-png">Copy PNG</button>
+    </div>
+    <div id="igt-img-preview" class="igt-img-preview"></div>
+  </div>
+
+  <div class="igt-tabpane" data-pane="data" hidden>
+    <div class="tool-controls">
+      <button type="button" id="igt-copy-json">Copy JSON</button>
+      <button type="button" id="igt-import-json">Import JSON…</button>
+      <button type="button" id="igt-share">Copy share link</button>
+    </div>
+    <pre class="igt-output" id="igt-json-out"></pre>
+  </div>
+</section>
+
+<script>
+  import {
+    demoExample, makeTier, validate, serialize, deserialize, tierName,
+  } from "../../lib/igt-core.js";
+  import {
+    renderText, renderHtml, renderLatex, renderSvg, svgToPng,
+  } from "../../lib/igt-render.js";
+  import { mountIpaKeyboard } from "../../lib/ipa-keyboard.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+
+  // ---- model ----
+  let ex = loadFromHash() || demoExample();
+
+  // ---- tier editor ----
+  const tiersHost = byId("igt-tiers");
+  const tierFields: HTMLTextAreaElement[] = [];
+
+  function buildTierEditors() {
+    tiersHost.innerHTML = "";
+    tierFields.length = 0;
+    ex.tiers.forEach((tier, i) => {
+      const row = document.createElement("div");
+      row.className = "igt-tier-row";
+
+      const ctrl = document.createElement("div");
+      ctrl.className = "igt-tier-ctrl";
+
+      const labelInput = document.createElement("input");
+      labelInput.type = "text";
+      labelInput.value = tier.label;
+      labelInput.placeholder = "label";
+      labelInput.size = 6;
+      labelInput.title = "Tier label (left margin)";
+      labelInput.addEventListener("input", () => { tier.label = labelInput.value; refresh(); });
+
+      const role = document.createElement("select");
+      role.innerHTML = '<option value="aligned">aligned</option><option value="free">free</option>';
+      role.value = tier.role;
+      role.addEventListener("change", () => { tier.role = role.value as any; refresh(); });
+
+      const sc = toggle("sc", tier.smallcaps, "small caps", (v) => { tier.smallcaps = v; refresh(); });
+      const it = toggle("it", tier.italic, "italic", (v) => { tier.italic = v; refresh(); });
+
+      const up = miniBtn("↑", "move up", () => moveTier(i, -1));
+      const down = miniBtn("↓", "move down", () => moveTier(i, 1));
+      const del = miniBtn("✕", "remove tier", () => { ex.tiers.splice(i, 1); buildTierEditors(); refresh(); });
+
+      ctrl.append(labelInput, role, sc, it, up, down, del);
+
+      const ta = document.createElement("textarea");
+      ta.className = "igt-tier-text";
+      ta.rows = 1;
+      ta.value = tier.text;
+      ta.placeholder = i === 0 ? "object language (morphemes)" : "gloss";
+      ta.addEventListener("input", () => { tier.text = ta.value; refresh(); });
+      tierFields.push(ta);
+
+      row.append(ctrl, ta);
+      tiersHost.append(row);
+    });
+  }
+
+  function toggle(kind: string, on: boolean, title: string, cb: (v: boolean) => void) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = kind === "sc" ? "ᴀ" : "𝑖";
+    b.title = title;
+    b.className = "igt-mini";
+    b.setAttribute("aria-pressed", String(on));
+    b.addEventListener("click", () => {
+      const v = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", String(v));
+      cb(v);
+    });
+    return b;
+  }
+  function miniBtn(text: string, title: string, cb: () => void) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "igt-mini";
+    b.textContent = text;
+    b.title = title;
+    b.addEventListener("click", cb);
+    return b;
+  }
+  function moveTier(i: number, dir: number) {
+    const j = i + dir;
+    if (j < 0 || j >= ex.tiers.length) return;
+    [ex.tiers[i], ex.tiers[j]] = [ex.tiers[j], ex.tiers[i]];
+    buildTierEditors();
+    refresh();
+  }
+
+  // ---- metadata bindings ----
+  const bind = (id: string, key: string) => {
+    const el = byId(id);
+    el.value = (ex as any)[key] ?? "";
+    el.addEventListener("input", () => { (ex as any)[key] = el.value; refresh(); });
+  };
+  bind("igt-label", "label");
+  bind("igt-lang", "language");
+  bind("igt-trans", "translation");
+  byId("igt-judge").value = ex.judgement;
+  byId("igt-judge").addEventListener("change", () => { ex.judgement = byId("igt-judge").value; refresh(); });
+
+  byId("igt-add-tier").addEventListener("click", () => {
+    ex.tiers.push(makeTier({ role: "aligned" }));
+    buildTierEditors(); remountKeyboard(); refresh();
+  });
+  byId("igt-add-ipa").addEventListener("click", () => {
+    ex.tiers.push(makeTier({ id: "ipa", label: "IPA", role: "aligned" }));
+    buildTierEditors(); remountKeyboard(); refresh();
+  });
+
+  // ---- IPA keyboard ----
+  const kbHost = byId("igt-kb");
+  function remountKeyboard() {
+    kbHost.innerHTML = "";
+    mountIpaKeyboard(kbHost, { fields: [...tierFields, byId("igt-trans")], onInsert: refresh });
+  }
+
+  // ---- export tabs ----
+  document.querySelectorAll<HTMLButtonElement>(".igt-extab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const name = tab.dataset.tab;
+      document.querySelectorAll(".igt-extab").forEach((t) =>
+        t.setAttribute("aria-pressed", String(t === tab)));
+      document.querySelectorAll<HTMLElement>(".igt-tabpane").forEach((p) => {
+        p.hidden = p.dataset.pane !== name;
+      });
+      refresh();
+    });
+  });
+
+  // ---- live refresh ----
+  let lastSvg = { svg: "", width: 0, height: 0 };
+
+  function refresh() {
+    // preview
+    const font = byId("igt-font").value;
+    renderHtml(byId("igt-preview"), ex, { fontFamily: font });
+
+    // validation
+    const { errors, warnings } = validate(ex);
+    const errBox = byId("igt-errors");
+    errBox.hidden = errors.length === 0;
+    errBox.textContent = errors.join("  ");
+    const warnBox = byId("igt-warnings");
+    warnBox.hidden = warnings.length === 0;
+    warnBox.textContent = warnings.length ? "⚠ " + warnings.join("  ") : "";
+
+    // text
+    byId("igt-text-out").textContent = renderText(ex, {
+      maxWidth: Number(byId("igt-text-width").value) || 80,
+    });
+
+    // latex
+    const engine = byId("igt-latex-engine").value;
+    const tex = renderLatex(ex, { engine });
+    byId("igt-preamble-out").textContent = tex.preamble;
+    byId("igt-latex-out").textContent = errors.length
+      ? "% Fix word-count errors above before exporting LaTeX."
+      : tex.body;
+
+    // image
+    const imgPane = document.querySelector('.igt-tabpane[data-pane="image"]') as HTMLElement;
+    if (imgPane && !imgPane.hidden) {
+      lastSvg = renderSvg(ex, {
+        fontFamily: font,
+        fontSize: Number(byId("igt-img-size").value) || 20,
+        maxWidth: Number(byId("igt-img-width").value) || 680,
+        background: byId("igt-img-bg").value,
+        color: getComputedStyle(document.body).getPropertyValue("color") || "#111",
+      });
+      byId("igt-img-preview").innerHTML = lastSvg.svg;
+    }
+
+    // data
+    byId("igt-json-out").textContent = serialize(ex);
+
+    writeHash();
+  }
+
+  // ---- copy / download helpers ----
+  async function copy(text: string, btn: HTMLButtonElement) {
+    try {
+      await navigator.clipboard.writeText(text);
+      flash(btn, "Copied");
+    } catch {
+      flash(btn, "Copy failed");
+    }
+  }
+  function flash(btn: HTMLButtonElement, msg: string) {
+    const old = btn.textContent;
+    btn.textContent = msg;
+    setTimeout(() => { btn.textContent = old; }, 1200);
+  }
+  function download(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  byId("igt-copy-text").addEventListener("click", (e: any) => copy(byId("igt-text-out").textContent, e.target));
+  byId("igt-copy-latex").addEventListener("click", (e: any) => copy(byId("igt-latex-out").textContent, e.target));
+  byId("igt-copy-preamble").addEventListener("click", (e: any) => copy(byId("igt-preamble-out").textContent, e.target));
+  byId("igt-copy-json").addEventListener("click", (e: any) => copy(byId("igt-json-out").textContent, e.target));
+
+  byId("igt-dl-svg").addEventListener("click", () => {
+    download(new Blob([lastSvg.svg], { type: "image/svg+xml" }), "gloss.svg");
+  });
+  byId("igt-dl-png").addEventListener("click", async () => {
+    const png = await svgToPng(lastSvg.svg, lastSvg.width, lastSvg.height, 2);
+    download(png, "gloss.png");
+  });
+  byId("igt-copy-png").addEventListener("click", async (e: any) => {
+    try {
+      const png = await svgToPng(lastSvg.svg, lastSvg.width, lastSvg.height, 2);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);
+      flash(e.target, "Copied");
+    } catch {
+      flash(e.target, "Copy failed");
+    }
+  });
+
+  byId("igt-import-json").addEventListener("click", () => {
+    const text = prompt("Paste exported gloss JSON:");
+    if (!text) return;
+    try {
+      ex = deserialize(text);
+      hydrateMeta();
+      buildTierEditors(); remountKeyboard(); refresh();
+    } catch {
+      alert("Could not parse that JSON.");
+    }
+  });
+  byId("igt-share").addEventListener("click", (e: any) => {
+    writeHash();
+    copy(location.href, e.target);
+  });
+
+  // react to control changes that only affect outputs
+  ["igt-font", "igt-text-width", "igt-latex-engine",
+   "igt-img-size", "igt-img-width", "igt-img-bg"].forEach((id) =>
+    byId(id).addEventListener("input", refresh));
+
+  // ---- hash persistence ----
+  function writeHash() {
+    try {
+      const enc = btoa(unescape(encodeURIComponent(serialize(ex))));
+      history.replaceState(null, "", "#g=" + enc);
+    } catch { /* ignore */ }
+  }
+  function loadFromHash() {
+    const m = location.hash.match(/g=([^&]+)/);
+    if (!m) return null;
+    try {
+      return deserialize(decodeURIComponent(escape(atob(m[1]))));
+    } catch {
+      return null;
+    }
+  }
+  function hydrateMeta() {
+    byId("igt-label").value = ex.label;
+    byId("igt-lang").value = ex.language;
+    byId("igt-trans").value = ex.translation;
+    byId("igt-judge").value = ex.judgement;
+  }
+
+  // ---- boot ----
+  hydrateMeta();
+  buildTierEditors();
+  remountKeyboard();
+  refresh();
+</script>
