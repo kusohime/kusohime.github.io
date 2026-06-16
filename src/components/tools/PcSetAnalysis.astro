@@ -34,7 +34,7 @@
   import { analyzeSet } from "../../lib/pcset.js";
   import { parsePcList } from "../../lib/parse.js";
   import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
-  import { blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { tone, createDrone, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
@@ -139,7 +139,9 @@
     analyze();
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
-    currentPcs.forEach((pc, index) => blip(midiToHz(60 + pc), t0 + index * 0.3, { dur: 0.28, gain: 0.45 }));
+    // 升序奏出集合作旋律线，用持续音而非击点。
+    // The set sounds ascending as a melodic line — sustained, not clicked.
+    currentPcs.forEach((pc, index) => tone(midiToHz(60 + pc), t0 + index * 0.3, { dur: 0.28, gain: 0.34 }));
   });
   analyze();
 </script>

@@ -46,7 +46,7 @@
 <script>
   import { parseNoteList } from "../../lib/parse.js";
   import { midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
-  import { blip, audioContext } from "../../lib/audio.js";
+  import { tone, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
@@ -133,7 +133,9 @@
   function play(series: number[]) {
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
-    series.forEach((m, index) => blip(midiToHz(m), t0 + index * 0.3, { dur: 0.28, gain: 0.45 }));
+    // 旋律线用持续音（起音—保持—收音），而非短促的击点。
+    // A melodic line wants sustained notes (attack–hold–release), not clicks.
+    series.forEach((m, index) => tone(midiToHz(m), t0 + index * 0.3, { dur: 0.28, gain: 0.34 }));
   }
   byId("tr-play-a").addEventListener("click", () => play(original));
   byId("tr-play-b").addEventListener("click", () => play(current()));

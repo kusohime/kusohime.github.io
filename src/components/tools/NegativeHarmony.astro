@@ -55,7 +55,7 @@
   import { negativeHarmonySum, pcMappingTable, reflectMidi, reflectPc } from "../../lib/reflect.js";
   import { parseNoteList } from "../../lib/parse.js";
   import { PC_NAMES, midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
-  import { blip, audioContext } from "../../lib/audio.js";
+  import { tone, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
@@ -125,7 +125,9 @@
   function play(series: number[]) {
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
-    series.forEach((m, index) => blip(midiToHz(m), t0 + index * 0.3, { dur: 0.28, gain: 0.45 }));
+    // 原线与镜像线都作旋律线奏出，用持续音而非击点。
+    // Both the source line and its mirror sound as melodic lines, sustained.
+    series.forEach((m, index) => tone(midiToHz(m), t0 + index * 0.3, { dur: 0.28, gain: 0.34 }));
   }
 
   byId("nh-go").addEventListener("click", reflect);

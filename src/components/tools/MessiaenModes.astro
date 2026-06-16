@@ -50,7 +50,7 @@
   import { transposePcs } from "../../lib/pcset.js";
   import { parsePcList } from "../../lib/parse.js";
   import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
-  import { blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { tone, createDrone, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
@@ -153,8 +153,10 @@
     const pcs = currentPcs();
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
+    // 音阶上行作旋律线奏出，用持续音连成音阶。
+    // The ascending scale sounds as a melodic line, sustained note to note.
     [...pcs, pcs[0] + 12].forEach((pc, index) =>
-      blip(midiToHz(60 + pc), t0 + index * 0.27, { dur: 0.26, gain: 0.42 }));
+      tone(midiToHz(60 + pc), t0 + index * 0.27, { dur: 0.26, gain: 0.32 }));
   });
   // 调式音场可持续按住；换调式或移位即时换声。
   // The mode field can be held; changing mode or transposition re-voices live.

@@ -80,7 +80,7 @@
     describeHz, edoStep, formatCents, hzToMidi, midiToHz, nameToMidi, ratioToCents,
   } from "../../lib/pitch.js";
   import { parseFrac } from "../../lib/fraction.js";
-  import { sustain, blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { sustain, tone, createDrone, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
@@ -202,8 +202,10 @@
     if (!rows) return;
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
+    // EDO 音阶上行作旋律线奏出，用持续音连成音阶。
+    // The EDO scale ascends as a melodic line, sustained step to step.
     rows.forEach((row, index) => {
-      blip(row.hz, t0 + index * 0.28, { dur: 0.26, gain: 0.4 });
+      tone(row.hz, t0 + index * 0.28, { dur: 0.26, gain: 0.32 });
     });
   });
 </script>

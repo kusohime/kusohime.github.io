@@ -188,20 +188,129 @@
     });
   }
 
+  // ---- pan & zoom over the SVG views (chart / fan) ----
+  // 树可能很大；与其压扁塞进面板，不如按原尺寸画进一个固定视窗，
+  // 让人拖动平移、滚轮／按钮缩放。大纲视图照常滚动，不参与缩放。
+  // The tree can grow large; rather than squashing it to fit, we render at
+  // natural size inside a fixed, resizable viewport and let the user drag to
+  // pan and scroll / buttons to zoom. Outline view just scrolls instead.
+  const pan = { x: 0, y: 0, scale: 1, natW: 0, natH: 0 };
+  let viewportReady = false;
+  let lastView: string | null = null;
+  let fitNext = true; // request a fit-to-view on the next draw
+  let panMoved = false; // last pointer gesture was a drag, not a click
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+  const canvasEl = () => byId("kin-tree").querySelector(".kin-canvas") as HTMLElement | null;
+  function applyTransform() {
+    const canvas = canvasEl();
+    if (canvas) canvas.style.transform = `translate(${pan.x}px, ${pan.y}px) scale(${pan.scale})`;
+  }
+  function fitTree() {
+    const host = byId("kin-tree");
+    if (!canvasEl() || !pan.natW || !pan.natH) return;
+    const m = 14;
+    const s = Math.min((host.clientWidth - m * 2) / pan.natW, (host.clientHeight - m * 2) / pan.natH);
+    pan.scale = clamp(s, 0.15, 1.6);
+    pan.x = (host.clientWidth - pan.natW * pan.scale) / 2;
+    pan.y = (host.clientHeight - pan.natH * pan.scale) / 2;
+    applyTransform();
+  }
+  function zoomAt(mx: number, my: number, factor: number) {
+    const next = clamp(pan.scale * factor, 0.15, 4);
+    const k = next / pan.scale;
+    pan.x = mx - (mx - pan.x) * k;
+    pan.y = my - (my - pan.y) * k;
+    pan.scale = next;
+    applyTransform();
+  }
+
+  function ensureViewport() {
+    if (viewportReady) return;
+    const host = byId("kin-tree");
+    host.innerHTML =
+      '<div class="kin-canvas"></div>' +
+      '<div class="kin-zoom" aria-label="Zoom controls">' +
+      '<button type="button" data-zoom="out" aria-label="Zoom out">−</button>' +
+      '<button type="button" data-zoom="fit">fit</button>' +
+      '<button type="button" data-zoom="in" aria-label="Zoom in">+</button></div>' +
+      '<span class="kin-hint" aria-hidden="true">drag to pan · scroll to zoom</span>';
+
+    host.querySelector(".kin-zoom")!.addEventListener("click", (e: any) => {
+      const b = e.target.closest("button[data-zoom]");
+      if (!b) return;
+      if (b.dataset.zoom === "fit") fitTree();
+      else zoomAt(host.clientWidth / 2, host.clientHeight / 2, b.dataset.zoom === "in" ? 1.2 : 1 / 1.2);
+    });
+
+    // drag to pan (pointer events cover mouse, touch, and pen)
+    let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+    host.addEventListener("pointerdown", (e: any) => {
+      if (state.view === "outline" || e.button !== 0 || e.target.closest(".kin-zoom")) return;
+      const r = host.getBoundingClientRect();
+      if (e.clientX > r.right - 18 && e.clientY > r.bottom - 18) return; // leave the resize corner
+      dragging = true; panMoved = false;
+      sx = e.clientX; sy = e.clientY; ox = pan.x; oy = pan.y;
+      host.setPointerCapture(e.pointerId);
+      host.classList.add("kin-tree--grabbing");
+    });
+    host.addEventListener("pointermove", (e: any) => {
+      if (!dragging) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) + Math.abs(dy) > 4) panMoved = true;
+      pan.x = ox + dx; pan.y = oy + dy;
+      applyTransform();
+    });
+    const endDrag = (e: any) => {
+      if (!dragging) return;
+      dragging = false;
+      try { host.releasePointerCapture(e.pointerId); } catch {}
+      host.classList.remove("kin-tree--grabbing");
+    };
+    host.addEventListener("pointerup", endDrag);
+    host.addEventListener("pointercancel", endDrag);
+
+    // scroll / trackpad-pinch to zoom around the cursor
+    host.addEventListener("wheel", (e: any) => {
+      if (state.view === "outline") return;
+      e.preventDefault();
+      const r = host.getBoundingClientRect();
+      zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0015));
+    }, { passive: false });
+
+    viewportReady = true;
+  }
+
   // ---- draw the active view ----
   let lastChart: any = null;
   function drawTree() {
     const vn = buildViewNodes();
-    const host = byId("kin-tree");
     const colors = themeColors();
+    ensureViewport();
+    const host = byId("kin-tree");
+    const canvas = canvasEl()!;
+    const pannable = state.view !== "outline";
+    host.classList.toggle("kin-tree--pan", pannable);
+    host.classList.toggle("kin-tree--flow", !pannable);
+
     if (state.view === "outline") {
-      host.innerHTML = renderOutlineHtml(vn, { selectedSig: state.sel });
+      canvas.style.transform = "";
+      canvas.innerHTML = renderOutlineHtml(vn, { selectedSig: state.sel });
     } else if (state.view === "fan") {
-      host.innerHTML = renderFanSvg(vn, { selectedSig: state.sel, colors }).svg;
+      const r = renderFanSvg(vn, { selectedSig: state.sel, colors });
+      canvas.innerHTML = r.svg; pan.natW = r.width; pan.natH = r.height;
     } else {
-      lastChart = renderChartSvg(vn, { selectedSig: state.sel, colors });
-      host.innerHTML = lastChart.svg;
+      lastChart = renderChartSvg(vn, { selectedSig: state.sel, colors, roman: state.roman });
+      canvas.innerHTML = lastChart.svg; pan.natW = lastChart.width; pan.natH = lastChart.height;
     }
+
+    if (pannable) {
+      if (fitNext || state.view !== lastView) fitTree();
+      else applyTransform();
+    }
+    fitNext = false;
+    lastView = state.view;
+
     // sync view tabs
     document.querySelectorAll<HTMLButtonElement>("#kin-viewtabs button").forEach((b) => {
       b.classList.toggle("kin-viewtab--on", b.dataset.view === state.view);
@@ -359,7 +468,10 @@
     state.sel = node.getAttribute("data-sig");
     refresh();
   }
-  byId("kin-tree").addEventListener("click", (e: any) => pickNode(e.target));
+  byId("kin-tree").addEventListener("click", (e: any) => {
+    if (panMoved) { panMoved = false; return; } // a pan drag, not a selection
+    pickNode(e.target);
+  });
   byId("kin-tree").addEventListener("keydown", (e: any) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pickNode(e.target); }
   });
@@ -370,7 +482,7 @@
     if (b) addBranch(b.dataset.add);
   });
   byId("kin-remove").addEventListener("click", removeSelected);
-  byId("kin-reset").addEventListener("click", () => { state = seedTree(); refresh(); });
+  byId("kin-reset").addEventListener("click", () => { state = seedTree(); fitNext = true; refresh(); });
 
   // view tabs
   byId("kin-viewtabs").addEventListener("click", (e: any) => {
@@ -425,13 +537,13 @@
   byId("kin-importcode").addEventListener("click", () => {
     const text = prompt("Paste a kinship tree code:");
     if (!text) return;
-    try { state = deserializeTree(text); refresh(); }
+    try { state = deserializeTree(text); fitNext = true; refresh(); }
     catch { alert("Could not read that code."); }
   });
 
   byId("kin-dl-tree").addEventListener("click", async () => {
     const vn = buildViewNodes();
-    const r = renderChartSvg(vn, { selectedSig: state.sel, colors: { ...themeColors(), paper: "#ffffff", ink: "#000", muted: "#555", rule: "#aaa" } });
+    const r = renderChartSvg(vn, { selectedSig: state.sel, roman: state.roman, colors: { ...themeColors(), paper: "#ffffff", ink: "#000", muted: "#555", rule: "#aaa" } });
     const png = await svgToPng(r.svg, r.width, r.height, 2);
     download(png, "kinship-tree.png");
   });

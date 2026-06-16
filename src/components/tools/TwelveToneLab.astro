@@ -56,7 +56,7 @@
   } from "../../lib/rows.js";
   import { parsePcList } from "../../lib/parse.js";
   import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
-  import { blip, audioContext } from "../../lib/audio.js";
+  import { tone, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
@@ -146,7 +146,9 @@
     if (!form) return;
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
-    form.forEach((pc: number, index: number) => blip(midiToHz(60 + pc), t0 + index * 0.32, { dur: 0.3, gain: 0.45 }));
+    // 行作为旋律线奏出：用持续音连成乐句，而非逐点敲击。
+    // The row sounds as a melodic line — sustained notes phrase it, not clicks.
+    form.forEach((pc: number, index: number) => tone(midiToHz(60 + pc), t0 + index * 0.32, { dur: 0.3, gain: 0.34 }));
   });
   build();
 </script>

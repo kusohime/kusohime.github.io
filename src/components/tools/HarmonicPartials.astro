@@ -43,7 +43,7 @@
 <script>
   import { partialTable, reduceToOctave } from "../../lib/partials.js";
   import { midiToHz, nameToMidi } from "../../lib/pitch.js";
-  import { blip, createDrone, audioContext } from "../../lib/audio.js";
+  import { tone, createDrone, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
@@ -156,8 +156,11 @@
     if (!table.length) compute();
     const ctx = audioContext();
     const t0 = ctx.currentTime + 0.08;
+    // 泛音上行作持续的旋律线扫过，相邻泛音略叠连成一条线。
+    // The partials sweep up as a sustained line, adjacent tones overlapping
+    // slightly so it reads as one rising line rather than separate clicks.
     table.forEach((row, index) => {
-      blip(row.hz, t0 + index * 0.22, { dur: 0.3, gain: 0.5 / Math.sqrt(row.n) });
+      tone(row.hz, t0 + index * 0.22, { dur: 0.3, gain: 0.34 / Math.sqrt(row.n) });
     });
   });
   mountKeyboard(byId("hp-kb"), { inputs: [byId("hp-f0")], baseOctave: 2 });

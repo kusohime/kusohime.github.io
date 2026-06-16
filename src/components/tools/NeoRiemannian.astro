@@ -49,7 +49,7 @@
     applyChain, commonTones, hexatonicCycle, nearestVoicing, triadLabel, triadPcs,
   } from "../../lib/triads.js";
   import { PC_NAMES, midiToHz } from "../../lib/pitch.js";
-  import { sustain, audioContext, blip } from "../../lib/audio.js";
+  import { sustain, audioContext, tone } from "../../lib/audio.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   let lastSteps: any[] = [];
@@ -104,8 +104,11 @@
     let voices: number[] | null = null;
     lastSteps.forEach((step, index) => {
       voices = nearestVoicing(voices, step.triad) as number[];
+      // 每个三和弦作持续和声奏出，让进行像声部连接而非逐块敲击。
+      // Each triad sustains so the progression connects as voice-leading,
+      // not block hits; per-note gain is scaled down for the three voices.
       for (const note of voices) {
-        blip(midiToHz(note), t0 + index * 0.85, { dur: 0.8, gain: 0.3 });
+        tone(midiToHz(note), t0 + index * 0.85, { dur: 0.8, gain: 0.2 });
       }
     });
   });

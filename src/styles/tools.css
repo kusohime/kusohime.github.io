@@ -766,21 +766,56 @@
   z-index: 1;
 }
 
-/* ---- tree canvas ---- */
+/* ---- tree canvas: pan & zoom viewport ---- */
 
 .kin-tree {
   margin-top: var(--space-md);
-  overflow: auto;
   border: 1px solid var(--color-rule);
   background: var(--color-background);
-  padding: var(--space-sm);
+  position: relative;
   min-height: 12rem;
 }
 
-.kin-tree svg {
+/* pannable SVG views (chart / fan): fixed-height, user-resizable viewport */
+.kin-tree--pan {
+  height: 24rem;
+  overflow: hidden;
+  resize: vertical;
+  touch-action: none;
+  cursor: grab;
+}
+
+.kin-tree--pan.kin-tree--grabbing {
+  cursor: grabbing;
+}
+
+/* outline view: flows and scrolls normally */
+.kin-tree--flow {
+  max-height: 26rem;
+  overflow: auto;
+  padding: var(--space-sm);
+  resize: vertical;
+}
+
+.kin-canvas {
+  transform-origin: 0 0;
+}
+
+.kin-tree--pan .kin-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.kin-tree--pan .kin-canvas svg {
   display: block;
-  max-width: 100%;
+  max-width: none;
   height: auto;
+}
+
+.kin-tree--flow .kin-canvas {
+  position: static;
 }
 
 .kin-cnode:hover rect,
@@ -790,6 +825,61 @@
 
 .kin-cnode:focus-visible {
   outline: none;
+}
+
+/* zoom controls + hint, overlaid on the viewport */
+.kin-zoom {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: flex;
+  z-index: 2;
+}
+
+.kin-tree--flow .kin-zoom {
+  display: none;
+}
+
+.kin-zoom button {
+  border: 1px solid var(--color-rule);
+  background: var(--color-background);
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1;
+  width: 1.9rem;
+  height: 1.7rem;
+  cursor: pointer;
+}
+
+.kin-zoom button + button {
+  border-left: none;
+}
+
+.kin-zoom button[data-zoom="fit"] {
+  width: auto;
+  padding: 0 0.5rem;
+  font-size: 0.74rem;
+}
+
+.tool-page .kin-zoom button:hover {
+  color: var(--theme-color);
+  border-color: var(--theme-color);
+}
+
+.kin-hint {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.35rem;
+  font-size: 0.68rem;
+  color: var(--color-muted);
+  opacity: 0.65;
+  pointer-events: none;
+  user-select: none;
+}
+
+.kin-tree--flow .kin-hint {
+  display: none;
 }
 
 /* ---- indented outline view ---- */

@@ -24,6 +24,29 @@ function trim(s, n) {
   return s.length > n ? s.slice(0, n - 1) + "…" : s;
 }
 
+// Approximate glyph advance. IBM Plex Mono is monospace for Latin (~0.6em);
+// CJK fall-through glyphs are full-width (~1em). Used to truncate by pixel
+// width so wide composite terms (哥哥 / 弟弟 …) never overrun their box.
+function charW(ch, size) {
+  return (/[㐀-鿿豈-﫿＀-￯　-〿]/.test(ch) ? 1.0 : 0.6) * size;
+}
+function strW(s, size) {
+  let w = 0;
+  for (const ch of String(s ?? "")) w += charW(ch, size);
+  return w;
+}
+/** Truncate `s` with an ellipsis so it fits within `maxW` px at `size`. */
+function fitText(s, size, maxW) {
+  s = String(s ?? "");
+  if (strW(s, size) <= maxW) return s;
+  let out = "";
+  for (const ch of s) {
+    if (strW(out, size) + charW(ch, size) + charW("…", size) > maxW) break;
+    out += ch;
+  }
+  return (out || s.slice(0, 1)) + "…";
+}
+
 const FONT = 'font-family="IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, monospace"';
 const LINK_ORDER = { F: 0, M: 1, B: 2, Z: 3, S: 4, D: 5 };
 
@@ -77,7 +100,10 @@ export function renderChartSvg(nodes, opts = {}) {
   const c = defaultColors(opts.colors);
   const sel = opts.selectedSig;
   const { xs, leaves, minG, maxG } = layoutChart(nodes);
-  const boxW = 134, boxH = 42, gapX = 18, rowH = 84, pad = 16;
+  const showRoman = opts.roman !== false;
+  const boxW = 156, gapX = 18, pad = 16;
+  const boxH = showRoman ? 54 : 40;
+  const rowH = boxH + 42;
   const X = (sig) => pad + xs[sig] * (boxW + gapX);
   const Y = (gen) => pad + (maxG - gen) * rowH;
   const cxOf = (sig) => X(sig) + boxW / 2;
@@ -109,20 +135,30 @@ export function renderChartSvg(nodes, opts = {}) {
   });
 
   const fill = c.paper === "transparent" ? "#fff" : c.paper;
-  const boxes = nodes.map((n) => {
+  const tx0 = 9, maxW = boxW - 18;
+  const boxes = nodes.map((n, i) => {
     const x = X(n.sig), y = Y(n.gen);
     const isSel = n.sig === sel;
     const bStroke = isSel ? c.accent : n.isEgo ? c.ego : c.rule;
     const sw = isSel ? 1.8 : n.isEgo ? 1.4 : 1;
     const relColor = n.isEgo ? c.ego : c.muted;
     const termColor = n.isEgo ? c.ego : n.missing ? c.muted : c.ink;
-    const roman = n.roman ? `<tspan dx="6" font-size="10" fill="${c.muted}">${esc(trim(n.roman, 16))}</tspan>` : "";
+    const cid = `kc${i}`;
+    const tx = x + tx0;
+    // romanization on its own line so the term keeps the full box width
+    const roman = showRoman && n.roman
+      ? `<text x="${tx}" y="${y + 47}" font-size="9.5" fill="${c.muted}">${esc(fitText(n.roman, 9.5, maxW))}</text>`
+      : "";
     return (
       `<g class="kin-cnode" data-sig="${esc(n.sig)}" tabindex="0" role="button" ` +
-      `aria-label="${esc(n.relLabel)}: ${esc(n.term)}" style="cursor:pointer">` +
+      `aria-label="${esc(n.relLabel)}: ${esc(n.term)}${n.roman ? " (" + esc(n.roman) + ")" : ""}" style="cursor:pointer">` +
+      `<clipPath id="${cid}"><rect x="${x}" y="${y}" width="${boxW}" height="${boxH}"/></clipPath>` +
       `<rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" fill="${fill}" stroke="${bStroke}" stroke-width="${sw}"/>` +
-      `<text x="${x + 9}" y="${y + 16}" font-size="10.5" fill="${relColor}">${esc(trim(n.relLabel, 22))}</text>` +
-      `<text x="${x + 9}" y="${y + 32}" font-size="13" fill="${termColor}">${esc(trim(n.term, 14))}${roman}</text>` +
+      `<g clip-path="url(#${cid})">` +
+      `<text x="${tx}" y="${y + 16}" font-size="10.5" fill="${relColor}">${esc(fitText(n.relLabel, 10.5, maxW))}</text>` +
+      `<text x="${tx}" y="${showRoman ? y + 33 : y + 32}" font-size="13" fill="${termColor}">${esc(fitText(n.term, 13, maxW))}</text>` +
+      roman +
+      `</g>` +
       `</g>`
     );
   });
@@ -183,7 +219,7 @@ export function renderFanSvg(nodes, opts = {}) {
     return !d.sib && d.downs.length === 0; // ego + pure ascending line only
   });
   const maxUp = Math.max(0, ...anc.map((n) => n.gen));
-  const ringW = 78, pad = 16, boxW = 96, boxH = 30;
+  const ringW = 78, pad = 16, boxW = 108, boxH = 32;
   const R = maxUp * ringW;
   const cx = pad + R;
   const cy = pad + R;
@@ -204,7 +240,7 @@ export function renderFanSvg(nodes, opts = {}) {
   parts.push(`<line x1="${cx - R}" y1="${cy}" x2="${cx + R}" y2="${cy}" stroke="${c.rule}" stroke-width="1"/>`);
 
   const fill = c.paper === "transparent" ? "#fff" : c.paper;
-  anc.forEach((n) => {
+  anc.forEach((n, fi) => {
     const g = n.gen;
     const ang = fanAngle(n.path);
     const r = g === 0 ? 0 : (g - 0.5) * ringW;
@@ -215,12 +251,16 @@ export function renderFanSvg(nodes, opts = {}) {
     const relColor = n.isEgo ? c.ego : c.muted;
     const termColor = n.isEgo ? c.ego : n.missing ? c.muted : c.ink;
     const x = px - boxW / 2, y = py - boxH / 2;
+    const cid = `kf${fi}`, maxW = boxW - 10;
     parts.push(
       `<g class="kin-cnode" data-sig="${esc(n.sig)}" tabindex="0" role="button" ` +
       `aria-label="${esc(n.relLabel)}: ${esc(n.term)}" style="cursor:pointer">` +
+      `<clipPath id="${cid}"><rect x="${x}" y="${y}" width="${boxW}" height="${boxH}"/></clipPath>` +
       `<rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" fill="${fill}" stroke="${bStroke}" stroke-width="${sw}"/>` +
-      `<text x="${px}" y="${y + 12}" text-anchor="middle" font-size="9.5" fill="${relColor}">${esc(trim(n.relLabel, 16))}</text>` +
-      `<text x="${px}" y="${y + 24}" text-anchor="middle" font-size="11.5" fill="${termColor}">${esc(trim(n.term, 12))}</text>` +
+      `<g clip-path="url(#${cid})">` +
+      `<text x="${px}" y="${y + 13}" text-anchor="middle" font-size="9.5" fill="${relColor}">${esc(fitText(n.relLabel, 9.5, maxW))}</text>` +
+      `<text x="${px}" y="${y + 25}" text-anchor="middle" font-size="11.5" fill="${termColor}">${esc(fitText(n.term, 11.5, maxW))}</text>` +
+      `</g>` +
       `</g>`,
     );
   });
