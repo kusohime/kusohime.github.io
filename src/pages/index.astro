@@ -7,7 +7,19 @@
 // Caveat: Keep selected works and recent writings off this page.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
-import homeContent from "../config/homeContent.json";
+import homeContentData from "../config/homeContent.json";
+
+// 中文：把图片字段视为可选——若在 Pages CMS 清空图片（image 键被删除），构建不会失败，
+// 页面只是省略这张图，而不是报错中断部署。
+// English: Treat the image fields as optional, so clearing the image in Pages CMS (which
+// drops the `image` key) can't fail the build — the figure is simply omitted.
+interface HomeContent {
+  intro: { en: string; zh: string };
+  caption: { en: string; zh: string };
+  image?: string;
+  imageAlt?: string;
+}
+const homeContent = homeContentData as HomeContent;
 
 // 中文：极简 Markdown。先转义 HTML，再支持 [文字](链接)、**粗体**、*斜体*；空行分段。
 // 内容由站长经 Pages CMS 编辑（可信来源），转义后再插入标签，因此是安全的。
@@ -76,10 +88,11 @@ const introRest = (markdown: string) =>
       </div>
     </section>
 
+    {homeContent.image && (
     <figure class="home-manuscript">
       <img
         src={homeContent.image}
-        alt={homeContent.imageAlt}
+        alt={homeContent.imageAlt ?? ""}
         width="1600"
         height="1200"
         decoding="async"
@@ -94,5 +107,6 @@ const introRest = (markdown: string) =>
         <span class="home-caption" data-lang="zh" set:html={inlineMarkdown(homeContent.caption.zh)} />
       </figcaption>
     </figure>
+    )}
   </div>
 </BaseLayout>
