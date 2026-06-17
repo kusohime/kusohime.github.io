@@ -1,7 +1,7 @@
 ---
-// 中文：节奏实验台：复节奏重合点、相位卡农（Reich 式连续相移）、多轨节拍器。
+// 中文：节奏实验台：复节奏重合点、相位卡农（连续或步进相移）、多轨节拍器。
 // English: Rhythm lab: polyrhythm coincidences, phase canon with a
-// continuous entry offset (Reich-style), and a multi-track metronome.
+// continuous or stepped entry offset, and a multi-track metronome.
 ---
 
 <section class="tool-panel" aria-label="Polyrhythm laboratory">
@@ -88,6 +88,9 @@
     <label class="tool-field">
       <span><input type="radio" name="cn-mode" id="cn-mode-phasing" /> Gradual phasing (Reich)</span>
     </label>
+    <label class="tool-field">
+      <span><input type="radio" name="cn-mode" id="cn-mode-stepped" /> Stepped phase (one step each cycle)</span>
+    </label>
     <label class="tool-field" style="flex: 1; min-width: 16rem;">
       <span>Voice 2 tempo ratio</span>
       <span class="range-pair">
@@ -153,7 +156,14 @@
   import { cycleAttacks } from "../../lib/tempo.js";
   import { fnum } from "../../lib/fraction.js";
   import { parseCountList } from "../../lib/parse.js";
-  import { parsePattern, driftPeriodSeconds, attackDurationSteps, PRESETS } from "../../lib/canon.js";
+  import {
+    parsePattern,
+    driftPeriodSeconds,
+    attackDurationSteps,
+    steppedOffsetFraction,
+    steppedShiftSteps,
+    PRESETS,
+  } from "../../lib/canon.js";
   import { midiToHz } from "../../lib/pitch.js";
   import { blip, tone, createClock, stopAll, audioContext } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
@@ -452,14 +462,19 @@
     const offset = Number(byId("cn-offset").value);
     const rate = Number(byId("cn-rate").value);
     const phasing = byId("cn-mode-phasing").checked;
+    const stepped = byId("cn-mode-stepped").checked;
     const transpose = Number(byId("cn-transpose").value) || 0;
-    return { stepDur, parsed, offset, rate, phasing, transpose };
+    return { stepDur, parsed, offset, rate, phasing, stepped, transpose };
   };
 
   function updateCanonReadout() {
-    const { stepDur, parsed, offset, rate, phasing } = canonParams();
+    const { stepDur, parsed, offset, rate, phasing, stepped } = canonParams();
+    const stepCount = parsed.steps.length || 0;
+    const roundedSteps = stepCount ? Math.round(offset * stepCount) : 0;
     byId("cn-offset-out").textContent =
-      `${offset.toFixed(3)} ≈ ${(offset * (parsed.steps.length || 0)).toFixed(2)} steps`;
+      stepped
+        ? `${roundedSteps} step${roundedSteps === 1 ? "" : "s"}`
+        : `${offset.toFixed(3)} ≈ ${(offset * stepCount).toFixed(2)} steps`;
     byId("cn-rate-out").textContent = `× ${rate.toFixed(3)}`;
     const error = byId("cn-error");
     if (!parsed.ok) {
@@ -478,17 +493,19 @@
         ? Number.isFinite(drift)
           ? `Phasing: voice 2 laps the pattern once every ${drift.toFixed(1)} s.`
           : "Phasing ratio 1.000: the voices stay locked."
+        : stepped
+          ? `Stepped phase: voice 2 advances by one ${stepCount ? `step every ${patternDur.toFixed(2)} s` : "step each cycle"}.`
         : `Locked canon at ${(offset * parsed.steps.length).toFixed(2)} steps.`);
   }
 
   function scheduleCanon(from: number, to: number) {
-    const { stepDur, parsed, offset, rate, phasing, transpose } = canonParams();
+    const { stepDur, parsed, offset, rate, phasing, stepped, transpose } = canonParams();
     if (!parsed.ok) return;
     const steps = parsed.steps;
     const patternDur = stepDur * steps.length;
 
     // Apply live offset changes as a delta to voice 2's next event time.
-    if (!phasing) {
+    if (!phasing && !stepped) {
       const delta = (offset - appliedOffset) * patternDur;
       if (Math.abs(delta) > 1e-9 && canonVoices[1]) {
         canonVoices[1].nextTime += delta;
@@ -506,12 +523,17 @@
       }
       while (voice.nextTime < to) {
         const position = voice.stepIndex % steps.length;
-        const step = steps[position];
+        const cycleIndex = Math.floor(voice.stepIndex / steps.length);
+        const shiftSteps = index === 1 && stepped
+          ? steppedShiftSteps(offset, steps.length, cycleIndex)
+          : 0;
+        const patternIndex = ((position - shiftSteps) % steps.length + steps.length) % steps.length;
+        const step = steps[patternIndex];
         if (!step.rest && !step.hold) {
           if (parsed.pitched && step.midi !== null) {
             // 音高卡农奏持续音：时值 = 本步 + 后续 "_" 延音步。
             // Pitched canons sustain: duration = this step plus "_" holds.
-            const holdSteps = attackDurationSteps(steps, position);
+            const holdSteps = attackDurationSteps(steps, patternIndex);
             tone(midiToHz(step.midi + (index === 1 ? transpose : 0)), voice.nextTime, {
               dur: holdSteps * voiceStep * 0.96,
               gain: index === 0 ? 0.34 : 0.28,
@@ -539,7 +561,16 @@
   let canonView: "lines" | "rings" = "lines";
 
   function currentPhaseFraction() {
-    const { stepDur, parsed, offset, rate, phasing } = canonParams();
+    const { stepDur, parsed, offset, rate, phasing, stepped } = canonParams();
+    if (stepped) {
+      if (!canonClock.running()) {
+        return steppedOffsetFraction(offset, parsed.steps.length, 0);
+      }
+      const patternDur = stepDur * parsed.steps.length;
+      const elapsed = Math.max(0, audioContext().currentTime - canonStartTime);
+      const cycleIndex = Math.floor(elapsed / patternDur);
+      return steppedOffsetFraction(offset, parsed.steps.length, cycleIndex);
+    }
     if (!phasing || !canonClock.running()) return offset;
     const patternDur = stepDur * parsed.steps.length;
     const elapsed = audioContext().currentTime - canonStartTime;
@@ -668,7 +699,7 @@
   byId("cn-view-rings").addEventListener("click", () => setCanonView("rings"));
 
   byId("cn-play").addEventListener("click", () => {
-    const { parsed, offset, phasing, stepDur } = canonParams();
+    const { parsed, offset, phasing, stepped, stepDur } = canonParams();
     if (!parsed.ok) {
       updateCanonReadout();
       return;
@@ -676,11 +707,11 @@
     const ctx = audioContext();
     const start = ctx.currentTime + 0.1;
     const patternDur = stepDur * parsed.steps.length;
-    appliedOffset = phasing ? 0 : offset;
+    appliedOffset = phasing || stepped ? 0 : offset;
     canonStartTime = start;
     canonVoices = [
       { nextTime: start, stepIndex: 0 },
-      { nextTime: start + (phasing ? 0 : offset * patternDur), stepIndex: 0 },
+      { nextTime: start + (phasing || stepped ? 0 : offset * patternDur), stepIndex: 0 },
     ];
     canonClock.start(scheduleCanon);
     // 播放期间持续重绘：指针扫过周期，相移模式下位移环/行也随之转动。
@@ -710,6 +741,10 @@
     drawCanonViz();
   });
   byId("cn-mode-phasing").addEventListener("change", () => {
+    updateCanonReadout();
+    drawCanonViz();
+  });
+  byId("cn-mode-stepped").addEventListener("change", () => {
     updateCanonReadout();
     drawCanonViz();
   });

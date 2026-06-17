@@ -295,6 +295,14 @@ test("drift period: pattern/|rate-1|; infinite when locked", async () => {
   approx(driftPeriodSeconds(10, 0.99), 1000, 1e-6);
   assert.equal(driftPeriodSeconds(10, 1), Infinity);
 });
+test("stepped phasing advances by whole pattern steps", async () => {
+  const { steppedShiftSteps, steppedOffsetFraction } = await import("../src/lib/canon.js");
+  assert.equal(steppedShiftSteps(0, 12, 0), 0);
+  assert.equal(steppedShiftSteps(0, 12, 1), 1);
+  assert.equal(steppedShiftSteps(0, 12, 12), 0);
+  assert.equal(steppedShiftSteps(0.25, 12, 2), 5);
+  approx(steppedOffsetFraction(0.25, 12, 2), 5 / 12, 1e-9);
+});
 test("hold steps extend attacks; wrap across the cycle", async () => {
   const { parsePattern, attackDurationSteps } = await import("../src/lib/canon.js");
   const held = parsePattern("E4 _ _ F4");
@@ -366,6 +374,43 @@ test("parallel fifths between subject and real answer at gap 0 are flagged", asy
   assert.ok(parallels.length >= 1, "expected parallel fifths to be flagged");
   assert.ok(parallels.every((p) => p.interval === "P5"));
 });
+test("augmentation doubles a statement's length, diminution halves it", async () => {
+  const { parseVoice, buildExposition, scaleBeats, totalBeats } = await import("../src/lib/fugue.js");
+  const subject = parseVoice("C4:q D4 E4 F4"); // 4 beats as written
+  assert.deepEqual(scaleBeats(subject.events, 2).map((e) => e.beats), [2, 2, 2, 2]);
+  assert.deepEqual(scaleBeats(subject.events, 0.5).map((e) => e.beats), [0.5, 0.5, 0.5, 0.5]);
+  // Pitches survive the scaling untouched.
+  assert.deepEqual(scaleBeats(subject.events, 2).map((e) => e.midi), subject.events.map((e) => e.midi));
+  const exposition = buildExposition({
+    subjectEvents: subject.events,
+    entries: [
+      { material: "S", semitones: 0, octave: 0, factor: 1 },
+      { material: "S", semitones: 0, octave: 0, factor: 2 }, // augmented
+      { material: "S", semitones: 0, octave: 0, factor: 0.5 }, // diminished
+    ],
+    gapBeats: 4,
+  });
+  assert.equal(totalBeats(exposition.voices[0].statement), 4);
+  assert.equal(totalBeats(exposition.voices[1].statement), 8); // augmentation
+  assert.equal(totalBeats(exposition.voices[2].statement), 2); // diminution
+  // Entries still begin on the grid; only the statement's length changes.
+  assert.deepEqual(exposition.voices.map((v) => v.entryStart), [0, 4, 8]);
+});
+test("fugue presets parse; supplied answers match subject length", async () => {
+  const { parseVoice, PRESETS } = await import("../src/lib/fugue.js");
+  assert.ok(PRESETS.length >= 2);
+  for (const preset of PRESETS) {
+    const subject = parseVoice(preset.subject);
+    assert.ok(subject.ok, `${preset.id} subject`);
+    if (preset.answer) {
+      const answer = parseVoice(preset.answer);
+      assert.ok(answer.ok, `${preset.id} answer`);
+      // The answer is the subject transposed, so it has the same note count.
+      assert.equal(answer.events.length, subject.events.length, `${preset.id} answer length`);
+    }
+    if (preset.cs) assert.ok(parseVoice(preset.cs).ok, `${preset.id} countersubject`);
+  }
+});
 
 /* ---------- input parsing ---------- */
 test("pc parsing disambiguates T/E numerals from note names", async () => {
@@ -382,6 +427,21 @@ test("pc parsing disambiguates T/E numerals from note names", async () => {
 test("all seed entries validate; missing provenance rejected", () => {
   for (const entry of ENTRIES) assert.ok(validateEntry(entry).ok, entry.id);
   assert.equal(validateEntry({ id: "x", instrument: "y", technique: "z" }).ok, false);
+});
+
+/* ---------- audio: equal-loudness compensation ---------- */
+test("loudness compensation: flat above middle C, rising and capped in the bass", async () => {
+  const { loudnessGain } = await import("../src/lib/audio.js");
+  const cap = Math.pow(10, 10 / 20); // LOUDNESS_MAX_DB = 10
+  assert.equal(loudnessGain(261.63), 1); // middle C: untouched
+  assert.equal(loudnessGain(440), 1); // above the corner: untouched
+  assert.ok(loudnessGain(130.81) > 1); // an octave below: boosted
+  assert.ok(loudnessGain(65.41) > loudnessGain(130.81)); // lower note, louder boost
+  assert.ok(loudnessGain(32.7) <= cap + 1e-9); // never exceeds the ceiling
+  assert.ok(loudnessGain(20) <= cap + 1e-9);
+  assert.equal(loudnessGain(0), 1); // guards against non-positive input
+  // ~4.5 dB/octave: one octave down should be close to 10^(4.5/20).
+  assert.ok(Math.abs(loudnessGain(130.81) - Math.pow(10, 4.5 / 20)) < 0.02);
 });
 
 console.log(`${passed} tests passed${process.exitCode ? " (with failures)" : ""}`);

@@ -7,6 +7,12 @@
 <section class="tool-panel" aria-label="Fugue material">
   <span class="tool-panel-label">Material</span>
   <div class="tool-controls">
+    <label class="tool-field">
+      <span>Preset — a worked exposition from the repertoire</span>
+      <select id="fg-preset"><option value="">— freeform —</option></select>
+    </label>
+  </div>
+  <div class="tool-controls" style="margin-top: var(--space-sm);">
     <label class="tool-field" style="flex:1; min-width: 20rem;">
       <span>Subject — NOTE:duration, durations w h q e s (+ dot), R = rest; a missing duration repeats the last</span>
       <input type="text" id="fg-subject" value="D4:e A4 F4 D4 C#4 D4:q E4:e D4 E4 F4:q G4:e F4 G4 A4:q" size="56" />
@@ -55,7 +61,7 @@
     <table class="tool-table">
       <caption>Per-entry plan (defaults: alternating subject and answer at the fifth)</caption>
       <thead>
-        <tr><th>Entry</th><th>Material</th><th>Transpose</th><th>Octave</th></tr>
+        <tr><th>Entry</th><th>Material</th><th>Transpose</th><th>Octave</th><th>Rhythm</th></tr>
       </thead>
       <tbody id="fg-entries"></tbody>
     </table>
@@ -72,7 +78,7 @@
 
 <script>
   import {
-    buildExposition, findParallels, parseVoice, totalBeats, voiceTimeline,
+    buildExposition, findParallels, parseVoice, totalBeats, voiceTimeline, PRESETS,
   } from "../../lib/fugue.js";
   import { midiToHz, midiToName } from "../../lib/pitch.js";
   import { tone, stopAll, audioContext } from "../../lib/audio.js";
@@ -95,11 +101,19 @@
     { label: "up an octave", value: 12 },
     { label: "down an octave", value: -12 },
   ];
+  // Rhythmic transformation of a statement: ×2 augmentation, ×½ diminution.
+  const RHYTHM_OPTIONS = [
+    { label: "diminish ×¼", value: 0.25 },
+    { label: "diminish ×½", value: 0.5 },
+    { label: "as written", value: 1 },
+    { label: "augment ×2", value: 2 },
+    { label: "augment ×4", value: 4 },
+  ];
   const ENTRY_DEFAULTS = [
-    { material: "S", transpose: 0, octave: 0 },
-    { material: "A", transpose: 0, octave: 0 },
-    { material: "S", transpose: 0, octave: -1 },
-    { material: "A", transpose: 0, octave: -1 },
+    { material: "S", transpose: 0, octave: 0, factor: 1 },
+    { material: "A", transpose: 0, octave: 0, factor: 1 },
+    { material: "S", transpose: 0, octave: -1, factor: 1 },
+    { material: "A", transpose: 0, octave: -1, factor: 1 },
   ];
 
   const entriesBody = byId("fg-entries");
@@ -121,6 +135,9 @@
         ).join("")}</select></td>` +
         `<td><select data-fg-octave="${index}">${[1, 0, -1, -2].map((octave) =>
           `<option value="${octave}" ${octave === defaults.octave ? "selected" : ""}>${octave > 0 ? `+${octave}` : octave}</option>`,
+        ).join("")}</select></td>` +
+        `<td><select data-fg-augment="${index}">${RHYTHM_OPTIONS.map((option) =>
+          `<option value="${option.value}" ${option.value === defaults.factor ? "selected" : ""}>${option.label}</option>`,
         ).join("")}</select></td>`;
       entriesBody.append(row);
     }
@@ -130,6 +147,29 @@
     build();
   });
   renderEntryRows();
+
+  // Repertoire presets: load subject/answer/countersubject and the voice
+  // count, then rebuild. Setting .value does not fire "change", so the
+  // entry rows and exposition are refreshed by hand.
+  const presetSelect = byId("fg-preset");
+  for (const preset of PRESETS) {
+    const option = document.createElement("option");
+    option.value = preset.id;
+    option.textContent = preset.label;
+    presetSelect.append(option);
+  }
+  presetSelect.addEventListener("change", () => {
+    const preset = PRESETS.find((p) => p.id === presetSelect.value);
+    if (!preset) return;
+    byId("fg-subject").value = preset.subject;
+    byId("fg-answer").value = preset.answer ?? "";
+    byId("fg-cs").value = preset.cs ?? "";
+    byId("fg-voices").value = String(preset.voices ?? 3);
+    byId("fg-bpm").value = String(preset.bpm ?? 84);
+    byId("fg-gap").value = "";
+    renderEntryRows();
+    build();
+  });
 
   let exposition: any = null;
 
@@ -165,6 +205,7 @@
         material: (document.querySelector(`[data-fg-material="${index}"]`) as HTMLSelectElement).value as "S" | "A",
         semitones: Number((document.querySelector(`[data-fg-transpose="${index}"]`) as HTMLSelectElement).value),
         octave: Number((document.querySelector(`[data-fg-octave="${index}"]`) as HTMLSelectElement).value),
+        factor: Number((document.querySelector(`[data-fg-augment="${index}"]`) as HTMLSelectElement).value),
       });
     }
     const gapInput = Number(byId("fg-gap").value);
@@ -178,11 +219,20 @@
 
     const subjectBeats = totalBeats(subject.events);
     const stretto = exposition.gap < subjectBeats - 1e-9;
+    const FACTOR_LABEL: Record<string, string> = { "0.25": "×¼", "0.5": "×½", "2": "×2", "4": "×4" };
+    const transforms = entries
+      .map((entry, index) =>
+        entry.factor === 1
+          ? null
+          : `V${index + 1} ${entry.factor > 1 ? "augmented" : "diminished"} ${FACTOR_LABEL[String(entry.factor)] ?? `×${entry.factor}`}`,
+      )
+      .filter(Boolean);
     byId("fg-summary").textContent =
       `${voiceCount} voices, entries every ${exposition.gap} beats` +
       `${stretto ? ` — stretto (subject is ${subjectBeats} beats)` : ""}; ` +
       `answer is ${answerText ? "as supplied (tonal)" : "the subject up a fifth (real)"}` +
-      `${csText ? "; countersubject follows each statement" : ""}.`;
+      `${csText ? "; countersubject follows each statement" : ""}` +
+      `${transforms.length ? `; ${transforms.join(", ")}` : ""}.`;
 
     drawRoll();
     reportParallels();

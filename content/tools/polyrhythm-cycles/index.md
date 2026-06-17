@@ -3,7 +3,7 @@ title: "Polyrhythm & Canon Lab"
 subtitle: "Coincidence cycles, phase canon, multi-track metronome"
 number: 2
 group: "Composition"
-summary: "Plots pulse streams in one cycle with their coincidence points, states a pattern in canon with a continuously adjustable entry (Reich-style phasing), and runs a metronome of independent tracks."
+summary: "Plots pulse streams in one cycle with their coincidence points, states a pattern in canon with locked, gradual, or stepped phasing, and runs a metronome of independent tracks."
 status: "stable"
 slug: "polyrhythm-cycles"
 references:
@@ -50,7 +50,10 @@ runs at a slightly different tempo (ratio slider, also live), and the
 readout reports the lap time — how long until the voices realign, which
 is the formal span of a Reich phase section: with a 12-step pattern at
 ♩=72 and ratio 1.01, one lap of the pattern takes about a minute and a
-half, which is why those pieces breathe at the pace they do. A
+half, which is why those pieces breathe at the pace they do. In
+**stepped phase** mode, voice 2 instead jumps ahead by one pattern step
+at the start of each cycle, so the rotations are discrete rather than
+gradual. A
 transposition control turns the pitch canon into a canon at the interval.
 Pitched patterns play as sustained notes (`_` extends a note across
 steps), and the displacement can be viewed two ways: as two **rows**,

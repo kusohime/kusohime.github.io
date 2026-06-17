@@ -87,6 +87,19 @@ export function offsetInSteps(offsetFraction, stepCount) {
   return offsetFraction * stepCount;
 }
 
+/** Integer step displacement for stepped phasing, advancing one step per cycle. */
+export function steppedShiftSteps(offsetFraction, stepCount, cycleIndex) {
+  if (!Number.isFinite(stepCount) || stepCount <= 0) return 0;
+  const start = Math.round(offsetFraction * stepCount);
+  return ((start + cycleIndex) % stepCount + stepCount) % stepCount;
+}
+
+/** Stepped displacement as a fraction of the pattern cycle. */
+export function steppedOffsetFraction(offsetFraction, stepCount, cycleIndex) {
+  if (!Number.isFinite(stepCount) || stepCount <= 0) return 0;
+  return steppedShiftSteps(offsetFraction, stepCount, cycleIndex) / stepCount;
+}
+
 export const PRESETS = [
   {
     id: "piano-phase",

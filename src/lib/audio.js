@@ -19,6 +19,30 @@ export function audioContext() {
   return context;
 }
 
+/**
+ * Equal-loudness compensation for the bass. The ear is far less sensitive
+ * to low frequencies (the equal-loudness contours), so a low tone at a
+ * given amplitude reads as much quieter than a mid one at the same
+ * amplitude — which is why every voice here sounded fine up top but thin
+ * in the bass. We raise the gain of low tones to even this out.
+ *
+ * Crucially this changes loudness, not timbre: it is a pure amplitude
+ * scale on a single oscillator, so a boosted sine is the same sine — the
+ * waveform, and thus the quality, is untouched. No boost at or above
+ * middle C; below it the gain rises on a gentle per-octave tilt, capped
+ * so stacked bass tones still cannot clip the master.
+ */
+const LOUDNESS_CORNER_HZ = 261.63; // middle C (C4): leave the upper register as tuned
+const LOUDNESS_SLOPE_DB = 4.5; // extra dB per octave below the corner
+const LOUDNESS_MAX_DB = 10; // ceiling on the boost, for headroom
+
+export function loudnessGain(freq) {
+  if (!(freq > 0) || freq >= LOUDNESS_CORNER_HZ) return 1;
+  const octavesBelow = Math.log2(LOUDNESS_CORNER_HZ / freq);
+  const db = Math.min(octavesBelow * LOUDNESS_SLOPE_DB, LOUDNESS_MAX_DB);
+  return Math.pow(10, db / 20);
+}
+
 /** A short sine/triangle blip with exponential decay. */
 export function blip(freq, when, { dur = 0.25, gain = 0.5, type = "sine" } = {}) {
   const ctx = audioContext();
@@ -26,7 +50,7 @@ export function blip(freq, when, { dur = 0.25, gain = 0.5, type = "sine" } = {})
   const env = ctx.createGain();
   osc.type = type;
   osc.frequency.value = freq;
-  env.gain.setValueAtTime(gain, when);
+  env.gain.setValueAtTime(gain * loudnessGain(freq), when);
   env.gain.exponentialRampToValueAtTime(0.0001, when + dur);
   osc.connect(env).connect(master);
   osc.start(when);
@@ -47,9 +71,10 @@ export function sustain(freqsAndGains, { dur = 2.2, type = "sine" } = {}) {
     const env = ctx.createGain();
     osc.type = type;
     osc.frequency.value = hz;
+    const peak = amp * 0.25 * loudnessGain(hz);
     env.gain.setValueAtTime(0, now);
-    env.gain.linearRampToValueAtTime(amp * 0.25, now + 0.04);
-    env.gain.setValueAtTime(amp * 0.25, now + dur - 0.3);
+    env.gain.linearRampToValueAtTime(peak, now + 0.04);
+    env.gain.setValueAtTime(peak, now + dur - 0.3);
     env.gain.linearRampToValueAtTime(0.0001, now + dur);
     osc.connect(env).connect(master);
     osc.start(now);
@@ -95,9 +120,10 @@ export function tone(freq, when, { dur = 0.5, gain = 0.35, type = "sine" } = {})
   osc.frequency.value = freq;
   const attack = Math.min(0.015, dur / 4);
   const release = Math.min(0.07, dur / 3);
+  const level = gain * loudnessGain(freq);
   env.gain.setValueAtTime(0.0001, when);
-  env.gain.linearRampToValueAtTime(gain, when + attack);
-  env.gain.setValueAtTime(gain, Math.max(when + attack, when + dur - release));
+  env.gain.linearRampToValueAtTime(level, when + attack);
+  env.gain.setValueAtTime(level, Math.max(when + attack, when + dur - release));
   env.gain.linearRampToValueAtTime(0.0001, when + dur);
   osc.connect(env).connect(master);
   osc.start(when);
@@ -157,10 +183,11 @@ export function createDrone() {
     has: (key) => voices.has(key),
     set(key, { hz, amp = 0.2, type = "sine" }) {
       const ctx = audioContext();
+      const level = amp * loudnessGain(hz);
       const existing = voices.get(key);
       if (existing) {
         existing.osc.frequency.setTargetAtTime(hz, ctx.currentTime, 0.02);
-        existing.env.gain.setTargetAtTime(amp, ctx.currentTime, 0.05);
+        existing.env.gain.setTargetAtTime(level, ctx.currentTime, 0.05);
         return;
       }
       const osc = ctx.createOscillator();
@@ -168,7 +195,7 @@ export function createDrone() {
       osc.type = type;
       osc.frequency.value = hz;
       env.gain.setValueAtTime(0.0001, ctx.currentTime);
-      env.gain.setTargetAtTime(amp, ctx.currentTime, 0.06);
+      env.gain.setTargetAtTime(level, ctx.currentTime, 0.06);
       osc.connect(env).connect(master);
       osc.start();
       voices.set(key, { osc, env });

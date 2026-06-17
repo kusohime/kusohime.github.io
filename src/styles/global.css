@@ -342,8 +342,36 @@ summary {
 }
 
 .site-footer {
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
   min-height: var(--footer-min-height);
   padding: var(--space-sm) 0;
+}
+
+.rss-link {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.3rem;
+  color: inherit;
+  font-weight: normal;
+  text-decoration-color: currentColor;
+}
+
+.rss-icon {
+  width: 0.95em;
+  height: 0.95em;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 2;
+}
+
+.rss-icon circle {
+  fill: currentColor;
+  stroke: none;
 }
 
 .header-row {

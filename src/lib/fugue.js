@@ -62,6 +62,13 @@ export const transposeEvents = (events, semitones) =>
   }));
 
 /**
+ * Scale every note value by a factor: 2 is augmentation (the statement in
+ * doubled note values), 0.5 is diminution (halved). Pitches are untouched.
+ */
+export const scaleBeats = (events, factor) =>
+  events.map((event) => ({ midi: event.midi, beats: event.beats * factor }));
+
+/**
  * Build the exposition.
  * entries: [{ material: "S" | "A", semitones, octave }] per voice, in
  * entry order. The answer defaults to the subject up a perfect fifth
@@ -71,11 +78,15 @@ export const transposeEvents = (events, semitones) =>
  * Returns voices: [{ entryStart, statement, csStart, cs, freeFrom }],
  * all times in beats from the top.
  *
+ * Each entry may also carry a rhythmic `factor`: 2 states the material in
+ * augmentation, 0.5 in diminution (default 1, as written). The factor
+ * scales the statement only — the countersubject keeps its written values.
+ *
  * @param {{
  *   subjectEvents: { midi: number | null, beats: number }[],
  *   answerEvents?: { midi: number | null, beats: number }[] | null,
  *   csEvents?: { midi: number | null, beats: number }[] | null,
- *   entries: { material: "S" | "A", semitones?: number, octave?: number }[],
+ *   entries: { material: "S" | "A", semitones?: number, octave?: number, factor?: number }[],
  *   gapBeats?: number | null,
  * }} options
  */
@@ -92,7 +103,10 @@ export function buildExposition({
 
   const voices = entries.map((entry, index) => {
     const material = entry.material === "A" ? answer : subjectEvents;
-    const statement = transposeEvents(material, entryShift(entry));
+    const statement = scaleBeats(
+      transposeEvents(material, entryShift(entry)),
+      entry.factor ?? 1,
+    );
     const entryStart = index * gap;
     const statementEnd = entryStart + totalBeats(statement);
 
@@ -144,6 +158,48 @@ export function voiceTimeline(voice) {
   }
   return notes;
 }
+
+/**
+ * Worked expositions to load into the builder. Each subject/answer/cs is
+ * in the same NOTE:duration notation the inputs accept (leading rests are
+ * dropped: the builder spaces entries by the subject's length, so a voice
+ * still enters where it should). Pitches and rhythms are transcribed from
+ * the scores — the C minor fugue keeps Bach's tonal answer (its dominant
+ * G is answered by the tonic C, a fourth not a fifth) and its sixteenth-
+ * note countersubject, so the answer and CS fields are not left to the
+ * default real answer. An empty answer means the real answer up a fifth.
+ */
+export const PRESETS = [
+  {
+    id: "art-of-fugue",
+    label: "Bach — Art of Fugue, Contrapunctus 1 (BWV 1080)",
+    subject: "D4:e A4 F4 D4 C#4 D4:q E4:e D4 E4 F4:q G4:e F4 G4 A4:q",
+    answer: "",
+    cs: "",
+    voices: 3,
+    bpm: 72,
+  },
+  {
+    // Tonal answer: subject's G (the dominant) is answered by C, not D;
+    // the regular countersubject runs in sixteenths against the answer.
+    id: "wtc1-c-minor",
+    label: "Bach — WTC I, Fugue 2 in C minor (BWV 847)",
+    subject: "C5:s B4 C5:e G4 Ab4 C5:s B4 C5:e D5 G4:e C5:s B4 C5:e D5 F4:s G4 Ab4:q G4:s F4",
+    answer: "G5:s F#5 G5:e C5 Eb5 G5:s F#5 G5:e A5 D5:e G5:s F#5 G5:e A5 C5:s D5 Eb5:q D5:s C5",
+    cs: "Eb4:s C5 B4 A4 G4 F4 Eb4 D4 C4:e Eb5 D5 C5 Bb4 A4 Bb4 C5 F#4 G4 A4 F#4",
+    voices: 3,
+    bpm: 76,
+  },
+  {
+    id: "wtc1-d-minor",
+    label: "Bach — WTC I, Fugue 6 in D minor (BWV 851)",
+    subject: "D4:e E4 F4 G4 E4 F4:s D4 C#4 D4 Bb4:q G4",
+    answer: "",
+    cs: "",
+    voices: 3,
+    bpm: 78,
+  },
+];
 
 /**
  * Consecutive perfect fifths/octaves between voice pairs, judged at

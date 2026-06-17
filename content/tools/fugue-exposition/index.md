@@ -20,7 +20,11 @@ durations are `w h q e s` (whole to sixteenth) with an optional dot, `R`
 is a rest, and a token without a duration repeats the previous one — so
 `D4:e A4 F4 D4` is four eighths. The builder then lays out an exposition
 for two to four voices: each entry states the subject or the answer,
-transposed per the entry table, at the chosen octave.
+transposed per the entry table, at the chosen octave. The **preset** menu
+loads a few worked expositions — the *Art of Fugue* principal subject and
+two from the *Wohltemperiertes Klavier* — including the C minor fugue's
+tonal answer and regular countersubject, so the answer and countersubject
+fields fill in alongside the subject.
 
 The **answer** defaults to the subject up a perfect fifth — the *real*
 answer, which is why "by fifths" is the default behavior. If your subject
@@ -31,6 +35,14 @@ composer's first real decision in a fugue, and no tool should make it
 silently. A **countersubject** (entered as it should sound against entry
 2) follows each voice's own statement, shifted in parallel with the
 entry it accompanies.
+
+Each entry also carries a **rhythm** transformation: state the material in
+*augmentation* (note values doubled, ×2 or ×4) or *diminution* (halved, ×½
+or ×¼), the devices that stack a subject against itself at different
+speeds — the augmented entry runs underneath while quicker entries come and
+go above it (as in *Art of Fugue* Contrapunctus VII). Pitches are
+untouched; only the note values stretch or compress, so the statement
+lengthens or shortens while still entering on the grid.
 
 The **entry distance** defaults to the subject's full length — each voice
 waits its turn, the textbook exposition. Shorten it and the entries

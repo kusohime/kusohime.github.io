@@ -40,6 +40,12 @@ const defaultLanguage = siteDefaults.defaultLanguage;
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon-32.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${site.name} RSS`}
+      href="/rss.xml"
+    />
     {
       adminOnly && (
         <>
