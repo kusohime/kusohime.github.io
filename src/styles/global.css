@@ -356,7 +356,7 @@ summary {
   gap: 0.3rem;
   color: inherit;
   font-weight: normal;
-  text-decoration-color: currentColor;
+  text-decoration-color: var(--theme-color);
 }
 
 .rss-icon {
