@@ -1,0 +1,152 @@
+# 中文：Pages CMS 配置——让你可以在任何设备上用 GitHub 账号登录、在线编辑作品与文章。
+# English: Pages CMS config — lets you log in with GitHub from any device and edit
+# works and writings online. Saving commits to this repo and your existing
+# .github/workflows/deploy-pages.yml rebuilds yixincui.com.
+# Caveat / 注意：字段必须与 src/content.config.ts 的 schema 保持一致，否则构建会失败。
+# Caveat: Fields must match the schema in src/content.config.ts, or the build fails.
+
+# 图片库：上传到 public/images，网址前缀为 /images（与 frontmatter 中的 image 一致）。
+# Media library: uploads land in public/images, served under /images.
+media:
+  input: public/images
+  output: /images
+
+content:
+  # 作品：每个作品一个文件夹 content/works/<slug>/index.md。
+  # Works: one folder per piece, content/works/<slug>/index.md.
+  - name: works
+    label: Works / 作品
+    type: collection
+    path: content/works
+    format: yaml-frontmatter
+    subfolders: true
+    filename: "{fields.slug}/index.md"
+    view:
+      fields: [title, year, category]
+      primary: title
+      sort: [order, year, title]
+      default:
+        sort: order
+        order: asc
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: subtitle, label: Subtitle, type: string }
+      - { name: year, label: Year, type: number, required: true }
+      - name: category
+        label: Category
+        type: select
+        required: true
+        options:
+          values: [Solo, Chamber, Orchestral, "Vocal / Choral", "Music Theatre", Other]
+      # 多语言字段：英文必填，其余可留空。
+      # Localized field: English required, other languages optional.
+      - name: instrumentation
+        label: Instrumentation / 编制
+        type: object
+        fields:
+          - { name: en, label: English, type: string, required: true }
+          - { name: zh, label: 中文, type: string }
+          - { name: de, label: Deutsch, type: string }
+          - { name: fr, label: Français, type: string }
+          - { name: ja, label: 日本語, type: string }
+      - name: duration
+        label: Duration / 时长
+        type: object
+        fields:
+          - { name: minutes, label: Minutes, type: number }
+          - { name: continuous, label: Continuous (no pause), type: boolean }
+          - { name: approximate, label: Approximate, type: boolean }
+      - name: dedication
+        label: Dedication / 题献 (optional)
+        type: object
+        fields:
+          - { name: en, label: English, type: string, required: true }
+          - { name: zh, label: 中文, type: string }
+          - { name: de, label: Deutsch, type: string }
+          - { name: fr, label: Français, type: string }
+          - { name: ja, label: 日本語, type: string }
+      - name: commission
+        label: Commission / 委约 (optional)
+        type: object
+        fields:
+          - { name: en, label: English, type: string, required: true }
+          - { name: zh, label: 中文, type: string }
+          - { name: de, label: Deutsch, type: string }
+          - { name: fr, label: Français, type: string }
+          - { name: ja, label: 日本語, type: string }
+      - name: credits
+        label: Credits / 制作人员 (optional)
+        type: object
+        list: true
+        fields:
+          - { name: en, label: English, type: string, required: true }
+          - { name: zh, label: 中文, type: string }
+          - { name: de, label: Deutsch, type: string }
+          - { name: fr, label: Français, type: string }
+          - { name: ja, label: 日本語, type: string }
+      - name: premiere
+        label: Premiere / 首演 (optional)
+        type: object
+        fields:
+          - { name: date, label: Date (e.g. 2025-04-18), type: string }
+          - name: details
+            label: Details
+            type: object
+            fields:
+              - { name: en, label: English, type: string, required: true }
+              - { name: zh, label: 中文, type: string }
+              - { name: de, label: Deutsch, type: string }
+              - { name: fr, label: Français, type: string }
+              - { name: ja, label: 日本語, type: string }
+      # 网址字段：要么留空，要么填写完整有效网址（schema 要求是合法 URL）。
+      # URL fields: leave blank, or enter a complete valid URL (schema requires a real URL).
+      - { name: recordingUrl, label: Recording URL, type: string, pattern: { regex: "^https?://.+", message: "Must be a full http(s) URL or left blank" } }
+      - { name: scoreUrl, label: Score URL, type: string, pattern: { regex: "^https?://.+", message: "Must be a full http(s) URL or left blank" } }
+      - { name: image, label: Cover image, type: image }
+      - { name: imageAlt, label: Image alt text, type: string }
+      - { name: description, label: Short description, type: text, required: true, options: { rows: 3 } }
+      - { name: slug, label: Slug (folder & URL name), type: string, required: true, pattern: { regex: "^[a-z0-9-]+$", message: "Lowercase letters, numbers, and hyphens only" } }
+      - { name: order, label: Order, type: number, default: 999 }
+      - { name: draft, label: Draft (hidden from public index), type: boolean }
+      - { name: body, label: Program notes / 正文, type: rich-text }
+
+  # 文章：每篇文章一个文件夹 content/writings/<slug>/index.md。
+  # Writings: one folder per piece, content/writings/<slug>/index.md.
+  - name: writings
+    label: Writings / 文章
+    type: collection
+    path: content/writings
+    format: yaml-frontmatter
+    subfolders: true
+    filename: "{fields.slug}/index.md"
+    view:
+      fields: [title, type, date]
+      primary: title
+      sort: [order, title]
+      default:
+        sort: order
+        order: asc
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: subtitle, label: Subtitle, type: string }
+      # 日期可以是年份、年月或完整日期，例如 2024 / 2026-06 / 2026-06-17。
+      # Date may be a year, year-month, or full date, e.g. 2024 / 2026-06 / 2026-06-17.
+      - { name: date, label: Date (year, year-month, or full date), type: string, required: true }
+      - name: type
+        label: Type
+        type: select
+        required: true
+        options:
+          values: [Translation, Essay, Fiction, Blog, Poem, "Program Note", Review, Other]
+      - { name: language, label: Language (e.g. English, Chinese, Chinese / English, Japanese), type: string, required: true }
+      - { name: excerpt, label: Excerpt, type: text, required: true, options: { rows: 3 } }
+      - { name: slug, label: Slug (folder & URL name), type: string, required: true, pattern: { regex: "^[a-z0-9-]+$", message: "Lowercase letters, numbers, and hyphens only" } }
+      - { name: order, label: Order, type: number, default: 999 }
+      - { name: draft, label: Draft (hidden from public index), type: boolean }
+      - { name: body, label: Text / 正文, type: rich-text }
+
+# 整个仓库默认操作主分支；保存即提交，触发 GitHub Actions 部署。
+# Operates on the default branch; saving commits and triggers the deploy workflow.
+settings:
+  content:
+    merge: true
