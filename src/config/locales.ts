@@ -3,6 +3,10 @@ import type {
   WorkCategory,
   WritingType,
 } from "./contentTaxonomy";
+// 中文：首页正文（身分、简介、手稿说明）改由可在 Pages CMS 编辑的 JSON 提供。
+// English: Home-page prose (role, bio, manuscript caption) is sourced from a JSON
+// file so it can be edited in Pages CMS; the values flow into the locale messages below.
+import homeContent from "./homeContent.json";
 
 export const localeCodes = ["en", "zh", "de", "fr", "ja"] as const;
 export type Locale = (typeof localeCodes)[number];
@@ -39,11 +43,9 @@ export const messages = {
     "common.backWorks": "Back to Works",
     "common.backWritings": "Back to Writings",
     "common.backContents": "Back to Contents",
-    "home.role":
-      " is a composer, tenor, collaborative keyboardist, conductor, designer, and apprentice piano technician.",
-    "home.bio":
-      "They received professional training in bullshitting at Swarthmore College in Pennsylvania. They now live in Rochester, New York, and study composition at the Eastman School of Music. This website is under construction and contains plenty of AI slop.",
-    "home.manuscript": "manuscript, ",
+    "home.role": homeContent.role.en,
+    "home.bio": homeContent.bio.en,
+    "home.manuscript": homeContent.manuscript.en,
     "resource.recording": "Recording",
     "resource.score": "Score",
     "metadata.dedication": "Dedication",
@@ -73,10 +75,9 @@ export const messages = {
     "common.backWorks": "返回作品",
     "common.backWritings": "返回文字",
     "common.backContents": "返回目錄",
-    "home.role": "是作曲家、男高音、合作鍵盤樂手、指揮、設計師與鋼琴技術學徒。",
-    "home.bio":
-      "祂曾在賓夕法尼亞州的斯沃斯莫爾學院接受專業胡說八道訓練。現居紐約州羅徹斯特，並於伊士曼音樂學院研習作曲。本站仍在建置中，且含有大量 AI 廢料。",
-    "home.manuscript": "手稿、",
+    "home.role": homeContent.role.zh,
+    "home.bio": homeContent.bio.zh,
+    "home.manuscript": homeContent.manuscript.zh,
     "resource.recording": "錄音",
     "resource.score": "樂譜",
     "metadata.dedication": "題獻",
@@ -107,11 +108,9 @@ export const messages = {
     "common.backWorks": "Zurück zu den Werken",
     "common.backWritings": "Zurück zu den Texten",
     "common.backContents": "Zurück zum Inhalt",
-    "home.role":
-      " arbeitet als Komponist, Tenor, Korrepetitor, Dirigent, Designer und angehender Klaviertechniker.",
-    "home.bio":
-      "Die professionelle Ausbildung im Bullshitting fand am Swarthmore College in Pennsylvania statt. Heute lebt Yixin in Rochester, New York, und studiert Komposition an der Eastman School of Music. Diese Website befindet sich im Aufbau und enthält reichlich KI-Schrott.",
-    "home.manuscript": "Manuskript, ",
+    "home.role": homeContent.role.de,
+    "home.bio": homeContent.bio.de,
+    "home.manuscript": homeContent.manuscript.de,
     "resource.recording": "Aufnahme",
     "resource.score": "Partitur",
     "metadata.dedication": "Widmung",
@@ -142,11 +141,9 @@ export const messages = {
     "common.backWorks": "Retour aux œuvres",
     "common.backWritings": "Retour aux écrits",
     "common.backContents": "Retour au sommaire",
-    "home.role":
-      " est compositeur·rice, ténor, pianiste collaboratif·ve, chef·fe d’orchestre, designer et apprenti·e technicien·ne de piano.",
-    "home.bio":
-      "Sa formation professionnelle en baratin a eu lieu au Swarthmore College, en Pennsylvanie. Yixin vit maintenant à Rochester, dans l’État de New York, et étudie la composition à l’Eastman School of Music. Ce site est en construction et contient beaucoup de déchets d’IA.",
-    "home.manuscript": "manuscrit, ",
+    "home.role": homeContent.role.fr,
+    "home.bio": homeContent.bio.fr,
+    "home.manuscript": homeContent.manuscript.fr,
     "resource.recording": "Enregistrement",
     "resource.score": "Partition",
     "metadata.dedication": "Dédicace",
@@ -176,11 +173,9 @@ export const messages = {
     "common.backWorks": "作品一覧へ戻る",
     "common.backWritings": "文章一覧へ戻る",
     "common.backContents": "目次へ戻る",
-    "home.role":
-      "は、作曲家、テノール、コラボレーティブ・キーボード奏者、指揮者、デザイナー、そしてピアノ技術の見習いです。",
-    "home.bio":
-      "ペンシルベニア州のスワースモア大学で、もっともらしい戯言を語る専門訓練を受けました。現在はニューヨーク州ロチェスターに住み、イーストマン音楽学校で作曲を学んでいます。このサイトは制作中で、AIの残骸も多く含まれています。",
-    "home.manuscript": "手稿、",
+    "home.role": homeContent.role.ja,
+    "home.bio": homeContent.bio.ja,
+    "home.manuscript": homeContent.manuscript.ja,
     "resource.recording": "録音",
     "resource.score": "楽譜",
     "metadata.dedication": "献呈",

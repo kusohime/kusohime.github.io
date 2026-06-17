@@ -12,6 +12,44 @@ media:
   output: /images
 
 content:
+  # 首页正文：身分行、简介、手稿说明，按语言分别填写。
+  # Home page prose: role line, bio, manuscript caption, one box per language.
+  - name: home
+    label: Home page / 首页
+    type: file
+    path: src/config/homeContent.json
+    format: json
+    fields:
+      - name: role
+        label: Role line (shown right after the name)
+        # 注意：英文 / 德文 / 法文以一个空格开头，请勿删除；中文 / 日文不需要空格。
+        # Note: the English / German / French lines begin with a leading space — keep it. Chinese / Japanese need no space.
+        type: object
+        fields:
+          - { name: en, label: English, type: text, options: { rows: 2 } }
+          - { name: zh, label: 中文, type: text, options: { rows: 2 } }
+          - { name: de, label: Deutsch, type: text, options: { rows: 2 } }
+          - { name: fr, label: Français, type: text, options: { rows: 2 } }
+          - { name: ja, label: 日本語, type: text, options: { rows: 2 } }
+      - name: bio
+        label: Biography
+        type: object
+        fields:
+          - { name: en, label: English, type: text, options: { rows: 6 } }
+          - { name: zh, label: 中文, type: text, options: { rows: 6 } }
+          - { name: de, label: Deutsch, type: text, options: { rows: 6 } }
+          - { name: fr, label: Français, type: text, options: { rows: 6 } }
+          - { name: ja, label: 日本語, type: text, options: { rows: 6 } }
+      - name: manuscript
+        label: Manuscript caption (before the italic title)
+        type: object
+        fields:
+          - { name: en, label: English, type: string }
+          - { name: zh, label: 中文, type: string }
+          - { name: de, label: Deutsch, type: string }
+          - { name: fr, label: Français, type: string }
+          - { name: ja, label: 日本語, type: string }
+
   # 作品：每个作品一个文件夹 content/works/<slug>/index.md。
   # Works: one folder per piece, content/works/<slug>/index.md.
   - name: works
