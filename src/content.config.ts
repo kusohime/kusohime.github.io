@@ -15,6 +15,9 @@ const folderId = ({ entry }: { entry: string }) =>
 const filePathId = ({ entry }: { entry: string }) =>
   entry.replaceAll("\\", "/").replace(/\.md$/, "");
 
+const jsonId = ({ entry }: { entry: string }) =>
+  entry.replaceAll("\\", "/").replace(/\.json$/, "");
+
 const localizedText = z.object({
   en: z.string(),
   zh: z.string().optional(),
@@ -60,6 +63,9 @@ const works = defineCollection({
     // 草稿不出现在公开目录页，只在 /drafts/ 与直接网址下可见。
     // Drafts stay off the public index pages; see /drafts/ and direct URLs.
     draft: z.boolean().default(false),
+    // 是否在此页面开放「回應」评论区。
+    // Whether the responses (comment) zone is open on this page.
+    comments: z.boolean().default(false),
   }),
 });
 
@@ -79,6 +85,7 @@ const writings = defineCollection({
     slug: z.string(),
     order: z.number().int().default(999),
     draft: z.boolean().default(false),
+    comments: z.boolean().default(false),
   }),
 });
 
@@ -121,4 +128,27 @@ const tools = defineCollection({
   }),
 });
 
-export const collections = { works, writings, writingChapters, tools };
+// 中文：已审核的评论，每条一个 JSON 文件，由审批工作流写入 content/comments。
+// English: Approved comments — one JSON file each, written into content/comments by the approval workflow.
+// Caveat / 注意：collection 与 slug 必须对应某个作品或文章；replyTo 指向父评论的条目 id。
+// Caveat: collection + slug must match a work or writing; replyTo points at the parent entry's id.
+const comments = defineCollection({
+  loader: glob({
+    base: "./content/comments",
+    pattern: "**/*.json",
+    generateId: jsonId,
+  }),
+  schema: z.object({
+    collection: z.enum(["works", "writings"]),
+    slug: z.string(),
+    name: z.string(),
+    date: z.string(),
+    body: z.string(),
+    image: z.string().optional(),
+    imageAlt: z.string().optional(),
+    replyTo: z.string().optional(),
+    author: z.boolean().default(false),
+  }),
+});
+
+export const collections = { works, writings, writingChapters, tools, comments };

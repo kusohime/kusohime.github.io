@@ -5,6 +5,7 @@
 // Caveat: Chapters must remain inside that writing's chapters/ folder.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Comments from "../../components/Comments.astro";
 import { contentFolder } from "../../utils/contentPaths";
 import {
   contentLanguageLabel,
@@ -94,6 +95,8 @@ const hasChapters = chapters.length > 0;
         </nav>
       )
     }
+
+    {writing.data.comments && <Comments collection="writings" slug={writing.data.slug} />}
 
     <p class="back-link">
       <a href="/writings/">

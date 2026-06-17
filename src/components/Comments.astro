@@ -1,0 +1,366 @@
+---
+// 中文：渲染某个作品或文章的「回應」区——已发布评论的线程 + 公开留言表单。
+// English: Renders the responses zone for one work or writing — the published thread plus the public compose form.
+// Caveat / 注意：评论内容来自 content/comments 下经审核提交的 JSON；表单提交到 commentsConfig.endpoint。
+// Caveat: Comments come from approved JSON under content/comments; the form posts to commentsConfig.endpoint.
+import { getCollection } from "astro:content";
+import { renderCommentMarkdown } from "../lib/commentMarkdown.js";
+import { commentsConfig } from "../config/comments";
+import { formatDate, translate } from "../config/locales";
+
+interface Props {
+  collection: "works" | "writings";
+  slug: string;
+}
+
+const { collection, slug } = Astro.props;
+
+const matching = await getCollection(
+  "comments",
+  (entry) => entry.data.collection === collection && entry.data.slug === slug,
+);
+const ordered = matching.sort((a, b) => a.data.date.localeCompare(b.data.date));
+const roots = ordered.filter((entry) => !entry.data.replyTo);
+const repliesByParent = new Map<string, typeof ordered>();
+for (const entry of ordered) {
+  if (!entry.data.replyTo) continue;
+  const group = repliesByParent.get(entry.data.replyTo) ?? [];
+  group.push(entry);
+  repliesByParent.set(entry.data.replyTo, group);
+}
+
+const formEnabled = commentsConfig.endpoint.length > 0;
+const allowImages = commentsConfig.allowImages;
+const domId = (id: string) =>
+  "comment-" + id.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+
+// 双语提示文字注入 data-*，客户端脚本按当前语言选择。
+// Bilingual status strings injected as data-*; the client script picks by current language.
+const t2 = (key: Parameters<typeof translate>[1]) => ({
+  en: translate("en", key),
+  zh: translate("zh", key),
+});
+const sending = t2("comments.sending");
+const error = t2("comments.error");
+const disabled = t2("comments.disabled");
+---
+
+<section class="comments" aria-labelledby={`comments-heading-${slug}`}>
+  <h2 id={`comments-heading-${slug}`} class="comments-heading">
+    <span data-i18n-key="comments.heading">{translate("en", "comments.heading")}</span>
+    {roots.length > 0 && <span class="comments-count"> · {roots.length}</span>}
+  </h2>
+
+  {
+    roots.length === 0 && (
+      <p class="comment-empty" data-i18n-key="comments.empty">
+        {translate("en", "comments.empty")}
+      </p>
+    )
+  }
+
+  {
+    roots.length > 0 && (
+      <ol class="comment-list">
+        {roots.map((entry) => (
+          <li class="comment" id={domId(entry.id)}>
+            <div class="comment-meta">
+              <span class="comment-name">{entry.data.name}</span>
+              {entry.data.author && (
+                <span class="comment-badge" data-i18n-key="comments.author">
+                  {translate("en", "comments.author")}
+                </span>
+              )}
+              <time
+                class="comment-date"
+                datetime={entry.data.date}
+                data-i18n-date={entry.data.date}
+              >
+                {formatDate(entry.data.date, "en")}
+              </time>
+            </div>
+            <div class="comment-body" set:html={renderCommentMarkdown(entry.data.body)} />
+            {entry.data.image && (
+              <figure class="comment-image">
+                <img src={entry.data.image} alt={entry.data.imageAlt ?? ""} loading="lazy" />
+              </figure>
+            )}
+            {(repliesByParent.get(entry.id) ?? []).length > 0 && (
+              <ol class="comment-replies">
+                {(repliesByParent.get(entry.id) ?? []).map((reply) => (
+                  <li class="comment-reply">
+                    <div class="comment-meta">
+                      <span class="comment-name">{reply.data.name}</span>
+                      {reply.data.author && (
+                        <span class="comment-badge" data-i18n-key="comments.author">
+                          {translate("en", "comments.author")}
+                        </span>
+                      )}
+                      <time
+                        class="comment-date"
+                        datetime={reply.data.date}
+                        data-i18n-date={reply.data.date}
+                      >
+                        {formatDate(reply.data.date, "en")}
+                      </time>
+                    </div>
+                    <div class="comment-body" set:html={renderCommentMarkdown(reply.data.body)} />
+                    {reply.data.image && (
+                      <figure class="comment-image">
+                        <img src={reply.data.image} alt={reply.data.imageAlt ?? ""} loading="lazy" />
+                      </figure>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </li>
+        ))}
+      </ol>
+    )
+  }
+
+  <div class="comment-compose">
+    <h3 data-i18n-key="comments.leave">{translate("en", "comments.leave")}</h3>
+    <p class="comments-lead" data-i18n-key="comments.lead">
+      {translate("en", "comments.lead")}
+    </p>
+
+    <form
+      class="comment-form"
+      data-comment-form
+      data-endpoint={commentsConfig.endpoint}
+      data-sending-en={sending.en}
+      data-sending-zh={sending.zh}
+      data-error-en={error.en}
+      data-error-zh={error.zh}
+      data-disabled-en={disabled.en}
+      data-disabled-zh={disabled.zh}
+      novalidate
+    >
+      <input type="hidden" name="collection" value={collection} />
+      <input type="hidden" name="slug" value={slug} />
+      <input type="hidden" name="loadedAt" data-comment-loaded />
+      <input
+        type="text"
+        name="website"
+        class="comment-hp"
+        tabindex="-1"
+        autocomplete="off"
+        aria-hidden="true"
+      />
+
+      <div class="comment-form-row">
+        <label>
+          <span class="comment-label" data-i18n-key="comments.name">
+            {translate("en", "comments.name")}
+          </span>
+          <input type="text" name="name" maxlength="80" required />
+        </label>
+        <label>
+          <span class="comment-label" data-i18n-key="comments.email">
+            {translate("en", "comments.email")}
+          </span>
+          <input type="email" name="email" maxlength="160" />
+        </label>
+      </div>
+
+      <div class="comment-field">
+        <span class="comment-label" data-i18n-key="comments.body">
+          {translate("en", "comments.body")}
+        </span>
+        <div class="comment-toolbar" role="group" aria-label="Formatting">
+          <button type="button" data-md="bold" title="Bold">B</button>
+          <button type="button" data-md="italic" title="Italic" style="font-style:italic">I</button>
+          <button type="button" data-md="quote" title="Quote">&#10077;</button>
+          <button type="button" data-md="code" title="Code">&lt;&gt;</button>
+          <button type="button" data-md="list" title="List">&bull;</button>
+          <button type="button" data-md="link" title="Link">link</button>
+          <span class="comment-toolbar-note" data-i18n-key="comments.markdown">
+            {translate("en", "comments.markdown")}
+          </span>
+        </div>
+        <textarea name="body" maxlength="4000" rows="4" data-comment-input required></textarea>
+      </div>
+
+      <div class="comment-preview" data-comment-preview hidden>
+        <div class="comment-preview-tab" data-i18n-key="comments.preview">
+          {translate("en", "comments.preview")}
+        </div>
+        <div class="comment-body" data-comment-preview-body></div>
+      </div>
+
+      {
+        allowImages && (
+          <label class="comment-attach">
+            <input
+              type="file"
+              name="image"
+              accept="image/png,image/jpeg"
+              data-comment-image
+              hidden
+            />
+            <span>
+              + <span data-i18n-key="comments.attach">{translate("en", "comments.attach")}</span>
+            </span>
+            <span class="comment-attach-name" data-comment-image-name></span>
+          </label>
+        )
+      }
+
+      <div class="comment-actions">
+        <button type="submit" class="comment-submit" data-i18n-key="comments.submit" disabled={!formEnabled}>
+          {translate("en", "comments.submit")}
+        </button>
+        <label class="comment-notify">
+          <input type="checkbox" name="notify" />
+          <span data-i18n-key="comments.notify">{translate("en", "comments.notify")}</span>
+        </label>
+      </div>
+
+      {
+        !formEnabled && (
+          <p class="comment-form-message comment-disabled-note" data-i18n-key="comments.disabled">
+            {translate("en", "comments.disabled")}
+          </p>
+        )
+      }
+      <p class="comment-form-message" data-comment-message aria-live="polite"></p>
+    </form>
+
+    <div class="comment-success" data-comment-success hidden>
+      <strong data-i18n-key="comments.success">{translate("en", "comments.success")}</strong>
+      <span data-i18n-key="comments.successDetail">{translate("en", "comments.successDetail")}</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { renderCommentMarkdown } from "../lib/commentMarkdown.js";
+
+  function wrapSelection(input: HTMLTextAreaElement, before: string, after: string, placeholder: string) {
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    const selected = input.value.slice(start, end) || placeholder;
+    input.value = input.value.slice(0, start) + before + selected + after + input.value.slice(end);
+    input.focus();
+    input.selectionStart = start + before.length;
+    input.selectionEnd = start + before.length + selected.length;
+  }
+
+  function prefixLine(input: HTMLTextAreaElement, prefix: string) {
+    const pos = input.selectionStart;
+    const lineStart = input.value.lastIndexOf("\n", pos - 1) + 1;
+    input.value = input.value.slice(0, lineStart) + prefix + input.value.slice(lineStart);
+    input.focus();
+    input.selectionStart = input.selectionEnd = pos + prefix.length;
+  }
+
+  function applyFormat(input: HTMLTextAreaElement, kind: string) {
+    switch (kind) {
+      case "bold": return wrapSelection(input, "**", "**", "bold text");
+      case "italic": return wrapSelection(input, "*", "*", "text");
+      case "code": return wrapSelection(input, "`", "`", "code");
+      case "link": return wrapSelection(input, "[", "](https://)", "label");
+      case "quote": return prefixLine(input, "> ");
+      case "list": return prefixLine(input, "- ");
+    }
+  }
+
+  async function submitComment(form: HTMLFormElement) {
+    const langKey = document.documentElement.lang === "zh-Hant-TW" ? "Zh" : "En";
+    const message = form.querySelector<HTMLElement>("[data-comment-message]");
+    const setMessage = (text?: string) => { if (message) message.textContent = text ?? ""; };
+    const endpoint = form.dataset.endpoint ?? "";
+    const honeypot = form.querySelector<HTMLInputElement>(".comment-hp");
+    if (honeypot && honeypot.value) return;
+    if (!endpoint) { setMessage(form.dataset["disabled" + langKey]); return; }
+
+    const data = new FormData(form);
+    const name = String(data.get("name") ?? "").trim();
+    const body = String(data.get("body") ?? "").trim();
+    if (!name || !body) { setMessage(form.dataset["error" + langKey]); return; }
+
+    const payload: Record<string, unknown> = {
+      collection: data.get("collection"),
+      slug: data.get("slug"),
+      name,
+      email: String(data.get("email") ?? "").trim(),
+      body: String(data.get("body") ?? ""),
+      notify: data.get("notify") === "on",
+      loadedAt: Number(data.get("loadedAt") ?? 0),
+      website: data.get("website") ?? "",
+      image: null,
+    };
+
+    const fileInput = form.querySelector<HTMLInputElement>("[data-comment-image]");
+    const file = fileInput?.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { setMessage(form.dataset["error" + langKey]); return; }
+      payload.image = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({ name: file.name, type: file.type, data: String(reader.result).split(",")[1] });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const submit = form.querySelector<HTMLButtonElement>("[type=submit]");
+    if (submit) submit.disabled = true;
+    setMessage(form.dataset["sending" + langKey]);
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      form.hidden = true;
+      const success = form.parentElement?.querySelector<HTMLElement>("[data-comment-success]");
+      if (success) success.hidden = false;
+    } catch {
+      if (submit) submit.disabled = false;
+      setMessage(form.dataset["error" + langKey]);
+    }
+  }
+
+  function initCommentForms() {
+    document.querySelectorAll<HTMLFormElement>("[data-comment-form]").forEach((form) => {
+      const input = form.querySelector<HTMLTextAreaElement>("[data-comment-input]");
+      const previewWrap = form.querySelector<HTMLElement>("[data-comment-preview]");
+      const previewBody = form.querySelector<HTMLElement>("[data-comment-preview-body]");
+      const loadedAt = form.querySelector<HTMLInputElement>("[data-comment-loaded]");
+      if (loadedAt) loadedAt.value = String(Date.now());
+      if (!input) return;
+
+      const updatePreview = () => {
+        if (!previewWrap || !previewBody) return;
+        const value = input.value.trim();
+        previewWrap.hidden = value.length === 0;
+        if (value) previewBody.innerHTML = renderCommentMarkdown(input.value);
+      };
+      input.addEventListener("input", updatePreview);
+
+      form.querySelectorAll<HTMLButtonElement>("[data-md]").forEach((button) => {
+        button.addEventListener("click", () => {
+          applyFormat(input, button.dataset.md ?? "");
+          updatePreview();
+        });
+      });
+
+      const imageInput = form.querySelector<HTMLInputElement>("[data-comment-image]");
+      const imageName = form.querySelector<HTMLElement>("[data-comment-image-name]");
+      imageInput?.addEventListener("change", () => {
+        if (imageName) imageName.textContent = imageInput.files?.[0]?.name ?? "";
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        submitComment(form);
+      });
+    });
+  }
+
+  initCommentForms();
+</script>

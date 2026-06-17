@@ -675,6 +675,11 @@ main {
   max-width: var(--page-width);
 }
 
+.works-index,
+.writings-index {
+  max-width: min(100%, 64rem);
+}
+
 .catalog-rail {
   position: sticky;
   top: var(--space-md);
@@ -702,6 +707,12 @@ main {
 .catalog-groups,
 .writing-groups {
   max-width: var(--reading-width);
+}
+
+.works-index .catalog-groups,
+.writings-index .catalog-groups,
+.writings-index .writing-groups {
+  max-width: 42rem;
 }
 
 .catalog-groups .category-group,
@@ -753,6 +764,14 @@ main {
 .detail-header {
   max-width: var(--reading-width);
   margin: 0 0 var(--space-lg);
+}
+
+.detail-kicker {
+  margin: 0 0 var(--space-xs);
+  color: var(--theme-color);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .work-detail-header {
@@ -998,6 +1017,77 @@ main {
   text-align: left;
 }
 
+.cv-page {
+  max-width: min(100%, 46rem);
+}
+
+.cv-header h1,
+.cv-header p {
+  margin: 0;
+}
+
+.cv-section {
+  max-width: 44rem;
+  margin-bottom: var(--space-lg);
+}
+
+.cv-section h2 {
+  margin: 0 0 var(--space-sm);
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--color-rule);
+  font-size: 1rem;
+}
+
+.cv-entry {
+  margin-bottom: var(--space-md);
+}
+
+.cv-entry-head,
+.cv-entry-subhead,
+.cv-lines p {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.cv-entry-head h3,
+.cv-entry-head p,
+.cv-entry-subhead p,
+.cv-lines p {
+  margin: 0;
+}
+
+.cv-entry-head h3 {
+  font-size: 1rem;
+}
+
+.cv-entry-head p,
+.cv-entry-subhead p:last-child,
+.cv-lines p span:last-child {
+  color: var(--color-muted);
+  text-align: right;
+}
+
+.cv-entry ul {
+  margin: var(--space-xs) 0 0;
+  padding-left: 1.35rem;
+}
+
+.cv-entry li {
+  margin-bottom: 0.2rem;
+}
+
+.cv-lines {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.cv-section > p {
+  max-width: var(--reading-width);
+  margin: 0;
+}
+
 .back-link {
   margin-top: var(--space-lg);
 }
@@ -1226,6 +1316,19 @@ main {
     font-size: 0.8rem;
   }
 
+  .cv-entry-head,
+  .cv-entry-subhead,
+  .cv-lines p {
+    grid-template-columns: 1fr;
+    gap: 0.05rem;
+  }
+
+  .cv-entry-head p,
+  .cv-entry-subhead p:last-child,
+  .cv-lines p span:last-child {
+    text-align: left;
+  }
+
   .preference-options {
     right: 0;
     left: auto;
@@ -1246,5 +1349,307 @@ main {
   .flap-glyph,
   :root[data-font-size-transition] .site-shell {
     animation-duration: 1ms;
+  }
+}
+
+/* 回應（评论）区：线程 + 公开留言表单，沿用全站排版与主题色。 */
+/* Responses (comments) zone: thread + public compose form, reusing site type and accent. */
+.comments {
+  max-width: var(--reading-width);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-rule);
+}
+
+.comments-heading {
+  /* 标题始终使用正文色（深色模式下为白色），仅下划线用主题色。 */
+  /* Heading always uses the text color (white in dark mode); only the rule is the accent. */
+  color: var(--color-text);
+  border-bottom: 1px solid var(--theme-color);
+  padding-bottom: var(--space-xs);
+  margin: 0 0 var(--space-md);
+}
+
+.comments-count {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.comment-empty {
+  color: var(--color-muted);
+}
+
+.comment-list,
+.comment-replies {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comment {
+  margin-bottom: var(--space-md);
+}
+
+.comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.7rem;
+  margin-bottom: var(--space-xs);
+}
+
+.comment-name {
+  font-weight: bold;
+}
+
+.comment-date {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.comment-badge {
+  border: 1px solid var(--theme-color);
+  padding: 0.02rem 0.4rem;
+  color: var(--theme-color);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.comment-body > :first-child {
+  margin-top: 0;
+}
+
+.comment-body > :last-child {
+  margin-bottom: 0;
+}
+
+.comment-body p {
+  margin-block: var(--space-xs);
+}
+
+.comment-body blockquote {
+  margin: var(--space-xs) 0;
+  padding-left: var(--space-sm);
+  border-left: 0.18rem solid var(--theme-color);
+  color: var(--color-muted);
+}
+
+.comment-body a {
+  color: inherit;
+  text-decoration-color: var(--theme-color);
+}
+
+.comment-body code {
+  padding: 0.05em 0.25em;
+  background: color-mix(in srgb, var(--theme-color) 8%, transparent);
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.comment-body ul {
+  margin-block: var(--space-xs);
+  padding-left: 1.25rem;
+}
+
+.comment-image {
+  margin: var(--space-xs) 0 0;
+}
+
+.comment-image img {
+  max-width: 100%;
+  border: 1px solid var(--color-rule);
+}
+
+.comment-replies {
+  margin-top: var(--space-sm);
+  margin-left: var(--space-md);
+  padding-left: var(--space-sm);
+  border-left: 1px solid var(--color-rule);
+}
+
+.comment-reply {
+  margin-bottom: var(--space-sm);
+}
+
+.comment-compose {
+  margin-top: var(--space-lg);
+}
+
+.comment-compose h3 {
+  margin: 0 0 var(--space-xs);
+}
+
+.comments-lead {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.comment-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.comment-form label {
+  display: block;
+}
+
+.comment-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form textarea {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.comment-form input:focus,
+.comment-form textarea:focus {
+  outline: 2px solid var(--theme-color);
+  outline-offset: -1px;
+  border-color: var(--theme-color);
+}
+
+.comment-form textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.comment-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border: 1px solid var(--color-rule);
+  border-bottom: 0;
+}
+
+.comment-toolbar button {
+  border: 0;
+  border-right: 1px solid var(--color-rule);
+  padding: 0.35rem 0.6rem;
+  background: transparent;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.comment-toolbar button:hover,
+.comment-toolbar button:focus-visible {
+  color: var(--theme-color);
+}
+
+.comment-toolbar-note {
+  margin-left: auto;
+  padding-right: 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+}
+
+.comment-preview {
+  margin-top: var(--space-sm);
+  border: 1px solid var(--color-rule);
+}
+
+.comment-preview-tab {
+  padding: 0.3rem 0.55rem;
+  border-bottom: 1px solid var(--color-rule);
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.comment-preview .comment-body {
+  padding: 0.55rem;
+}
+
+.comment-attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: var(--space-sm);
+  padding: 0.45rem 0.6rem;
+  border: 1px dashed var(--color-rule);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.comment-attach-name {
+  color: var(--color-text);
+}
+
+.comment-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+}
+
+.comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.comment-submit {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--theme-color);
+  border-radius: 0;
+  background: var(--theme-color);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.comment-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.comment-notify {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.comment-form-message {
+  margin: var(--space-xs) 0 0;
+  font-size: 0.85rem;
+}
+
+.comment-success {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--theme-color);
+}
+
+.comment-success strong {
+  color: var(--theme-color);
+}
+
+@media (max-width: 40rem) {
+  .comment-form-row {
+    grid-template-columns: 1fr;
   }
 }

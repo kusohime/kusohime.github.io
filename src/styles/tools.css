@@ -307,8 +307,14 @@
 /* ---- Pitch-entry keyboard ---- */
 
 .pk {
+  min-width: 0;
   width: 100%;
   margin-top: var(--space-sm);
+}
+
+.tool-controls > div[id$="-kb"] {
+  max-width: 100%;
+  min-width: 0;
 }
 
 .pk summary {
@@ -322,6 +328,9 @@
 .pk-wrap {
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   gap: var(--space-sm) var(--space-md);
   align-items: flex-start;
   margin-top: var(--space-sm);
@@ -439,6 +448,26 @@
   .tool-controls {
     flex-direction: column;
     align-items: stretch;
+    min-width: 0;
+  }
+
+  .tool-field,
+  .tool-controls > div[id$="-kb"] {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .tool-field > span {
+    overflow-wrap: anywhere;
+  }
+
+  .tool-page input[type="text"],
+  .tool-page input[type="number"],
+  .tool-page select,
+  .tool-page textarea {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -1167,10 +1196,14 @@
 /* ---- Composition topic page: stacked tools ---- */
 
 .tools-group-page .group-tool {
-  border-top: 1px solid var(--color-rule);
+  grid-template-columns: minmax(0, 1fr);
   padding-top: var(--space-md);
   display: grid;
   gap: var(--space-md);
+}
+
+.tools-group-page .group-tool + .group-tool {
+  border-top: 1px solid var(--color-rule);
 }
 
 .tools-group-page .group-tool-head h2 {

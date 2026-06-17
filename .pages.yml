@@ -124,6 +124,7 @@ content:
       - { name: slug, label: Slug (folder & URL name), type: string, required: true, pattern: { regex: "^[a-z0-9-]+$", message: "Lowercase letters, numbers, and hyphens only" } }
       - { name: order, label: Order, type: number, default: 999 }
       - { name: draft, label: Draft (hidden from public index), type: boolean }
+      - { name: comments, label: Open responses (comment zone) on this page, type: boolean }
       - { name: body, label: Program notes / 正文, type: rich-text }
 
   # 文章：每篇文章一个文件夹 content/writings/<slug>/index.md。
@@ -159,6 +160,7 @@ content:
       - { name: slug, label: Slug (folder & URL name), type: string, required: true, pattern: { regex: "^[a-z0-9-]+$", message: "Lowercase letters, numbers, and hyphens only" } }
       - { name: order, label: Order, type: number, default: 999 }
       - { name: draft, label: Draft (hidden from public index), type: boolean }
+      - { name: comments, label: Open responses (comment zone) on this page, type: boolean }
       - { name: body, label: Text / 正文, type: rich-text }
 
 # 整个仓库默认操作主分支；保存即提交，触发 GitHub Actions 部署。
