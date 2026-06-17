@@ -617,15 +617,26 @@ main {
   font-size: 0.85rem;
 }
 
-/* 中文：说明文字两种语言都在 DOM 中，按 <html lang> 只显示当前语言。 */
-/* English: Both caption languages live in the DOM; show only the one matching <html lang>. */
+/* 中文：简介与说明文字两种语言都在 DOM 中，按 <html lang> 只显示当前语言。 */
+/* English: Intro and caption keep both languages in the DOM; show only the one matching <html lang>. */
+.home-intro,
 .home-caption {
   display: none;
+}
+
+:root:lang(en) .home-intro[data-lang="en"],
+:root:lang(zh) .home-intro[data-lang="zh"] {
+  display: block;
 }
 
 :root:lang(en) .home-caption[data-lang="en"],
 :root:lang(zh) .home-caption[data-lang="zh"] {
   display: inline;
+}
+
+/* 首段与姓名同行，其余段落正常成块。 First paragraph runs inline with the name. */
+.home-intro-lead {
+  margin: 0 0 var(--paragraph-spacing);
 }
 
 .page-introduction {

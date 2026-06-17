@@ -14,24 +14,20 @@ media:
   output: /images
 
 content:
-  # 首页正文：身分行、简介、手稿说明，按语言分别填写。
-  # Home page prose: role line, bio, manuscript caption, one box per language.
+  # 首页正文：紧跟姓名的简介，以及可替换的图片与说明，按语言分别填写。
+  # Home page: the intro that follows the name, plus a swappable image and caption.
   - name: home
     label: Home page / 首页
     type: file
     path: src/config/homeContent.json
     format: json
     fields:
-      - name: role
-        label: Role line (shown right after the name)
-        # 注意：英文以一个空格开头，请勿删除；中文不需要空格。
-        # Note: the English line begins with a leading space — keep it. Chinese needs no space.
-        type: object
-        fields:
-          - { name: en, label: English, type: text, options: { rows: 2 } }
-          - { name: zh, label: 中文, type: text, options: { rows: 2 } }
-      - name: bio
-        label: Biography
+      - name: intro
+        label: Intro — continues after your name
+        description: >-
+          Free text. Continues the sentence after your name (e.g. "studies
+          composition…"). Use [text](https://link) for a link, *text* for italics,
+          **text** for bold, and a blank line to start a new paragraph.
         type: object
         fields:
           - { name: en, label: English, type: text, options: { rows: 6 } }

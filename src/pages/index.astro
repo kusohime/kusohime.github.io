@@ -1,24 +1,47 @@
 ---
-// 中文：公開網站首頁，包含姓名、身分、簡介與手稿照片。
-// English: Public home page containing the name, role, biography, and manuscript image.
+// 中文：公開網站首頁——姓名、可自由編輯的簡介，以及一張可替換的圖片。
+// 簡介與說明文字都可在 Pages CMS 或本地 Studio 編輯（改 homeContent.json）。
+// English: Public home page — the name, a freeform intro, and one swappable image.
+// The intro and caption are editable in Pages CMS or the local Studio via homeContent.json.
 // Caveat / 注意：不要在此重新加入 selected works 或 recent writings。
 // Caveat: Keep selected works and recent writings off this page.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
-import { translate } from "../config/locales";
-// 中文：首页图片、替代文字与说明文字都可在 Pages CMS 或本地 Studio 编辑（改 homeContent.json）。
-// English: The home image, alt text, and caption are editable in Pages CMS or the
-// local Studio by changing homeContent.json.
 import homeContent from "../config/homeContent.json";
 
-// 中文：说明文字可自由填写；用 *星号* 包住的部分会显示为斜体（如作品名）。先转义 HTML 再处理。
-// English: Captions are freeform; wrap a span in *asterisks* to italicize it (e.g. a work
-// title). HTML is escaped first, so author text cannot inject markup.
-const captionHtml = (text: string) =>
-  text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
+// 中文：极简 Markdown。先转义 HTML，再支持 [文字](链接)、**粗体**、*斜体*；空行分段。
+// 内容由站长经 Pages CMS 编辑（可信来源），转义后再插入标签，因此是安全的。
+// English: Tiny Markdown. Escape HTML first, then support [text](link), **bold**, *italic*;
+// a blank line starts a new paragraph. Content is author-edited via Pages CMS (trusted)
+// and escaped before tags are inserted, so this is safe.
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const inlineMarkdown = (text: string) =>
+  escapeHtml(text)
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_match, label, url) => {
+      const href = String(url).trim();
+      const allowed = /^(https?:\/\/|\/|mailto:|#)/i.test(href);
+      const safeHref = allowed ? href : "#";
+      const external = /^https?:\/\//i.test(safeHref);
+      const extra = external ? ' target="_blank" rel="noopener noreferrer"' : "";
+      return `<a href="${safeHref}"${extra}>${label}</a>`;
+    })
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+const paragraphsOf = (markdown: string) =>
+  markdown.trim().split(/\n{2,}/).filter(Boolean);
+
+// 中文：首段与姓名同行（行内）；之后的段落各自成块。
+// English: The first paragraph sits inline after the name; later paragraphs become blocks.
+const introLead = (markdown: string) =>
+  inlineMarkdown((paragraphsOf(markdown)[0] ?? "").replace(/\s*\n\s*/g, " "));
+const introRest = (markdown: string) =>
+  paragraphsOf(markdown)
+    .slice(1)
+    .map((para) => `<p>${inlineMarkdown(para.replace(/\s*\n\s*/g, " "))}</p>`)
+    .join("");
 ---
 
 <BaseLayout>
@@ -32,12 +55,25 @@ const captionHtml = (text: string) =>
       >
         Yixin Cui
       </h1>
-      <p>
-        <!-- 中文：姓名與身分之間不可留空白，否則中文版會出現多餘空格。 -->
-        <!-- English: No whitespace between name and role, or CJK locales render a stray space. -->
-        <NamePronunciation translate /><span data-i18n-key="home.role">{translate("en", "home.role")}</span>
-      </p>
-      <p data-i18n-key="home.bio">{translate("en", "home.bio")}</p>
+      <!--
+        中文：两种语言的简介都在 DOM 中，由 CSS 依 <html lang> 显示其一，切换语言即时更新。
+        姓名领起首段：英文在姓名后留一个空格，中文不留，因此分别写在各自语言块内。
+        English: Both language intros live in the DOM; CSS shows the one matching
+        <html lang>, so it swaps instantly. The name leads the first paragraph — English
+        needs a space after the name, Chinese does not, so each block sets its own spacing.
+      -->
+      <div class="home-intro" data-lang="en">
+        <p class="home-intro-lead">
+          <NamePronunciation translate />{" "}<Fragment set:html={introLead(homeContent.intro.en)} />
+        </p>
+        <Fragment set:html={introRest(homeContent.intro.en)} />
+      </div>
+      <div class="home-intro" data-lang="zh">
+        <p class="home-intro-lead">
+          <NamePronunciation translate /><Fragment set:html={introLead(homeContent.intro.zh)} />
+        </p>
+        <Fragment set:html={introRest(homeContent.intro.zh)} />
+      </div>
     </section>
 
     <figure class="home-manuscript">
@@ -50,13 +86,12 @@ const captionHtml = (text: string) =>
       />
       <figcaption>
         <!--
-          中文：两种语言的说明文字都在 DOM 中，由 CSS 依 <html lang> 显示其一，
-          因此切换语言时立即更新，且可保留斜体。
-          English: Both language captions are in the DOM; CSS shows one based on
-          <html lang>, so it swaps instantly on language change and keeps italics.
+          中文：说明文字两种语言都在 DOM 中，由 CSS 依 <html lang> 显示其一，可保留斜体与链接。
+          English: Both caption languages live in the DOM; CSS shows one by <html lang>,
+          keeping italics and links.
         -->
-        <span class="home-caption" data-lang="en" set:html={captionHtml(homeContent.caption.en)} />
-        <span class="home-caption" data-lang="zh" set:html={captionHtml(homeContent.caption.zh)} />
+        <span class="home-caption" data-lang="en" set:html={inlineMarkdown(homeContent.caption.en)} />
+        <span class="home-caption" data-lang="zh" set:html={inlineMarkdown(homeContent.caption.zh)} />
       </figcaption>
     </figure>
   </div>

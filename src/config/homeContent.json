@@ -1,12 +1,9 @@
 {
-  "role": {
-    "en": "studies composition and piano technology at Eastman School of Music.",
-    "zh": "在伊斯曼音乐学院学习作曲和钢琴技术。"
+  "intro": {
+    "en": "studies composition and piano technology at [Eastman School of Music](https://www.esm.rochester.edu).",
+    "zh": "在[伊斯曼音乐学院](https://www.esm.rochester.edu)学习作曲和钢琴技术。"
   },
-  "bio": {
-    "en": "They received professional training in bullshitting at Swarthmore College in Pennsylvania. They now live in Rochester, New York, and study composition at the Eastman School of Music. This website is under construction and contains plenty of AI slop.",
-    "zh": "祂曾在賓夕法尼亞州的斯沃斯莫爾學院接受專業胡說八道訓練。現居紐約州羅徹斯特，並於伊士曼音樂學院研習作曲。本站仍在建置中，且含有大量 AI 廢料。"
-  },
+  "image": "/images/manuscript-home.webp",
   "imageAlt": "An annotated orchestral manuscript resting on a wooden table.",
   "caption": {
     "en": "manuscript, *Frühanthropozänes*.",

@@ -3,10 +3,6 @@ import type {
   WorkCategory,
   WritingType,
 } from "./contentTaxonomy";
-// 中文：首页正文（身分、简介、手稿说明）改由可在 Pages CMS 编辑的 JSON 提供。
-// English: Home-page prose (role, bio, manuscript caption) is sourced from a JSON
-// file so it can be edited in Pages CMS; the values flow into the locale messages below.
-import homeContent from "./homeContent.json";
 
 // 中文：本站使用两种语言——英文与中文（繁体）。新增语言需在此处与各翻译表同时补齐。
 // English: The site uses two languages — English and Traditional Chinese. Adding a
@@ -43,8 +39,6 @@ export const messages = {
     "common.backWorks": "Back to Works",
     "common.backWritings": "Back to Writings",
     "common.backContents": "Back to Contents",
-    "home.role": homeContent.role.en,
-    "home.bio": homeContent.bio.en,
     "resource.recording": "Recording",
     "resource.score": "Score",
     "metadata.dedication": "Dedication",
@@ -74,8 +68,6 @@ export const messages = {
     "common.backWorks": "返回作品",
     "common.backWritings": "返回文字",
     "common.backContents": "返回目錄",
-    "home.role": homeContent.role.zh,
-    "home.bio": homeContent.bio.zh,
     "resource.recording": "錄音",
     "resource.score": "樂譜",
     "metadata.dedication": "題獻",
