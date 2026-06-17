@@ -1,0 +1,152 @@
+---
+// 中文：按年份与月份列出近期活动。
+// English: Lists upcoming events by year and month.
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate, translate } from "../../config/locales";
+
+type EventEntry = CollectionEntry<"events">;
+
+const eventDate = (event: EventEntry) => {
+  const [year, month = "1", day = "1"] = event.data.date.split("-");
+  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+};
+
+const today = new Date();
+const todayUtc = new Date(
+  Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+);
+
+const monthFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  timeZone: "UTC",
+});
+
+const monthAnchor = (year: string, month: string) => `events-${year}-${month}`;
+
+const events = (await getCollection("events", ({ data }) => import.meta.env.DEV || !data.draft))
+  .sort(
+    (a, b) =>
+      eventDate(a).getTime() - eventDate(b).getTime() ||
+      a.data.order - b.data.order ||
+      a.data.title.localeCompare(b.data.title),
+  );
+
+const upcomingEvents = events.filter((event) => eventDate(event) >= todayUtc);
+
+const groupedEvents = upcomingEvents.reduce((years, event) => {
+  const date = eventDate(event);
+  const year = String(date.getUTCFullYear());
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const yearGroup = years.get(year) ?? new Map<string, EventEntry[]>();
+  const monthGroup = yearGroup.get(month) ?? [];
+
+  monthGroup.push(event);
+  yearGroup.set(month, monthGroup);
+  years.set(year, yearGroup);
+  return years;
+}, new Map<string, Map<string, EventEntry[]>>());
+
+const yearGroups = Array.from(groupedEvents.entries()).map(([year, months]) => ({
+  year,
+  count: Array.from(months.values()).reduce((total, group) => total + group.length, 0),
+  months: Array.from(months.entries()).map(([month, monthEvents]) => ({
+    month,
+    label: monthFormatter.format(new Date(Date.UTC(Number(year), Number(month) - 1, 1))),
+    events: monthEvents,
+  })),
+}));
+---
+
+<BaseLayout
+  title="Events"
+  description="Upcoming performances and events by Yixin Cui."
+>
+  <div
+    class="index-page events-index"
+    data-source-file="src/pages/events/index.astro"
+  >
+    <h1 class="visually-hidden" data-i18n-key="nav.events">
+      {translate("en", "nav.events")}
+    </h1>
+
+    <nav class="catalog-rail event-rail" aria-label="Browse events by date">
+      {
+        yearGroups.length > 0 && (
+          <ul class="event-archive">
+            {yearGroups.map(({ year, months }) => (
+              <li>
+                <details>
+                  <summary>{year}</summary>
+                  <ul>
+                    {months.map(({ month, label, events: monthEvents }) => (
+                      <li>
+                        <a href={`#${monthAnchor(year, month)}`}>
+                          {label} ({monthEvents.length})
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </nav>
+
+    <div class="catalog-groups event-groups">
+      {
+        yearGroups.length > 0 ? (
+          yearGroups.map(({ year, months }) => (
+            <section
+              class="event-year-group"
+              id={`events-${year}`}
+              aria-labelledby={`events-${year}-heading`}
+            >
+              <h2 id={`events-${year}-heading`}>{year}</h2>
+              {months.map(({ month, label, events: monthEvents }) => (
+                <section
+                  class="event-month-group"
+                  id={monthAnchor(year, month)}
+                  aria-labelledby={`${monthAnchor(year, month)}-heading`}
+                >
+                  <h3 id={`${monthAnchor(year, month)}-heading`}>{label}</h3>
+                  <ol class="catalog-list event-list">
+                    {monthEvents.map((event) => (
+                      <li data-source-file={`content/events/${event.id}/index.md`}>
+                        <time
+                          datetime={event.data.date}
+                          data-i18n-date={event.data.date}
+                        >
+                          {formatDate(event.data.date, "en")}
+                        </time>
+                        <article class="entry-summary event-summary">
+                          <h4>
+                            <a href={`/events/${event.data.slug}/`}>
+                              {event.data.title}
+                            </a>
+                          </h4>
+                          <p class="event-brief">{event.data.brief}</p>
+                          <p class="event-meta">
+                            {[event.data.time, event.data.venue, event.data.location]
+                              .filter(Boolean)
+                              .join(" / ")}
+                          </p>
+                        </article>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              ))}
+            </section>
+          ))
+        ) : (
+          <p class="events-empty" data-i18n-key="events.noUpcoming">
+            {translate("en", "events.noUpcoming")}
+          </p>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

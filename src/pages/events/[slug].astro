@@ -1,0 +1,86 @@
+---
+// 中文：根据活动 Markdown 生成单个活动详情页。
+// English: Generates an individual event detail page from its Markdown file.
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate, translate } from "../../config/locales";
+
+export async function getStaticPaths() {
+  const events = await getCollection(
+    "events",
+    ({ data }) => import.meta.env.DEV || !data.draft,
+  );
+
+  return events.map((event) => ({
+    params: { slug: event.data.slug },
+    props: { event },
+  }));
+}
+
+interface Props {
+  event: CollectionEntry<"events">;
+}
+
+const { event } = Astro.props;
+const { Content } = await render(event);
+const { title, date, time, venue, location, role, brief, links } = event.data;
+---
+
+<BaseLayout title={title} description={brief} noindex={event.data.draft}>
+  <article
+    class="detail-page event-detail"
+    data-source-file={`content/events/${event.id}/index.md`}
+  >
+    <header class="detail-header event-detail-header">
+      {event.data.draft && <p class="draft-flag">Draft - not listed publicly</p>}
+      <p class="detail-kicker" data-i18n-key="nav.events">
+        {translate("en", "nav.events")}
+      </p>
+      <div class="event-title-line">
+        <h1>{title}</h1>
+        <p>
+          <time datetime={date} data-i18n-date={date}>
+            {formatDate(date, "en")}
+          </time>
+        </p>
+      </div>
+      <p>{brief}</p>
+      <p class="event-facts">
+        {[time, venue, location, role].filter(Boolean).map((item) => (
+          <span>{item}</span>
+        ))}
+      </p>
+
+      {
+        links.length > 0 && (
+          <nav class="resource-links" aria-label="Event links">
+            <ul>
+              {links.map((link) => (
+                <li>
+                  <a href={link.url}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+    </header>
+
+    <div class="prose event-notes">
+      <Content />
+    </div>
+
+    <p class="back-link">
+      <a href="/events/">
+        <span
+          class="glyph-arrow glyph-arrow--back"
+          data-arrow-glyph
+          aria-hidden="true"
+        ></span>
+        <span data-i18n-key="common.backEvents">
+          {translate("en", "common.backEvents")}
+        </span>
+      </a>
+    </p>
+  </article>
+</BaseLayout>

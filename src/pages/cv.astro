@@ -1,0 +1,179 @@
+---
+// 中文：网站版 CV/Resume；PDF 另存于 public/files。
+// English: Website CV/resume page; the downloadable PDF lives in public/files.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NamePronunciation from "../components/NamePronunciation.astro";
+import { translate } from "../config/locales";
+
+const sections = [
+  { id: "cv-education", label: "Education" },
+  { id: "cv-experience", label: "Professional Experience" },
+  { id: "cv-scholarships", label: "Scholarships and Fellowships" },
+  { id: "cv-languages", label: "Languages" },
+];
+---
+
+<BaseLayout
+  title="C.V."
+  description="Curriculum vitae for Yixin Cui."
+>
+  <div class="index-page cv-index" data-source-file="src/pages/cv.astro">
+    <nav class="catalog-rail cv-rail" aria-label="C.V. contents">
+      <ul>
+        {
+          sections.map((section) => (
+            <li>
+              <a href={`#${section.id}`}>{section.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <article class="detail-page cv-page">
+      <header class="detail-header cv-header">
+        <p class="detail-kicker">Curriculum vitae</p>
+        <h1><NamePronunciation /></h1>
+        <p>composer, pianist, keyboardist, designer</p>
+        <nav class="detail-actions" aria-label="CV downloads">
+          <a href="/files/yixin-cui-cv.pdf" download data-i18n-key="resource.cvPdf">
+            {translate("en", "resource.cvPdf")}
+          </a>
+        </nav>
+      </header>
+
+      <section class="cv-section" aria-labelledby="cv-education">
+        <h2 id="cv-education">Education</h2>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3>Eastman School of Music</h3>
+            <p>Rochester, NY</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Master of Arts, Composition</em></p>
+            <p>2026-2028, anticipated</p>
+          </div>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3>Swarthmore College</h3>
+            <p>Swarthmore, PA</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Bachelor of Arts, Philosophy</em></p>
+            <p>2021-2025</p>
+          </div>
+          <ul>
+            <li>Minor in Music; cumulative GPA 3.97/4.00.</li>
+            <li>Senior theses on aleatoric music and instrumentalized bodies.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-experience">
+        <h2 id="cv-experience">Professional Experience</h2>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3>Eastman School of Music Instrument Office</h3>
+            <p>Rochester, NY</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Piano Technology Apprentice</em></p>
+            <p>2026-present</p>
+          </div>
+          <ul>
+            <li>Apprenticeship in piano technology through Eastman's instrument office.</li>
+          </ul>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3>Pagoda Artworks, Inc., Westside Music Conservatory</h3>
+            <p>Los Angeles, CA</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Intern</em></p>
+            <p>2025-present</p>
+          </div>
+          <ul>
+            <li>Create illustrations and design for republishing piano technique tutorials.</li>
+            <li>Front-end engineering, catalog design, and professional composer websites.</li>
+            <li>Consultation on pedagogy and world music.</li>
+          </ul>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3>Vortion Education Technology Co., Ltd.</h3>
+            <p>Shanghai, China</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Start-up Partner</em></p>
+            <p>2025-present</p>
+          </div>
+          <ul>
+            <li>Consultation and resources for students preparing to study abroad.</li>
+            <li>E-learning courses and flipped classrooms using higher-education resources.</li>
+          </ul>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3>Concert Musician</h3>
+            <p>Swarthmore, PA</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Collaborative Pianist and Soloist Singer</em></p>
+            <p>2025-present</p>
+          </div>
+          <ul>
+            <li>Soloist for a newly commissioned cantata by C. Leonard Raybon.</li>
+            <li>Collaborative keyboard work for rehearsal, sight-reading, and concert performance.</li>
+          </ul>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3>Swarthmore College</h3>
+            <p>Swarthmore, PA</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Tutor, Grader</em></p>
+            <p>2021-2024</p>
+          </div>
+          <ul>
+            <li>Tutoring and grading across mathematics, modern languages, and music theory.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-scholarships">
+        <h2 id="cv-scholarships">Scholarships and Fellowships</h2>
+
+        <div class="cv-lines">
+          <p>
+            <span>Hannah A. Leedom Fellowship, Swarthmore College</span>
+            <span>2026-2027</span>
+          </p>
+          <p>
+            <span>Merit Scholarships, University of Rochester</span>
+            <span>2026-present</span>
+          </p>
+          <p>
+            <span>Freeman Scholars, Swarthmore Music Department</span>
+            <span>2024-2025</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-languages">
+        <h2 id="cv-languages">Languages</h2>
+        <p class="cv-note">Listed from greater to lesser proficiency.</p>
+        <p>Mandarin, English, Japanese, Classical Chinese, Classical Japanese, French, Chinese Sign Language, German, Tibetan.</p>
+      </section>
+    </article>
+  </div>
+</BaseLayout>

@@ -129,6 +129,42 @@ content:
 
   # 文章：每篇文章一个文件夹 content/writings/<slug>/index.md。
   # Writings: one folder per piece, content/writings/<slug>/index.md.
+  # 活动：每个活动一个文件夹 content/events/<slug>/index.md。
+  # Events: one folder per event, content/events/<slug>/index.md.
+  - name: events
+    label: Events / 活动
+    type: collection
+    path: content/events
+    format: yaml-frontmatter
+    subfolders: true
+    filename: "{fields.slug}/index.md"
+    view:
+      fields: [title, date, venue]
+      primary: title
+      sort: [date, order, title]
+      default:
+        sort: date
+        order: asc
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: date, label: Date (YYYY-MM-DD), type: string, required: true }
+      - { name: time, label: Time, type: string }
+      - { name: venue, label: Venue, type: string }
+      - { name: location, label: Location, type: string }
+      - { name: role, label: Role, type: string }
+      - { name: brief, label: Brief listing text, type: text, required: true, options: { rows: 2 } }
+      - { name: slug, label: Slug (folder & URL name), type: string, required: true, pattern: { regex: "^[a-z0-9-]+$", message: "Lowercase letters, numbers, and hyphens only" } }
+      - { name: order, label: Order, type: number, default: 999 }
+      - { name: draft, label: Draft (hidden from public index), type: boolean }
+      - name: links
+        label: Links
+        type: object
+        list: true
+        fields:
+          - { name: label, label: Label, type: string, required: true }
+          - { name: url, label: URL, type: string, required: true, pattern: { regex: "^https?://.+", message: "Must be a full http(s) URL" } }
+      - { name: body, label: Event notes / 正文, type: rich-text }
+
   - name: writings
     label: Writings / 文章
     type: collection

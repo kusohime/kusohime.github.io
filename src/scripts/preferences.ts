@@ -346,7 +346,7 @@ export function initializePreferences() {
     });
   });
 
-  const menus = document.querySelectorAll<HTMLDetailsElement>("[data-preference-menu]");
+  const menus = document.querySelectorAll<HTMLDetailsElement>("[data-nav-menu]");
   menus.forEach((menu) => {
     menu.addEventListener("toggle", () => {
       if (!menu.open) return;
@@ -358,7 +358,7 @@ export function initializePreferences() {
 
   document.addEventListener("click", (event) => {
     const target = event.target;
-    if (target instanceof Node && !document.querySelector(".header-tools")?.contains(target)) {
+    if (target instanceof Node && !document.querySelector(".site-header")?.contains(target)) {
       menus.forEach((menu) => {
         menu.open = false;
       });

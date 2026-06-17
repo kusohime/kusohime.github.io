@@ -1,6 +1,6 @@
 /**
- * 中文：告诉 Astro 从哪里加载作品、文章与章节，并验证 frontmatter。
- * English: Tells Astro where to load works, writings, and chapters and validates frontmatter.
+ * 中文：告诉 Astro 从哪里加载作品、活动、文章与章节，并验证 frontmatter。
+ * English: Tells Astro where to load works, events, writings, and chapters and validates frontmatter.
  * Caveat / 注意：内容目录结构与 glob pattern 必须同时保持一致。
  * Caveat: Folder structure and glob patterns must be changed together.
  */
@@ -89,6 +89,30 @@ const writings = defineCollection({
   }),
 });
 
+const events = defineCollection({
+  loader: glob({
+    base: "./content/events",
+    pattern: "*/index.md",
+    generateId: folderId,
+  }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    time: z.string().optional(),
+    venue: z.string().optional(),
+    location: z.string().optional(),
+    role: z.string().optional(),
+    brief: z.string(),
+    slug: z.string(),
+    order: z.number().int().default(999),
+    draft: z.boolean().default(false),
+    links: z.array(z.object({
+      label: z.string(),
+      url: z.url(),
+    })).default([]),
+  }),
+});
+
 const writingChapters = defineCollection({
   // 章节通过所在文件夹自动归属于文章，不需要重复填写 writingSlug。
   // A chapter belongs to its writing by folder; no repeated writingSlug is needed.
@@ -151,4 +175,11 @@ const comments = defineCollection({
   }),
 });
 
-export const collections = { works, writings, writingChapters, tools, comments };
+export const collections = {
+  works,
+  events,
+  writings,
+  writingChapters,
+  tools,
+  comments,
+};

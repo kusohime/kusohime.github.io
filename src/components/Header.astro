@@ -12,22 +12,24 @@ import {
 const { pathname } = Astro.url;
 const currentPath = pathname.replace(/\/$/, "") || "/";
 
-const navItems = [
+const isActivePath = (href: string) =>
+  currentPath === href || currentPath.startsWith(`${href}/`);
+
+const navGroups = [
   {
-    key: "nav.works" as TranslationKey,
-    href: "/works",
+    key: "nav.music" as TranslationKey,
+    items: [
+      { key: "nav.works" as TranslationKey, href: "/works" },
+      { key: "nav.events" as TranslationKey, href: "/events" },
+      { key: "nav.cv" as TranslationKey, href: "/cv" },
+    ],
   },
   {
-    key: "nav.writings" as TranslationKey,
-    href: "/writings",
-  },
-  {
-    key: "nav.tools" as TranslationKey,
-    href: "/tools",
-  },
-  {
-    key: "nav.cv" as TranslationKey,
-    href: "/cv",
+    key: "nav.blog" as TranslationKey,
+    items: [
+      { key: "nav.writings" as TranslationKey, href: "/writings" },
+      { key: "nav.tools" as TranslationKey, href: "/tools" },
+    ],
   },
 ];
 ---
@@ -47,14 +49,36 @@ const navItems = [
     <nav aria-label="Primary navigation">
       <ul class="nav-list">
         {
-          navItems.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                aria-current={currentPath.startsWith(item.href) ? "page" : undefined}
+          navGroups.map((group) => (
+            <li class="nav-group">
+              <details
+                class="nav-dropdown"
+                data-nav-menu
+                data-active={group.items.some((item) => isActivePath(item.href)) ? "true" : undefined}
               >
-                <span data-i18n-key={item.key}>{translate("en", item.key)}</span>
-              </a>
+                <summary>
+                  <span
+                    class="glyph-arrow glyph-arrow--disclosure"
+                    data-arrow-glyph
+                    aria-hidden="true"
+                  ></span>
+                  <span data-i18n-key={group.key}>{translate("en", group.key)}</span>
+                </summary>
+                <ul class="nav-dropdown-list">
+                  {group.items.map((item) => (
+                    <li>
+                      <a
+                        href={item.href}
+                        aria-current={isActivePath(item.href) ? "page" : undefined}
+                      >
+                        <span data-i18n-key={item.key}>
+                          {translate("en", item.key)}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
             </li>
           ))
         }
@@ -64,6 +88,7 @@ const navItems = [
     <div class="header-tools" aria-label="Site preferences">
       <details
         class="preference-menu"
+        data-nav-menu
         data-preference-menu
         data-preference-type="language"
       >
@@ -88,6 +113,7 @@ const navItems = [
 
       <details
         class="preference-menu font-size-menu"
+        data-nav-menu
         data-preference-menu
         data-preference-type="font-size"
       >
