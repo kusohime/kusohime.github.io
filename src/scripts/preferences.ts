@@ -70,9 +70,6 @@ function applyGuideLanguage(language: Locale) {
 
 function translationFor(element: HTMLElement, language: Locale) {
   if (language === "zh") return element.dataset.i18nZh ?? element.dataset.i18nEn;
-  if (language === "de") return element.dataset.i18nDe ?? element.dataset.i18nEn;
-  if (language === "fr") return element.dataset.i18nFr ?? element.dataset.i18nEn;
-  if (language === "ja") return element.dataset.i18nJa ?? element.dataset.i18nEn;
   return element.dataset.i18nEn;
 }
 
@@ -258,9 +255,6 @@ function updateThemeToggleLabel(theme: Theme, language: Locale) {
 function activeLanguage(): Locale {
   const language = document.documentElement.lang;
   if (language === "zh-Hant-TW") return "zh";
-  if (language === "de") return "de";
-  if (language === "fr") return "fr";
-  if (language === "ja") return "ja";
   return "en";
 }
 

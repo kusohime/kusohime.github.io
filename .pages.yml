@@ -4,6 +4,8 @@
 # .github/workflows/deploy-pages.yml rebuilds yixincui.com.
 # Caveat / 注意：字段必须与 src/content.config.ts 的 schema 保持一致，否则构建会失败。
 # Caveat: Fields must match the schema in src/content.config.ts, or the build fails.
+# 语言：本站为英文 + 中文两种语言。
+# Languages: this site is English + Chinese (two languages).
 
 # 图片库：上传到 public/images，网址前缀为 /images（与 frontmatter 中的 image 一致）。
 # Media library: uploads land in public/images, served under /images.
@@ -22,33 +24,24 @@ content:
     fields:
       - name: role
         label: Role line (shown right after the name)
-        # 注意：英文 / 德文 / 法文以一个空格开头，请勿删除；中文 / 日文不需要空格。
-        # Note: the English / German / French lines begin with a leading space — keep it. Chinese / Japanese need no space.
+        # 注意：英文以一个空格开头，请勿删除；中文不需要空格。
+        # Note: the English line begins with a leading space — keep it. Chinese needs no space.
         type: object
         fields:
           - { name: en, label: English, type: text, options: { rows: 2 } }
           - { name: zh, label: 中文, type: text, options: { rows: 2 } }
-          - { name: de, label: Deutsch, type: text, options: { rows: 2 } }
-          - { name: fr, label: Français, type: text, options: { rows: 2 } }
-          - { name: ja, label: 日本語, type: text, options: { rows: 2 } }
       - name: bio
         label: Biography
         type: object
         fields:
           - { name: en, label: English, type: text, options: { rows: 6 } }
           - { name: zh, label: 中文, type: text, options: { rows: 6 } }
-          - { name: de, label: Deutsch, type: text, options: { rows: 6 } }
-          - { name: fr, label: Français, type: text, options: { rows: 6 } }
-          - { name: ja, label: 日本語, type: text, options: { rows: 6 } }
       - name: manuscript
         label: Manuscript caption (before the italic title)
         type: object
         fields:
           - { name: en, label: English, type: string }
           - { name: zh, label: 中文, type: string }
-          - { name: de, label: Deutsch, type: string }
-          - { name: fr, label: Français, type: string }
-          - { name: ja, label: 日本語, type: string }
 
   # 作品：每个作品一个文件夹 content/works/<slug>/index.md。
   # Works: one folder per piece, content/works/<slug>/index.md.
@@ -76,17 +69,14 @@ content:
         required: true
         options:
           values: [Solo, Chamber, Orchestral, "Vocal / Choral", "Music Theatre", Other]
-      # 多语言字段：英文必填，其余可留空。
-      # Localized field: English required, other languages optional.
+      # 多语言字段：英文必填，中文可留空。
+      # Localized field: English required, Chinese optional.
       - name: instrumentation
         label: Instrumentation / 编制
         type: object
         fields:
           - { name: en, label: English, type: string, required: true }
           - { name: zh, label: 中文, type: string }
-          - { name: de, label: Deutsch, type: string }
-          - { name: fr, label: Français, type: string }
-          - { name: ja, label: 日本語, type: string }
       - name: duration
         label: Duration / 时长
         type: object
@@ -100,18 +90,12 @@ content:
         fields:
           - { name: en, label: English, type: string, required: true }
           - { name: zh, label: 中文, type: string }
-          - { name: de, label: Deutsch, type: string }
-          - { name: fr, label: Français, type: string }
-          - { name: ja, label: 日本語, type: string }
       - name: commission
         label: Commission / 委约 (optional)
         type: object
         fields:
           - { name: en, label: English, type: string, required: true }
           - { name: zh, label: 中文, type: string }
-          - { name: de, label: Deutsch, type: string }
-          - { name: fr, label: Français, type: string }
-          - { name: ja, label: 日本語, type: string }
       - name: credits
         label: Credits / 制作人员 (optional)
         type: object
@@ -119,9 +103,6 @@ content:
         fields:
           - { name: en, label: English, type: string, required: true }
           - { name: zh, label: 中文, type: string }
-          - { name: de, label: Deutsch, type: string }
-          - { name: fr, label: Français, type: string }
-          - { name: ja, label: 日本語, type: string }
       - name: premiere
         label: Premiere / 首演 (optional)
         type: object
@@ -133,9 +114,6 @@ content:
             fields:
               - { name: en, label: English, type: string, required: true }
               - { name: zh, label: 中文, type: string }
-              - { name: de, label: Deutsch, type: string }
-              - { name: fr, label: Français, type: string }
-              - { name: ja, label: 日本語, type: string }
       # 网址字段：要么留空，要么填写完整有效网址（schema 要求是合法 URL）。
       # URL fields: leave blank, or enter a complete valid URL (schema requires a real URL).
       - { name: recordingUrl, label: Recording URL, type: string, pattern: { regex: "^https?://.+", message: "Must be a full http(s) URL or left blank" } }
@@ -176,7 +154,7 @@ content:
         required: true
         options:
           values: [Translation, Essay, Fiction, Blog, Poem, "Program Note", Review, Other]
-      - { name: language, label: Language (e.g. English, Chinese, Chinese / English, Japanese), type: string, required: true }
+      - { name: language, label: Language (e.g. English, Chinese, Chinese / English), type: string, required: true }
       - { name: excerpt, label: Excerpt, type: text, required: true, options: { rows: 3 } }
       - { name: slug, label: Slug (folder & URL name), type: string, required: true, pattern: { regex: "^[a-z0-9-]+$", message: "Lowercase letters, numbers, and hyphens only" } }
       - { name: order, label: Order, type: number, default: 999 }

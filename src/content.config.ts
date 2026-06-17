@@ -18,9 +18,6 @@ const filePathId = ({ entry }: { entry: string }) =>
 const localizedText = z.object({
   en: z.string(),
   zh: z.string().optional(),
-  de: z.string().optional(),
-  fr: z.string().optional(),
-  ja: z.string().optional(),
 });
 
 // 中文：定义内容文件的位置与 frontmatter 结构。

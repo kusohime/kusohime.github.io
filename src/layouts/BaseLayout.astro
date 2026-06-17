@@ -85,13 +85,7 @@ const defaultLanguage = siteDefaults.defaultLanguage;
           document.documentElement.dataset.fontSize = fontSize;
         }
 
-        if (
-          language === "en" ||
-          language === "zh" ||
-          language === "de" ||
-          language === "fr" ||
-          language === "ja"
-        ) {
+        if (language === "en" || language === "zh") {
           document.documentElement.lang = language === "zh" ? "zh-Hant-TW" : language;
         }
 
