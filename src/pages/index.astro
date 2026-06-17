@@ -6,10 +6,19 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
 import { translate } from "../config/locales";
-// 中文：手稿图片、替代文字与说明标题可在 Pages CMS 或本地 Studio 编辑（改 homeContent.json）。
-// English: The manuscript image, alt text, and caption title are editable in Pages CMS
-// or the local Studio by changing homeContent.json.
+// 中文：首页图片、替代文字与说明文字都可在 Pages CMS 或本地 Studio 编辑（改 homeContent.json）。
+// English: The home image, alt text, and caption are editable in Pages CMS or the
+// local Studio by changing homeContent.json.
 import homeContent from "../config/homeContent.json";
+
+// 中文：说明文字可自由填写；用 *星号* 包住的部分会显示为斜体（如作品名）。先转义 HTML 再处理。
+// English: Captions are freeform; wrap a span in *asterisks* to italicize it (e.g. a work
+// title). HTML is escaped first, so author text cannot inject markup.
+const captionHtml = (text: string) =>
+  text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 ---
 
 <BaseLayout>
@@ -33,17 +42,21 @@ import homeContent from "../config/homeContent.json";
 
     <figure class="home-manuscript">
       <img
-        src={homeContent.manuscriptImage}
-        alt={homeContent.manuscriptImageAlt}
+        src={homeContent.image}
+        alt={homeContent.imageAlt}
         width="1600"
         height="1200"
         decoding="async"
       />
       <figcaption>
-        <span data-i18n-key="home.manuscript">
-          {translate("en", "home.manuscript")}
-        </span>
-        <em>{homeContent.manuscriptTitle}</em>.
+        <!--
+          中文：两种语言的说明文字都在 DOM 中，由 CSS 依 <html lang> 显示其一，
+          因此切换语言时立即更新，且可保留斜体。
+          English: Both language captions are in the DOM; CSS shows one based on
+          <html lang>, so it swaps instantly on language change and keeps italics.
+        -->
+        <span class="home-caption" data-lang="en" set:html={captionHtml(homeContent.caption.en)} />
+        <span class="home-caption" data-lang="zh" set:html={captionHtml(homeContent.caption.zh)} />
       </figcaption>
     </figure>
   </div>

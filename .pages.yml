@@ -36,17 +36,16 @@ content:
         fields:
           - { name: en, label: English, type: text, options: { rows: 6 } }
           - { name: zh, label: 中文, type: text, options: { rows: 6 } }
-      - name: manuscript
-        label: Manuscript caption (before the italic title)
+      # 首页图片：可上传或挑选 public/images 中的图片；显示时裁切为 4:3。可随时换成别的图片。
+      # Home image: upload or pick from public/images; shown cropped to 4:3. Swap it any time.
+      - { name: image, label: Home image, type: image }
+      - { name: imageAlt, label: Home image — alt text (for screen readers), type: text, options: { rows: 2 } }
+      - name: caption
+        label: Image caption (free text; wrap a title in *asterisks* to italicize it)
         type: object
         fields:
-          - { name: en, label: English, type: string }
-          - { name: zh, label: 中文, type: string }
-      # 首页手稿图片：可上传或挑选 public/images 中的图片；显示时裁切为 4:3。
-      # Home manuscript image: upload or pick from public/images; shown cropped to 4:3.
-      - { name: manuscriptImage, label: Manuscript image, type: image }
-      - { name: manuscriptImageAlt, label: Manuscript image — alt text (for screen readers), type: text, options: { rows: 2 } }
-      - { name: manuscriptTitle, label: Manuscript image — italic title in caption, type: string }
+          - { name: en, label: English, type: text, options: { rows: 2 } }
+          - { name: zh, label: 中文, type: text, options: { rows: 2 } }
 
   # 作品：每个作品一个文件夹 content/works/<slug>/index.md。
   # Works: one folder per piece, content/works/<slug>/index.md.

@@ -617,6 +617,17 @@ main {
   font-size: 0.85rem;
 }
 
+/* 中文：说明文字两种语言都在 DOM 中，按 <html lang> 只显示当前语言。 */
+/* English: Both caption languages live in the DOM; show only the one matching <html lang>. */
+.home-caption {
+  display: none;
+}
+
+:root:lang(en) .home-caption[data-lang="en"],
+:root:lang(zh) .home-caption[data-lang="zh"] {
+  display: inline;
+}
+
 .page-introduction {
   max-width: var(--reading-width);
 }
