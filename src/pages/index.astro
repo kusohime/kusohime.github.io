@@ -6,6 +6,10 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
 import { translate } from "../config/locales";
+// 中文：手稿图片、替代文字与说明标题可在 Pages CMS 或本地 Studio 编辑（改 homeContent.json）。
+// English: The manuscript image, alt text, and caption title are editable in Pages CMS
+// or the local Studio by changing homeContent.json.
+import homeContent from "../config/homeContent.json";
 ---
 
 <BaseLayout>
@@ -29,8 +33,8 @@ import { translate } from "../config/locales";
 
     <figure class="home-manuscript">
       <img
-        src="/images/manuscript-home.webp"
-        alt="An annotated orchestral manuscript resting on a wooden table."
+        src={homeContent.manuscriptImage}
+        alt={homeContent.manuscriptImageAlt}
         width="1600"
         height="1200"
         decoding="async"
@@ -39,7 +43,7 @@ import { translate } from "../config/locales";
         <span data-i18n-key="home.manuscript">
           {translate("en", "home.manuscript")}
         </span>
-        <em>Frühanthropozänes</em>.
+        <em>{homeContent.manuscriptTitle}</em>.
       </figcaption>
     </figure>
   </div>

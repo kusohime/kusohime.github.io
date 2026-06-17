@@ -10,5 +10,8 @@
   "manuscript": {
     "en": "manuscript, ",
     "zh": "手稿、"
-  }
+  },
+  "manuscriptImage": "/images/manuscript-home.webp",
+  "manuscriptImageAlt": "An annotated orchestral manuscript resting on a wooden table.",
+  "manuscriptTitle": "Frühanthropozänes"
 }

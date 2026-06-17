@@ -42,6 +42,11 @@ content:
         fields:
           - { name: en, label: English, type: string }
           - { name: zh, label: 中文, type: string }
+      # 首页手稿图片：可上传或挑选 public/images 中的图片；显示时裁切为 4:3。
+      # Home manuscript image: upload or pick from public/images; shown cropped to 4:3.
+      - { name: manuscriptImage, label: Manuscript image, type: image }
+      - { name: manuscriptImageAlt, label: Manuscript image — alt text (for screen readers), type: text, options: { rows: 2 } }
+      - { name: manuscriptTitle, label: Manuscript image — italic title in caption, type: string }
 
   # 作品：每个作品一个文件夹 content/works/<slug>/index.md。
   # Works: one folder per piece, content/works/<slug>/index.md.
