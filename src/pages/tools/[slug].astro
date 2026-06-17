@@ -91,22 +91,26 @@ const refHtml = (text: string) =>
           </div>
         )}
 
-        <div class="prose tool-docs">
-          <h2 data-i18n-key="tools.notes">{translate("en", "tools.notes")}</h2>
-          <Content />
-          {tool.data.references.length > 0 && (
-            <>
-              <h2 data-i18n-key="tools.references">
-                {translate("en", "tools.references")}
-              </h2>
-              <ul>
-                {tool.data.references.map((reference) => (
-                  <li set:html={refHtml(reference)} />
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
+        <details class="group-tool-notes tool-docs">
+          <summary>
+            <span data-i18n-key="tools.notes">{translate("en", "tools.notes")}</span>
+          </summary>
+          <div class="prose">
+            <Content />
+            {tool.data.references.length > 0 && (
+              <>
+                <h3 data-i18n-key="tools.references">
+                  {translate("en", "tools.references")}
+                </h3>
+                <ul>
+                  {tool.data.references.map((reference) => (
+                    <li set:html={refHtml(reference)} />
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </details>
 
         <p class="back-link">
           <a href="/tools/">

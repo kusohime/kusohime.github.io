@@ -111,11 +111,25 @@ export function renderHtml(host, ex, { fontFamily } = {}) {
   block.className = "igt-block";
   if (fontFamily) block.style.setProperty("--igt-font", fontFamily);
 
-  if (ex.label) {
-    const lab = doc.createElement("span");
-    lab.className = "igt-label";
-    lab.textContent = (ex.judgement ? ex.judgement + " " : "") + ex.label;
-    block.append(lab);
+  // 例号（如 "(1)"）放在左边距，与右侧首行对齐。
+  // The example label (e.g. "(1)") sits in the left margin, aligned with the first
+  // line of the example on the right.
+  const lab = doc.createElement("span");
+  lab.className = "igt-label";
+  lab.textContent = (ex.judgement ? ex.judgement + " " : "") + (ex.label || "");
+  block.append(lab);
+
+  const main = doc.createElement("div");
+  main.className = "igt-main";
+
+  // language/citation 为可选：留空就不渲染，于是注解成为首行，紧贴例号，没有空行。
+  // Language/citation is optional: when blank it is not rendered, so the gloss becomes
+  // the first line and sits right next to the label — no empty line.
+  if (ex.language && ex.language.trim()) {
+    const lang = doc.createElement("div");
+    lang.className = "igt-lang";
+    lang.textContent = ex.language;
+    main.append(lang);
   }
 
   const body = doc.createElement("div");
@@ -139,14 +153,16 @@ export function renderHtml(host, ex, { fontFamily } = {}) {
     });
     body.append(col);
   }
-  block.append(body);
+  main.append(body);
 
   if (ex.translation) {
     const tr = doc.createElement("div");
     tr.className = "igt-translation";
     tr.textContent = `‘${ex.translation}’`;
-    block.append(tr);
+    main.append(tr);
   }
+
+  block.append(main);
   host.append(block);
 }
 
@@ -279,21 +295,34 @@ export function renderSvg(ex, {
   const pad = 16;
   const colGap = fontSize * 0.9;
   const lineLead = fontSize * 1.45;
+  const measure = measurer(fontFamily, fontSize);
+
+  // 例号放在左边距；其余内容右移，使首行紧贴例号（language 留空时尤其重要）。
+  // The label sits in the left margin; everything else shifts right so the first line
+  // sits next to the label (matters most when there is no language line).
+  const labelText = (ex.judgement ? ex.judgement + " " : "") + (ex.label || "");
+  const labelWidth = labelText.trim() ? measure(labelText, { italic: true }) : 0;
+  const leftPad = labelWidth ? labelWidth + colGap : 0;
+
   const lay = layout(ex, {
-    measure: measurer(fontFamily, fontSize),
-    maxWidth: maxWidth - pad * 2,
+    measure,
+    maxWidth: maxWidth - pad * 2 - leftPad,
     colGap,
   });
 
   const parts = [];
   let y = pad + fontSize;
+  const firstLineY = y;
   let maxX = 0;
 
-  if (ex.label || ex.language) {
-    const head = [ex.judgement, ex.label, ex.language].filter(Boolean).join("  ");
+  // language/citation 为可选，留空就不占一行。
+  // The language/citation line is optional and takes no row when blank.
+  const language = ex.language && ex.language.trim() ? ex.language : "";
+  if (language) {
     parts.push(
-      `<text x="${pad}" y="${y}" font-style="italic">${svgEscape(head)}</text>`,
+      `<text x="${pad + leftPad}" y="${y}" font-style="italic">${svgEscape(language)}</text>`,
     );
+    maxX = Math.max(maxX, pad + leftPad + measure(language, { italic: true }));
     y += lineLead;
   }
 
@@ -301,7 +330,7 @@ export function renderSvg(ex, {
     if (li > 0) y += lineLead * 0.4;
     line.rows.forEach((row) => {
       row.cells.forEach((cell) => {
-        const x = pad + cell.x;
+        const x = pad + leftPad + cell.x;
         const style = row.tier.italic ? ' font-style="italic"' : "";
         const content = row.tier.smallcaps
           ? svgTspansForGloss(cell.text, fontSize)
@@ -313,12 +342,20 @@ export function renderSvg(ex, {
     });
   });
 
+  // 例号画在左边距，对齐右侧首行。
+  // Draw the label in the left margin, aligned with the first content line.
+  if (labelText.trim()) {
+    parts.push(
+      `<text x="${pad}" y="${firstLineY}" font-style="italic">${svgEscape(labelText)}</text>`,
+    );
+  }
+
   if (ex.translation) {
     y += lineLead * 0.1;
     parts.push(
-      `<text x="${pad}" y="${y}">‘${svgEscape(ex.translation)}’</text>`,
+      `<text x="${pad + leftPad}" y="${y}">‘${svgEscape(ex.translation)}’</text>`,
     );
-    maxX = Math.max(maxX, pad + 200);
+    maxX = Math.max(maxX, pad + leftPad + 200);
     y += lineLead;
   }
 

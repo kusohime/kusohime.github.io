@@ -529,12 +529,30 @@
   --igt-font: "Gentium Plus", "Charis SIL", serif;
   font-family: var(--igt-font);
   display: grid;
-  gap: 0.3rem;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.6rem;
+  align-items: start;
 }
 
+/* 例号在左边距，与右侧首行对齐。 Example label in the left margin, top-aligned with the first line. */
 .igt-label {
   color: var(--color-muted);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.igt-main {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+/* language / citation：可选的首行；留空时整行消失。 Optional first line; vanishes when blank. */
+.igt-lang {
+  color: var(--color-muted);
   font-size: 0.95rem;
+  font-style: italic;
 }
 
 .igt-body {
