@@ -55,6 +55,19 @@ const works = defineCollection({
     }).optional(),
     recordingUrl: z.url().optional(),
     scoreUrl: z.url().optional(),
+    video: z.object({
+      provider: z.literal("peertube").default("peertube"),
+      embedUrl: z.url(),
+      watchUrl: z.url().optional(),
+      poster: z.string().optional(),
+      posterAlt: z.string().optional(),
+      caption: localizedText.optional(),
+      title: localizedText.optional(),
+      aspectRatio: z
+        .string()
+        .regex(/^\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?$/)
+        .default("16 / 9"),
+    }).optional(),
     image: z.string().optional(),
     imageAlt: z.string().optional(),
     description: z.string(),

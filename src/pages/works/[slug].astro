@@ -7,6 +7,7 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import Comments from "../../components/Comments.astro";
+import PeerTubeEmbed from "../../components/PeerTubeEmbed.astro";
 import {
   formatDate,
   formatDuration,
@@ -43,6 +44,7 @@ const {
   premiere,
   recordingUrl,
   scoreUrl,
+  video,
   image,
   imageAlt,
   description,
@@ -100,6 +102,8 @@ const {
         )
       }
     </header>
+
+    {video && <PeerTubeEmbed video={video} fallbackTitle={title} />}
 
     {
       image && (

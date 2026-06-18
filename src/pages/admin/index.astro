@@ -458,6 +458,64 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 Duration, minutes
                 <input type="number" min="0" step="0.5" data-library-field="duration" />
               </label>
+              <details class="video-fields" data-library-work-only>
+                <summary>PeerTube video</summary>
+                <label>
+                  Embed URL
+                  <input
+                    type="text"
+                    inputmode="url"
+                    data-library-field="videoEmbedUrl"
+                    placeholder="https://example.org/videos/embed/..."
+                  />
+                </label>
+                <label>
+                  PeerTube page URL
+                  <input
+                    type="text"
+                    inputmode="url"
+                    data-library-field="videoWatchUrl"
+                    placeholder="https://example.org/w/..."
+                  />
+                </label>
+                <label>
+                  Poster image
+                  <input
+                    type="text"
+                    inputmode="url"
+                    data-library-field="videoPoster"
+                    placeholder="/images/video-poster.webp"
+                  />
+                </label>
+                <label>
+                  Poster alt text
+                  <input type="text" data-library-field="videoPosterAlt" />
+                </label>
+                <label>
+                  Caption, English
+                  <textarea rows="2" data-library-field="videoCaption"></textarea>
+                </label>
+                <label>
+                  Caption, Chinese
+                  <textarea rows="2" data-library-field="videoCaptionZh"></textarea>
+                </label>
+                <label>
+                  Video title, English
+                  <input type="text" data-library-field="videoTitle" />
+                </label>
+                <label>
+                  Video title, Chinese
+                  <input type="text" data-library-field="videoTitleZh" />
+                </label>
+                <label>
+                  Aspect ratio
+                  <input
+                    type="text"
+                    data-library-field="videoAspectRatio"
+                    placeholder="16 / 9"
+                  />
+                </label>
+              </details>
               <label data-library-writing-or-event hidden>
                 Date
                 <input type="text" data-library-field="date" />
@@ -563,6 +621,60 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                   Duration (minutes)
                   <input type="number" data-new-duration min="0" step="0.5" />
                 </label>
+                <details class="video-fields">
+                  <summary>PeerTube video</summary>
+                  <label>
+                    Embed URL
+                    <input
+                      type="text"
+                      inputmode="url"
+                      data-new-video-embed-url
+                      placeholder="https://example.org/videos/embed/..."
+                    />
+                  </label>
+                  <label>
+                    PeerTube page URL
+                    <input
+                      type="text"
+                      inputmode="url"
+                      data-new-video-watch-url
+                      placeholder="https://example.org/w/..."
+                    />
+                  </label>
+                  <label>
+                    Poster image
+                    <input
+                      type="text"
+                      inputmode="url"
+                      data-new-video-poster
+                      placeholder="/images/video-poster.webp"
+                    />
+                  </label>
+                  <label>
+                    Poster alt text
+                    <input type="text" data-new-video-poster-alt />
+                  </label>
+                  <label>
+                    Caption, English
+                    <textarea rows="2" data-new-video-caption></textarea>
+                  </label>
+                  <label>
+                    Caption, Chinese
+                    <textarea rows="2" data-new-video-caption-zh></textarea>
+                  </label>
+                  <label>
+                    Video title, English
+                    <input type="text" data-new-video-title />
+                  </label>
+                  <label>
+                    Video title, Chinese
+                    <input type="text" data-new-video-title-zh />
+                  </label>
+                  <label>
+                    Aspect ratio
+                    <input type="text" data-new-video-aspect-ratio placeholder="16 / 9" />
+                  </label>
+                </details>
               </div>
 
               <div data-new-writing-fields hidden>

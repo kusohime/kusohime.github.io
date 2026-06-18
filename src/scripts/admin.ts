@@ -1205,6 +1205,65 @@ export async function initializeAdminStudio() {
   const yamlQuote = (text: string) =>
     `"${text.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
 
+  interface PeerTubeFormValues {
+    embedUrl: string;
+    watchUrl: string;
+    poster: string;
+    posterAlt: string;
+    caption: string;
+    captionZh: string;
+    title: string;
+    titleZh: string;
+    aspectRatio: string;
+  }
+
+  const peerTubeBlockLines = (values: PeerTubeFormValues) => {
+    const embedUrl = values.embedUrl.trim();
+    if (!embedUrl) return [];
+
+    const watchUrl = values.watchUrl.trim();
+    const poster = values.poster.trim();
+    const posterAlt = values.posterAlt.trim();
+    const caption = values.caption.trim();
+    const captionZh = values.captionZh.trim();
+    const title = values.title.trim();
+    const titleZh = values.titleZh.trim();
+    const rawAspectRatio = values.aspectRatio.trim();
+    const aspectRatio = /^\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?$/.test(
+      rawAspectRatio,
+    )
+      ? rawAspectRatio
+      : "16 / 9";
+    const captionEn = caption || captionZh;
+    const titleEn = title || titleZh;
+    const lines = [
+      "video:",
+      '  provider: "peertube"',
+      `  embedUrl: ${yamlQuote(embedUrl)}`,
+    ];
+
+    if (watchUrl) lines.push(`  watchUrl: ${yamlQuote(watchUrl)}`);
+    if (poster) lines.push(`  poster: ${yamlQuote(poster)}`);
+    if (posterAlt) lines.push(`  posterAlt: ${yamlQuote(posterAlt)}`);
+    if (caption || captionZh) {
+      lines.push("  caption:");
+      lines.push(`    en: ${yamlQuote(captionEn)}`);
+      if (captionZh) lines.push(`    zh: ${yamlQuote(captionZh)}`);
+    }
+    if (title || titleZh) {
+      lines.push("  title:");
+      lines.push(`    en: ${yamlQuote(titleEn)}`);
+      if (titleZh) lines.push(`    zh: ${yamlQuote(titleZh)}`);
+    }
+    lines.push(`  aspectRatio: ${yamlQuote(aspectRatio)}`);
+    return lines;
+  };
+
+  const peerTubeBlockText = (values: PeerTubeFormValues) => {
+    const lines = peerTubeBlockLines(values);
+    return lines.length > 0 ? `\n${lines.join("\n")}` : "";
+  };
+
   const newField = <T extends HTMLElement>(selector: string) =>
     studio.querySelector<T>(selector);
 
@@ -1531,6 +1590,24 @@ export async function initializeAdminStudio() {
         newField<HTMLInputElement>("[data-new-duration]")?.value,
       );
       const durationBlock = minutes > 0 ? `\n  minutes: ${minutes}` : " {}";
+      const videoBlock = peerTubeBlockText({
+        embedUrl:
+          newField<HTMLInputElement>("[data-new-video-embed-url]")?.value ?? "",
+        watchUrl:
+          newField<HTMLInputElement>("[data-new-video-watch-url]")?.value ?? "",
+        poster: newField<HTMLInputElement>("[data-new-video-poster]")?.value ?? "",
+        posterAlt:
+          newField<HTMLInputElement>("[data-new-video-poster-alt]")?.value ?? "",
+        caption:
+          newField<HTMLTextAreaElement>("[data-new-video-caption]")?.value ?? "",
+        captionZh:
+          newField<HTMLTextAreaElement>("[data-new-video-caption-zh]")?.value ?? "",
+        title: newField<HTMLInputElement>("[data-new-video-title]")?.value ?? "",
+        titleZh:
+          newField<HTMLInputElement>("[data-new-video-title-zh]")?.value ?? "",
+        aspectRatio:
+          newField<HTMLInputElement>("[data-new-video-aspect-ratio]")?.value ?? "",
+      });
       return {
         path: `content/works/${slug}/index.md`,
         previewPath: `/works/${slug}/`,
@@ -1543,7 +1620,7 @@ instrumentation:
 duration:${durationBlock}
 description: ${yamlQuote(summary || title)}
 slug: ${yamlQuote(slug)}
-order: 999${draft ? "\ndraft: true" : ""}
+order: 999${draft ? "\ndraft: true" : ""}${videoBlock}
 ---
 
 ## Program Notes
@@ -1752,6 +1829,15 @@ Write the text here.
     language: string;
     instrumentation: string;
     duration: string;
+    videoEmbedUrl: string;
+    videoWatchUrl: string;
+    videoPoster: string;
+    videoPosterAlt: string;
+    videoCaption: string;
+    videoCaptionZh: string;
+    videoTitle: string;
+    videoTitleZh: string;
+    videoAspectRatio: string;
     summary: string;
     links: string;
     order: string;
@@ -1844,6 +1930,37 @@ Write the text here.
       if (match) return unquoteYaml(match[1]);
     }
     return "";
+  };
+
+  const readDoubleNestedScalar = (
+    lines: string[],
+    parent: string,
+    child: string,
+    grandchild: string,
+  ) => {
+    const parentIndex = topKeyIndex(lines, parent);
+    if (parentIndex < 0) return "";
+    const parentEnd = topBlockEnd(lines, parentIndex);
+    for (let index = parentIndex + 1; index < parentEnd; index += 1) {
+      const childMatch = lines[index].match(new RegExp(`^(\\s+)${child}:\\s*$`));
+      if (!childMatch) continue;
+      const childIndent = childMatch[1].length;
+      for (let nestedIndex = index + 1; nestedIndex < parentEnd; nestedIndex += 1) {
+        const nestedIndent = lines[nestedIndex].match(/^(\s*)/)?.[1].length ?? 0;
+        if (nestedIndent <= childIndent) break;
+        const match = lines[nestedIndex].match(
+          new RegExp(`^\\s+${grandchild}:\\s*(.*)$`),
+        );
+        if (match) return unquoteYaml(match[1]);
+      }
+    }
+    return "";
+  };
+
+  const setVideoBlock = (lines: string[], values: PeerTubeFormValues) => {
+    removeTopKey(lines, "video");
+    const videoLines = peerTubeBlockLines(values);
+    if (videoLines.length > 0) lines.push(...videoLines);
   };
 
   const setNestedScalar = (
@@ -1992,6 +2109,17 @@ Write the text here.
       );
       setDurationMinutes(lines, text("duration"));
       setTopScalar(lines, "description", text("summary") || text("title"));
+      setVideoBlock(lines, {
+        embedUrl: text("videoEmbedUrl"),
+        watchUrl: text("videoWatchUrl"),
+        poster: text("videoPoster"),
+        posterAlt: text("videoPosterAlt"),
+        caption: text("videoCaption"),
+        captionZh: text("videoCaptionZh"),
+        title: text("videoTitle"),
+        titleZh: text("videoTitleZh"),
+        aspectRatio: text("videoAspectRatio"),
+      });
     } else if (entry.kind === "writings") {
       setTopScalar(lines, "subtitle", text("subtitle"), { omitEmpty: true });
       setTopScalar(lines, "comments", checked("comments"), { omitFalse: true });
@@ -2071,6 +2199,15 @@ Write the text here.
       language: readTopScalar(lines, "language") || "English",
       instrumentation: readNestedScalar(lines, "instrumentation", "en"),
       duration: readNestedScalar(lines, "duration", "minutes"),
+      videoEmbedUrl: readNestedScalar(lines, "video", "embedUrl"),
+      videoWatchUrl: readNestedScalar(lines, "video", "watchUrl"),
+      videoPoster: readNestedScalar(lines, "video", "poster"),
+      videoPosterAlt: readNestedScalar(lines, "video", "posterAlt"),
+      videoCaption: readDoubleNestedScalar(lines, "video", "caption", "en"),
+      videoCaptionZh: readDoubleNestedScalar(lines, "video", "caption", "zh"),
+      videoTitle: readDoubleNestedScalar(lines, "video", "title", "en"),
+      videoTitleZh: readDoubleNestedScalar(lines, "video", "title", "zh"),
+      videoAspectRatio: readNestedScalar(lines, "video", "aspectRatio"),
       summary:
         kind === "works"
           ? readTopScalar(lines, "description")
@@ -2175,6 +2312,15 @@ Write the text here.
     setLibraryField("category", entry.category);
     setLibraryField("instrumentation", entry.instrumentation);
     setLibraryField("duration", entry.duration);
+    setLibraryField("videoEmbedUrl", entry.videoEmbedUrl);
+    setLibraryField("videoWatchUrl", entry.videoWatchUrl);
+    setLibraryField("videoPoster", entry.videoPoster);
+    setLibraryField("videoPosterAlt", entry.videoPosterAlt);
+    setLibraryField("videoCaption", entry.videoCaption);
+    setLibraryField("videoCaptionZh", entry.videoCaptionZh);
+    setLibraryField("videoTitle", entry.videoTitle);
+    setLibraryField("videoTitleZh", entry.videoTitleZh);
+    setLibraryField("videoAspectRatio", entry.videoAspectRatio);
     setLibraryField("date", entry.date);
     setLibraryField("time", entry.time);
     setLibraryField("venue", entry.venue);

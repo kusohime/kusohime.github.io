@@ -1,0 +1,111 @@
+---
+import type { LocalizedText as LocalizedTextValue } from "../config/locales";
+import { translate } from "../config/locales";
+import LocalizedText from "./LocalizedText.astro";
+
+interface PeerTubeVideo {
+  provider?: "peertube";
+  embedUrl: string;
+  watchUrl?: string;
+  poster?: string;
+  posterAlt?: string;
+  caption?: LocalizedTextValue;
+  title?: LocalizedTextValue;
+  aspectRatio?: string;
+}
+
+interface Props {
+  fallbackTitle: string;
+  video: PeerTubeVideo;
+}
+
+const { fallbackTitle, video } = Astro.props;
+const videoTitle = video.title?.en ?? fallbackTitle;
+const aspectRatio = video.aspectRatio ?? "16 / 9";
+
+const embedUrlWithAutoplay = (() => {
+  try {
+    const url = new URL(video.embedUrl);
+    if (!url.searchParams.has("autoplay")) url.searchParams.set("autoplay", "1");
+    return url.toString();
+  } catch {
+    return video.embedUrl;
+  }
+})();
+
+const initialIframeSrc = video.poster ? undefined : video.embedUrl;
+const lazyIframeSrc = video.poster ? embedUrlWithAutoplay : undefined;
+---
+
+<figure class="peertube-embed" style={`--video-aspect-ratio: ${aspectRatio};`}>
+  <div class="peertube-embed-shell" data-peertube-embed>
+    {
+      video.poster && (
+        <button
+          type="button"
+          class="peertube-poster-button"
+          data-load-peertube
+          title={translate("en", "media.loadVideo")}
+        >
+          <img
+            src={video.poster}
+            alt={video.posterAlt ?? ""}
+            width="1280"
+            height="720"
+            loading="lazy"
+          />
+          <span class="peertube-play-icon" aria-hidden="true"></span>
+          <span class="visually-hidden" data-i18n-key="media.loadVideo">
+            {translate("en", "media.loadVideo")}
+          </span>
+        </button>
+      )
+    }
+    <iframe
+      src={initialIframeSrc}
+      data-src={lazyIframeSrc}
+      title={videoTitle}
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      allowfullscreen
+      hidden={Boolean(video.poster)}
+    ></iframe>
+  </div>
+  {
+    (video.caption || video.watchUrl) && (
+      <figcaption>
+        {video.caption && <LocalizedText value={video.caption} />}
+        {video.caption && video.watchUrl && <span class="metadata-divider" aria-hidden="true"></span>}
+        {video.watchUrl && (
+          <a href={video.watchUrl} class="peertube-watch-link" data-i18n-key="media.watchPeerTube">
+            {translate("en", "media.watchPeerTube")}
+          </a>
+        )}
+      </figcaption>
+    )
+  }
+</figure>
+
+<script>
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const button = target.closest("[data-load-peertube]");
+    if (!(button instanceof HTMLButtonElement)) return;
+
+    const root = button.closest("[data-peertube-embed]");
+    const iframe = root?.querySelector("iframe");
+    if (!(iframe instanceof HTMLIFrameElement)) return;
+
+    const src = iframe.dataset.src;
+    if (src) {
+      iframe.src = src;
+      delete iframe.dataset.src;
+    }
+
+    iframe.hidden = false;
+    button.hidden = true;
+    root?.setAttribute("data-peertube-loaded", "true");
+  });
+</script>

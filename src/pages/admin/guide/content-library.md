@@ -96,6 +96,19 @@ premiere:
     ja: "某氏により会場名で初演"
 recordingUrl: "https://example.com/recording"
 scoreUrl: "https://example.com/score"
+video:
+  provider: "peertube"
+  embedUrl: "https://video.example/videos/embed/video-id"
+  watchUrl: "https://video.example/w/video-id"
+  poster: "/images/example-video-poster.webp"
+  posterAlt: "Still from the performance video"
+  caption:
+    en: "Performance excerpt."
+    zh: "演出片段。"
+  title:
+    en: "Work title, performance video"
+    zh: "作品名稱，演出影片"
+  aspectRatio: "16 / 9"
 image: "/images/example.jpg"
 imageAlt: "Description of the image"
 order: 1
@@ -113,6 +126,15 @@ dates so each language receives its own date format.
 分類值請保留上述英文拼法，公開名稱會自動翻譯。本地化欄位使用 `en`、`zh`、
 `de`、`fr`、`ja`，其中英文是必填的備援文字。日期請使用 `YYYY`、`YYYY-MM`
 或 `YYYY-MM-DD`，網站便會依語言顯示適當格式。
+
+For PeerTube videos, copy the embed URL from PeerTube's **Share / Embed**
+panel and paste it into `video.embedUrl`. Add `poster` when you want the page
+to show your own still image and load PeerTube only after a visitor presses
+play. `watchUrl` is the ordinary PeerTube page link shown below the player.
+
+PeerTube 影片請從 PeerTube 的 **Share / Embed** 面板複製嵌入網址，貼到
+`video.embedUrl`。若填寫 `poster`，頁面會先顯示自己的靜態圖片，訪客按下播放
+後才載入 PeerTube。`watchUrl` 是播放器下方顯示的 PeerTube 頁面連結。
 
 ## Add a one-page writing / 新增單篇文章
 
