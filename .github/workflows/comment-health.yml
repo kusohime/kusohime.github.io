@@ -1,0 +1,33 @@
+# 中文：每周定时 ping 评论 Worker 的 /health；失败时工作流报错，GitHub 会邮件通知仓库所有者。
+# English: Weekly ping of the comment Worker's /health; on failure the workflow errors and GitHub emails the repo owner.
+# Caveat / 注意：需在仓库 Secrets 添加 COMMENT_HEALTH_URL（Worker 网址 + /health，若设了 HEALTH_KEY 则附 ?key=…）。
+# Caveat: Add a repo secret COMMENT_HEALTH_URL (the Worker URL + /health, plus ?key=… if you set HEALTH_KEY).
+name: Comment worker health
+
+on:
+  schedule:
+    - cron: "0 13 * * 1" # every Monday 13:00 UTC
+  workflow_dispatch: # lets you run it manually to confirm the secret is set right
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping comment worker /health
+        env:
+          HEALTH_URL: ${{ secrets.COMMENT_HEALTH_URL }}
+        run: |
+          if [ -z "$HEALTH_URL" ]; then
+            echo "::error::COMMENT_HEALTH_URL secret is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "Pinging comment worker health endpoint…"
+          code=$(curl -sS -o /tmp/health.out -w "%{http_code}" --max-time 20 --retry 2 --retry-delay 5 "$HEALTH_URL" || true)
+          echo "HTTP $code"
+          [ -f /tmp/health.out ] && cat /tmp/health.out || true
+          echo
+          if [ "$code" != "200" ]; then
+            echo "::error::Comment worker health check failed (HTTP $code). The Worker's GITHUB_TOKEN may have expired, or Cloudflare/GitHub is unreachable. See scripts/comment-worker/README.md."
+            exit 1
+          fi
+          echo "Comment worker healthy."

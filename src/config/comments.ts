@@ -4,7 +4,7 @@
 // Caveat: When endpoint is empty the form shows as not-yet-open, but published comments still render.
 export const commentsConfig = {
   // 例如 / e.g. "https://comments.yixincui.com" or the *.workers.dev URL Cloudflare gives you.
-  endpoint: "",
+  endpoint: "https://yixincui-comments.chubbymeemaw.workers.dev",
   // 是否允许评论附带一张图片（需作者审核后才会发布）。
   // Whether a comment may attach one image (published only after the author approves it).
   allowImages: true,

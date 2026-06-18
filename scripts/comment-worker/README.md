@@ -26,7 +26,8 @@ issue; the `comment-approve` GitHub Action then writes the comment into
    npm install -g wrangler        # if you don't have it
    wrangler login
    wrangler secret put GITHUB_TOKEN   # paste the token from step 2
-   wrangler secret put REPO           # type: kusohime/Website
+   wrangler secret put REPO           # type: kusohime/kusohime.github.io
+   wrangler secret put HEALTH_KEY     # optional: any random string (see step 5)
    wrangler deploy
    ```
    Wrangler prints a URL like `https://yixincui-comments.<you>.workers.dev`
@@ -35,6 +36,18 @@ issue; the `comment-approve` GitHub Action then writes the comment into
 4. **Paste that URL** into [`src/config/comments.ts`](../../src/config/comments.ts)
    as `endpoint`, then commit. The compose form goes live on every page that has
    `comments: true`.
+
+5. **Turn on the health monitor** (recommended — this is what makes the setup
+   low-maintenance). The Worker's `GITHUB_TOKEN` can expire; if it does, comment
+   filing fails silently. The [`comment-health`](../../.github/workflows/comment-health.yml)
+   workflow pings the Worker every Monday so a dead token reaches you as a failed-
+   workflow **email** instead of weeks of quietly lost comments.
+   - In the repo: **Settings → Secrets and variables → Actions → New repository
+     secret**, name `COMMENT_HEALTH_URL`, value = your Worker URL + `/health`
+     (e.g. `https://yixincui-comments.<you>.workers.dev/health`). If you set a
+     `HEALTH_KEY` above, append `?key=<that value>`.
+   - Then **Actions → Comment worker health → Run workflow** once to confirm it
+     reports healthy. It runs weekly on its own after that.
 
 That's the whole setup. Everything else (the form, rendering, the approval
 Action) is already in the repo.
