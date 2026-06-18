@@ -6,6 +6,12 @@
  */
 export const adminGuideChapters = [
   {
+    slug: "site-manual",
+    title: "Site Manual / 網站手冊",
+    description:
+      "A compact reference for routes, content, Studio, media, tools, responses, and publishing. / 網址、內容、管理器、媒體、工具、回應與發布的精簡參考。",
+  },
+  {
     slug: "content-library",
     title: "Content Library / 內容資料庫",
     description:

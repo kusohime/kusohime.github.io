@@ -1,9 +1,14 @@
-# Yixin Cui Website Manual / 崔逸新網站手冊
+---
+layout: ../../../layouts/AdminGuideLayout.astro
+title: "Site Manual / 網站手冊"
+description: "A compact bilingual reference for structure, use, and maintenance. / 結構、使用與維護的精簡雙語參考。"
+slug: "site-manual"
+---
 
-English and 正體中文 are paired. In the local Admin Guide, use the language
-menu to show one language.
+English and 正體中文 are paired. Use the site language menu to show one
+language.
 
-英文與正體中文成對書寫。在本地管理指南中，可用語言選單只顯示其中一種。
+英文與正體中文成對書寫。可用網站語言選單只顯示其中一種。
 
 ## 0. Object / 對象
 
