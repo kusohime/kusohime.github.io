@@ -96,6 +96,49 @@ is ready to publish.
 與文章列表中，並可在本地 `/drafts/` 草稿架預覽。完成後，從 Markdown 檔案刪除
 `draft: true` 即可公開。
 
+## Video maintenance / 影片維護
+
+Work pages support PeerTube embeds through the `video` frontmatter block.
+For routine maintenance, use the Website Studio rather than hand-editing the
+YAML: open **New > PeerTube video** when creating a work, or
+**Library > Works > PeerTube video** when updating an existing work. Only the
+embed URL is required. Leave it blank to remove the video block from a work.
+
+作品頁透過 `video` frontmatter 區塊支援 PeerTube 嵌入。日常維護請優先使用
+Website Studio，不要手動編輯 YAML：建立作品時開啟
+**New > PeerTube video**；修改既有作品時開啟
+**Library > Works > PeerTube video**。只有嵌入網址是必填；清空嵌入網址即可從
+作品移除影片區塊。
+
+Use the URL from PeerTube's share or embed panel for `embedUrl`. It normally
+contains `/videos/embed/`. Use the ordinary public PeerTube page as `watchUrl`;
+that link appears below the player. A poster image is strongly recommended
+because the page can show a clean still image first and load PeerTube only
+after the visitor presses play.
+
+`embedUrl` 請使用 PeerTube 分享或嵌入面板中的網址，通常包含
+`/videos/embed/`。`watchUrl` 請使用普通公開 PeerTube 頁面；這個連結會顯示在
+播放器下方。建議填寫封面圖，這樣頁面會先顯示乾淨的靜態圖片，訪客按下播放後
+才載入 PeerTube。
+
+The public player is implemented by `src/components/PeerTubeEmbed.astro`,
+validated in `src/content.config.ts`, styled in `src/styles/global.css`, and
+edited by the Studio fields in `src/pages/admin/index.astro` plus
+`src/scripts/admin.ts`. If a maintainer changes the video schema, update all
+four places together and then run `npm run check` and `npm run build`.
+
+公開播放器由 `src/components/PeerTubeEmbed.astro` 實作，
+`src/content.config.ts` 驗證，`src/styles/global.css` 控制外觀，Studio 欄位則在
+`src/pages/admin/index.astro` 與 `src/scripts/admin.ts`。若維護者修改影片資料
+結構，請同步更新這幾處，然後執行 `npm run check` 與 `npm run build`。
+
+Do not paste a full iframe tag into Markdown. Store the PeerTube URLs in the
+video fields instead. Avoid committing real unpublished videos as public
+non-draft pages; use `draft: true` until the work is ready.
+
+不要把完整 iframe 標籤貼進 Markdown；請把 PeerTube 網址放在影片欄位中。未公開
+的正式影片不要作為公開頁面提交；準備完成前請保留 `draft: true`。
+
 The five animation switches below **CSS** edit `src/config/motion.json`.
 Language flaps, theme fading, font-size scaling, glyph rotation, and interface
 motion can be enabled independently. They are all off by default.

@@ -16,6 +16,27 @@ structure, components, and styles live in `src/`.
 - `public/`: files served directly, including images and the favicon.
 - `public/`: 直接公开的图片与 favicon 等静态文件。
 
+## Video Support / 影片支援
+
+Work pages can show PeerTube videos without using YouTube or other ad-based
+platforms. Add videos through the local Website Studio: run `npm run dev`,
+open `/admin/`, then use **New > PeerTube video** for a new work or
+**Library > Works > PeerTube video** for an existing work. The embed URL is the
+only required video field; poster image, captions, title, and the public
+PeerTube page link are optional.
+
+作品頁可以顯示 PeerTube 影片，不需要使用 YouTube 或其他廣告平台。請透過本地
+Website Studio 新增影片：執行 `npm run dev`、開啟 `/admin/`，新增作品時使用
+**New > PeerTube video**，修改既有作品時使用
+**Library > Works > PeerTube video**。影片只必須填寫嵌入網址；封面圖、說明文字、
+標題與公開 PeerTube 頁面連結都可選。
+
+For maintainer details, see `content/README.md` and
+`src/pages/admin/guide/website-maintenance.md`.
+
+維護細節請見 `content/README.md` 與
+`src/pages/admin/guide/website-maintenance.md`。
+
 ## Commands / 命令
 
 ```text
