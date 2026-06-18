@@ -17,12 +17,12 @@ images, and feeds to `dist/`.
 Astro 讀取 `content/` 與 `src/`，再把靜態 HTML、CSS、JavaScript、圖片與 feed
 寫入 `dist/`。
 
-There is no production database. The local Website Studio edits files. GitHub
-Pages serves the build.
+There is no production database. The local Website Studio writes the source
+files, and GitHub Pages serves only the built site.
 
-正式網站沒有資料庫。Website Studio 在本地編輯檔案。GitHub Pages 只提供建置結果。
+正式網站沒有資料庫。Website Studio 在本地寫入原始檔；GitHub Pages 只提供建置後的網站。
 
-Invariant. If routes, schemas, Studio controls, media, comments, tools,
+Invariant. When routes, schemas, Studio controls, media, comments, tools,
 publishing, or maintenance rules change, update this manual in the same change.
 
 不變式：若網址、資料結構、管理器控制項、媒體、回應、工具、發布或維護規則改變，
@@ -94,9 +94,9 @@ publishing, or maintenance rules change, update this manual in the same change.
 
 ## 4. Content Model / 內容模型
 
-Entry equals folder plus frontmatter plus Markdown body.
+An entry is a folder, a frontmatter block, and a Markdown body.
 
-條目等於資料夾、frontmatter 與 Markdown 正文。
+條目由資料夾、frontmatter 區塊與 Markdown 正文組成。
 
 Public URL uses `slug`, not the folder name.
 
@@ -213,7 +213,7 @@ Run `npm run dev`; open `/admin/`.
 
 執行 `npm run dev`；開啟 `/admin/`。
 
-The Studio is local file editing, not production authentication.
+The Studio is a local file editor, not production authentication.
 
 管理器是本地檔案編輯介面，不是正式網站登入系統。
 
@@ -236,12 +236,12 @@ Use Library for metadata. Use Files for prose and code.
 
 Markdown renders **strong**, *emphasis*, ***strong emphasis***,
 ~~deletion~~, `code`, [links](https://example.com), H<sub>2</sub>O,
-x<sup>2</sup>, <mark>mark</mark>, and
-<ruby>留白<rp>(</rp><rt>liú bái</rt><rp>)</rp></ruby>.
+x<sup>2</sup>, <mark>mark</mark>, and Japanese furigana:
+<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>.
 
 Markdown 可呈現 **粗體**、*斜體*、***粗斜體***、~~刪除線~~、`程式碼`、
 [連結](https://example.com)、H<sub>2</sub>O、x<sup>2</sup>、<mark>標記</mark> 與
-<ruby>留白<rp>(</rp><rt>liú bái</rt><rp>)</rp></ruby>。
+日文振假名：<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>。
 
 Footnotes, mathematics, figures, tables, block quotes, poetry blocks,
 definition lists, and `<details>` are supported.
@@ -258,8 +258,8 @@ Images belong in `public/images/`; Markdown uses `/images/name.ext`.
 
 圖片放在 `public/images/`；Markdown 使用 `/images/name.ext`。
 
-A caption is visible context. `alt` text is non-visual description. Write both
-when the image matters.
+A caption gives visible context. `alt` text gives a non-visual description.
+Write both when the image carries meaning.
 
 圖片說明是可見語境。`alt` 文字是非視覺描述。重要圖片兩者都寫。
 
@@ -349,10 +349,10 @@ Prefer Markdown or live guide pages over screenshots; screenshots decay.
 
 ## 10. Tools / 工具
 
-Tool metadata is content. Tool instruments are components. Tool math is library
-code.
+Tool metadata is content. Tool instruments are components. Tool mathematics
+belongs in library code.
 
-工具資料是內容。工具介面是元件。工具數學是函式庫程式碼。
+工具資料是內容。工具介面是元件。工具中的數學屬於函式庫程式碼。
 
 Add a composition tool by creating `content/tools/<slug>/index.md`, creating a
 component in `src/components/tools/`, registering it in
@@ -449,7 +449,7 @@ coherent change.
 
 發布前：檢查、建置、預覽變更的路由，然後提交一個完整修改。
 
-End condition: source updated, manual updated, `npm run check` and
+End condition: the source and this manual agree; `npm run check` and
 `npm run build` pass.
 
-終止條件：原始碼已更新，手冊已更新，`npm run check` 與 `npm run build` 通過。
+終止條件：原始碼與本手冊一致，`npm run check` 與 `npm run build` 通過。

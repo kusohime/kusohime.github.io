@@ -123,14 +123,12 @@ caption:
 
 簡短的 Markdown 圖片語法也可以使用，但不會自動生成圖片說明。
 
-## Ruby annotation / Ruby 注音
+## Ruby annotation / Ruby 標註
 
-The term <ruby>留白<rp>(</rp><rt>liú bái</rt><rp>)</rp></ruby> demonstrates
-pronunciation above base text. Japanese is also possible:
+Japanese furigana attaches kana to kanji:
 <ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>.
 
-<ruby>留白<rp>(</rp><rt>liú bái</rt><rp>)</rp></ruby> 演示在基礎文字上方標註
-讀音；也可以用於日文：
+日文振假名將假名標在漢字上：
 <ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>。
 
 ## Code / 程式碼

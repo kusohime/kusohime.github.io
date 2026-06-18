@@ -233,10 +233,10 @@ Figure with caption / 帶說明的圖片:
 </figure>
 ```
 
-Ruby annotation / Ruby 注音:
+Ruby annotation / Ruby 標註:
 
 ```html
-<ruby>漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby>
+<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>
 ```
 
 Poetry without paragraph indentation / 無首行縮排的詩歌:
