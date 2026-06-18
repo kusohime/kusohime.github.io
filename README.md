@@ -1,4 +1,4 @@
-# Yixin Cui Website Manual / 崔逸新網站手冊
+# Yixin Cui Website Manual / 崔浥新網站手冊
 
 English and 正體中文 are paired. In the local Admin Guide, use the language
 menu to show one language.
