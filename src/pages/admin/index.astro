@@ -3,34 +3,10 @@
 // English: Markup for the local Website Studio; behavior lives in scripts/admin.ts.
 // Caveat / 注意：這是本地工具，不是部署後的線上 CMS。
 // Caveat: This is a local tool, not a deployed online CMS.
-import NamePronunciation from "../../components/NamePronunciation.astro";
 import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
 <AdminLayout title="Website Studio | Yixin Cui">
-  <!--
-    本地管理入口：透過後只在當前瀏覽器標籤頁內記住口令。
-    Local admin gate: the passcode is remembered only for this browser tab.
-  -->
-  <section class="admin-gate" data-admin-gate>
-    <form class="gate-card" data-passcode-form>
-      <p class="gate-kicker"><NamePronunciation /></p>
-      <h1>Website Studio</h1>
-      <label>
-        Passcode
-        <input
-          type="password"
-          inputmode="numeric"
-          autocomplete="current-password"
-          data-passcode-input
-          autofocus
-        />
-      </label>
-      <button type="submit">Enter</button>
-      <p class="gate-message" data-passcode-message aria-live="polite"></p>
-    </form>
-  </section>
-
   <main class="studio" data-admin-studio hidden>
     <header class="studio-toolbar">
       <div class="toolbar-actions">
@@ -44,7 +20,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <input type="checkbox" data-auto-refresh checked />
           Refresh preview after save
         </label>
-        <button type="button" data-lock-studio>Lock</button>
       </div>
 
       <p class="studio-status" data-status>
@@ -98,6 +73,14 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             data-sidebar-tab="design"
           >
             Design
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-sidebar-tab="library"
+          >
+            Library
           </button>
           <button
             type="button"
@@ -392,8 +375,155 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         </section>
 
         <!--
-          New 頁籤：以表單建立新的作品或文章草稿，存於 content/ 之下。
-          The New tab creates a fresh work or writing draft under content/.
+          Library 頁籤：整理作品、文章與活動的 metadata，並可安全移入 trash。
+          The Library tab edits works/writings/events metadata and safely moves pages to trash.
+        -->
+        <section class="sidebar-panel library-panel" data-sidebar-panel="library" hidden>
+          <div class="library-controls">
+            <label>
+              Collection
+              <select data-library-kind>
+                <option value="works">Works</option>
+                <option value="events">Events</option>
+                <option value="writings">Writings</option>
+              </select>
+            </label>
+            <label>
+              Filter
+              <input type="search" data-library-filter placeholder="title, slug, draft…" />
+            </label>
+            <div class="library-create-actions">
+              <button type="button" data-library-create="work">New work</button>
+              <button type="button" data-library-create="event">New event</button>
+              <button type="button" data-library-create="writing">New writing</button>
+            </div>
+          </div>
+
+          <details class="taxonomy-manager">
+            <summary>Manage categories</summary>
+            <label>
+              Set
+              <select data-taxonomy-kind>
+                <option value="workCategories">Work categories</option>
+                <option value="writingTypes">Writing types</option>
+              </select>
+            </label>
+            <label>
+              Existing values
+              <select size="6" data-taxonomy-list></select>
+            </label>
+            <label>
+              Value
+              <input type="text" data-taxonomy-value placeholder="Category name" />
+            </label>
+            <div class="library-actions">
+              <button type="button" data-taxonomy-add>Add</button>
+              <button type="button" data-taxonomy-rename>Rename</button>
+              <button type="button" data-taxonomy-delete data-danger>Delete</button>
+            </div>
+            <p class="panel-hint" data-taxonomy-message aria-live="polite"></p>
+          </details>
+
+          <ol class="library-list" data-library-list></ol>
+
+          <form class="library-editor" data-library-form hidden>
+            <fieldset class="design-group">
+              <legend>Catalog fields</legend>
+              <p class="library-path" data-library-path></p>
+              <label>
+                Title
+                <input type="text" data-library-field="title" />
+              </label>
+              <label>
+                Slug
+                <input type="text" data-library-field="slug" />
+              </label>
+              <label data-library-non-event>
+                Subtitle
+                <input type="text" data-library-field="subtitle" />
+              </label>
+              <label data-library-work-only>
+                Year
+                <input type="number" min="1900" max="2100" data-library-field="year" />
+              </label>
+              <label data-library-work-only>
+                Category
+                <select data-library-field="category" data-library-category></select>
+              </label>
+              <label data-library-work-only>
+                Instrumentation
+                <input type="text" data-library-field="instrumentation" />
+              </label>
+              <label data-library-work-only>
+                Duration, minutes
+                <input type="number" min="0" step="0.5" data-library-field="duration" />
+              </label>
+              <label data-library-writing-or-event hidden>
+                Date
+                <input type="text" data-library-field="date" />
+              </label>
+              <label data-library-writing-only hidden>
+                Type
+                <select data-library-field="type" data-library-type></select>
+              </label>
+              <label data-library-writing-only hidden>
+                Language
+                <input type="text" data-library-field="language" />
+              </label>
+              <label data-library-event-only hidden>
+                Time
+                <input type="text" data-library-field="time" placeholder="7:30 PM" />
+              </label>
+              <label data-library-event-only hidden>
+                Venue
+                <input type="text" data-library-field="venue" />
+              </label>
+              <label data-library-event-only hidden>
+                Location
+                <input type="text" data-library-field="location" />
+              </label>
+              <label data-library-event-only hidden>
+                Role
+                <input type="text" data-library-field="role" placeholder="composer, pianist..." />
+              </label>
+              <label>
+                Summary
+                <textarea rows="3" data-library-field="summary"></textarea>
+              </label>
+              <label data-library-event-only hidden>
+                Links
+                <textarea
+                  rows="3"
+                  data-library-field="links"
+                  placeholder="Program | https://example.com"
+                ></textarea>
+              </label>
+              <label>
+                Order
+                <input type="number" data-library-field="order" />
+              </label>
+              <label>
+                <input type="checkbox" data-library-field="draft" />
+                Draft
+              </label>
+              <label data-library-comments-control>
+                <input type="checkbox" data-library-field="comments" />
+                Comments open
+              </label>
+              <div class="library-actions">
+                <button type="submit" data-library-save>Save catalog</button>
+                <button type="button" data-library-open>Open content</button>
+                <button type="button" data-library-preview>Preview</button>
+                <button type="button" data-library-trash data-danger>Move to trash</button>
+              </div>
+              <p class="panel-hint" data-library-message aria-live="polite"></p>
+            </fieldset>
+          </form>
+        </section>
+
+        <!--
+          New 頁籤：以表單建立新的作品、文章或活動草稿，存於 content/ 之下。
+          The New tab creates a fresh work, writing, or event draft under content/.
         -->
         <section class="sidebar-panel new-page-panel" data-sidebar-panel="new" hidden>
           <form data-new-page-form>
@@ -403,6 +533,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 Kind
                 <select data-new-kind>
                   <option value="work">Work (composition)</option>
+                  <option value="event">Event</option>
                   <option value="writing">Writing (text)</option>
                 </select>
               </label>
@@ -451,6 +582,29 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                     <option>Chinese / English</option>
                     <option>Japanese</option>
                   </select>
+                </label>
+              </div>
+
+              <div data-new-event-fields hidden>
+                <label>
+                  Date (YYYY-MM-DD)
+                  <input type="text" data-new-event-date placeholder="2026-09-20" />
+                </label>
+                <label>
+                  Time
+                  <input type="text" data-new-event-time placeholder="7:30 PM" />
+                </label>
+                <label>
+                  Venue
+                  <input type="text" data-new-event-venue placeholder="Eastman School of Music" />
+                </label>
+                <label>
+                  Location
+                  <input type="text" data-new-event-location placeholder="Rochester, NY" />
+                </label>
+                <label>
+                  Role
+                  <input type="text" data-new-event-role placeholder="composer" />
                 </label>
               </div>
 
@@ -511,6 +665,19 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             >-</button>
           </div>
         </header>
+        <div class="markdown-toolbar" data-md-toolbar hidden>
+          <button type="button" data-md-insert="h2">H2</button>
+          <button type="button" data-md-insert="h3">H3</button>
+          <button type="button" data-md-insert="bold">B</button>
+          <button type="button" data-md-insert="italic">I</button>
+          <button type="button" data-md-insert="link">Link</button>
+          <button type="button" data-md-insert="quote">Quote</button>
+          <button type="button" data-md-insert="list">List</button>
+          <button type="button" data-md-insert="footnote">Footnote</button>
+          <button type="button" data-md-insert="no-indent">No indent</button>
+          <button type="button" data-md-insert="lang">Lang</button>
+          <button type="button" data-md-insert="ruby">Ruby</button>
+        </div>
         <div class="code-editor" data-code-editor></div>
       </section>
 

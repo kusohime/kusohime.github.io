@@ -75,8 +75,7 @@ button:disabled {
 }
 
 /*
- * 口令入口保持简单，不使用公开网站的排版系统。
- * The passcode gate stays plain and independent from the public site's typography.
+ * Former local gate styles remain for old markup snapshots.
  */
 .admin-gate {
   display: grid;
@@ -317,7 +316,7 @@ button:disabled {
 
 .sidebar-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   border-bottom: 1px solid var(--admin-border);
   background: var(--admin-background);
 }
@@ -358,18 +357,25 @@ button:disabled {
 .filter-field input,
 .preview-controls input,
 .design-group input:not([type="checkbox"]):not([type="range"]),
-.design-group select {
+.design-group select,
+.design-group textarea,
+.library-controls input,
+.library-controls select {
   min-width: 0;
   border: 1px solid var(--admin-border);
   padding: 0.4rem 0.5rem;
   color: var(--admin-text);
   background: #fff;
+  font: inherit;
 }
 
 .filter-field input:focus,
 .preview-controls input:focus,
 .design-group input:focus,
-.design-group select:focus {
+.design-group select:focus,
+.design-group textarea:focus,
+.library-controls input:focus,
+.library-controls select:focus {
   border-color: var(--admin-accent);
   outline: 1px solid var(--admin-accent);
   outline-offset: 0;
@@ -508,6 +514,10 @@ button:disabled {
   grid-template-rows: auto minmax(0, 1fr);
 }
 
+.studio-editor-pane {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
 .pane-heading {
   min-height: 2.55rem;
   padding: 0.5rem 0.65rem;
@@ -557,6 +567,25 @@ button:disabled {
 .code-editor {
   min-height: 0;
   overflow: hidden;
+}
+
+.markdown-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: color-mix(in srgb, var(--admin-background) 72%, white);
+}
+
+.markdown-toolbar[hidden] {
+  display: none;
+}
+
+.markdown-toolbar button {
+  min-width: 2rem;
+  padding: 0.24rem 0.45rem;
+  font-size: 0.7rem;
 }
 
 .code-editor .cm-editor {
@@ -812,10 +841,149 @@ button:disabled {
 }
 
 .new-page-panel [data-new-work-fields],
-.new-page-panel [data-new-writing-fields] {
+.new-page-panel [data-new-writing-fields],
+.new-page-panel [data-new-event-fields] {
   display: grid;
   gap: 0.65rem;
   padding-block: 0.2rem;
+}
+
+.library-panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(9rem, 0.9fr) auto;
+  gap: 0.75rem;
+}
+
+.library-panel[hidden] {
+  display: none;
+}
+
+.library-controls,
+.library-editor .design-group {
+  margin: 0;
+}
+
+.library-controls {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.library-controls label {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+}
+
+.taxonomy-manager {
+  border: 1px solid var(--admin-border);
+  padding: 0.55rem;
+  background: color-mix(in srgb, var(--admin-background) 34%, white);
+}
+
+.taxonomy-manager > summary {
+  color: var(--admin-accent);
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.taxonomy-manager label {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.55rem;
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+}
+
+.taxonomy-manager input,
+.taxonomy-manager select {
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  padding: 0.4rem 0.5rem;
+  background: #fff;
+  color: var(--admin-text);
+  font: inherit;
+}
+
+.taxonomy-manager select[size] {
+  min-height: 7rem;
+}
+
+.library-create-actions,
+.library-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.library-create-actions button,
+.library-actions button {
+  flex: 1 1 auto;
+  padding: 0.34rem 0.5rem;
+  font-size: 0.7rem;
+}
+
+.library-list {
+  min-height: 0;
+  overflow: auto;
+  margin: 0;
+  border: 1px solid var(--admin-border);
+  padding: 0;
+  background: var(--admin-panel);
+  list-style: none;
+}
+
+.library-list button {
+  display: grid;
+  width: 100%;
+  gap: 0.16rem;
+  border-width: 0 0 1px;
+  padding: 0.48rem 0.55rem;
+  background: transparent;
+  text-align: left;
+}
+
+.library-list button:hover,
+.library-list button[aria-current="true"] {
+  color: var(--admin-accent);
+  background: color-mix(in srgb, var(--admin-accent) 7%, transparent);
+}
+
+.library-list button[aria-current="true"] {
+  box-shadow: inset 0.18rem 0 var(--admin-accent);
+  font-weight: 700;
+}
+
+.library-title {
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-meta,
+.library-path {
+  overflow-wrap: anywhere;
+  color: var(--admin-muted);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.66rem;
+}
+
+.library-editor {
+  min-height: 0;
+  overflow: auto;
+}
+
+.library-actions button:first-child {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.library-actions [data-danger] {
+  color: var(--admin-accent);
 }
 
 .new-page-submit {

@@ -1,15 +1,147 @@
 ---
-// 中文：网站版 CV/Resume；PDF 另存于 public/files。
-// English: Website CV/resume page; the downloadable PDF lives in public/files.
+// 中文：网站版 C.V.；PDF 另存于 public/files。
+// English: Website C.V.; the downloadable PDF lives in public/files.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
 import { translate } from "../config/locales";
 
 const sections = [
   { id: "cv-education", label: "Education" },
+  { id: "cv-teachers", label: "Teachers" },
+  { id: "cv-masterclasses", label: "Masterclass and Workshop Appearances" },
   { id: "cv-experience", label: "Professional Experience" },
+  { id: "cv-ensembles", label: "Ensemble Experience" },
+  { id: "cv-compositions", label: "Selected Compositions" },
   { id: "cv-scholarships", label: "Scholarships and Fellowships" },
   { id: "cv-languages", label: "Languages" },
+  { id: "cv-repertoire", label: "Selected Performance Repertoire" },
+];
+
+const hrefs = {
+  eastman: "https://www.esm.rochester.edu/",
+  swarthmore: "https://www.swarthmore.edu/",
+  swarthmoreMusic: "https://www.swarthmore.edu/music",
+  westside: "https://westsidemusicconservatory.com/",
+  cooper: "https://www.swarthmore.edu/cooper-series",
+  raybon: "https://www.sacrednine.com/about",
+  garnetSingers: "https://www.swarthmore.edu/music/swarthmore-college-chorus-garnet-singers",
+  orchestra: "https://www.swarthmore.edu/music/swarthmore-college-orchestra",
+  labOrchestra: "https://www.swarthmore.edu/music/lab-orchestra",
+  chineseMusicEnsemble: "https://www.swarthmore.edu/music/chinese-music-ensemble",
+  theaterDepartment: "https://www.swarthmore.edu/department-theater",
+  marcantonio: "https://www.swarthmore.edu/profile/marcantonio-barone",
+  laraNie: "https://laranie.com/",
+  edwardSenn: "https://www.linkedin.com/in/edward-landin-senn-84a43539a/",
+  geraldLevinson: "https://www.swarthmore.edu/profile/gerald-levinson",
+  andrewHauze: "https://www.swarthmore.edu/profile/andrew-hauze-%E2%80%9904",
+  tomWhitman: "https://www.swarthmore.edu/profile/tom-whitman-%E2%80%9982",
+  erinBusch: "https://www.swarthmore.edu/music/associate-performance-erin-busch",
+  nathanReiff: "https://www.swarthmore.edu/profile/nathan-reiff",
+  keikoSato: "https://www.curtis.edu/person/keiko-sato/",
+  debraScurtoDavis: "https://www.rider.edu/about/faculty-staff-directory/debra-scurto-davis",
+  daminSpritzer: "https://www.daminspritzer.com/",
+  markLoria: "https://www.swarthmore.edu/music/mark-loria",
+  hannahRoseNicholas: "https://www.hannahroseviola.com/",
+  roderickWilliams: "https://www.grovesartists.com/artist/roderick-williams/",
+  jasperQuartet: "https://www.jasperquartet.com/",
+  wildflowerLab: "https://wildflowercomposers.org/lab",
+  relache: "https://www.relachemusic.org/about",
+  tamaraLukasheva: "https://tamaralukasheva.de/about",
+  hansLuedemann: "https://www.hansluedemann.de/english/",
+  peggyDettwiler: "https://peggydettwiler.com/",
+  antonArmstrong: "https://www.stolaf.edu/profile/armstron",
+  passacaglia: "https://westsidemusicfoundation.org/passacaglia/",
+};
+
+const compositions = [
+  {
+    heading: "Chamber and Instrumental",
+    works: [
+      ["Bayanbulak", "2023", "8'20, solo viola", "/works/bayanbulak/"],
+      ["Urtonforschungen I", "2024", "5', piano and vibraphone", "/works/urtonforschungen-i/"],
+      ["Urtonforschungen II", "2024", "4', chamber ensemble", "/works/urtonforschungen-ii/"],
+      ["A Song in the Winter", "2025", "6', soprano and piano", "/works/a-song-in-the-winter/"],
+      ["A Past Life", "2025", "5', solo sign-singer in CSL", "/works/a-past-life/"],
+      ["Saijōtai Yamata[i]-K[h]itan No. 2", "2025", "9', percussion and voice", "/works/saijotai-yamatai-khitan-no-2/"],
+      ["Phalanx Break", "2025", "6'30, piccolo and piano; commissioned by Passacaglia Chamber Music Collective", "/works/phalanx-break/"],
+    ],
+  },
+  {
+    heading: "Large Ensemble",
+    works: [
+      ["Twink Death", "2025", "circa 65', two actors, high voice, and large ensemble", "/works/twink-death/"],
+    ],
+  },
+  {
+    heading: "Choral",
+    works: [
+      ["DU:: nouvelle prière bouddhique", "2025", "9', SATB, percussion, piano", "/works/du-nouvelle-priere-bouddhique/"],
+    ],
+  },
+  {
+    heading: "Orchestral",
+    works: [
+      ["Impasse of the Weasels", "2025", "6'20, orchestra", "/works/impasse-of-the-weasels/"],
+    ],
+  },
+];
+
+const repertoire = [
+  {
+    heading: "Voice",
+    items: [
+      "Richard Strauss: Befreit, Op. 39, No. 4",
+      "Jules Massenet: Pourquoi me réveiller?, Werther, Act III",
+      "Benjamin Britten: Miles...!, The Turn of the Screw, Act I",
+      "Lili Boulanger: Clairières dans le ciel",
+      "Olivier Messiaen: Trois mélodies",
+      "Chen Yi: Meditation",
+      "Spencer Kennedy: Péripéties",
+    ],
+  },
+  {
+    heading: "Piano",
+    items: [
+      "Sofia Gubaidulina: Toccata-Troncata",
+      "Tōru Takemitsu: Rain Tree Sketch II",
+      "Nikolai Kapustin: 8 Concert Etudes",
+      "Gerald Levinson: Chorale for Nanine, with Birds",
+      "Tristan Murail: Le Rossignol en amour",
+    ],
+  },
+  {
+    heading: "Organ",
+    items: [
+      "J. Pachelbel: Toccata in E minor, P. 462",
+      "A. Vivaldi / J. S. Bach: Concerto in D minor, BWV 596",
+      "Louis Vierne: 24 Pièces en style libre",
+      "György Ligeti: Volumina",
+      "Modest Mussorgsky / Jean Guillou: Pictures at an Exhibition",
+    ],
+  },
+  {
+    heading: "Chamber and Ensemble",
+    items: [
+      "G. F. Handel: Organ Concerto, Op. 4, No. 4, HWV 292, continuo on harpsichord",
+      "J. S. Bach: Ich habe genug, BWV 82, continuo on chamber organ",
+      "F. Schubert: Winterreise, Op. 89, piano",
+      "Carl Reinecke: Flute Sonata Undine, Op. 167, piano",
+      "Erwin Schulhoff: Hot-Sonate, piano",
+      "George Bizet: Au fond du temple saint, Les pêcheurs de perles, Act I, tenor",
+      "Giacomo Puccini: O soave fanciulla, La bohème, Act I, tenor",
+      "Luo Zhong-rong: Five Tang Quatrains, tenor",
+      "Antonio Estévez: Mata del Anima Sola, soloist",
+      "P. D. Q. Bach [Prof. Peter Schickele]: Knock, Knock Cantata, soloist",
+    ],
+  },
+  {
+    heading: "Conducting",
+    items: [
+      "J. Haydn: Symphony No. 45",
+      "Pärt Uusberg: Õhtul",
+      "Charles H. Gabriel / Rollo Dilworth: I Sing Because I'm Happy",
+    ],
+  },
 ];
 ---
 
@@ -34,7 +166,7 @@ const sections = [
       <header class="detail-header cv-header">
         <p class="detail-kicker">Curriculum vitae</p>
         <h1><NamePronunciation /></h1>
-        <p>composer, pianist, keyboardist, designer</p>
+        <p>tenor, composer, keyboardist, conductor</p>
         <nav class="detail-actions" aria-label="CV downloads">
           <a href="/files/yixin-cui-cv.pdf" download data-i18n-key="resource.cvPdf">
             {translate("en", "resource.cvPdf")}
@@ -47,7 +179,7 @@ const sections = [
 
         <div class="cv-entry">
           <div class="cv-entry-head">
-            <h3>Eastman School of Music</h3>
+            <h3><a href={hrefs.eastman}>Eastman School of Music</a></h3>
             <p>Rochester, NY</p>
           </div>
           <div class="cv-entry-subhead">
@@ -58,18 +190,47 @@ const sections = [
 
         <div class="cv-entry">
           <div class="cv-entry-head">
-            <h3>Swarthmore College</h3>
+            <h3><a href={hrefs.swarthmore}>Swarthmore College</a></h3>
             <p>Swarthmore, PA</p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Bachelor of Arts, Philosophy</em></p>
+            <p><em>Bachelor of Arts, Philosophy; minor in Music</em></p>
             <p>2021-2025</p>
           </div>
           <ul>
-            <li>Minor in Music; cumulative GPA 3.97/4.00.</li>
-            <li>Senior theses on aleatoric music and instrumentalized bodies.</li>
+            <li>Cumulative GPA 3.97/4.00.</li>
+            <li>Senior theses: <em>Contingency, Difference, and Reproducibility in the Ontological Problems of Aleatoric Music</em>; <em>The Archaeology of Olympics: On Instrumentalized Bodies</em>.</li>
           </ul>
         </div>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-teachers">
+        <h2 id="cv-teachers">Teachers</h2>
+        <div class="cv-lines">
+          <p><span>Voice</span><span><a href={hrefs.laraNie}>Lara Nie</a></span></p>
+          <p><span>Vocal Coach</span><span><a href={hrefs.debraScurtoDavis}>Debra Scurto-Davis</a></span></p>
+          <p><span>Piano</span><span><a href={hrefs.marcantonio}>Marcantonio Barone</a>; <a href={hrefs.keikoSato}>Keiko Sato</a></span></p>
+          <p><span>Organ</span><span><a href={hrefs.edwardSenn}>Edward Landin Senn</a></span></p>
+          <p><span>Composition</span><span><a href={hrefs.geraldLevinson}>Gerald Levinson</a>; <a href={hrefs.tomWhitman}>Thomas Whitman</a>; <a href={hrefs.erinBusch}>Erin Busch</a></span></p>
+          <p><span>Conducting</span><span><a href={hrefs.andrewHauze}>Andrew Hauze</a>; <a href={hrefs.nathanReiff}>Nathan Reiff</a></span></p>
+        </div>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-masterclasses">
+        <h2 id="cv-masterclasses">Masterclass and Workshop Appearances</h2>
+        <ul class="cv-dot-list">
+          <li>American Guild of Organists, Philadelphia Chapter, organ (2023)</li>
+          <li><a href={hrefs.daminSpritzer}>Damin Spritzer</a>, organ (2023)</li>
+          <li><a href={hrefs.markLoria}>Mark Loria</a>, organ (2023)</li>
+          <li>Violafest with <a href={hrefs.hannahRoseNicholas}>Hannah Rose Nicholas</a>, composition (2023)</li>
+          <li><a href={hrefs.roderickWilliams}>Roderick Williams OBE</a>, composition (2024)</li>
+          <li><a href={hrefs.jasperQuartet}>Jasper String Quartet</a>, conducting (2024)</li>
+          <li><a href={hrefs.wildflowerLab}>Wildflower Lab</a> with <a href={hrefs.relache}>Relâche Ensemble</a>, composition (2025)</li>
+          <li><a href={hrefs.roderickWilliams}>Roderick Williams OBE</a>, voice (2025)</li>
+          <li><a href={hrefs.tamaraLukasheva}>Tamara Lukasheva</a> and <a href={hrefs.hansLuedemann}>Hans Lüdemann</a>, voice and composition (2025)</li>
+          <li>American Choral Directors Association, Pennsylvania, conducting (2025)</li>
+          <li><a href={hrefs.peggyDettwiler}>Peggy Dettwiler</a> and <a href={hrefs.antonArmstrong}>Anton Armstrong</a>, conducting (2025)</li>
+        </ul>
       </section>
 
       <section class="cv-section" aria-labelledby="cv-experience">
@@ -91,33 +252,42 @@ const sections = [
 
         <div class="cv-entry">
           <div class="cv-entry-head">
-            <h3>Pagoda Artworks, Inc., Westside Music Conservatory</h3>
+            <h3>Pagoda Artworks, Inc., <a href={hrefs.westside}>Westside Music Conservatory</a></h3>
             <p>Los Angeles, CA</p>
           </div>
           <div class="cv-entry-subhead">
             <p><em>Intern</em></p>
-            <p>2025-present</p>
+            <p>2025-2026</p>
           </div>
           <ul>
-            <li>Create illustrations and design for republishing piano technique tutorials.</li>
-            <li>Front-end engineering, catalog design, and professional composer websites.</li>
-            <li>Consultation on pedagogy and world music.</li>
+            <li>Illustrator and designer for a young children's piano pedagogy book republishing project.</li>
+            <li>Maintenance of professional composer's website.</li>
           </ul>
         </div>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
-            <h3>Vortion Education Technology Co., Ltd.</h3>
-            <p>Shanghai, China</p>
+            <h3><a href={hrefs.cooper}>Cooper Series, Swarthmore College</a></h3>
+            <p>Swarthmore, PA</p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Start-up Partner</em></p>
-            <p>2025-present</p>
-          </div>
+            <p><em>Tenor</em></p>
+            <p>2025-2026</p>
           <ul>
-            <li>Consultation and resources for students preparing to study abroad.</li>
-            <li>E-learning courses and flipped classrooms using higher-education resources.</li>
+             <li>Soloist for a newly commissioned cantata by <a href={hrefs.raybon}>C. Leonard Raybon</a>.</li>
           </ul>
+          </div>
+        </div>
+
+        <div class="cv-entry">
+          <div class="cv-entry-head">
+            <h3><a href={hrefs.garnetSingers}>Swarthmore Garnet Singers</a></h3>
+            <p>Swarthmore, PA</p>
+          </div>
+          <div class="cv-entry-subhead">
+            <p><em>Conductor and Pianist</em></p>
+            <p>2026</p>
+          </div>
         </div>
 
         <div class="cv-entry">
@@ -126,18 +296,16 @@ const sections = [
             <p>Swarthmore, PA</p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Collaborative Pianist and Soloist Singer</em></p>
             <p>2025-present</p>
           </div>
           <ul>
-            <li>Soloist for a newly commissioned cantata by C. Leonard Raybon.</li>
-            <li>Collaborative keyboard work for rehearsal, sight-reading, and concert performance.</li>
+            <li>Collaborative keyboard work for rehearsal, sight-reading, and concert performance for Choir, Orchestra, and other ensembles.</li>
           </ul>
         </div>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
-            <h3>Swarthmore College</h3>
+            <h3><a href={hrefs.swarthmore}>Swarthmore College</a></h3>
             <p>Swarthmore, PA</p>
           </div>
           <div class="cv-entry-subhead">
@@ -145,8 +313,38 @@ const sections = [
             <p>2021-2024</p>
           </div>
           <ul>
-            <li>Tutoring and grading across mathematics, modern languages, and music theory.</li>
+            <li>Tutoring and grading for mathematics, modern languages, and music theory.</li>
           </ul>
+        </div>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-ensembles">
+        <h2 id="cv-ensembles">Music Ensemble Experience</h2>
+        <ul class="cv-dot-list">
+          <li><a href={hrefs.garnetSingers}>Swarthmore Chorus</a>, section leader, soloist, octet singer</li>
+          <li><a href={hrefs.garnetSingers}>Swarthmore Garnet Singers</a>, senior student conductor, composer, pianist</li>
+          <li><a href={hrefs.orchestra}>Swarthmore Orchestra</a>, celesta, piano, organ, percussion, composer</li>
+          <li><a href={hrefs.labOrchestra}>Swarthmore Lab Orchestra</a>, senior student conductor, percussion</li>
+          <li><a href={hrefs.theaterDepartment}>Swarthmore Theatre Department</a>, student keyboardist</li>
+          <li><a href={hrefs.chineseMusicEnsemble}>Swarthmore Chinese Music Ensemble</a>, erhu, zheng, voice, yangqin, conducting assistant</li>
+        </ul>
+      </section>
+
+      <section class="cv-section" aria-labelledby="cv-compositions">
+        <h2 id="cv-compositions">Selected Compositions</h2>
+        <div class="cv-composition-groups">
+          {
+            compositions.map((group) => (
+              <section class="cv-subsection" aria-label={group.heading}>
+                <h3>{group.heading}</h3>
+                <ul class="cv-dot-list">
+                  {group.works.map(([title, year, detail, href]) => (
+                    <li><a href={href}>{title}</a> ({year}), {detail}</li>
+                  ))}
+                </ul>
+              </section>
+            ))
+          }
         </div>
       </section>
 
@@ -163,7 +361,7 @@ const sections = [
             <span>2026-present</span>
           </p>
           <p>
-            <span>Freeman Scholars, Swarthmore Music Department</span>
+            <span>Freeman Scholars, Swarthmore College Music Department</span>
             <span>2024-2025</span>
           </p>
         </div>
@@ -171,8 +369,28 @@ const sections = [
 
       <section class="cv-section" aria-labelledby="cv-languages">
         <h2 id="cv-languages">Languages</h2>
-        <p class="cv-note">Listed from greater to lesser proficiency.</p>
-        <p>Mandarin, English, Japanese, Classical Chinese, Classical Japanese, French, Chinese Sign Language, German, Tibetan.</p>
+        <p class="cv-note">Listed from higher to lower proficiency.</p>
+        <p>Mandarin, English, Japanese, Classical Chinese, Classical Japanese, French, Chinese Sign Language (PRC standard), German, Tibetan.</p>
+      </section>
+
+      <section class="cv-section cv-fold-section" aria-labelledby="cv-repertoire">
+        <details class="cv-fold">
+          <summary id="cv-repertoire">
+            <span>Selected Performance Repertoire</span>
+          </summary>
+          <div class="cv-repertoire-groups">
+            {
+              repertoire.map((group) => (
+                <section class="cv-subsection" aria-label={group.heading}>
+                  <h3>{group.heading}</h3>
+                  <ul>
+                    {group.items.map((item) => <li>{item}</li>)}
+                  </ul>
+                </section>
+              ))
+            }
+          </div>
+        </details>
       </section>
     </article>
   </div>

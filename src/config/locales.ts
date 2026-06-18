@@ -142,9 +142,9 @@ const workCategoryTranslations: Record<
 > = {
   Solo: { en: "Solo", zh: "獨奏" },
   Chamber: { en: "Chamber", zh: "室內樂" },
+  "Large Ensemble": { en: "Large Ensemble", zh: "大型合奏" },
   Orchestral: { en: "Orchestral", zh: "管弦樂" },
   "Vocal / Choral": { en: "Vocal / Choral", zh: "聲樂／合唱" },
-  "Music Theatre": { en: "Music Theatre", zh: "音樂劇場" },
   Other: { en: "Other", zh: "其他" },
 };
 

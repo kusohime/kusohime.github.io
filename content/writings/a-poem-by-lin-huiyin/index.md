@@ -1,12 +1,13 @@
 ---
 title: "A Poem by Lin Huiyin"
 subtitle: "A working translation"
-date: 2024
+date: "2024"
 type: "Translation"
 language: "Chinese / English"
 excerpt: "A placeholder translation accompanied by brief notes on rhythm, image, and competing English phrasings."
 slug: "a-poem-by-lin-huiyin"
 order: 2
+comments: true
 ---
 
 ## Translator's Note

@@ -53,16 +53,14 @@ const defaultLanguage = siteDefaults.defaultLanguage;
             html {"{"} visibility: hidden; {"}"}
           </style>
           <script is:inline>
-            // 管理指南只在本地 Studio 解鎖後顯示；這不是線上帳戶系統。
-            // The guide appears only after the local Studio is unlocked; this is not online authentication.
+            // 管理指南只在本地開發時顯示；這不是線上帳戶系統。
+            // The guide appears only in local development; this is not online authentication.
             try {
               const isLocal =
                 location.hostname === "localhost" ||
                 location.hostname === "127.0.0.1";
-              const isUnlocked =
-                sessionStorage.getItem("yixin-cui-studio-passcode") === "0592";
 
-              if (!isLocal || !isUnlocked) {
+              if (!isLocal) {
                 location.replace("/admin/");
               } else {
                 document.documentElement.style.visibility = "visible";

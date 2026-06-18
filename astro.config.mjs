@@ -7,13 +7,13 @@
  */
 import { defineConfig } from "astro/config";
 import { unified } from "@astrojs/markdown-remark";
-import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, stat, writeFile } from "node:fs/promises";
 import { dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 
-// 管理页面只在本地开发服务器中工作；口令同时保护下面的文件读写接口。
-// The Studio runs only in local development; the passcode also protects its file API.
+// 管理页面只在本地开发服务器中工作；文件读写接口仍只接受本地请求。
+// The Studio runs only in local development; its file API still accepts local requests only.
 const ADMIN_PASSCODE = "0592";
 const MAX_SEARCH_RESULTS = 250;
 
@@ -212,6 +212,38 @@ function localStudioPlugin() {
               query,
               results: await searchProject(query),
             });
+            return;
+          }
+
+          if (url.pathname === "/__admin/api/move" && request.method === "POST") {
+            const payload = JSON.parse(await readBody(request));
+            const from = String(payload.from ?? "");
+            const to = String(payload.to ?? "");
+            if (!from || !to) {
+              sendJson(response, 400, { error: "Source and destination paths are required." });
+              return;
+            }
+
+            const fromPath = resolveProjectFile(from);
+            const toPath = resolveProjectFile(to);
+            await stat(fromPath);
+            try {
+              await stat(toPath);
+              sendJson(response, 409, { error: "Destination already exists." });
+              return;
+            } catch (error) {
+              if (
+                !(error instanceof Error) ||
+                !("code" in error) ||
+                error.code !== "ENOENT"
+              ) {
+                throw error;
+              }
+            }
+
+            await mkdir(dirname(toPath), { recursive: true });
+            await rename(fromPath, toPath);
+            sendJson(response, 200, { moved: from, to });
             return;
           }
 

@@ -96,9 +96,9 @@
    */
   --theme-color: #c81e1e;
 
-  --page-width: 56rem;
+  --page-width: 76rem;
   --content-width: 38rem;
-  --reading-width: 32rem;
+  --reading-width: 40rem;
   --page-gutter: 1.25rem;
 
   --space-xs: 0.35rem;
@@ -285,6 +285,12 @@ a {
   text-decoration-color: var(--theme-color);
   text-decoration-thickness: 0.09em;
   text-underline-offset: 0.15em;
+}
+
+a:hover,
+a:focus-visible {
+  font-weight: bold;
+  text-decoration-color: var(--theme-color);
 }
 
 img {
@@ -509,8 +515,8 @@ summary {
 .nav-dropdown-list a:hover,
 .nav-dropdown-list a:focus-visible,
 .nav-dropdown-list a[aria-current="page"] {
-  text-decoration-color: currentColor;
-  text-decoration-thickness: 1px;
+  text-decoration-color: var(--theme-color);
+  text-decoration-thickness: 0.09em;
 }
 
 .preference-menu {
@@ -801,6 +807,31 @@ main {
   text-decoration-color: var(--theme-color);
 }
 
+/* CV contents: these labels are long and wrap, so the shared tight spacing
+   made the four entries read as one block. Number each entry, give the
+   rows room, and let wrapped lines hang under the label — the list now
+   reads as discrete, layered items rather than one crammed column. */
+.cv-rail ul {
+  counter-reset: cv-toc;
+  gap: var(--space-sm);
+}
+
+.cv-rail li {
+  counter-increment: cv-toc;
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  column-gap: var(--space-xs);
+  align-items: baseline;
+  line-height: 1.25;
+}
+
+.cv-rail li::before {
+  content: counter(cv-toc, decimal-leading-zero);
+  color: var(--theme-color);
+  font-size: 0.85em;
+  text-align: right;
+}
+
 .catalog-groups,
 .writing-groups {
   max-width: var(--reading-width);
@@ -945,8 +976,8 @@ main {
 }
 
 .cv-page a:not(.detail-actions a) {
-  text-decoration-color: currentColor;
-  text-decoration-thickness: 1px;
+  text-decoration-color: var(--theme-color);
+  text-decoration-thickness: 0.09em;
 }
 
 .detail-kicker {
@@ -1238,11 +1269,33 @@ main {
   margin-bottom: var(--space-lg);
 }
 
-.cv-section h2 {
+.cv-section h2,
+.cv-fold > summary {
   margin: 0 0 var(--space-sm);
   padding-bottom: 0.2rem;
   border-bottom: 1px solid var(--color-rule);
   font-size: 1rem;
+}
+
+.cv-fold > summary {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  font-weight: bold;
+  list-style: none;
+}
+
+.cv-fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.cv-fold > summary::after {
+  color: var(--theme-color);
+  content: "+";
+}
+
+.cv-fold[open] > summary::after {
+  content: "-";
 }
 
 .cv-entry {
@@ -1276,6 +1329,15 @@ main {
   text-align: right;
 }
 
+.cv-dot-list {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.cv-dot-list li {
+  margin-bottom: 0.2rem;
+}
+
 .cv-entry ul {
   margin: var(--space-xs) 0 0;
   padding-left: 1.35rem;
@@ -1288,6 +1350,33 @@ main {
 .cv-lines {
   display: grid;
   gap: 0.25rem;
+}
+
+.cv-subsection {
+  margin-bottom: var(--space-md);
+}
+
+.cv-subsection h3 {
+  margin: 0 0 var(--space-xs);
+  color: var(--theme-color);
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cv-subsection ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.cv-subsection li {
+  margin-bottom: 0.2rem;
+}
+
+.cv-composition-groups,
+.cv-repertoire-groups {
+  display: grid;
+  gap: var(--space-sm);
 }
 
 .cv-section > p {
@@ -1574,7 +1663,6 @@ main {
   max-width: var(--reading-width);
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
-  border-top: 1px solid var(--color-rule);
 }
 
 .comments-heading {

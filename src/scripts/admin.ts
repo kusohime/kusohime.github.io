@@ -50,7 +50,6 @@ interface FileTreeNode {
 }
 
 const ADMIN_PASSCODE = "0592";
-const PASSCODE_SESSION_KEY = "yixin-cui-studio-passcode";
 const LINE_WRAP_STORAGE_KEY = "yixin-cui-studio-line-wrap";
 const PREVIEW_PATH_SESSION_KEY = "yixin-cui-studio-preview-path";
 const PREVIEW_MODE_SESSION_KEY = "yixin-cui-studio-preview-mode";
@@ -60,6 +59,7 @@ const GLOBAL_CSS_PATH = "src/styles/global.css";
 const MOTION_SETTINGS_PATH = "src/config/motion.json";
 const TYPOGRAPHY_SETTINGS_PATH = "src/config/typography.json";
 const SITE_DEFAULTS_PATH = "src/config/siteDefaults.json";
+const CONTENT_TAXONOMY_PATH = "src/config/contentTaxonomy.ts";
 
 type MotionSetting =
   | "languageFlap"
@@ -135,7 +135,6 @@ async function responseError(response: Response) {
 
 export async function initializeAdminStudio() {
   const studio = document.querySelector<HTMLElement>("[data-admin-studio]");
-  const gate = document.querySelector<HTMLElement>("[data-admin-gate]");
   if (!studio) return;
 
   const isLocal =
@@ -146,7 +145,6 @@ export async function initializeAdminStudio() {
   const localOnly = studio.querySelector<HTMLElement>("[data-local-only]");
 
   if (!isLocal) {
-    if (gate) gate.hidden = true;
     studio.hidden = false;
     if (workspace) workspace.hidden = true;
     if (toolbar) toolbar.hidden = true;
@@ -154,42 +152,7 @@ export async function initializeAdminStudio() {
     return;
   }
 
-  // 口令保存在 sessionStorage：关闭当前标签页后需要重新输入。
-  // The passcode lives in sessionStorage, so a new tab or session must unlock again.
-  const unlockStudio = async () => {
-    const savedPasscode = sessionStorage.getItem(PASSCODE_SESSION_KEY);
-    if (savedPasscode === ADMIN_PASSCODE) return savedPasscode;
-
-    const form = gate?.querySelector<HTMLFormElement>("[data-passcode-form]");
-    const input = gate?.querySelector<HTMLInputElement>("[data-passcode-input]");
-    const message =
-      gate?.querySelector<HTMLElement>("[data-passcode-message]");
-    if (!gate || !form || !input || !message) return "";
-
-    return new Promise<string>((resolve) => {
-      form.addEventListener(
-        "submit",
-        (event) => {
-          event.preventDefault();
-          if (input.value !== ADMIN_PASSCODE) {
-            message.textContent = "Incorrect passcode.";
-            message.dataset.kind = "error";
-            input.select();
-            return;
-          }
-
-          sessionStorage.setItem(PASSCODE_SESSION_KEY, input.value);
-          message.textContent = "";
-          resolve(input.value);
-        },
-        { once: false },
-      );
-    });
-  };
-
-  const activePasscode = await unlockStudio();
-  if (!activePasscode) return;
-  if (gate) gate.hidden = true;
+  const activePasscode = ADMIN_PASSCODE;
   studio.hidden = false;
 
   const [
@@ -341,8 +304,6 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLInputElement>("[data-cjk-letter-spacing]");
   const cjkLetterSpacingOutput =
     studio.querySelector<HTMLOutputElement>("[data-cjk-letter-spacing-output]");
-  const lockStudioButton =
-    studio.querySelector<HTMLButtonElement>("[data-lock-studio]");
   const searchForm =
     studio.querySelector<HTMLFormElement>("[data-search-form]");
   const globalSearchInput =
@@ -385,6 +346,44 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLElement>("[data-new-message]");
   const draftShelfButton =
     studio.querySelector<HTMLButtonElement>("[data-draft-shelf]");
+  const libraryKindSelect =
+    studio.querySelector<HTMLSelectElement>("[data-library-kind]");
+  const libraryFilterInput =
+    studio.querySelector<HTMLInputElement>("[data-library-filter]");
+  const libraryList =
+    studio.querySelector<HTMLOListElement>("[data-library-list]");
+  const libraryForm =
+    studio.querySelector<HTMLFormElement>("[data-library-form]");
+  const libraryPathLabel =
+    studio.querySelector<HTMLElement>("[data-library-path]");
+  const libraryMessage =
+    studio.querySelector<HTMLElement>("[data-library-message]");
+  const libraryOpenButton =
+    studio.querySelector<HTMLButtonElement>("[data-library-open]");
+  const libraryPreviewButton =
+    studio.querySelector<HTMLButtonElement>("[data-library-preview]");
+  const libraryTrashButton =
+    studio.querySelector<HTMLButtonElement>("[data-library-trash]");
+  const libraryCategorySelect =
+    studio.querySelector<HTMLSelectElement>("[data-library-category]");
+  const libraryTypeSelect =
+    studio.querySelector<HTMLSelectElement>("[data-library-type]");
+  const markdownToolbar =
+    studio.querySelector<HTMLElement>("[data-md-toolbar]");
+  const taxonomyKindSelect =
+    studio.querySelector<HTMLSelectElement>("[data-taxonomy-kind]");
+  const taxonomyListSelect =
+    studio.querySelector<HTMLSelectElement>("[data-taxonomy-list]");
+  const taxonomyValueInput =
+    studio.querySelector<HTMLInputElement>("[data-taxonomy-value]");
+  const taxonomyAddButton =
+    studio.querySelector<HTMLButtonElement>("[data-taxonomy-add]");
+  const taxonomyRenameButton =
+    studio.querySelector<HTMLButtonElement>("[data-taxonomy-rename]");
+  const taxonomyDeleteButton =
+    studio.querySelector<HTMLButtonElement>("[data-taxonomy-delete]");
+  const taxonomyMessage =
+    studio.querySelector<HTMLElement>("[data-taxonomy-message]");
 
   if (
     !openFolderButton ||
@@ -409,7 +408,6 @@ export async function initializeAdminStudio() {
     !typographySettingsFieldset ||
     !cjkLetterSpacingInput ||
     !cjkLetterSpacingOutput ||
-    !lockStudioButton ||
     !searchForm ||
     !globalSearchInput ||
     !searchSummary ||
@@ -430,7 +428,26 @@ export async function initializeAdminStudio() {
     !newSlugInput ||
     !newSubmitButton ||
     !newMessage ||
-    !draftShelfButton
+    !draftShelfButton ||
+    !libraryKindSelect ||
+    !libraryFilterInput ||
+    !libraryList ||
+    !libraryForm ||
+    !libraryPathLabel ||
+    !libraryMessage ||
+    !libraryOpenButton ||
+    !libraryPreviewButton ||
+    !libraryTrashButton ||
+    !libraryCategorySelect ||
+    !libraryTypeSelect ||
+    !markdownToolbar ||
+    !taxonomyKindSelect ||
+    !taxonomyListSelect ||
+    !taxonomyValueInput ||
+    !taxonomyAddButton ||
+    !taxonomyRenameButton ||
+    !taxonomyDeleteButton ||
+    !taxonomyMessage
   ) {
     return;
   }
@@ -548,6 +565,7 @@ export async function initializeAdminStudio() {
   let loadingDocument = false;
   let saveTimer: number | undefined;
   let previewTimer: number | undefined;
+  let activePreviewPath = storedPreviewPath;
   let apiConnected = false;
 
   const setStatus = (message: string, kind: "normal" | "error" = "normal") => {
@@ -605,19 +623,46 @@ export async function initializeAdminStudio() {
     },
   });
 
-  const refreshPreview = () => {
-    const path = previewPath.value.trim() || "/";
+  const normalizePreviewPath = (value: string) => {
+    const url = new URL(value || "/", window.location.origin);
+    url.searchParams.delete("_studio");
+    return `${url.pathname}${url.search}${url.hash}` || "/";
+  };
+
+  const previewFramePath = () => {
+    try {
+      const href =
+        previewFrame.contentWindow?.location.href || previewFrame.src || "/";
+      const url = new URL(href, window.location.origin);
+      if (url.origin !== window.location.origin) return activePreviewPath;
+      return normalizePreviewPath(url.toString());
+    } catch {
+      return activePreviewPath;
+    }
+  };
+
+  const syncPreviewPath = (path: string) => {
+    activePreviewPath = normalizePreviewPath(path);
+    previewPath.value = activePreviewPath;
+    openPreviewLink.href = activePreviewPath;
+    sessionStorage.setItem(PREVIEW_PATH_SESSION_KEY, activePreviewPath);
+  };
+
+  const refreshPreview = (requestedPath = activePreviewPath) => {
+    const path = normalizePreviewPath(requestedPath);
+    syncPreviewPath(path);
     sessionStorage.setItem(PREVIEW_PATH_SESSION_KEY, path);
     const url = new URL(path, window.location.origin);
     url.searchParams.set("_studio", Date.now().toString());
     previewFrame.src = url.toString();
-    openPreviewLink.href = path;
   };
 
   const schedulePreviewRefresh = () => {
     if (!autoRefreshInput.checked) return;
     window.clearTimeout(previewTimer);
-    previewTimer = window.setTimeout(refreshPreview, 800);
+    previewTimer = window.setTimeout(() => {
+      refreshPreview(previewFramePath());
+    }, 800);
   };
 
   const saveCurrentFile = async () => {
@@ -711,6 +756,102 @@ export async function initializeAdminStudio() {
       ],
     }),
   });
+
+  const syncMarkdownToolbar = () => {
+    markdownToolbar.hidden = extensionOf(currentPath) !== ".md";
+  };
+
+  const selectedEditorText = (fallback = "text") => {
+    const selection = editor.state.selection.main;
+    return selection.empty
+      ? fallback
+      : editor.state.doc.sliceString(selection.from, selection.to);
+  };
+
+  const insertEditorText = (text: string, selectStart?: number, selectEnd?: number) => {
+    const selection = editor.state.selection.main;
+    const from = selection.from;
+    editor.dispatch({
+      changes: { from: selection.from, to: selection.to, insert: text },
+      selection:
+        selectStart !== undefined && selectEnd !== undefined
+          ? { anchor: from + selectStart, head: from + selectEnd }
+          : { anchor: from + text.length },
+      effects: EditorView.scrollIntoView(from, { y: "center" }),
+    });
+    editor.focus();
+  };
+
+  const wrapEditorSelection = (
+    before: string,
+    after: string,
+    fallback = "text",
+  ) => {
+    const text = selectedEditorText(fallback);
+    insertEditorText(
+      `${before}${text}${after}`,
+      before.length,
+      before.length + text.length,
+    );
+  };
+
+  const insertMarkdownStyle = (kind: string) => {
+    switch (kind) {
+      case "h2":
+        insertEditorText(`\n\n## ${selectedEditorText("Heading")}\n\n`);
+        break;
+      case "h3":
+        insertEditorText(`\n\n### ${selectedEditorText("Heading")}\n\n`);
+        break;
+      case "bold":
+        wrapEditorSelection("**", "**", "bold text");
+        break;
+      case "italic":
+        wrapEditorSelection("*", "*", "italic text");
+        break;
+      case "link":
+        wrapEditorSelection("[", "](https://example.com)", "link text");
+        break;
+      case "quote":
+        insertEditorText(
+          selectedEditorText("quoted text")
+            .split(/\r?\n/)
+            .map((line) => `> ${line}`)
+            .join("\n"),
+        );
+        break;
+      case "list":
+        insertEditorText(
+          selectedEditorText("list item")
+            .split(/\r?\n/)
+            .map((line) => `- ${line || "list item"}`)
+            .join("\n"),
+        );
+        break;
+      case "footnote":
+        insertEditorText("[^note]\n\n[^note]: Footnote text.");
+        break;
+      case "no-indent":
+        wrapEditorSelection('<p class="no-indent">', "</p>", "Paragraph text");
+        break;
+      case "lang":
+        wrapEditorSelection('<span lang="zh-Hant">', "</span>", "文字");
+        break;
+      case "ruby":
+        insertEditorText("<ruby>字<rt>zi</rt></ruby>");
+        break;
+      default:
+        break;
+    }
+  };
+
+  markdownToolbar
+    .querySelectorAll<HTMLButtonElement>("[data-md-insert]")
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        insertMarkdownStyle(button.dataset.mdInsert ?? "");
+      });
+    });
 
   const parseMotionSettings = (text: string): MotionSettings => {
     const parsed = JSON.parse(text) as Partial<MotionSettings>;
@@ -1051,7 +1192,7 @@ export async function initializeAdminStudio() {
     })();
   });
 
-  /* ----- Add page (works and writings, drafts by default) ----- */
+  /* ----- Add page (works, events, and writings; drafts by default) ----- */
 
   const slugify = (text: string) =>
     text
@@ -1069,22 +1210,286 @@ export async function initializeAdminStudio() {
 
   const newCategorySelect = newField<HTMLSelectElement>("[data-new-category]");
   const newTypeSelect = newField<HTMLSelectElement>("[data-new-type]");
-  if (newCategorySelect) {
-    for (const category of workCategories) {
+  let editableWorkCategories: string[] = [...workCategories];
+  let editableWritingTypes: string[] = [...writingTypes];
+
+  const setOptions = (
+    select: HTMLSelectElement | null,
+    values: readonly string[],
+  ) => {
+    if (!select) return;
+    const previous = select.value;
+    select.replaceChildren();
+    for (const value of values) {
       const option = document.createElement("option");
-      option.value = category;
-      option.textContent = category;
-      newCategorySelect.append(option);
+      option.value = value;
+      option.textContent = value;
+      select.append(option);
     }
-  }
-  if (newTypeSelect) {
-    for (const type of writingTypes) {
+    select.value = values.includes(previous) ? previous : values[0] ?? "";
+  };
+
+  const activeTaxonomyValues = () =>
+    taxonomyKindSelect.value === "workCategories"
+      ? editableWorkCategories
+      : editableWritingTypes;
+
+  const renderTaxonomyList = () => {
+    const values = activeTaxonomyValues();
+    const previous = taxonomyListSelect.value;
+    taxonomyListSelect.replaceChildren();
+    values.forEach((value) => {
       const option = document.createElement("option");
-      option.value = type;
-      option.textContent = type;
-      newTypeSelect.append(option);
+      option.value = value;
+      option.textContent = value;
+      taxonomyListSelect.append(option);
+    });
+    taxonomyListSelect.value = values.includes(previous)
+      ? previous
+      : values[0] ?? "";
+    taxonomyValueInput.value = taxonomyListSelect.value;
+  };
+
+  const syncTaxonomyControls = () => {
+    setOptions(newCategorySelect, editableWorkCategories);
+    setOptions(libraryCategorySelect, editableWorkCategories);
+    setOptions(newTypeSelect, editableWritingTypes);
+    setOptions(libraryTypeSelect, editableWritingTypes);
+    renderTaxonomyList();
+  };
+
+  syncTaxonomyControls();
+
+  const taxonomyArrayPattern = (name: string) =>
+    new RegExp(`export const ${name} = \\[([\\s\\S]*?)\\] as const;`);
+
+  const parseTaxonomyValues = (source: string, name: string) => {
+    const match = source.match(taxonomyArrayPattern(name));
+    if (!match) return [];
+    return [...match[1].matchAll(/"((?:\\.|[^"\\])*)"/g)].map(
+      ([, value]) => JSON.parse(`"${value}"`) as string,
+    );
+  };
+
+  const setTaxonomyValuesInSource = (
+    source: string,
+    name: string,
+    values: readonly string[],
+  ) => {
+    const next = `export const ${name} = [\n${values
+      .map((value) => `  ${JSON.stringify(value)},`)
+      .join("\n")}\n] as const;`;
+    const pattern = taxonomyArrayPattern(name);
+    if (!pattern.test(source)) {
+      throw new Error(`${name} was not found in contentTaxonomy.ts.`);
     }
-  }
+    return source.replace(pattern, next);
+  };
+
+  const writeSourceWithoutPreview = async (
+    path: string,
+    updated: string,
+    message: string,
+  ) => {
+    const handle = fileHandles.get(path);
+    if (!handle) throw new Error("The source file is unavailable.");
+    const writable = await handle.createWritable();
+    await writable.write(updated);
+    await writable.close();
+
+    if (currentPath === path) {
+      loadingDocument = true;
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: updated,
+        },
+      });
+      loadingDocument = false;
+      setDirty(false);
+    }
+
+    setStatus(message);
+  };
+
+  const taxonomySourceText = async () => {
+    const handle = fileHandles.get(CONTENT_TAXONOMY_PATH);
+    if (!handle) throw new Error("contentTaxonomy.ts is unavailable.");
+    return currentPath === CONTENT_TAXONOMY_PATH
+      ? editor.state.doc.toString()
+      : await (await handle.getFile()).text();
+  };
+
+  const loadTaxonomySettings = async () => {
+    try {
+      const source = await taxonomySourceText();
+      const nextWorkCategories = parseTaxonomyValues(source, "workCategories");
+      const nextWritingTypes = parseTaxonomyValues(source, "writingTypes");
+      if (nextWorkCategories.length > 0) {
+        editableWorkCategories = nextWorkCategories;
+      }
+      if (nextWritingTypes.length > 0) {
+        editableWritingTypes = nextWritingTypes;
+      }
+      syncTaxonomyControls();
+    } catch {
+      taxonomyMessage.textContent = "Could not read category settings.";
+    }
+  };
+
+  const saveTaxonomySettings = async () => {
+    let source = await taxonomySourceText();
+    source = setTaxonomyValuesInSource(
+      source,
+      "workCategories",
+      editableWorkCategories,
+    );
+    source = setTaxonomyValuesInSource(
+      source,
+      "writingTypes",
+      editableWritingTypes,
+    );
+    await writeSourceWithoutPreview(
+      CONTENT_TAXONOMY_PATH,
+      source,
+      "Saved category settings.",
+    );
+  };
+
+  const replaceLibraryTaxonomyValue = async (
+    taxonomyName: "workCategories" | "writingTypes",
+    oldValue: string,
+    nextValue: string,
+  ) => {
+    const targetKind: LibraryKind =
+      taxonomyName === "workCategories" ? "works" : "writings";
+    const key = taxonomyName === "workCategories" ? "category" : "type";
+    const paths = [...fileHandles.keys()].filter((path) =>
+      path.match(new RegExp(`^content/${targetKind}/[^/]+/index\\.md$`)),
+    );
+
+    for (const path of paths) {
+      const handle = fileHandles.get(path);
+      if (!handle) continue;
+      const source = currentPath === path
+        ? editor.state.doc.toString()
+        : await (await handle.getFile()).text();
+      const parts = frontmatterParts(source);
+      if (!parts) continue;
+      const lines = parts.frontmatter.split(/\r?\n/);
+      if (readTopScalar(lines, key) !== oldValue) continue;
+      setTopScalar(lines, key, nextValue);
+      const updated = `---${parts.lineBreak}${lines.join(parts.lineBreak)}${parts.lineBreak}---${parts.lineBreak}${parts.body}`;
+      await writeSourceWithoutPreview(path, updated, `Updated ${path}.`);
+    }
+  };
+
+  const currentTaxonomyName = () =>
+    taxonomyKindSelect.value as "workCategories" | "writingTypes";
+
+  const setActiveTaxonomyValues = (values: string[]) => {
+    if (currentTaxonomyName() === "workCategories") {
+      editableWorkCategories = values;
+    } else {
+      editableWritingTypes = values;
+    }
+    syncTaxonomyControls();
+  };
+
+  taxonomyListSelect.addEventListener("change", () => {
+    taxonomyValueInput.value = taxonomyListSelect.value;
+  });
+
+  taxonomyKindSelect.addEventListener("change", () => {
+    taxonomyMessage.textContent = "";
+    renderTaxonomyList();
+  });
+
+  const runTaxonomyAction = (action: () => Promise<void>) => {
+    void (async () => {
+      try {
+        taxonomyMessage.textContent = "";
+        await action();
+      } catch (error) {
+        taxonomyMessage.textContent =
+          error instanceof Error ? error.message : "Unable to update categories.";
+        await loadTaxonomySettings();
+      }
+    })();
+  };
+
+  taxonomyAddButton.addEventListener("click", () => {
+    runTaxonomyAction(async () => {
+      const value = taxonomyValueInput.value.trim();
+      const values = activeTaxonomyValues();
+      if (!value) {
+        taxonomyMessage.textContent = "Enter a value first.";
+        return;
+      }
+      if (values.includes(value)) {
+        taxonomyMessage.textContent = "That value already exists.";
+        return;
+      }
+      setActiveTaxonomyValues([...values, value]);
+      await saveTaxonomySettings();
+      taxonomyListSelect.value = value;
+      taxonomyMessage.textContent = "Added.";
+    });
+  });
+
+  taxonomyRenameButton.addEventListener("click", () => {
+    runTaxonomyAction(async () => {
+      const oldValue = taxonomyListSelect.value;
+      const nextValue = taxonomyValueInput.value.trim();
+      const values = activeTaxonomyValues();
+      if (!oldValue || !nextValue) {
+        taxonomyMessage.textContent = "Choose a value and enter a new name.";
+        return;
+      }
+      if (oldValue !== nextValue && values.includes(nextValue)) {
+        taxonomyMessage.textContent = "That value already exists.";
+        return;
+      }
+      const nextValues = values.map((value) =>
+        value === oldValue ? nextValue : value,
+      );
+      setActiveTaxonomyValues(nextValues);
+      await saveTaxonomySettings();
+      await replaceLibraryTaxonomyValue(currentTaxonomyName(), oldValue, nextValue);
+      await refreshLibrary();
+      taxonomyListSelect.value = nextValue;
+      taxonomyMessage.textContent = "Renamed and updated matching pages.";
+    });
+  });
+
+  taxonomyDeleteButton.addEventListener("click", () => {
+    runTaxonomyAction(async () => {
+      const oldValue = taxonomyListSelect.value;
+      const values = activeTaxonomyValues();
+      if (!oldValue) {
+        taxonomyMessage.textContent = "Choose a value to delete.";
+        return;
+      }
+      const nextValues = values.filter((value) => value !== oldValue);
+      if (nextValues.length === 0) {
+        taxonomyMessage.textContent = "At least one value must remain.";
+        return;
+      }
+      const fallback = nextValues.includes("Other")
+        ? "Other"
+        : nextValues[0];
+      const ok = window.confirm(
+        `Delete “${oldValue}”? Existing pages using it will change to “${fallback}”.`,
+      );
+      if (!ok) return;
+      setActiveTaxonomyValues(nextValues);
+      await saveTaxonomySettings();
+      await replaceLibraryTaxonomyValue(currentTaxonomyName(), oldValue, fallback);
+      await refreshLibrary();
+      taxonomyMessage.textContent = `Deleted. Matching pages now use “${fallback}”.`;
+    });
+  });
 
   let slugEditedManually = false;
   newSlugInput.addEventListener("input", () => {
@@ -1095,10 +1500,14 @@ export async function initializeAdminStudio() {
   });
   newKindSelect.addEventListener("change", () => {
     const isWork = newKindSelect.value === "work";
+    const isWriting = newKindSelect.value === "writing";
+    const isEvent = newKindSelect.value === "event";
     const workFields = newField<HTMLElement>("[data-new-work-fields]");
     const writingFields = newField<HTMLElement>("[data-new-writing-fields]");
+    const eventFields = newField<HTMLElement>("[data-new-event-fields]");
     if (workFields) workFields.hidden = !isWork;
-    if (writingFields) writingFields.hidden = isWork;
+    if (writingFields) writingFields.hidden = !isWriting;
+    if (eventFields) eventFields.hidden = !isEvent;
   });
 
   const buildNewPageSource = () => {
@@ -1140,6 +1549,41 @@ order: 999${draft ? "\ndraft: true" : ""}
 ## Program Notes
 
 Write about this piece here.
+`,
+      };
+    }
+
+    if (kind === "event") {
+      const date =
+        newField<HTMLInputElement>("[data-new-event-date]")?.value.trim() ||
+        new Date().toISOString().slice(0, 10);
+      const time =
+        newField<HTMLInputElement>("[data-new-event-time]")?.value.trim() ?? "";
+      const venue =
+        newField<HTMLInputElement>("[data-new-event-venue]")?.value.trim() ?? "";
+      const location =
+        newField<HTMLInputElement>("[data-new-event-location]")?.value.trim() ?? "";
+      const role =
+        newField<HTMLInputElement>("[data-new-event-role]")?.value.trim() ?? "";
+      const optionalFields = [
+        time ? `time: ${yamlQuote(time)}` : "",
+        venue ? `venue: ${yamlQuote(venue)}` : "",
+        location ? `location: ${yamlQuote(location)}` : "",
+        role ? `role: ${yamlQuote(role)}` : "",
+      ].filter(Boolean).join("\n");
+      return {
+        path: `content/events/${slug}/index.md`,
+        previewPath: `/events/${slug}/`,
+        source: `---
+title: ${yamlQuote(title)}
+date: ${yamlQuote(date)}
+${optionalFields ? `${optionalFields}\n` : ""}brief: ${yamlQuote(summary || title)}
+slug: ${yamlQuote(slug)}
+order: 999${draft ? "\ndraft: true" : ""}
+links: []
+---
+
+More information will be posted when details are confirmed.
 `,
       };
     }
@@ -1195,7 +1639,7 @@ Write the text here.
         setStatus(`Created ${built.path}. Continue writing in the editor.`);
         // Astro 需要片刻同步新内容文件，稍后再刷新预览。
         // Astro needs a moment to sync the new content file before preview.
-        window.setTimeout(refreshPreview, 1500);
+        window.setTimeout(() => refreshPreview(built.previewPath), 1500);
         newTitleInput.value = "";
         newSlugInput.value = "";
         slugEditedManually = false;
@@ -1212,10 +1656,26 @@ Write the text here.
     previewPath.value = "/drafts/";
     openPreviewLink.href = "/drafts/";
     sessionStorage.setItem(PREVIEW_PATH_SESSION_KEY, "/drafts/");
-    refreshPreview();
+    refreshPreview("/drafts/");
   });
 
   const loadFile = async (path: string, targetLine?: number) => {
+    if (currentPath === path) {
+      if (targetLine) {
+        const line = Math.min(Math.max(targetLine, 1), editor.state.doc.lines);
+        const position = editor.state.doc.line(line).from;
+        editor.dispatch({
+          selection: { anchor: position },
+          effects: EditorView.scrollIntoView(position, { y: "center" }),
+        });
+        editor.focus();
+      }
+      setStatus(`Editing ${path}.`);
+      revealFileInTree(path);
+      syncMarkdownToolbar();
+      return;
+    }
+
     if (dirty) {
       const proceed = window.confirm(
         `Discard unsaved changes to ${currentPath}?`,
@@ -1241,6 +1701,7 @@ Write the text here.
       currentPath = path;
       currentFileLabel.textContent = path;
       setDirty(false);
+      syncMarkdownToolbar();
       setStatus(`Editing ${path}.`);
       revealFileInTree(path);
       if (path === MOTION_SETTINGS_PATH) {
@@ -1264,6 +1725,689 @@ Write the text here.
     }
   };
 
+  type LibraryKind = "works" | "events" | "writings";
+
+  interface FrontmatterParts {
+    frontmatter: string;
+    body: string;
+    lineBreak: string;
+  }
+
+  interface LibraryEntry {
+    kind: LibraryKind;
+    path: string;
+    folder: string;
+    folderSlug: string;
+    title: string;
+    slug: string;
+    subtitle: string;
+    year: string;
+    date: string;
+    time: string;
+    venue: string;
+    location: string;
+    role: string;
+    category: string;
+    type: string;
+    language: string;
+    instrumentation: string;
+    duration: string;
+    summary: string;
+    links: string;
+    order: string;
+    draft: boolean;
+    comments: boolean;
+    source: string;
+  }
+
+  const frontmatterParts = (source: string): FrontmatterParts | null => {
+    const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+    if (!match) return null;
+    const lineBreak = match[0].includes("\r\n") ? "\r\n" : "\n";
+    return {
+      frontmatter: match[1],
+      body: source.slice(match[0].length),
+      lineBreak,
+    };
+  };
+
+  const unquoteYaml = (value: string) => {
+    const trimmed = value.trim();
+    if (
+      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'"))
+    ) {
+      return trimmed.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+    }
+    return trimmed;
+  };
+
+  const readTopScalar = (lines: string[], key: string) => {
+    const line = lines.find((item) => item.match(new RegExp(`^${key}:\\s*`)));
+    if (!line) return "";
+    return unquoteYaml(line.replace(new RegExp(`^${key}:\\s*`), ""));
+  };
+
+  const topKeyIndex = (lines: string[], key: string) =>
+    lines.findIndex((line) => line.match(new RegExp(`^${key}:\\s*`)));
+
+  const topBlockEnd = (lines: string[], start: number) => {
+    let end = start + 1;
+    while (end < lines.length && /^\s+/.test(lines[end])) end += 1;
+    return end;
+  };
+
+  const removeTopKey = (lines: string[], key: string) => {
+    const index = topKeyIndex(lines, key);
+    if (index < 0) return;
+    lines.splice(index, topBlockEnd(lines, index) - index);
+  };
+
+  const setTopScalar = (
+    lines: string[],
+    key: string,
+    value: string | number | boolean,
+    options: { quote?: boolean; omitFalse?: boolean; omitEmpty?: boolean } = {},
+  ) => {
+    if (options.omitFalse && value === false) {
+      removeTopKey(lines, key);
+      return;
+    }
+    if (options.omitEmpty && String(value).trim() === "") {
+      removeTopKey(lines, key);
+      return;
+    }
+    const next =
+      typeof value === "boolean"
+        ? String(value)
+        : typeof value === "number" || options.quote === false
+          ? String(value)
+          : yamlQuote(String(value));
+    const line = `${key}: ${next}`;
+    const index = topKeyIndex(lines, key);
+    if (index >= 0) {
+      lines.splice(index, topBlockEnd(lines, index) - index, line);
+    } else {
+      lines.push(line);
+    }
+  };
+
+  const readNestedScalar = (lines: string[], parent: string, child: string) => {
+    const parentIndex = topKeyIndex(lines, parent);
+    if (parentIndex < 0) return "";
+    for (
+      let index = parentIndex + 1;
+      index < topBlockEnd(lines, parentIndex);
+      index += 1
+    ) {
+      const match = lines[index].match(new RegExp(`^\\s+${child}:\\s*(.*)$`));
+      if (match) return unquoteYaml(match[1]);
+    }
+    return "";
+  };
+
+  const setNestedScalar = (
+    lines: string[],
+    parent: string,
+    child: string,
+    value: string | number,
+    options: { quote?: boolean } = {},
+  ) => {
+    const parentIndex = topKeyIndex(lines, parent);
+    const next =
+      typeof value === "number" || options.quote === false
+        ? String(value)
+        : yamlQuote(String(value));
+    const childLine = `  ${child}: ${next}`;
+
+    if (parentIndex < 0) {
+      lines.push(`${parent}:`, childLine);
+      return;
+    }
+
+    if (lines[parentIndex].trim() !== `${parent}:`) {
+      lines.splice(parentIndex, 1, `${parent}:`, childLine);
+      return;
+    }
+
+    const end = topBlockEnd(lines, parentIndex);
+    for (let index = parentIndex + 1; index < end; index += 1) {
+      if (lines[index].match(new RegExp(`^\\s+${child}:\\s*`))) {
+        lines[index] = childLine;
+        return;
+      }
+    }
+    lines.splice(parentIndex + 1, 0, childLine);
+  };
+
+  const setDurationMinutes = (lines: string[], value: string) => {
+    const minutes = Number(value);
+    if (!(minutes > 0)) {
+      const index = topKeyIndex(lines, "duration");
+      if (index >= 0) {
+        lines.splice(index, topBlockEnd(lines, index) - index, "duration: {}");
+      } else {
+        lines.push("duration: {}");
+      }
+      return;
+    }
+    setNestedScalar(lines, "duration", "minutes", minutes, { quote: false });
+  };
+
+  const readLinksText = (lines: string[]) => {
+    const index = topKeyIndex(lines, "links");
+    if (index < 0) return "";
+    const line = lines[index].trim();
+    if (line === "links: []") return "";
+
+    const links: { label: string; url: string }[] = [];
+    let current: { label: string; url: string } | null = null;
+    const end = topBlockEnd(lines, index);
+    for (let lineIndex = index + 1; lineIndex < end; lineIndex += 1) {
+      const itemLine = lines[lineIndex];
+      const labelMatch = itemLine.match(/^\s*-\s+label:\s*(.*)$/);
+      if (labelMatch) {
+        if (current) links.push(current);
+        current = { label: unquoteYaml(labelMatch[1]), url: "" };
+        continue;
+      }
+      const urlMatch = itemLine.match(/^\s+url:\s*(.*)$/);
+      if (urlMatch && current) {
+        current.url = unquoteYaml(urlMatch[1]);
+      }
+    }
+    if (current) links.push(current);
+    return links
+      .filter((link) => link.label || link.url)
+      .map((link) => `${link.label} | ${link.url}`)
+      .join("\n");
+  };
+
+  const parseLinksText = (value: string) =>
+    value
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const separator = line.indexOf("|");
+        if (separator < 0) {
+          throw new Error("Write event links as: Label | https://example.com");
+        }
+        const label = line.slice(0, separator).trim();
+        const url = line.slice(separator + 1).trim();
+        if (!label || !url) {
+          throw new Error("Each event link needs both a label and a URL.");
+        }
+        return { label, url };
+      });
+
+  const setLinksBlock = (lines: string[], value: string) => {
+    removeTopKey(lines, "links");
+    const links = parseLinksText(value);
+    if (links.length === 0) {
+      lines.push("links: []");
+      return;
+    }
+    lines.push(
+      "links:",
+      ...links.flatMap((link) => [
+        `  - label: ${yamlQuote(link.label)}`,
+        `    url: ${yamlQuote(link.url)}`,
+      ]),
+    );
+  };
+
+  const updateLibraryFrontmatter = (
+    source: string,
+    entry: LibraryEntry,
+    form: FormData,
+  ) => {
+    const parts = frontmatterParts(source);
+    if (!parts) throw new Error("This page has no frontmatter block.");
+    const lines = parts.frontmatter.split(/\r?\n/);
+    const text = (key: string) => String(form.get(key) ?? "").trim();
+    const checked = (key: string) => form.get(key) === "on";
+    const nextSlug = slugify(text("slug") || entry.folderSlug);
+
+    setTopScalar(lines, "title", text("title") || "Untitled");
+    setTopScalar(lines, "slug", nextSlug);
+    setTopScalar(lines, "order", Number(text("order")) || 999, { quote: false });
+    setTopScalar(lines, "draft", checked("draft"), { omitFalse: true });
+
+    if (entry.kind === "works") {
+      setTopScalar(lines, "subtitle", text("subtitle"), { omitEmpty: true });
+      setTopScalar(lines, "comments", checked("comments"), { omitFalse: true });
+      setTopScalar(
+        lines,
+        "year",
+        Number(text("year")) || new Date().getFullYear(),
+        { quote: false },
+      );
+      setTopScalar(lines, "category", text("category") || "Other");
+      setNestedScalar(
+        lines,
+        "instrumentation",
+        "en",
+        text("instrumentation") || "To be decided",
+      );
+      setDurationMinutes(lines, text("duration"));
+      setTopScalar(lines, "description", text("summary") || text("title"));
+    } else if (entry.kind === "writings") {
+      setTopScalar(lines, "subtitle", text("subtitle"), { omitEmpty: true });
+      setTopScalar(lines, "comments", checked("comments"), { omitFalse: true });
+      setTopScalar(
+        lines,
+        "date",
+        text("date") || new Date().toISOString().slice(0, 10),
+      );
+      setTopScalar(lines, "type", text("type") || "Other");
+      setTopScalar(lines, "language", text("language") || "English");
+      setTopScalar(lines, "excerpt", text("summary") || text("title"));
+    } else {
+      removeTopKey(lines, "subtitle");
+      removeTopKey(lines, "comments");
+      setTopScalar(
+        lines,
+        "date",
+        text("date") || new Date().toISOString().slice(0, 10),
+      );
+      setTopScalar(lines, "time", text("time"), { omitEmpty: true });
+      setTopScalar(lines, "venue", text("venue"), { omitEmpty: true });
+      setTopScalar(lines, "location", text("location"), { omitEmpty: true });
+      setTopScalar(lines, "role", text("role"), { omitEmpty: true });
+      setTopScalar(lines, "brief", text("summary") || text("title"));
+      setLinksBlock(lines, text("links"));
+    }
+
+    return {
+      slug: nextSlug,
+      source: `---${parts.lineBreak}${lines.join(parts.lineBreak)}${parts.lineBreak}---${parts.lineBreak}${parts.body}`,
+    };
+  };
+
+  const pathKind = (path: string): LibraryKind | null => {
+    if (path.startsWith("content/works/")) return "works";
+    if (path.startsWith("content/events/")) return "events";
+    if (path.startsWith("content/writings/")) return "writings";
+    return null;
+  };
+
+  const libraryPathFor = (kind: LibraryKind, slug: string) =>
+    `content/${kind}/${slug}/index.md`;
+
+  const libraryFolderFor = (kind: LibraryKind, slug: string) =>
+    `content/${kind}/${slug}`;
+
+  const readLibraryEntry = async (path: string): Promise<LibraryEntry | null> => {
+    const kind = pathKind(path);
+    if (!kind || !path.match(/^content\/(works|events|writings)\/[^/]+\/index\.md$/)) {
+      return null;
+    }
+    const handle = fileHandles.get(path);
+    if (!handle) return null;
+    const source = currentPath === path
+      ? editor.state.doc.toString()
+      : await (await handle.getFile()).text();
+    const parts = frontmatterParts(source);
+    if (!parts) return null;
+    const lines = parts.frontmatter.split(/\r?\n/);
+    const folderSlug = path.split("/").at(-2) ?? "";
+    return {
+      kind,
+      path,
+      folder: path.replace(/\/index\.md$/, ""),
+      folderSlug,
+      title: readTopScalar(lines, "title") || folderSlug,
+      slug: readTopScalar(lines, "slug") || folderSlug,
+      subtitle: readTopScalar(lines, "subtitle"),
+      year: readTopScalar(lines, "year"),
+      date: readTopScalar(lines, "date"),
+      time: readTopScalar(lines, "time"),
+      venue: readTopScalar(lines, "venue"),
+      location: readTopScalar(lines, "location"),
+      role: readTopScalar(lines, "role"),
+      category: readTopScalar(lines, "category") || "Other",
+      type: readTopScalar(lines, "type") || "Other",
+      language: readTopScalar(lines, "language") || "English",
+      instrumentation: readNestedScalar(lines, "instrumentation", "en"),
+      duration: readNestedScalar(lines, "duration", "minutes"),
+      summary:
+        kind === "works"
+          ? readTopScalar(lines, "description")
+          : kind === "writings"
+            ? readTopScalar(lines, "excerpt")
+            : readTopScalar(lines, "brief"),
+      links: readLinksText(lines),
+      order: readTopScalar(lines, "order") || "999",
+      draft: readTopScalar(lines, "draft") === "true",
+      comments: kind !== "events" && readTopScalar(lines, "comments") === "true",
+      source,
+    };
+  };
+
+  let libraryEntries: LibraryEntry[] = [];
+  let selectedLibraryPath = "";
+
+  const setLibraryMode = () => {
+    const kind = libraryKindSelect.value as LibraryKind;
+    const isWorks = kind === "works";
+    const isEvents = kind === "events";
+    const isWritings = kind === "writings";
+    libraryForm
+      .querySelectorAll<HTMLElement>("[data-library-work-only]")
+      .forEach((element) => {
+        element.hidden = !isWorks;
+      });
+    libraryForm
+      .querySelectorAll<HTMLElement>("[data-library-writing-only]")
+      .forEach((element) => {
+        element.hidden = !isWritings;
+      });
+    libraryForm
+      .querySelectorAll<HTMLElement>("[data-library-event-only]")
+      .forEach((element) => {
+        element.hidden = !isEvents;
+      });
+    libraryForm
+      .querySelectorAll<HTMLElement>("[data-library-writing-or-event]")
+      .forEach((element) => {
+        element.hidden = !(isWritings || isEvents);
+      });
+    libraryForm
+      .querySelectorAll<HTMLElement>("[data-library-non-event]")
+      .forEach((element) => {
+        element.hidden = isEvents;
+      });
+    libraryForm
+      .querySelectorAll<HTMLElement>("[data-library-comments-control]")
+      .forEach((element) => {
+        element.hidden = isEvents;
+      });
+  };
+
+  const libraryField = <T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+    name: string,
+  ) => libraryForm.querySelector<T>(`[data-library-field="${name}"]`);
+
+  const setLibraryField = (name: string, value: string | boolean) => {
+    const field = libraryField(name);
+    if (!field) return;
+    if (field instanceof HTMLInputElement && field.type === "checkbox") {
+      field.checked = value === true;
+    } else {
+      field.value = String(value ?? "");
+    }
+  };
+
+  const libraryFormData = () => {
+    const data = new FormData();
+    libraryForm
+      .querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        "[data-library-field]",
+      )
+      .forEach((field) => {
+        const name = field.dataset.libraryField;
+        if (!name) return;
+        if (field instanceof HTMLInputElement && field.type === "checkbox") {
+          if (field.checked) data.set(name, "on");
+        } else {
+          data.set(name, field.value);
+        }
+      });
+    return data;
+  };
+
+  const activeLibraryEntry = () =>
+    libraryEntries.find((entry) => entry.path === selectedLibraryPath);
+
+  const previewPathForEntry = (entry: LibraryEntry) =>
+    `/${entry.kind}/${entry.slug || entry.folderSlug}/`;
+
+  const showLibraryEntry = (entry: LibraryEntry) => {
+    selectedLibraryPath = entry.path;
+    libraryForm.hidden = false;
+    libraryPathLabel.textContent = entry.path;
+    setLibraryMode();
+    setLibraryField("title", entry.title);
+    setLibraryField("slug", entry.slug);
+    setLibraryField("subtitle", entry.subtitle);
+    setLibraryField("year", entry.year);
+    setLibraryField("category", entry.category);
+    setLibraryField("instrumentation", entry.instrumentation);
+    setLibraryField("duration", entry.duration);
+    setLibraryField("date", entry.date);
+    setLibraryField("time", entry.time);
+    setLibraryField("venue", entry.venue);
+    setLibraryField("location", entry.location);
+    setLibraryField("role", entry.role);
+    setLibraryField("type", entry.type);
+    setLibraryField("language", entry.language);
+    setLibraryField("summary", entry.summary);
+    setLibraryField("links", entry.links);
+    setLibraryField("order", entry.order);
+    setLibraryField("draft", entry.draft);
+    setLibraryField("comments", entry.comments);
+    libraryMessage.textContent = "";
+    renderLibraryList();
+  };
+
+  const renderLibraryList = () => {
+    const kind = libraryKindSelect.value as LibraryKind;
+    const query = libraryFilterInput.value.trim().toLowerCase();
+    const items = libraryEntries
+      .filter((entry) => entry.kind === kind)
+      .filter((entry) =>
+        [
+          entry.title,
+          entry.slug,
+          entry.folderSlug,
+          entry.category,
+          entry.type,
+          entry.date,
+          entry.time,
+          entry.venue,
+          entry.location,
+          entry.role,
+          entry.draft ? "draft" : "public",
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(query),
+      )
+      .sort((a, b) => {
+        if (kind === "events") {
+          const dateOrder = Date.parse(a.date) - Date.parse(b.date);
+          if (Number.isFinite(dateOrder) && dateOrder !== 0) return dateOrder;
+        }
+        const order = Number(a.order) - Number(b.order);
+        if (Number.isFinite(order) && order !== 0) return order;
+        return a.title.localeCompare(b.title);
+      });
+
+    libraryList.replaceChildren();
+    for (const entry of items) {
+      const item = document.createElement("li");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("aria-current", String(entry.path === selectedLibraryPath));
+      const title = document.createElement("span");
+      title.className = "library-title";
+      title.textContent = entry.title;
+      const meta = document.createElement("span");
+      meta.className = "library-meta";
+      const metaParts =
+        entry.kind === "works"
+          ? [entry.year, entry.category]
+          : entry.kind === "writings"
+            ? [entry.date, entry.type]
+            : [entry.date, entry.time, entry.venue || entry.location, entry.role];
+      meta.textContent = [...metaParts, entry.draft ? "draft" : "public"]
+        .filter(Boolean)
+        .join(" | ");
+      button.append(title, meta);
+      button.addEventListener("click", () => showLibraryEntry(entry));
+      item.append(button);
+      libraryList.append(item);
+    }
+  };
+
+  const refreshLibrary = async () => {
+    const paths = [...fileHandles.keys()].filter((path) =>
+      path.match(/^content\/(works|events|writings)\/[^/]+\/index\.md$/),
+    );
+    const entries = await Promise.all(paths.map((path) => readLibraryEntry(path)));
+    libraryEntries = entries.filter((entry): entry is LibraryEntry => Boolean(entry));
+    if (selectedLibraryPath && !libraryEntries.some((entry) => entry.path === selectedLibraryPath)) {
+      selectedLibraryPath = "";
+      libraryForm.hidden = true;
+    }
+    renderLibraryList();
+  };
+
+  const moveProjectPath = async (from: string, to: string) => {
+    if (!apiConnected) {
+      throw new Error("Start the local development server before moving folders.");
+    }
+    const response = await fetch("/__admin/api/move", {
+      method: "POST",
+      headers: authenticatedHeaders({
+        "Content-Type": "application/json; charset=utf-8",
+      }),
+      body: JSON.stringify({ from, to }),
+    });
+    if (!response.ok) throw new Error(await responseError(response));
+  };
+
+  libraryKindSelect.addEventListener("change", () => {
+    selectedLibraryPath = "";
+    libraryForm.hidden = true;
+    setLibraryMode();
+    renderLibraryList();
+  });
+
+  libraryFilterInput.addEventListener("input", renderLibraryList);
+
+  studio
+    .querySelectorAll<HTMLButtonElement>("[data-library-create]")
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        newKindSelect.value = button.dataset.libraryCreate ?? "work";
+        newKindSelect.dispatchEvent(new Event("change"));
+        selectSidebarTab("new");
+        newTitleInput.focus();
+      });
+    });
+
+  libraryOpenButton.addEventListener("click", () => {
+    const entry = activeLibraryEntry();
+    if (entry) void loadFile(entry.path);
+  });
+
+  libraryPreviewButton.addEventListener("click", () => {
+    const entry = activeLibraryEntry();
+    if (!entry) return;
+    refreshPreview(previewPathForEntry(entry));
+  });
+
+  libraryForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void (async () => {
+      const entry = activeLibraryEntry();
+      if (!entry) return;
+      try {
+        const form = libraryFormData();
+        const updated = updateLibraryFrontmatter(entry.source, entry, form);
+        const newPath = libraryPathFor(entry.kind, updated.slug);
+        const oldFolder = entry.folder;
+        const newFolder = libraryFolderFor(entry.kind, updated.slug);
+        if (newPath !== entry.path && fileHandles.has(newPath)) {
+          throw new Error("A page with that slug already exists.");
+        }
+        if (newPath !== entry.path && !apiConnected) {
+          throw new Error("Slug changes need the local development server connection.");
+        }
+
+        const handle = fileHandles.get(entry.path);
+        if (!handle) throw new Error("The page file is unavailable.");
+        const writable = await handle.createWritable();
+        await writable.write(updated.source);
+        await writable.close();
+
+        if (newPath !== entry.path) {
+          await moveProjectPath(oldFolder, newFolder);
+        }
+
+        if (currentPath === entry.path) {
+          currentPath = newPath;
+          currentFileLabel.textContent = newPath;
+          loadingDocument = true;
+          editor.dispatch({
+            changes: {
+              from: 0,
+              to: editor.state.doc.length,
+              insert: updated.source,
+            },
+          });
+          loadingDocument = false;
+          setDirty(false);
+          syncMarkdownToolbar();
+        }
+
+        await connectDevProject();
+        selectedLibraryPath = newPath;
+        const nextEntry = libraryEntries.find((item) => item.path === newPath);
+        if (nextEntry) showLibraryEntry(nextEntry);
+        setStatus(`Saved catalog fields for ${newPath}.`);
+        libraryMessage.textContent = "Saved.";
+      } catch (error) {
+        libraryMessage.textContent =
+          error instanceof Error ? error.message : "Unable to save catalog fields.";
+      }
+    })();
+  });
+
+  libraryTrashButton.addEventListener("click", () => {
+    void (async () => {
+      const entry = activeLibraryEntry();
+      if (!entry) return;
+      const ok = window.confirm(
+        `Move “${entry.title}” to content/_trash? The public page will disappear after rebuild.`,
+      );
+      if (!ok) return;
+      try {
+        const stamp = new Date()
+          .toISOString()
+          .replace(/[-:]/g, "")
+          .replace(/\..+$/, "");
+        const destination = `content/_trash/${entry.kind}/${entry.folderSlug}-${stamp}`;
+        await moveProjectPath(entry.folder, destination);
+        if (currentPath.startsWith(`${entry.folder}/`)) {
+          currentPath = "";
+          currentFileLabel.textContent = "No file selected";
+          loadingDocument = true;
+          editor.dispatch({
+            changes: {
+              from: 0,
+              to: editor.state.doc.length,
+              insert: "Moved to trash. Select another file.",
+            },
+          });
+          loadingDocument = false;
+          setDirty(false);
+          syncMarkdownToolbar();
+        }
+        selectedLibraryPath = "";
+        libraryForm.hidden = true;
+        await connectDevProject();
+        setStatus(`Moved ${entry.folder} to ${destination}.`);
+        libraryMessage.textContent = "Moved to trash.";
+      } catch (error) {
+        libraryMessage.textContent =
+          error instanceof Error ? error.message : "Unable to move this page.";
+      }
+    })();
+  });
+
   const normalizedSourceText = (value: string) =>
     value
       .toLocaleLowerCase()
@@ -1277,6 +2421,30 @@ Write the text here.
     if (!handle) return 1;
     const text = await (await handle.getFile()).text();
     const lines = text.split(/\r?\n/);
+    const jsonPath = element.closest<HTMLElement>("[data-json-path]")?.dataset
+      .jsonPath;
+    if (jsonPath && extensionOf(path) === ".json") {
+      const keys = jsonPath.split(".");
+      if (keys.length >= 2) {
+        const parentIndex = lines.findIndex((line) =>
+          line.includes(`"${keys[0]}"`),
+        );
+        if (parentIndex >= 0) {
+          const childKey = keys.at(-1);
+          for (let index = parentIndex + 1; index < lines.length; index += 1) {
+            if (/^\s*}\s*,?\s*$/.test(lines[index])) break;
+            if (childKey && lines[index].includes(`"${childKey}"`)) {
+              return index + 1;
+            }
+          }
+        }
+      }
+      const fieldName = keys.at(-1);
+      if (fieldName) {
+        const index = lines.findIndex((line) => line.includes(`"${fieldName}"`));
+        if (index >= 0) return index + 1;
+      }
+    }
     const associatedLabel =
       (element as HTMLInputElement).labels?.[0]?.textContent ?? "";
     const visibleText = normalizedSourceText(
@@ -1346,7 +2514,10 @@ Write the text here.
   };
 
   const openInspectorContent = async (element: Element) => {
-    const sourceElement = element.closest<HTMLElement>("[data-source-file]");
+    const sourceElement =
+      element.closest<HTMLElement>("[data-editable-text][data-source-file]") ??
+      element.querySelector<HTMLElement>("[data-editable-text][data-source-file]") ??
+      element.closest<HTMLElement>("[data-source-file]");
     const path = sourceElement?.dataset.sourceFile;
     if (!path || !fileHandles.has(path)) {
       setStatus("No unique content source is registered for this block.", "error");
@@ -1497,7 +2668,9 @@ Write the text here.
     element: Element,
     renderedText: string,
   ): Promise<VisualMarkdownContext | null> => {
-    const sourceElement = element.closest<HTMLElement>("[data-source-file]");
+    const sourceElement =
+      element.closest<HTMLElement>("[data-editable-text][data-source-file]") ??
+      element.closest<HTMLElement>("[data-source-file]");
     const path = sourceElement?.dataset.sourceFile;
     const handle = path ? fileHandles.get(path) : undefined;
     if (!path || !handle || extensionOf(path) !== ".md") return null;
@@ -1747,7 +2920,9 @@ Write the text here.
     oldText: string,
     newText: string,
   ) => {
-    const sourceElement = element.closest<HTMLElement>("[data-source-file]");
+    const sourceElement =
+      element.closest<HTMLElement>("[data-editable-text][data-source-file]") ??
+      element.closest<HTMLElement>("[data-source-file]");
     const path = sourceElement?.dataset.sourceFile;
     const handle = path ? fileHandles.get(path) : undefined;
     if (!path || !handle) {
@@ -1756,9 +2931,49 @@ Write the text here.
     }
 
     const extension = extensionOf(path);
-    if (extension !== ".md" && extension !== ".astro") {
-      setStatus("Visual text editing supports Markdown and Astro pages.", "error");
+    if (extension !== ".md" && extension !== ".astro" && extension !== ".json") {
+      setStatus("Visual text editing supports Markdown, Astro, and registered JSON text.", "error");
       return false;
+    }
+
+    if (extension === ".json") {
+      const jsonPath = sourceElement.dataset.jsonPath;
+      if (!jsonPath) {
+        setStatus("This JSON-backed text has no registered field.", "error");
+        return false;
+      }
+
+      try {
+        const source =
+          currentPath === path
+            ? editor.state.doc.toString()
+            : await (await handle.getFile()).text();
+        const data = JSON.parse(source) as Record<string, unknown>;
+        const keys = jsonPath.split(".");
+        let target: Record<string, unknown> = data;
+        for (const key of keys.slice(0, -1)) {
+          const next = target[key];
+          if (!next || typeof next !== "object" || Array.isArray(next)) {
+            setStatus("That JSON field could not be found.", "error");
+            return false;
+          }
+          target = next as Record<string, unknown>;
+        }
+        target[keys.at(-1) ?? ""] = newText.trim();
+        await writeVisualSource(
+          path,
+          `${JSON.stringify(data, null, 2)}\n`,
+          `Updated text in ${path}.`,
+        );
+        return true;
+      } catch (error) {
+        loadingDocument = false;
+        setStatus(
+          error instanceof Error ? error.message : "Unable to update this text.",
+          "error",
+        );
+        return false;
+      }
     }
 
     if (extension === ".astro") {
@@ -2478,10 +3693,14 @@ Write the text here.
 
     const editableElementFor = (target: Element) => {
       const element = target.closest<HTMLElement>(
-        "p, h1, h2, h3, h4, h5, h6, figcaption, blockquote, dt, dd, li",
+        "[data-editable-text], p, h1, h2, h3, h4, h5, h6, figcaption, blockquote, dt, dd, li",
       );
       if (!element || element.closest("[data-studio-inspector-ui]")) return null;
-      return element.closest("[data-source-file]") ? element : null;
+      const editable = element.matches("[data-editable-text]")
+        ? element
+        : element.querySelector<HTMLElement>("[data-editable-text]");
+      const targetElement = editable ?? element;
+      return targetElement.closest("[data-source-file]") ? targetElement : null;
     };
 
     const handlePointerOver = (event: PointerEvent) => {
@@ -2518,6 +3737,7 @@ Write the text here.
       sourceLabel.textContent = sourcePath;
       selectedIsMarkdown = extensionOf(sourcePath) === ".md";
       selectedIsAstro = extensionOf(sourcePath) === ".astro";
+      const selectedIsJson = extensionOf(sourcePath) === ".json";
       canManageBlocks = false;
       originalSourceText = originalText;
       if (selectedIsMarkdown) {
@@ -2548,6 +3768,27 @@ Write the text here.
           }
         }
       }
+      if (selectedIsJson) {
+        const jsonPath = selectedElement.closest<HTMLElement>("[data-json-path]")
+          ?.dataset.jsonPath;
+        const handle = fileHandles.get(sourcePath);
+        if (jsonPath && handle) {
+          const source =
+            currentPath === sourcePath
+              ? editor.state.doc.toString()
+              : await (await handle.getFile()).text();
+          const data = JSON.parse(source) as Record<string, unknown>;
+          let value: unknown = data;
+          for (const key of jsonPath.split(".")) {
+            if (!value || typeof value !== "object" || Array.isArray(value)) {
+              value = undefined;
+              break;
+            }
+            value = (value as Record<string, unknown>)[key];
+          }
+          if (typeof value === "string") originalSourceText = value;
+        }
+      }
       editAction = "replace";
       deleteArmed = false;
       deleteBlockButton.textContent = "Delete block";
@@ -2555,7 +3796,9 @@ Write the text here.
         ? "Edit Markdown block"
         : selectedIsAstro
           ? "Edit Astro text"
-          : "Edit plain text";
+          : selectedIsJson
+            ? "Edit JSON text"
+            : "Edit plain text";
       textarea.value = originalSourceText;
       formatToolbar.hidden = !selectedIsMarkdown || !canManageBlocks;
       inlineToolbar.hidden = !selectedIsMarkdown && !selectedIsAstro;
@@ -2565,6 +3808,8 @@ Write the text here.
           ? "Markdown is supported. Blank lines create separate blocks. Inline HTML styling is allowed."
           : selectedIsAstro
             ? "Inline styling allowed: <em>, <strong>, <span style=…>, ruby, lang marks. Components and { } stay protected."
+            : selectedIsJson
+              ? "Markdown-style links, emphasis, and paragraph breaks are allowed for registered homepage fields."
             : "Plain text only. Structured markup stays protected.";
       applyButton.textContent = "Apply";
       panel.dataset.open = "true";
@@ -3034,6 +4279,8 @@ Write the text here.
 
       openFolderButton.textContent = "Reload project";
       renderFileList();
+      await loadTaxonomySettings();
+      await refreshLibrary();
       renderImages();
       openThemeCssButton.disabled = !fileHandles.has(GLOBAL_CSS_PATH);
       await loadMotionSettings();
@@ -3092,6 +4339,8 @@ Write the text here.
       setStatus("Reading project files…");
       await scanDirectory(directory);
       renderFileList();
+      await loadTaxonomySettings();
+      await refreshLibrary();
       renderImages();
       openThemeCssButton.disabled = !fileHandles.has(GLOBAL_CSS_PATH);
       await loadMotionSettings();
@@ -3145,8 +4394,12 @@ Write the text here.
     searchBlock.hidden = true;
     globalSearchInput.focus();
   });
-  loadPreviewButton.addEventListener("click", refreshPreview);
-  refreshPreviewButton.addEventListener("click", refreshPreview);
+  loadPreviewButton.addEventListener("click", () => {
+    refreshPreview(previewPath.value);
+  });
+  refreshPreviewButton.addEventListener("click", () => {
+    refreshPreview(previewFramePath());
+  });
   previewInspectorInput.addEventListener("change", () => {
     if (previewInspectorInput.checked) {
       previewVisualEditorInput.checked = false;
@@ -3171,12 +4424,13 @@ Write the text here.
     installPreviewVisualEditor();
   });
   previewFrame.addEventListener("load", () => {
+    syncPreviewPath(previewFramePath());
     applyTypographyPreview(Number(cjkLetterSpacingInput.value));
     installPreviewInspector();
     installPreviewVisualEditor();
   });
   previewPath.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") refreshPreview();
+    if (event.key === "Enter") refreshPreview(previewPath.value);
   });
   previewPath.addEventListener("input", () => {
     const path = previewPath.value.trim() || "/";
@@ -3200,18 +4454,6 @@ Write the text here.
   cjkLetterSpacingInput.addEventListener("change", () => {
     void saveTypographySettings(Number(cjkLetterSpacingInput.value));
   });
-  lockStudioButton.addEventListener("click", () => {
-    if (
-      dirty &&
-      !window.confirm("Lock the Studio and discard unsaved editor changes?")
-    ) {
-      return;
-    }
-    setDirty(false);
-    sessionStorage.removeItem(PASSCODE_SESSION_KEY);
-    window.location.reload();
-  });
-
   studio
     .querySelectorAll<HTMLButtonElement>("[data-preview-size]")
     .forEach((button) => {
@@ -3349,7 +4591,7 @@ Write the text here.
   });
 
   const connected = await connectDevProject();
-  refreshPreview();
+  refreshPreview(storedPreviewPath);
   if (!connected) {
     setStatus(
       window.showDirectoryPicker

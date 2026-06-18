@@ -7,9 +7,9 @@
 export const workCategories = [
   "Solo",
   "Chamber",
+  "Large Ensemble",
   "Orchestral",
   "Vocal / Choral",
-  "Music Theatre",
   "Other",
 ] as const;
 

@@ -75,16 +75,44 @@ const introRest = (markdown: string) =>
         needs a space after the name, Chinese does not, so each block sets its own spacing.
       -->
       <div class="home-intro" data-lang="en">
-        <p class="home-intro-lead">
-          <NamePronunciation translate />{" "}<Fragment set:html={introLead(homeContent.intro.en)} />
+        <p
+          class="home-intro-lead"
+          data-source-file="src/config/homeContent.json"
+          data-json-path="intro.en"
+        >
+          <NamePronunciation translate />{" "}<span
+            data-editable-text
+            data-source-file="src/config/homeContent.json"
+            data-json-path="intro.en"
+            set:html={introLead(homeContent.intro.en)}
+          />
         </p>
-        <Fragment set:html={introRest(homeContent.intro.en)} />
+        <div
+          data-editable-text
+          data-source-file="src/config/homeContent.json"
+          data-json-path="intro.en"
+          set:html={introRest(homeContent.intro.en)}
+        />
       </div>
       <div class="home-intro" data-lang="zh">
-        <p class="home-intro-lead">
-          <NamePronunciation translate /><Fragment set:html={introLead(homeContent.intro.zh)} />
+        <p
+          class="home-intro-lead"
+          data-source-file="src/config/homeContent.json"
+          data-json-path="intro.zh"
+        >
+          <NamePronunciation translate /><span
+            data-editable-text
+            data-source-file="src/config/homeContent.json"
+            data-json-path="intro.zh"
+            set:html={introLead(homeContent.intro.zh)}
+          />
         </p>
-        <Fragment set:html={introRest(homeContent.intro.zh)} />
+        <div
+          data-editable-text
+          data-source-file="src/config/homeContent.json"
+          data-json-path="intro.zh"
+          set:html={introRest(homeContent.intro.zh)}
+        />
       </div>
     </section>
 
@@ -103,8 +131,22 @@ const introRest = (markdown: string) =>
           English: Both caption languages live in the DOM; CSS shows one by <html lang>,
           keeping italics and links.
         -->
-        <span class="home-caption" data-lang="en" set:html={inlineMarkdown(homeContent.caption.en)} />
-        <span class="home-caption" data-lang="zh" set:html={inlineMarkdown(homeContent.caption.zh)} />
+        <span
+          class="home-caption"
+          data-lang="en"
+          data-editable-text
+          data-source-file="src/config/homeContent.json"
+          data-json-path="caption.en"
+          set:html={inlineMarkdown(homeContent.caption.en)}
+        />
+        <span
+          class="home-caption"
+          data-lang="zh"
+          data-editable-text
+          data-source-file="src/config/homeContent.json"
+          data-json-path="caption.zh"
+          set:html={inlineMarkdown(homeContent.caption.zh)}
+        />
       </figcaption>
     </figure>
     )}

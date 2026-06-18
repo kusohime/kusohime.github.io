@@ -219,14 +219,12 @@ static website source can be copied when published.
 不要手動編輯 `package-lock.json`、生成的 `.astro` 檔案、`dist` 或
 `node_modules`。不要把私人資訊放進專案：靜態網站釋出後，源內容可能被複制。
 
-The passcode protects the local Studio file API from casual access. It is not
-a hosted user account, encrypted vault, or production CMS login. The guide is
-hidden from public navigation and requires a local unlocked Studio, but its
-source still belongs to the project.
+The Studio is local-only. It is not a hosted user account, encrypted vault, or
+production CMS login. The guide is hidden from public navigation, but its source
+still belongs to the project.
 
-口令用於防止隨意訪問本地管理器檔案介面，並不是託管賬戶、加密保險庫或線上 CMS
-登入。本指南不出現在公開導航中，並要求本地管理器已經解鎖，但其原始檔仍屬於
-專案的一部分。
+本地管理器僅供本地使用，並不是託管賬戶、加密保險庫或線上 CMS 登入。本指南不出
+現在公開導航中，但其原始檔仍屬於專案的一部分。
 
 ## Publishing / 釋出
 
