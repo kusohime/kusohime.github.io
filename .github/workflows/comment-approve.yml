@@ -56,13 +56,23 @@ jobs:
             if (data.imagePath) {
               const pendingBranch = process.env.PENDING_BRANCH || "comment-pending";
               const ext = path.extname(data.imagePath) || ".jpg";
-              const res = await github.rest.repos.getContent({
+              // 注意：Contents API 对 >1MB 文件返回空 content（encoding "none"）；
+              // 先用它拿 sha，再用 Blobs API（支持到 100MB）取真正内容，避免写出 0 字节文件。
+              // Note: the Contents API returns empty content for files >1MB (encoding "none").
+              // Use it only for the sha, then fetch the real bytes via the Blobs API (up to 100MB),
+              // otherwise large images get written as 0-byte files.
+              const meta = await github.rest.repos.getContent({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 path: data.imagePath,
                 ref: pendingBranch,
               });
-              const buffer = Buffer.from(res.data.content, "base64");
+              const blob = await github.rest.git.getBlob({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                file_sha: meta.data.sha,
+              });
+              const buffer = Buffer.from(blob.data.content, blob.data.encoding);
               const imageDir = path.join("public", "images", "comments");
               fs.mkdirSync(imageDir, { recursive: true });
               const imageFile = path.join(imageDir, `${id}${ext}`);
