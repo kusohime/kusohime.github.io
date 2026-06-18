@@ -45,9 +45,10 @@ jobs:
         shell: bash
         run: |
           rm -rf dist/admin dist/drafts
-          find dist/_astro -type f -name '*.js' -print0 |
-            xargs -0 grep -l 'yixin-cui-studio-passcode' |
-            xargs -r rm -f
+          if [ -d dist/_astro ]; then
+            find dist/_astro -type f -name '*.js' -exec grep -l 'yixin-cui-studio-passcode' {} + |
+              xargs -r rm -f
+          fi
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
