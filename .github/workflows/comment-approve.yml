@@ -11,6 +11,7 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: write # lets this workflow dispatch the Pages deploy (see last step)
 
 jobs:
   approve:
@@ -103,3 +104,13 @@ jobs:
               issue_number: context.payload.issue.number,
               state: "closed",
             });
+
+      # 中文：本工作流用内置 GITHUB_TOKEN 提交，push 不会触发部署工作流（GitHub 防递归）。
+      # 用 workflow_dispatch 显式触发部署——这是 GITHUB_TOKEN 唯一能触发的事件例外。
+      # English: This workflow commits with the built-in GITHUB_TOKEN, and such pushes do NOT
+      # trigger other workflows (GitHub's anti-recursion rule). workflow_dispatch is the one
+      # event GITHUB_TOKEN can trigger, so dispatch the Pages deploy explicitly.
+      - name: Trigger Pages deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-pages.yml --ref main
