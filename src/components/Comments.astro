@@ -82,7 +82,16 @@ const disabled = t2("comments.disabled");
             <div class="comment-body" set:html={renderCommentMarkdown(entry.data.body)} />
             {entry.data.image && (
               <figure class="comment-image">
-                <img src={entry.data.image} alt={entry.data.imageAlt ?? ""} loading="lazy" />
+                <button type="button" class="comment-image-zoom">
+                  <img src={entry.data.image} alt={entry.data.imageAlt ?? ""} loading="lazy" />
+                  <span
+                    class="visually-hidden"
+                    data-i18n-en="Enlarge image"
+                    data-i18n-zh="放大图片"
+                  >
+                    Enlarge image
+                  </span>
+                </button>
               </figure>
             )}
             {(repliesByParent.get(entry.id) ?? []).length > 0 && (
@@ -107,7 +116,16 @@ const disabled = t2("comments.disabled");
                     <div class="comment-body" set:html={renderCommentMarkdown(reply.data.body)} />
                     {reply.data.image && (
                       <figure class="comment-image">
-                        <img src={reply.data.image} alt={reply.data.imageAlt ?? ""} loading="lazy" />
+                        <button type="button" class="comment-image-zoom">
+                          <img src={reply.data.image} alt={reply.data.imageAlt ?? ""} loading="lazy" />
+                          <span
+                            class="visually-hidden"
+                            data-i18n-en="Enlarge image"
+                            data-i18n-zh="放大图片"
+                          >
+                            Enlarge image
+                          </span>
+                        </button>
                       </figure>
                     )}
                   </li>
@@ -362,5 +380,63 @@ const disabled = t2("comments.disabled");
     });
   }
 
+  // 点击缩略图 → 全屏查看；点背景、关闭按钮或 Esc 关闭。
+  // Click a thumbnail → full-screen view; close via backdrop, the close button, or Esc.
+  function initCommentLightbox() {
+    let overlay: HTMLDivElement | null = null;
+    let lastFocus: HTMLElement | null = null;
+
+    const ensure = () => {
+      if (overlay) return overlay;
+      const el = document.createElement("div");
+      el.className = "comment-lightbox";
+      el.hidden = true;
+      el.setAttribute("role", "dialog");
+      el.setAttribute("aria-modal", "true");
+      const zh = document.documentElement.dataset.locale === "zh";
+      el.setAttribute("aria-label", zh ? "放大的图片" : "Enlarged image");
+      el.innerHTML =
+        '<button type="button" class="comment-lightbox-close" aria-label="Close">×</button><img alt="" />';
+      el.addEventListener("click", () => closeLightbox());
+      document.body.appendChild(el);
+      overlay = el;
+      return el;
+    };
+
+    const openLightbox = (src: string, alt: string) => {
+      const el = ensure();
+      const img = el.querySelector("img");
+      if (img) {
+        img.src = src;
+        img.alt = alt;
+      }
+      lastFocus = document.activeElement as HTMLElement | null;
+      el.hidden = false;
+      document.documentElement.style.overflow = "hidden";
+      el.querySelector<HTMLButtonElement>(".comment-lightbox-close")?.focus();
+    };
+
+    const closeLightbox = () => {
+      if (!overlay || overlay.hidden) return;
+      overlay.hidden = true;
+      document.documentElement.style.overflow = "";
+      lastFocus?.focus();
+    };
+
+    document.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement | null;
+      const trigger = target?.closest<HTMLButtonElement>(".comment-image-zoom");
+      if (!trigger) return;
+      event.preventDefault();
+      const img = trigger.querySelector("img");
+      if (img) openLightbox(img.currentSrc || img.src, img.alt);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeLightbox();
+    });
+  }
+
   initCommentForms();
+  initCommentLightbox();
 </script>

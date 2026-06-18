@@ -1862,9 +1862,74 @@ main {
   margin: var(--space-xs) 0 0;
 }
 
-.comment-image img {
+/* 缩略图：默认压缩到小尺寸，点击放大。Thumbnail by default; click to enlarge. */
+.comment-image-zoom {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
+  cursor: zoom-in;
+}
+
+.comment-image-zoom img {
   max-width: 100%;
+  max-height: 200px;
+  width: auto;
   border: 1px solid var(--color-rule);
+}
+
+.comment-image-zoom:focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 2px;
+}
+
+/* 点击后的全屏查看层。Full-screen lightbox shown on click. */
+.comment-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.86);
+  cursor: zoom-out;
+}
+
+.comment-lightbox[hidden] {
+  display: none;
+}
+
+.comment-lightbox img {
+  max-width: 94vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  border: 1px solid var(--color-rule);
+  background: var(--color-background);
+  cursor: default;
+}
+
+.comment-lightbox-close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--color-rule);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.comment-lightbox-close:hover,
+.comment-lightbox-close:focus-visible {
+  border-color: var(--theme-color);
+  color: var(--theme-color);
 }
 
 .comment-replies {
