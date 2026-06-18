@@ -1908,28 +1908,6 @@ main {
   height: auto;
   border: 1px solid var(--color-rule);
   background: var(--color-background);
-  cursor: default;
-}
-
-.comment-lightbox-close {
-  position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-  border: 1px solid var(--color-rule);
-  background: var(--color-background);
-  color: var(--color-text);
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.comment-lightbox-close:hover,
-.comment-lightbox-close:focus-visible {
-  border-color: var(--theme-color);
-  color: var(--theme-color);
 }
 
 .comment-replies {

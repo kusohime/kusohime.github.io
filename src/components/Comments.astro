@@ -391,12 +391,13 @@ const disabled = t2("comments.disabled");
       const el = document.createElement("div");
       el.className = "comment-lightbox";
       el.hidden = true;
+      el.tabIndex = -1;
       el.setAttribute("role", "dialog");
       el.setAttribute("aria-modal", "true");
       const zh = document.documentElement.dataset.locale === "zh";
       el.setAttribute("aria-label", zh ? "放大的图片" : "Enlarged image");
-      el.innerHTML =
-        '<button type="button" class="comment-lightbox-close" aria-label="Close">×</button><img alt="" />';
+      el.innerHTML = '<img alt="" />';
+      // 点任意处（含图片本身）即关闭。Click anywhere (including the image) to close.
       el.addEventListener("click", () => closeLightbox());
       document.body.appendChild(el);
       overlay = el;
@@ -413,7 +414,7 @@ const disabled = t2("comments.disabled");
       lastFocus = document.activeElement as HTMLElement | null;
       el.hidden = false;
       document.documentElement.style.overflow = "hidden";
-      el.querySelector<HTMLButtonElement>(".comment-lightbox-close")?.focus();
+      el.focus();
     };
 
     const closeLightbox = () => {

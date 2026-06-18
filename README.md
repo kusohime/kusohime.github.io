@@ -37,6 +37,21 @@ For maintainer details, see `content/README.md` and
 維護細節請見 `content/README.md` 與
 `src/pages/admin/guide/website-maintenance.md`。
 
+## Comments / 评论系统
+
+Moderated "responses" can be enabled per page (`comments: true` frontmatter).
+Submissions are filed as pending GitHub Issues by a small Cloudflare Worker and
+published by adding the `comment:approved` label. For the full architecture,
+data flow, moderation, config, and gotchas, see
+[`docs/comments.md`](docs/comments.md); for one-time deploy/ops see
+[`scripts/comment-worker/README.md`](scripts/comment-worker/README.md).
+
+可按页面开启「回應」（在 frontmatter 设 `comments: true`）。访客提交由一个小型
+Cloudflare Worker 存为待审 GitHub Issue，加上 `comment:approved` 标签即发布。
+完整架构、数据流、审核、配置与注意事项见
+[`docs/comments.md`](docs/comments.md)；一次性部署步骤见
+[`scripts/comment-worker/README.md`](scripts/comment-worker/README.md)。
+
 ## Commands / 命令
 
 ```text
