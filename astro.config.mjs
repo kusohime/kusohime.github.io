@@ -13,6 +13,7 @@ import { dirname, extname, isAbsolute, relative, resolve, sep } from "node:path"
 import { promisify } from "node:util";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import remarkInlineFootnotes from "./src/lib/remarkInlineFootnotes.mjs";
 
 // 管理页面只在本地开发服务器中工作；文件读写接口仍只接受本地请求。
 // The Studio runs only in local development; its file API still accepts local requests only.
@@ -517,7 +518,7 @@ export default defineConfig({
   },
   markdown: {
     processor: unified({
-      remarkPlugins: [remarkMath],
+      remarkPlugins: [remarkMath, remarkInlineFootnotes],
       rehypePlugins: [rehypeKatex],
     }),
   },

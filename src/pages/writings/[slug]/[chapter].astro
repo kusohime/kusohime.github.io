@@ -49,6 +49,14 @@ const nextChapter =
   currentIndex >= 0 && currentIndex < chapters.length - 1
     ? chapters[currentIndex + 1]
     : undefined;
+const isCuiXiong = writing.data.slug === "cui-xiong-pian";
+const isBenQun = isCuiXiong && chapter.data.slug.startsWith("ben-qun");
+const normalizedLanguage = writing.data.language.toLowerCase();
+const contentLang = normalizedLanguage.includes("traditional")
+  ? "zh-Hant-TW"
+  : normalizedLanguage.includes("simplified") || normalizedLanguage.includes("chinese")
+    ? "zh-Hans-CN"
+    : undefined;
 ---
 
 <BaseLayout
@@ -58,14 +66,26 @@ const nextChapter =
 >
   <article
     class="detail-page writing-chapter-page"
+    data-writing-slug={writing.data.slug}
     data-source-file={`content/writings/${chapter.id}.md`}
   >
     <header class="detail-header">
-      <p>{writing.data.title}</p>
-      <h1>{chapter.data.title}</h1>
+      <p lang={contentLang}>{writing.data.title}</p>
+      <h1 lang={contentLang}>{chapter.data.title}</h1>
     </header>
 
-    <div class="prose writing-body chicago-prose">
+    <div
+      lang={contentLang}
+      class:list={[
+        "prose",
+        "writing-body",
+        "chicago-prose",
+        {
+          "cui-dialogue": isCuiXiong && !isBenQun,
+          "poly-dialogue": isBenQun,
+        },
+      ]}
+    >
       <Content />
     </div>
 
@@ -78,7 +98,7 @@ const nextChapter =
               data-arrow-glyph
               aria-hidden="true"
             ></span>
-            {previousChapter.data.title}
+            <span lang={contentLang}>{previousChapter.data.title}</span>
           </a>
         ) : (
           <span></span>
@@ -87,7 +107,7 @@ const nextChapter =
       {
         nextChapter && (
           <a href={`/writings/${writing.data.slug}/${nextChapter.data.slug}/`}>
-            {nextChapter.data.title}
+            <span lang={contentLang}>{nextChapter.data.title}</span>
             <span
               class="glyph-arrow glyph-arrow--forward"
               data-arrow-glyph

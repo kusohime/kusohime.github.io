@@ -206,7 +206,8 @@ function applyLanguage(language: Locale, animate = false) {
 
   document.querySelectorAll<HTMLElement>("[data-i18n-date]").forEach((element) => {
     const date = element.dataset.i18nDate ?? "";
-    setLocalizedText(element, formatDate(date, language), shouldAnimate);
+    const monthStyle = element.dataset.i18nDateFormat === "short" ? "short" : "long";
+    setLocalizedText(element, formatDate(date, language, monthStyle), shouldAnimate);
   });
 
   document

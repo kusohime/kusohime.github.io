@@ -310,6 +310,14 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 <output data-design-output="--page-gutter"></output>
               </span>
             </label>
+            <label>
+              Home image edge fade
+              <span class="range-control">
+                <input type="range" min="0" max="30" step="1"
+                  data-design-var="--home-image-fade-width" data-design-unit="%" />
+                <output data-design-output="--home-image-fade-width"></output>
+              </span>
+            </label>
           </fieldset>
 
           <fieldset class="design-group" data-design-settings-4 disabled>
@@ -856,6 +864,11 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <button type="button" data-md-insert="footnote">Footnote</button>
           <button type="button" data-md-insert="no-indent">No indent</button>
           <button type="button" data-md-insert="lang">Lang</button>
+          <button
+            type="button"
+            data-md-insert="zh-em"
+            title="Chinese emphasis dots (着重号)"
+          >着重</button>
           <button type="button" data-md-insert="ruby">Ruby</button>
         </div>
         <div class="code-editor" data-code-editor></div>

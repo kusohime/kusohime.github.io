@@ -899,9 +899,28 @@ export async function initializeAdminStudio() {
       case "lang":
         wrapEditorSelection('<span lang="zh-Hant">', "</span>", "文字");
         break;
-      case "ruby":
-        insertEditorText("<ruby>字<rt>zi</rt></ruby>");
+      case "zh-em":
+        // 中文着重号：用字符下方的点强调，而非斜体。
+        // Chinese emphasis dots (.zh-em), not italics.
+        wrapEditorSelection('<em class="zh-em">', "</em>", "文字");
         break;
+      case "ruby": {
+        // Wrap the selection as the ruby base. When text is selected, drop the
+        // cursor on the reading placeholder so it can be typed straight away;
+        // otherwise select the placeholder base character.
+        const selection = editor.state.selection.main;
+        const base = selection.empty ? "字" : selectedEditorText();
+        const before = `<ruby>${base}<rt>`;
+        const reading = "zi";
+        insertEditorText(
+          `${before}${reading}</rt></ruby>`,
+          selection.empty ? "<ruby>".length : before.length,
+          selection.empty
+            ? "<ruby>".length + base.length
+            : before.length + reading.length,
+        );
+        break;
+      }
       default:
         break;
     }

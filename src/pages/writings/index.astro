@@ -23,7 +23,7 @@ const writingGroups = writingTypes.map((type) => ({
   type,
   heading: writingTypeLabel(type, "en", "plural"),
   writings: writings.filter((writing) => writing.data.type === type),
-}));
+})).filter(({ writings: groupedWritings }) => groupedWritings.length > 0);
 ---
 
 <BaseLayout
@@ -76,27 +76,30 @@ const writingGroups = writingTypes.map((type) => ({
             >
               {heading}
             </h2>
-            {groupedWritings.length > 0 ? (
-              <ul class="catalog-list dated-list">
-                {groupedWritings.map((writing) => (
-                  <li data-source-file={`content/writings/${writing.id}/index.md`}>
-                    <time
-                      datetime={String(writing.data.date)}
-                      data-i18n-date={String(writing.data.date)}
-                    >
-                      {formatDate(writing.data.date, "en")}
-                    </time>
-                    <a href={`/writings/${writing.data.slug}/`}>
-                      {writing.data.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p data-i18n-key="common.noEntries">
-                {translate("en", "common.noEntries")}
-              </p>
-            )}
+            <ul class="catalog-list dated-list">
+              {groupedWritings.map((writing) => {
+                const dateLabel = writing.data.displayDate ?? String(writing.data.date);
+                return (
+                <li data-source-file={`content/writings/${writing.id}/index.md`}>
+                  <time
+                    datetime={String(writing.data.date)}
+                    data-i18n-date={dateLabel}
+                    data-i18n-date-format="short"
+                  >
+                    {formatDate(dateLabel, "en", "short")}
+                  </time>
+                  <a href={`/writings/${writing.data.slug}/`}>
+                    {writing.data.title}
+                  </a>
+                  {writing.data.subtitle && (
+                    <span class="writing-list-subtitle">
+                      {writing.data.subtitle}
+                    </span>
+                  )}
+                </li>
+                );
+              })}
+            </ul>
           </section>
         ))
       }

@@ -270,7 +270,11 @@ export function formatDuration(duration: DurationData, locale: Locale) {
   }[locale];
 }
 
-export function formatDate(value: string | number, locale: Locale) {
+export function formatDate(
+  value: string | number,
+  locale: Locale,
+  monthStyle: "long" | "short" = "long",
+) {
   const raw = String(value);
   const match = raw.match(/^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$/);
   if (!match) return raw;
@@ -280,9 +284,9 @@ export function formatDate(value: string | number, locale: Locale) {
     Date.UTC(Number(year), Number(month ?? 1) - 1, Number(day ?? 1)),
   );
   const options: Intl.DateTimeFormatOptions = day
-    ? { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }
+    ? { year: "numeric", month: monthStyle, day: "numeric", timeZone: "UTC" }
     : month
-      ? { year: "numeric", month: "long", timeZone: "UTC" }
+      ? { year: "numeric", month: monthStyle, timeZone: "UTC" }
       : { year: "numeric", timeZone: "UTC" };
 
   return new Intl.DateTimeFormat(localeInfo[locale].intl, options).format(date);

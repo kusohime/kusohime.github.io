@@ -19,7 +19,7 @@ const works = (await getCollection("works", ({ data }) => !data.draft)).sort(
 const worksByCategory = workCategories.map((category) => ({
   category,
   works: works.filter((work) => work.data.category === category),
-}));
+})).filter(({ works: categoryWorks }) => categoryWorks.length > 0);
 ---
 
 <BaseLayout
@@ -68,39 +68,33 @@ const worksByCategory = workCategories.map((category) => ({
             >
               {workCategoryLabel(category, "en")}
             </h2>
-            {categoryWorks.length > 0 ? (
-              <ol class="catalog-list entry-list works-list dated-list">
-                {categoryWorks.map((work) => (
-                  <li>
-                    <time
-                      datetime={String(work.data.year)}
-                      data-i18n-date={String(work.data.year)}
-                    >
-                      {formatDate(work.data.year, "en")}
-                    </time>
-                    <article
-                      class="entry-summary work-summary"
-                      data-source-file={`content/works/${work.id}/index.md`}
-                    >
-                      <div class="catalog-entry-line">
-                        <h3>
-                          <a href={`/works/${work.data.slug}/`}>
-                            {work.data.title}
-                          </a>
-                        </h3>
-                        {work.data.subtitle && (
-                          <p class="catalog-entry-subtitle">{work.data.subtitle}</p>
-                        )}
-                      </div>
-                    </article>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p data-i18n-key="common.noWorks">
-                {translate("en", "common.noWorks")}
-              </p>
-            )}
+            <ol class="catalog-list entry-list works-list dated-list">
+              {categoryWorks.map((work) => (
+                <li>
+                  <time
+                    datetime={String(work.data.year)}
+                    data-i18n-date={String(work.data.year)}
+                  >
+                    {formatDate(work.data.year, "en")}
+                  </time>
+                  <article
+                    class="entry-summary work-summary"
+                    data-source-file={`content/works/${work.id}/index.md`}
+                  >
+                    <div class="catalog-entry-line">
+                      <h3>
+                        <a href={`/works/${work.data.slug}/`}>
+                          {work.data.title}
+                        </a>
+                      </h3>
+                      {work.data.subtitle && (
+                        <p class="catalog-entry-subtitle">{work.data.subtitle}</p>
+                      )}
+                    </div>
+                  </article>
+                </li>
+              ))}
+            </ol>
           </section>
         ))
       }

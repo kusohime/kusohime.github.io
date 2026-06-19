@@ -92,6 +92,7 @@ const writings = defineCollection({
     title: z.string(),
     subtitle: z.string().optional(),
     date: z.union([z.string(), z.number()]),
+    displayDate: z.string().optional(),
     type: z.enum(writingTypes),
     language: z.string(),
     excerpt: z.string(),
@@ -99,6 +100,10 @@ const writings = defineCollection({
     order: z.number().int().default(999),
     draft: z.boolean().default(false),
     comments: z.boolean().default(false),
+    // 目录是否自动编号；章节标题本身就是序号时设为 false，避免重复。
+    // Whether the contents list auto-numbers; set false when chapter titles are
+    // themselves numbers, so the list does not repeat them.
+    numberedContents: z.boolean().default(true),
   }),
 });
 

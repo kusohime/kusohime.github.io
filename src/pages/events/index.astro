@@ -22,19 +22,24 @@ const monthFormatter = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 
-const monthAnchor = (year: string, month: string) => `events-${year}-${month}`;
+const yearAnchor = (period: "future" | "past", year: string) =>
+  `events-${period}-${year}`;
 
-const events = (await getCollection("events", ({ data }) => import.meta.env.DEV || !data.draft))
-  .sort(
-    (a, b) =>
-      eventDate(a).getTime() - eventDate(b).getTime() ||
-      a.data.order - b.data.order ||
-      a.data.title.localeCompare(b.data.title),
-  );
+const monthAnchor = (period: "future" | "past", year: string, month: string) =>
+  `events-${period}-${year}-${month}`;
 
-const upcomingEvents = events.filter((event) => eventDate(event) >= todayUtc);
+const sortEventsAscending = (a: EventEntry, b: EventEntry) =>
+  eventDate(a).getTime() - eventDate(b).getTime() ||
+  a.data.order - b.data.order ||
+  a.data.title.localeCompare(b.data.title);
 
-const groupedEvents = upcomingEvents.reduce((years, event) => {
+const sortEventsDescending = (a: EventEntry, b: EventEntry) =>
+  eventDate(b).getTime() - eventDate(a).getTime() ||
+  a.data.order - b.data.order ||
+  a.data.title.localeCompare(b.data.title);
+
+const groupEvents = (eventsToGroup: EventEntry[]) => {
+  const groupedEvents = eventsToGroup.reduce((years, event) => {
   const date = eventDate(event);
   const year = String(date.getUTCFullYear());
   const month = String(date.getUTCMonth() + 1).padStart(2, "0");
@@ -47,15 +52,30 @@ const groupedEvents = upcomingEvents.reduce((years, event) => {
   return years;
 }, new Map<string, Map<string, EventEntry[]>>());
 
-const yearGroups = Array.from(groupedEvents.entries()).map(([year, months]) => ({
-  year,
-  count: Array.from(months.values()).reduce((total, group) => total + group.length, 0),
-  months: Array.from(months.entries()).map(([month, monthEvents]) => ({
-    month,
-    label: monthFormatter.format(new Date(Date.UTC(Number(year), Number(month) - 1, 1))),
-    events: monthEvents,
-  })),
-}));
+  return Array.from(groupedEvents.entries()).map(([year, months]) => ({
+    year,
+    count: Array.from(months.values()).reduce((total, group) => total + group.length, 0),
+    months: Array.from(months.entries()).map(([month, monthEvents]) => ({
+      month,
+      label: monthFormatter.format(new Date(Date.UTC(Number(year), Number(month) - 1, 1))),
+      events: monthEvents,
+    })),
+  }));
+};
+
+const events = await getCollection("events", ({ data }) => import.meta.env.DEV || !data.draft);
+
+const upcomingEvents = events
+  .filter((event) => eventDate(event) >= todayUtc)
+  .sort(sortEventsAscending);
+
+const pastEvents = events
+  .filter((event) => eventDate(event) < todayUtc)
+  .sort(sortEventsDescending);
+
+const upcomingYearGroups = groupEvents(upcomingEvents);
+const pastYearGroups = groupEvents(pastEvents);
+const hasEvents = upcomingYearGroups.length > 0 || pastYearGroups.length > 0;
 ---
 
 <BaseLayout
@@ -72,16 +92,32 @@ const yearGroups = Array.from(groupedEvents.entries()).map(([year, months]) => (
 
     <nav class="catalog-rail event-rail" aria-label="Browse events by date">
       {
-        yearGroups.length > 0 && (
+        hasEvents && (
           <ul class="event-archive">
-            {yearGroups.map(({ year, months }) => (
+            {upcomingYearGroups.map(({ year, months }) => (
               <li>
+                <details open>
+                  <summary>{year}</summary>
+                  <ul>
+                    {months.map(({ month, label, events: monthEvents }) => (
+                      <li>
+                        <a href={`#${monthAnchor("future", year, month)}`}>
+                          {label} ({monthEvents.length})
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </li>
+            ))}
+            {pastYearGroups.map(({ year, months }) => (
+              <li class="event-archive-past">
                 <details>
                   <summary>{year}</summary>
                   <ul>
                     {months.map(({ month, label, events: monthEvents }) => (
                       <li>
-                        <a href={`#${monthAnchor(year, month)}`}>
+                        <a href={`#${monthAnchor("past", year, month)}`}>
                           {label} ({monthEvents.length})
                         </a>
                       </li>
@@ -97,21 +133,22 @@ const yearGroups = Array.from(groupedEvents.entries()).map(([year, months]) => (
 
     <div class="catalog-groups event-groups">
       {
-        yearGroups.length > 0 ? (
-          yearGroups.map(({ year, months }) => (
+        hasEvents ? (
+          <>
+            {upcomingYearGroups.map(({ year, months }) => (
             <section
               class="event-year-group"
-              id={`events-${year}`}
-              aria-labelledby={`events-${year}-heading`}
+              id={yearAnchor("future", year)}
+              aria-labelledby={`${yearAnchor("future", year)}-heading`}
             >
-              <h2 id={`events-${year}-heading`}>{year}</h2>
+              <h2 id={`${yearAnchor("future", year)}-heading`}>{year}</h2>
               {months.map(({ month, label, events: monthEvents }) => (
                 <section
                   class="event-month-group"
-                  id={monthAnchor(year, month)}
-                  aria-labelledby={`${monthAnchor(year, month)}-heading`}
+                  id={monthAnchor("future", year, month)}
+                  aria-labelledby={`${monthAnchor("future", year, month)}-heading`}
                 >
-                  <h3 id={`${monthAnchor(year, month)}-heading`}>{label}</h3>
+                  <h3 id={`${monthAnchor("future", year, month)}-heading`}>{label}</h3>
                   <ol class="catalog-list event-list">
                     {monthEvents.map((event) => (
                       <li data-source-file={`content/events/${event.id}/index.md`}>
@@ -140,7 +177,54 @@ const yearGroups = Array.from(groupedEvents.entries()).map(([year, months]) => (
                 </section>
               ))}
             </section>
-          ))
+            ))}
+            {pastYearGroups.map(({ year, months }) => (
+              <section
+                class="event-year-group event-year-group--past"
+                id={yearAnchor("past", year)}
+                aria-labelledby={`${yearAnchor("past", year)}-heading`}
+              >
+                <h2 id={`${yearAnchor("past", year)}-heading`}>{year}</h2>
+                {months.map(({ month, label, events: monthEvents }) => (
+                  <section
+                    class="event-month-group"
+                    id={monthAnchor("past", year, month)}
+                    aria-labelledby={`${monthAnchor("past", year, month)}-heading`}
+                  >
+                    <h3 id={`${monthAnchor("past", year, month)}-heading`}>{label}</h3>
+                    <ol class="catalog-list event-list">
+                      {monthEvents.map((event) => (
+                        <li
+                          class="event-list-item--past"
+                          data-source-file={`content/events/${event.id}/index.md`}
+                        >
+                          <time
+                            datetime={event.data.date}
+                            data-i18n-date={event.data.date}
+                          >
+                            {formatDate(event.data.date, "en")}
+                          </time>
+                          <article class="entry-summary event-summary">
+                            <h4>
+                              <a href={`/events/${event.data.slug}/`}>
+                                {event.data.title}
+                              </a>
+                            </h4>
+                            <p class="event-brief">{event.data.brief}</p>
+                            <p class="event-meta">
+                              {[event.data.time, event.data.venue, event.data.location]
+                                .filter(Boolean)
+                                .join(" / ")}
+                            </p>
+                          </article>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+                ))}
+              </section>
+            ))}
+          </>
         ) : (
           <p class="events-empty" data-i18n-key="events.noUpcoming">
             {translate("en", "events.noUpcoming")}

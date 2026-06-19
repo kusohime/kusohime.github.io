@@ -91,6 +91,19 @@ This sentence contains a Chicago-style note.[^note] A second note contains a
 [^cn-note]: 這是一條示例腳註。腳註段落不使用首行縮排。
 [^cn-link]: 這條腳註用於測試帶有超連結的來源說明。
 
+### Inline footnotes / 行內腳註
+
+Write the note text right where it happens, with `^[...]`. No labels to manage —
+they number themselves and collect at the foot, alongside any `[^id]` notes.^[This whole note was written inline.]
+
+直接用 `^[……]` 在原處寫下註釋內容，不用管理標籤——它們會自動編號並收集到頁尾，
+與 `[^id]` 腳註共用一個列表。^[整條註釋就是這樣行內寫成的。]
+
+Plain text only: a note that needs a Markdown link or emphasis should use the
+labelled `[^id]` style above.
+
+僅限純文字：若註釋需要 Markdown 連結或強調，請改用上面的 `[^id]` 標籤式寫法。
+
 ## Mathematics / 數學公式
 
 Inline mathematics stays within a sentence: $s_{n+1}=s_n+\varepsilon_n$.

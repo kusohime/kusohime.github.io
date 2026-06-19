@@ -38,27 +38,36 @@ const chapters = allChapters
   .filter((chapter) => contentFolder(chapter.id) === writingFolder)
   .sort((a, b) => a.data.order - b.data.order);
 
-const { title, subtitle, date, type, language, excerpt } = writing.data;
+const { title, subtitle, date, displayDate, type, language, excerpt } = writing.data;
+const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
+const isCuiXiong = writing.data.slug === "cui-xiong-pian";
+const normalizedLanguage = language.toLowerCase();
+const contentLang = normalizedLanguage.includes("traditional")
+  ? "zh-Hant-TW"
+  : normalizedLanguage.includes("simplified") || normalizedLanguage.includes("chinese")
+    ? "zh-Hans-CN"
+    : undefined;
 ---
 
 <BaseLayout title={title} description={excerpt} noindex={writing.data.draft}>
   <article
     class="detail-page writing-title-page"
+    data-writing-slug={writing.data.slug}
     data-source-file={`content/writings/${writing.id}/index.md`}
   >
     <header class="detail-header">
       {writing.data.draft && (
         <p class="draft-flag">Draft — not listed publicly</p>
       )}
-      <h1>{title}</h1>
-      {subtitle && <p>{subtitle}</p>}
+      <h1 lang={contentLang}>{title}</h1>
+      {subtitle && <p lang={contentLang}>{subtitle}</p>}
       <p class="writing-metadata">
         <span data-i18n-writing-type={type}>
           {writingTypeLabel(type, "en")}
         </span>
-        <time datetime={String(date)} data-i18n-date={String(date)}>
-          {formatDate(date, "en")}
+        <time datetime={String(date)} data-i18n-date={dateLabel}>
+          {formatDate(dateLabel, "en")}
         </time>
         <span data-i18n-content-language={language}>
           {contentLanguageLabel(language, "en")}
@@ -66,12 +75,18 @@ const hasChapters = chapters.length > 0;
       </p>
     </header>
 
-    <section class="writing-brief" aria-labelledby="brief-heading">
-      <h2 id="brief-heading" data-i18n-key="common.brief">
-        {translate("en", "common.brief")}
-      </h2>
-      <p>{excerpt}</p>
-      <div class:list={["prose", "chicago-prose", { "writing-body": !hasChapters }]}>
+    <section class="writing-opening">
+      <div
+        lang={contentLang}
+        class:list={[
+          "prose",
+          "chicago-prose",
+          {
+            "writing-body": !hasChapters,
+            "cui-dialogue": isCuiXiong,
+          },
+        ]}
+      >
         <Content />
       </div>
     </section>
@@ -82,13 +97,16 @@ const hasChapters = chapters.length > 0;
           <h2 id="contents-heading" data-i18n-key="common.contents">
             {translate("en", "common.contents")}
           </h2>
-          <ol>
+          <ol class={writing.data.numberedContents ? undefined : "unnumbered"}>
             {chapters.map((chapter) => (
               <li>
-                <a href={`/writings/${writing.data.slug}/${chapter.data.slug}/`}>
+                <a
+                  href={`/writings/${writing.data.slug}/${chapter.data.slug}/`}
+                  lang={contentLang}
+                >
                   {chapter.data.title}
                 </a>
-                {chapter.data.excerpt && <p>{chapter.data.excerpt}</p>}
+                {chapter.data.excerpt && <p lang={contentLang}>{chapter.data.excerpt}</p>}
               </li>
             ))}
           </ol>

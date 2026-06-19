@@ -4,7 +4,7 @@
  * Caveat / 注意：優先修改 :root 變數；大範圍選擇器會影響所有頁面。
  * Caveat: Prefer :root variables; broad selectors affect every public page.
  */
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
 
 :root {
   color-scheme: light;
@@ -21,6 +21,10 @@
                    "BIZ UDGothic",
                    "Noto Sans CJK JP",
                    "Source Han Sans JP",
+                   "Noto Sans SC",
+                   "PingFang SC",
+                   "Noto Sans CJK SC",
+                   "Source Han Sans SC",
                    "PingFang TC",
                    "Noto Sans CJK TC",
                    "Microsoft JhengHei",
@@ -31,6 +35,10 @@
                     "Hiragino Mincho ProN",
                     "Noto Serif CJK JP",
                     "Source Han Serif JP",
+                    "Noto Serif SC",
+                    "Songti SC",
+                    "Noto Serif CJK SC",
+                    "Source Han Serif SC",
                     "Songti TC",
                     "Noto Serif CJK TC",
                     serif;
@@ -40,6 +48,9 @@
                    "Yu Gothic",
                    "Noto Sans Mono CJK JP",
                    "Source Han Mono JP",
+                   "Noto Sans SC",
+                   "Sarasa Mono SC",
+                   "PingFang SC",
                    "PingFang TC",
                    "Microsoft JhengHei",
                    monospace;
@@ -100,6 +111,7 @@
   --content-width: 38rem;
   --reading-width: 40rem;
   --page-gutter: 1.25rem;
+  --home-image-fade-width: 5%;
 
   --space-xs: 0.35rem;
   --space-sm: 0.7rem;
@@ -140,6 +152,26 @@
                    "PingFang TC",
                    "Microsoft JhengHei",
                    monospace;
+}
+
+:where(:lang(zh-Hans), :lang(zh-CN)) {
+  --font-cjk-sans: "Noto Sans SC",
+                   "PingFang SC",
+                   "Noto Sans CJK SC",
+                   "Source Han Sans SC",
+                   "Microsoft YaHei",
+                   sans-serif;
+  --font-cjk-serif: "Noto Serif SC",
+                    "Songti SC",
+                    "Noto Serif CJK SC",
+                    "Source Han Serif SC",
+                    serif;
+  --font-cjk-mono: "Noto Sans SC",
+                   "Sarasa Mono SC",
+                   "PingFang SC",
+                   "Microsoft YaHei",
+                   monospace;
+  font-family: var(--font-body);
 }
 
 html {
@@ -699,18 +731,51 @@ main {
   margin-bottom: var(--space-lg);
 }
 
-.home-manuscript {
+.home-image-frame {
   width: min(100%, var(--reading-width));
   margin: 0;
 }
 
-.home-manuscript img {
+.home-image-frame img {
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--home-image-fade-width),
+      #000 calc(100% - var(--home-image-fade-width)),
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--home-image-fade-width),
+      #000 calc(100% - var(--home-image-fade-width)),
+      transparent 100%
+    );
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--home-image-fade-width),
+      #000 calc(100% - var(--home-image-fade-width)),
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--home-image-fade-width),
+      #000 calc(100% - var(--home-image-fade-width)),
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 
-.home-manuscript figcaption {
+.home-image-frame figcaption {
   margin-top: var(--space-xs);
   color: var(--color-muted);
   font-size: 0.85rem;
@@ -878,6 +943,20 @@ main {
   list-style: none;
 }
 
+.event-archive-past,
+.event-archive-past a,
+.event-archive-past summary {
+  color: var(--color-muted);
+}
+
+.event-year-group--past {
+  color: var(--color-muted);
+}
+
+.event-year-group--past a {
+  color: inherit;
+}
+
 .catalog-groups section > h2 {
   margin: 0 0 var(--space-sm);
 }
@@ -954,6 +1033,34 @@ main {
 
 .dated-list time {
   color: var(--color-muted);
+}
+
+/* Writings list: a shared date column so every title aligns, regardless of
+   how wide the (abbreviated) date is. The column lives on the <ul> and each
+   <li> opts into it via subgrid, so max-content spans every row — the column
+   is as wide as the longest date and adapts when the locale switches. */
+.writings-index .dated-list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 0.85rem;
+}
+
+.writings-index .dated-list li {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: baseline;
+  row-gap: 0.1rem;
+}
+
+.writings-index .dated-list time {
+  font-variant-numeric: tabular-nums;
+}
+
+.writing-list-subtitle {
+  grid-column: 2;
+  color: var(--color-muted);
+  font-size: 0.95em;
 }
 
 .detail-page {
@@ -1219,18 +1326,18 @@ main {
 }
 
 .prose,
-.writing-brief,
+.writing-opening,
 .writing-contents {
   max-width: var(--reading-width);
 }
 
 .prose > :first-child,
-.writing-brief > :first-child {
+.writing-opening > :first-child {
   margin-top: 0;
 }
 
 .prose > :last-child,
-.writing-brief > :last-child {
+.writing-opening > :last-child {
   margin-bottom: 0;
 }
 
@@ -1291,12 +1398,8 @@ main {
   margin-left: var(--space-md);
 }
 
-.writing-brief {
+.writing-opening {
   margin-bottom: var(--space-lg);
-}
-
-.writing-brief > .prose {
-  margin-top: var(--space-md);
 }
 
 .writing-contents {
@@ -1305,6 +1408,11 @@ main {
 
 .writing-contents ol {
   padding-left: 1.25rem;
+}
+
+.writing-contents ol.unnumbered {
+  list-style: none;
+  padding-left: 0;
 }
 
 .writing-contents li {
@@ -1331,6 +1439,84 @@ main {
 
 .writing-body {
   text-align: left;
+}
+
+.cui-dialogue > ul {
+  display: grid;
+  gap: 0.55rem;
+  max-width: min(100%, 46rem);
+  margin-block: var(--space-md);
+  padding: 0;
+  list-style: none;
+}
+
+.cui-dialogue > ul > li {
+  width: min(82%, 30rem);
+  margin: 0;
+  padding: 0;
+}
+
+.cui-dialogue > ul > li:nth-child(odd) {
+  justify-self: start;
+  text-align: left;
+}
+
+.cui-dialogue > ul > li:nth-child(even) {
+  justify-self: end;
+  text-align: right;
+}
+
+.cui-dialogue > ul > li > ul {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cui-dialogue > ul > li:nth-child(even) > ul {
+  text-align: right;
+}
+
+.poly-dialogue {
+  max-width: min(100%, 46rem);
+}
+
+.poly-dialogue p,
+.poly-dialogue ul,
+.poly-dialogue blockquote {
+  text-indent: 0;
+}
+
+.poly-dialogue > ul {
+  display: grid;
+  gap: 0.42rem;
+  margin-block: var(--space-md);
+  padding: 0;
+  list-style: none;
+}
+
+.poly-dialogue > ul > li {
+  margin: 0;
+  padding-left: 1.15rem;
+  text-align: left;
+  text-indent: -1.15rem;
+}
+
+.poly-dialogue > ul > li::before {
+  content: "–";
+  padding-right: 0.45rem;
+  color: var(--color-muted);
+}
+
+.poly-dialogue > p {
+  margin-block: 0.45rem;
+}
+
+.poly-dialogue > p + p {
+  text-indent: 0;
+}
+
+.poly-dialogue blockquote {
+  margin-block: var(--space-sm);
 }
 
 .cv-page {
@@ -1567,6 +1753,17 @@ main {
   line-height: 0;
 }
 
+/* 中文着重号：强调用字符下方的点，而非加粗或斜体。 */
+/* Chinese emphasis marks (zhuzhong): dots beneath each character, not bold or italic. */
+.zh-em {
+  font-style: normal;
+  font-weight: inherit;
+  text-emphasis: filled dot;
+  text-emphasis-position: under right;
+  -webkit-text-emphasis: filled dot;
+  -webkit-text-emphasis-position: under right;
+}
+
 .prose hr {
   border: 0;
   border-top: 1px solid var(--theme-color);
@@ -1690,6 +1887,10 @@ main {
 
   .dated-list li {
     gap: 0.15rem 0.6rem;
+  }
+
+  .writings-index .dated-list {
+    column-gap: 0.6rem;
   }
 
   .works-index,
