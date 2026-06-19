@@ -7,8 +7,10 @@
  */
 import { defineConfig } from "astro/config";
 import { unified } from "@astrojs/markdown-remark";
+import { execFile } from "node:child_process";
 import { mkdir, readdir, readFile, rename, stat, writeFile } from "node:fs/promises";
 import { dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
+import { promisify } from "node:util";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 
@@ -16,6 +18,7 @@ import remarkMath from "remark-math";
 // The Studio runs only in local development; its file API still accepts local requests only.
 const ADMIN_PASSCODE = "0592";
 const MAX_SEARCH_RESULTS = 250;
+const execFileAsync = promisify(execFile);
 
 const ignoredDirectories = new Set([
   ".astro",
@@ -166,6 +169,113 @@ function localStudioPlugin() {
     return Buffer.concat(chunks).toString("utf8");
   };
 
+  // 二进制读取（图片上传用）；与 readBody 同样有 10MB 上限。
+  // Binary read for image uploads; same 10 MB cap as readBody.
+  const readBodyBuffer = async (request) => {
+    const chunks = [];
+    let size = 0;
+
+    for await (const chunk of request) {
+      size += chunk.length;
+      if (size > 10 * 1024 * 1024) {
+        throw new Error("The image is too large (10 MB limit).");
+      }
+      chunks.push(chunk);
+    }
+
+    return Buffer.concat(chunks);
+  };
+
+  const runGit = async (args, options = {}) => {
+    try {
+      const { stdout, stderr } = await execFileAsync("git", args, {
+        cwd: projectRoot,
+        maxBuffer: 1024 * 1024 * 10,
+        windowsHide: true,
+      });
+      return {
+        stdout: options.trim === false ? stdout : stdout.trim(),
+        stderr: stderr.trim(),
+      };
+    } catch (error) {
+      const stderr = String(error?.stderr ?? "").trim();
+      const stdout = String(error?.stdout ?? "").trim();
+      const message = stderr || stdout || error.message || "Git command failed.";
+      throw new Error(message);
+    }
+  };
+
+  const parseGitStatus = (raw) => {
+    const chunks = raw.split("\0").filter(Boolean);
+    const entries = [];
+
+    for (let index = 0; index < chunks.length; index += 1) {
+      const item = chunks[index];
+      const status = item.slice(0, 2);
+      const path = item.slice(3);
+      let oldPath = "";
+
+      if (status.includes("R") || status.includes("C")) {
+        oldPath = chunks[index + 1] ?? "";
+        index += 1;
+      }
+
+      entries.push({
+        path,
+        oldPath,
+        status,
+        staged: status[0] !== " " && status[0] !== "?",
+        unstaged: status[1] !== " " || status[0] === "?",
+      });
+    }
+
+    return entries;
+  };
+
+  const gitSnapshot = async () => {
+    const [{ stdout: branch }, { stdout: rawStatus }] = await Promise.all([
+      runGit(["branch", "--show-current"]),
+      runGit(["status", "--porcelain=v1", "-z", "--untracked-files=all"], { trim: false }),
+    ]);
+
+    let upstream = "";
+    let ahead = 0;
+    let behind = 0;
+    try {
+      upstream = (await runGit(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])).stdout;
+      const counts = (await runGit(["rev-list", "--left-right", "--count", "HEAD...@{u}"])).stdout
+        .split(/\s+/)
+        .map((value) => Number(value));
+      ahead = counts[0] || 0;
+      behind = counts[1] || 0;
+    } catch {
+      upstream = "";
+    }
+
+    const entries = parseGitStatus(rawStatus);
+    return {
+      branch,
+      upstream,
+      ahead,
+      behind,
+      clean: entries.length === 0,
+      entries,
+    };
+  };
+
+  const validateGitPath = (path) => {
+    const normalizedPath = String(path ?? "").replaceAll("\\", "/").trim();
+    if (
+      !normalizedPath ||
+      normalizedPath === ".git" ||
+      normalizedPath.startsWith(".git/")
+    ) {
+      throw new Error("Invalid Git path.");
+    }
+    resolveProjectFile(normalizedPath);
+    return normalizedPath;
+  };
+
   return {
     name: "local-website-studio",
     configureServer(server) {
@@ -193,6 +303,53 @@ function localStudioPlugin() {
             project.files.sort((a, b) => a.localeCompare(b));
             project.images.sort((a, b) => a.localeCompare(b));
             sendJson(response, 200, project);
+            return;
+          }
+
+          if (url.pathname === "/__admin/api/git/status" && request.method === "GET") {
+            sendJson(response, 200, await gitSnapshot());
+            return;
+          }
+
+          if (url.pathname === "/__admin/api/git/publish" && request.method === "POST") {
+            const payload = JSON.parse(await readBody(request));
+            const message = String(payload.message ?? "").trim();
+            const files = Array.isArray(payload.files)
+              ? payload.files.map(validateGitPath)
+              : [];
+
+            if (!message) {
+              sendJson(response, 400, { error: "A commit message is required." });
+              return;
+            }
+            if (files.length === 0) {
+              sendJson(response, 400, { error: "Choose at least one changed file." });
+              return;
+            }
+
+            const snapshot = await gitSnapshot();
+            if (!snapshot.branch) {
+              sendJson(response, 400, { error: "Git is not on a branch." });
+              return;
+            }
+
+            const changedPaths = new Set(snapshot.entries.map((entry) => entry.path));
+            const unknown = files.find((file) => !changedPaths.has(file));
+            if (unknown) {
+              sendJson(response, 400, { error: `${unknown} is not currently changed.` });
+              return;
+            }
+
+            await runGit(["add", "--", ...files]);
+            await runGit(["commit", "-m", message, "--only", "--", ...files]);
+            await runGit(["pull", "--rebase", "--autostash", "origin", snapshot.branch]);
+            await runGit(["push", "origin", snapshot.branch]);
+            const { stdout: commit } = await runGit(["rev-parse", "--short", "HEAD"]);
+            sendJson(response, 200, {
+              branch: snapshot.branch,
+              commit,
+              status: await gitSnapshot(),
+            });
             return;
           }
 
@@ -267,6 +424,32 @@ function localStudioPlugin() {
             }
             await mkdir(dirname(filePath), { recursive: true });
             await writeFile(filePath, await readBody(request), "utf8");
+            sendJson(response, 200, { saved: requestedPath });
+            return;
+          }
+
+          // 上传/替换站点图片：二进制写入，仅允许 public/images/ 内的图片扩展名。
+          // Upload/replace a site image: binary write, restricted to image types under public/images/.
+          if (
+            url.pathname === "/__admin/api/image" &&
+            request.method === "PUT"
+          ) {
+            const normalized = requestedPath.replaceAll("\\", "/");
+            if (
+              normalized !== "public/images" &&
+              !normalized.startsWith("public/images/")
+            ) {
+              sendJson(response, 400, {
+                error: "Images must be saved under public/images/.",
+              });
+              return;
+            }
+            if (!imageExtensions.has(extname(filePath).toLowerCase())) {
+              sendJson(response, 415, { error: "Unsupported image type." });
+              return;
+            }
+            await mkdir(dirname(filePath), { recursive: true });
+            await writeFile(filePath, await readBodyBuffer(request));
             sendJson(response, 200, { saved: requestedPath });
             return;
           }

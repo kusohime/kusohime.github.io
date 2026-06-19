@@ -90,6 +90,14 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           >
             New
           </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-sidebar-tab="publish"
+          >
+            Publish
+          </button>
         </div>
 
         <!--
@@ -136,8 +144,30 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         >
           <p class="panel-hint">
             Albums follow the project folders. Open one to load thumbnails,
-            then copy the URL or insert Markdown.
+            then copy the URL, insert Markdown, or delete. Add new images into a
+            folder under <code>public/images</code>. Needs the local dev server.
           </p>
+          <div class="image-uploader" data-image-uploader>
+            <label class="image-upload-folder">
+              <span>Folder</span>
+              <input
+                type="text"
+                data-image-upload-folder
+                value="public/images"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+            <button type="button" data-image-add>Add images…</button>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              data-image-input
+            />
+            <p class="image-upload-message" data-image-message aria-live="polite"></p>
+          </div>
           <div class="image-library" data-image-library></div>
         </section>
 
@@ -735,6 +765,44 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 Preview draft shelf
               </button>
               <p class="panel-hint" data-new-message aria-live="polite"></p>
+            </fieldset>
+          </form>
+        </section>
+
+        <!--
+          Publish 頁籤：只提交被勾選的檔案，避免把無關修改一起推送。
+          The Publish tab commits only checked files, keeping unrelated local
+          edits out of a push.
+        -->
+        <section class="sidebar-panel publish-panel" data-sidebar-panel="publish" hidden>
+          <form data-publish-form>
+            <fieldset class="design-group">
+              <legend>Publish to GitHub</legend>
+              <div class="publish-actions">
+                <button type="button" data-publish-refresh>
+                  Refresh
+                </button>
+                <button type="button" data-publish-select-all>
+                  Select all
+                </button>
+              </div>
+              <p class="panel-hint" data-publish-summary aria-live="polite">
+                Refresh to inspect local changes.
+              </p>
+              <ol class="publish-file-list" data-publish-file-list></ol>
+              <label>
+                Commit message
+                <input
+                  type="text"
+                  data-publish-commit-message
+                  placeholder="Update website"
+                  autocomplete="off"
+                />
+              </label>
+              <button type="submit" class="publish-submit" data-publish-submit disabled>
+                Commit and push selected
+              </button>
+              <p class="panel-hint" data-publish-message aria-live="polite"></p>
             </fieldset>
           </form>
         </section>

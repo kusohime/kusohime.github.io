@@ -220,10 +220,11 @@ The Studio is a local file editor, not production authentication.
 | Pane / 區域 | Use / 用途 |
 | --- | --- |
 | Files / 檔案 | Edit files; filter names; search text / 編輯檔案；篩選檔名；搜尋文字 |
-| Images / 圖片 | Browse albums; copy URLs; insert Markdown / 瀏覽相簿；複製網址；插入 Markdown |
+| Images / 圖片 | Browse albums; add and delete images; copy URLs; insert Markdown / 瀏覽相簿；新增與刪除圖片；複製網址；插入 Markdown |
 | Design / 設計 | Edit language default, type, spacing, motion / 編輯預設語言、字體、間距、動畫 |
 | Library / 資料庫 | Edit catalog fields; drafts; comments; trash / 編輯目錄欄位、草稿、回應、回收 |
 | New / 新增 | Create work, event, writing drafts / 建立作品、活動、文章草稿 |
+| Publish / 發布 | Commit selected files; push to GitHub / 提交選取檔案；推送至 GitHub |
 | Preview / 預覽 | Desktop and phone preview / 桌面與手機預覽 |
 | Inspect / 檢查 | Locate source and style for visible blocks / 定位可見區塊的來源與樣式 |
 | Edit text / 編輯文字 | Edit safe Markdown and literal text in preview / 在預覽中編輯安全 Markdown 與字面文字 |
@@ -257,6 +258,17 @@ Rendered reference: Admin Guide -> Markdown Style Guide.
 Images belong in `public/images/`; Markdown uses `/images/name.ext`.
 
 圖片放在 `public/images/`；Markdown 使用 `/images/name.ext`。
+
+The Studio's Images pane adds and deletes images (local dev server only).
+"Add images…" writes the chosen files into a folder under `public/images`;
+"Delete" on a card moves the image to `content/_trash/images/` (recoverable,
+no longer deployed). Deleting an image does not rewrite pages that reference it,
+so update those references too.
+
+管理器的「圖片」面板可新增與刪除圖片（僅限本地開發伺服器）。「Add images…」會把
+選取的檔案寫入 `public/images` 下的資料夾；卡片上的「Delete」會把圖片移到
+`content/_trash/images/`（可復原，且不再發布）。刪除圖片不會自動修改引用它的頁面，
+請一併更新那些引用。
 
 A caption gives visible context. `alt` text gives a non-visual description.
 Write both when the image carries meaning.
@@ -404,6 +416,11 @@ Full reference: `docs/comments.md`; Worker setup:
 Push to `main`.
 
 推送至 `main`。
+
+Studio: **Publish** > refresh > check files > write message > commit and push.
+Unchecked files stay local.
+
+管理器：**Publish** > 重新整理 > 勾選檔案 > 寫訊息 > 提交並推送。未勾選檔案留在本地。
 
 `.github/workflows/deploy-pages.yml` runs `npm ci`, `npm run check`,
 `npm run build`, removes local-only `dist/admin` and `dist/drafts`, then

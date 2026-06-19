@@ -316,7 +316,7 @@ button:disabled {
 
 .sidebar-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   border-bottom: 1px solid var(--admin-border);
   background: var(--admin-background);
 }
@@ -827,6 +827,53 @@ button:disabled {
   font-size: 0.7rem;
 }
 
+.image-trash {
+  color: var(--admin-accent);
+}
+
+.image-trash:hover {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent-soft);
+}
+
+.image-uploader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
+}
+
+.image-upload-folder {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--admin-text);
+}
+
+.image-upload-folder input {
+  width: 11rem;
+  max-width: 100%;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.72rem;
+}
+
+.image-uploader > [data-image-add] {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.72rem;
+}
+
+.image-upload-message {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.7rem;
+}
+
+.image-upload-message[data-kind="error"] {
+  color: var(--admin-accent);
+}
+
 .image-load-error {
   margin: 0;
   border: 1px solid var(--admin-accent);
@@ -846,6 +893,71 @@ button:disabled {
   display: grid;
   gap: 0.65rem;
   padding-block: 0.2rem;
+}
+
+.publish-panel form,
+.publish-panel fieldset {
+  margin-top: 0;
+}
+
+.publish-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.publish-file-list {
+  min-height: 4rem;
+  max-height: 16rem;
+  overflow: auto;
+  margin: 0;
+  border: 1px solid var(--admin-border);
+  padding: 0;
+  background: var(--admin-panel);
+  list-style: none;
+}
+
+.publish-file-list:empty::before {
+  display: block;
+  padding: 0.65rem;
+  color: var(--admin-muted);
+  content: "No changed files.";
+  font-size: 0.7rem;
+}
+
+.publish-file-item {
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.publish-file-item:last-child {
+  border-bottom: 0;
+}
+
+.publish-file-item label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.48rem 0.55rem;
+  color: var(--admin-text);
+}
+
+.publish-file-item input {
+  accent-color: var(--admin-accent);
+}
+
+.publish-file-path {
+  overflow: hidden;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.publish-file-state {
+  color: var(--admin-muted);
+  font-size: 0.62rem;
+  text-transform: uppercase;
 }
 
 .video-fields {
@@ -1010,6 +1122,13 @@ button:disabled {
 }
 
 .new-page-submit {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.publish-submit:not(:disabled) {
   border-color: var(--admin-accent);
   background: var(--admin-accent);
   color: #fff;

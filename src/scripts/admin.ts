@@ -44,6 +44,23 @@ interface SearchResult {
   excerpt: string;
 }
 
+interface GitStatusEntry {
+  path: string;
+  oldPath?: string;
+  status: string;
+  staged: boolean;
+  unstaged: boolean;
+}
+
+interface GitSnapshot {
+  branch: string;
+  upstream: string;
+  ahead: number;
+  behind: number;
+  clean: boolean;
+  entries: GitStatusEntry[];
+}
+
 interface FileTreeNode {
   folders: Map<string, FileTreeNode>;
   files: string[];
@@ -51,6 +68,7 @@ interface FileTreeNode {
 
 const ADMIN_PASSCODE = "0592";
 const LINE_WRAP_STORAGE_KEY = "yixin-cui-studio-line-wrap";
+const CURRENT_FILE_SESSION_KEY = "yixin-cui-studio-current-file";
 const PREVIEW_PATH_SESSION_KEY = "yixin-cui-studio-preview-path";
 const PREVIEW_MODE_SESSION_KEY = "yixin-cui-studio-preview-mode";
 const PREVIEW_SIZE_SESSION_KEY = "yixin-cui-studio-preview-size";
@@ -280,6 +298,15 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLInputElement>("[data-file-filter]");
   const imageLibrary =
     studio.querySelector<HTMLElement>("[data-image-library]");
+  const imageAddButton =
+    studio.querySelector<HTMLButtonElement>("[data-image-add]");
+  const imageInput = studio.querySelector<HTMLInputElement>("[data-image-input]");
+  const imageFolderInput = studio.querySelector<HTMLInputElement>(
+    "[data-image-upload-folder]",
+  );
+  const imageUploadMessage = studio.querySelector<HTMLElement>(
+    "[data-image-message]",
+  );
   const previewFrame =
     studio.querySelector<HTMLIFrameElement>("[data-preview-frame]");
   const previewPath =
@@ -384,6 +411,22 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLButtonElement>("[data-taxonomy-delete]");
   const taxonomyMessage =
     studio.querySelector<HTMLElement>("[data-taxonomy-message]");
+  const publishForm =
+    studio.querySelector<HTMLFormElement>("[data-publish-form]");
+  const publishRefreshButton =
+    studio.querySelector<HTMLButtonElement>("[data-publish-refresh]");
+  const publishSelectAllButton =
+    studio.querySelector<HTMLButtonElement>("[data-publish-select-all]");
+  const publishFileList =
+    studio.querySelector<HTMLOListElement>("[data-publish-file-list]");
+  const publishSummary =
+    studio.querySelector<HTMLElement>("[data-publish-summary]");
+  const publishCommitMessage =
+    studio.querySelector<HTMLInputElement>("[data-publish-commit-message]");
+  const publishSubmitButton =
+    studio.querySelector<HTMLButtonElement>("[data-publish-submit]");
+  const publishMessage =
+    studio.querySelector<HTMLElement>("[data-publish-message]");
 
   if (
     !openFolderButton ||
@@ -447,7 +490,15 @@ export async function initializeAdminStudio() {
     !taxonomyAddButton ||
     !taxonomyRenameButton ||
     !taxonomyDeleteButton ||
-    !taxonomyMessage
+    !taxonomyMessage ||
+    !publishForm ||
+    !publishRefreshButton ||
+    !publishSelectAllButton ||
+    !publishFileList ||
+    !publishSummary ||
+    !publishCommitMessage ||
+    !publishSubmitButton ||
+    !publishMessage
   ) {
     return;
   }
@@ -567,6 +618,8 @@ export async function initializeAdminStudio() {
   let previewTimer: number | undefined;
   let activePreviewPath = storedPreviewPath;
   let apiConnected = false;
+  let latestGitSnapshot: GitSnapshot | null = null;
+  let publishing = false;
 
   const setStatus = (message: string, kind: "normal" | "error" = "normal") => {
     status.textContent = message;
@@ -577,6 +630,14 @@ export async function initializeAdminStudio() {
     dirty = nextDirty;
     dirtyLabel.textContent = dirty ? "Unsaved changes" : "";
     saveButton.disabled = !currentPath || !dirty;
+  };
+
+  const rememberCurrentFile = (path: string) => {
+    sessionStorage.setItem(CURRENT_FILE_SESSION_KEY, path);
+  };
+
+  const forgetCurrentFile = () => {
+    sessionStorage.removeItem(CURRENT_FILE_SESSION_KEY);
   };
 
   const authenticatedHeaders = (
@@ -684,6 +745,7 @@ export async function initializeAdminStudio() {
         );
       }
       setDirty(false);
+      rememberCurrentFile(currentPath);
       setStatus(`Saved ${currentPath}.`);
       schedulePreviewRefresh();
     } catch (error) {
@@ -1748,6 +1810,7 @@ Write the text here.
         editor.focus();
       }
       setStatus(`Editing ${path}.`);
+      rememberCurrentFile(path);
       revealFileInTree(path);
       syncMarkdownToolbar();
       return;
@@ -1776,6 +1839,7 @@ Write the text here.
         effects: languageCompartment.reconfigure(languageFor(path)),
       });
       currentPath = path;
+      rememberCurrentFile(path);
       currentFileLabel.textContent = path;
       setDirty(false);
       syncMarkdownToolbar();
@@ -1800,6 +1864,20 @@ Write the text here.
     } finally {
       loadingDocument = false;
     }
+  };
+
+  const restoreCurrentFile = async () => {
+    if (currentPath || dirty) return;
+
+    const storedPath = sessionStorage.getItem(CURRENT_FILE_SESSION_KEY);
+    if (!storedPath) return;
+
+    if (!fileHandles.has(storedPath)) {
+      forgetCurrentFile();
+      return;
+    }
+
+    await loadFile(storedPath);
   };
 
   type LibraryKind = "works" | "events" | "writings";
@@ -2485,6 +2563,7 @@ Write the text here.
 
         if (currentPath === entry.path) {
           currentPath = newPath;
+          rememberCurrentFile(newPath);
           currentFileLabel.textContent = newPath;
           loadingDocument = true;
           editor.dispatch({
@@ -2529,6 +2608,7 @@ Write the text here.
         await moveProjectPath(entry.folder, destination);
         if (currentPath.startsWith(`${entry.folder}/`)) {
           currentPath = "";
+          forgetCurrentFile();
           currentFileLabel.textContent = "No file selected";
           loadingDocument = true;
           editor.dispatch({
@@ -4290,6 +4370,47 @@ Write the text here.
     imageUrls.splice(0).forEach((url) => URL.revokeObjectURL(url));
   };
 
+  // 软删除：把图片移到 content/_trash/images（不再部署，可恢复）。需要本地开发服务器。
+  // Soft delete: move the image to content/_trash/images (no longer deployed, recoverable).
+  // Requires the local dev server.
+  const trashImage = async (path: string, card: HTMLElement) => {
+    if (!apiConnected) {
+      setStatus(
+        "Deleting images needs the local dev server (npm run dev).",
+        "error",
+      );
+      return;
+    }
+    const name = path.split("/").at(-1) ?? path;
+    if (
+      !window.confirm(
+        `Move ${name} to content/_trash? Any page that references it will show a broken image until you update it.`,
+      )
+    ) {
+      return;
+    }
+    const ext = extensionOf(name);
+    const base = ext ? name.slice(0, name.length - ext.length) : name;
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const to = `content/_trash/images/${base}-${stamp}${ext}`;
+    try {
+      const response = await fetch("/__admin/api/move", {
+        method: "POST",
+        headers: authenticatedHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ from: path, to }),
+      });
+      if (!response.ok) throw new Error(await responseError(response));
+      imageHandles.delete(path);
+      card.remove();
+      setStatus(`Moved ${name} to content/_trash.`);
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? error.message : "Could not delete the image.",
+        "error",
+      );
+    }
+  };
+
   const createImageCard = async (path: string) => {
     const handle = imageHandles.get(path);
     if (!handle) return null;
@@ -4341,7 +4462,15 @@ Write the text here.
       editor.focus();
     });
 
-    actions.append(copyButton, insertButton);
+    const trashButton = document.createElement("button");
+    trashButton.type = "button";
+    trashButton.className = "image-trash";
+    trashButton.textContent = "Delete";
+    trashButton.addEventListener("click", () => {
+      void trashImage(path, card);
+    });
+
+    actions.append(copyButton, insertButton, trashButton);
     card.append(image, code, actions);
     return card;
   };
@@ -4398,6 +4527,190 @@ Write the text here.
     if (mainAlbum) mainAlbum.open = true;
   };
 
+  const publishCheckboxes = () =>
+    [...publishFileList.querySelectorAll<HTMLInputElement>("[data-publish-path]")];
+
+  const selectedPublishFiles = () =>
+    publishCheckboxes()
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value);
+
+  const publishStateLabel = (entry: GitStatusEntry) => {
+    if (entry.status.includes("R")) return "renamed";
+    if (entry.status.includes("D")) return "deleted";
+    if (entry.status.includes("A") || entry.status === "??") return "new";
+    if (entry.status.includes("M")) return "modified";
+    return entry.status.trim() || "changed";
+  };
+
+  const updatePublishSubmitState = () => {
+    const checkboxes = publishCheckboxes();
+    const selectedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
+    const allSelected = selectedCount > 0 && selectedCount === checkboxes.length;
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.disabled = publishing;
+    });
+    publishSelectAllButton.textContent = allSelected ? "Clear all" : "Select all";
+    publishSelectAllButton.disabled = publishing || checkboxes.length === 0;
+    publishRefreshButton.disabled = publishing || !apiConnected;
+    publishSubmitButton.disabled =
+      publishing ||
+      !apiConnected ||
+      dirty ||
+      selectedCount === 0 ||
+      !publishCommitMessage.value.trim();
+  };
+
+  const setPublishUnavailable = (message: string) => {
+    latestGitSnapshot = null;
+    publishFileList.replaceChildren();
+    publishSummary.textContent = message;
+    publishMessage.textContent = "";
+    updatePublishSubmitState();
+  };
+
+  const renderGitStatus = (snapshot: GitSnapshot) => {
+    latestGitSnapshot = snapshot;
+    publishFileList.replaceChildren();
+
+    const branch = snapshot.branch || "detached HEAD";
+    const changedCount = snapshot.entries.length;
+    const changedText =
+      changedCount === 1 ? "1 changed file" : `${changedCount} changed files`;
+    const upstreamText = snapshot.upstream
+      ? `${snapshot.ahead} ahead, ${snapshot.behind} behind`
+      : "no upstream";
+
+    publishSummary.textContent = snapshot.clean
+      ? `${branch}: clean (${upstreamText}).`
+      : `${branch}: ${changedText} (${upstreamText}).`;
+
+    snapshot.entries
+      .slice()
+      .sort((a, b) => a.path.localeCompare(b.path))
+      .forEach((entry) => {
+        const item = document.createElement("li");
+        item.className = "publish-file-item";
+
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = entry.path;
+        checkbox.dataset.publishPath = entry.path;
+        checkbox.disabled = publishing;
+
+        const path = document.createElement("span");
+        path.className = "publish-file-path";
+        const displayPath = entry.oldPath
+          ? `${entry.oldPath} -> ${entry.path}`
+          : entry.path;
+        path.textContent = displayPath;
+        path.title = displayPath;
+
+        const state = document.createElement("span");
+        state.className = "publish-file-state";
+        state.textContent = publishStateLabel(entry);
+
+        label.append(checkbox, path, state);
+        item.append(label);
+        publishFileList.append(item);
+      });
+
+    updatePublishSubmitState();
+  };
+
+  const refreshGitStatus = async () => {
+    if (!apiConnected) {
+      setPublishUnavailable("Connect the local project before publishing.");
+      return;
+    }
+
+    publishMessage.textContent = "";
+    publishSummary.textContent = "Reading Git status...";
+    updatePublishSubmitState();
+
+    try {
+      const response = await fetch("/__admin/api/git/status", {
+        headers: authenticatedHeaders({ Accept: "application/json" }),
+      });
+      if (!response.ok) throw new Error(await responseError(response));
+      renderGitStatus((await response.json()) as GitSnapshot);
+    } catch (error) {
+      setPublishUnavailable("Git status is unavailable.");
+      publishMessage.textContent =
+        error instanceof Error ? error.message : "Could not read Git status.";
+    }
+  };
+
+  const publishSelectedChanges = async () => {
+    const message = publishCommitMessage.value.trim();
+    const files = selectedPublishFiles();
+
+    if (dirty) {
+      publishMessage.textContent = "Save the open file before publishing.";
+      setStatus("Save the open file before publishing.", "error");
+      updatePublishSubmitState();
+      return;
+    }
+
+    if (!message) {
+      publishMessage.textContent = "Write a commit message.";
+      publishCommitMessage.focus();
+      updatePublishSubmitState();
+      return;
+    }
+
+    if (files.length === 0) {
+      publishMessage.textContent = "Choose at least one changed file.";
+      updatePublishSubmitState();
+      return;
+    }
+
+    const branch = latestGitSnapshot?.branch || "the current branch";
+    const fileText = files.length === 1 ? "1 file" : `${files.length} files`;
+    const confirmed = window.confirm(`Commit and push ${fileText} to ${branch}?`);
+    if (!confirmed) return;
+
+    publishing = true;
+    publishMessage.textContent = "Publishing...";
+    setStatus("Publishing selected files...");
+    updatePublishSubmitState();
+
+    try {
+      const response = await fetch("/__admin/api/git/publish", {
+        method: "POST",
+        headers: authenticatedHeaders({
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify({ message, files }),
+      });
+      if (!response.ok) throw new Error(await responseError(response));
+
+      const payload = (await response.json()) as {
+        branch: string;
+        commit: string;
+        status?: GitSnapshot;
+      };
+      publishCommitMessage.value = "";
+      publishMessage.textContent = `Pushed ${payload.commit} to ${payload.branch}.`;
+      setStatus(`Published ${payload.commit} to ${payload.branch}.`);
+      if (payload.status) {
+        renderGitStatus(payload.status);
+      } else {
+        await refreshGitStatus();
+      }
+    } catch (error) {
+      publishMessage.textContent =
+        error instanceof Error ? error.message : "Publish failed.";
+      setStatus("Publish failed.", "error");
+    } finally {
+      publishing = false;
+      updatePublishSubmitState();
+    }
+  };
+
   const connectDevProject = async () => {
     try {
       const response = await fetch("/__admin/api/files", {
@@ -4438,10 +4751,12 @@ Write the text here.
       setStatus(
         `Connected: ${fileHandles.size} editable files and ${imageHandles.size} images.`,
       );
+      void refreshGitStatus();
       return true;
     } catch {
       apiConnected = false;
       newSubmitButton.disabled = true;
+      setPublishUnavailable("Local Git publishing requires the development server.");
       return false;
     }
   };
@@ -4467,7 +4782,10 @@ Write the text here.
   };
 
   const openProjectFolder = async () => {
-    if (await connectDevProject()) return;
+    if (await connectDevProject()) {
+      await restoreCurrentFile();
+      return;
+    }
 
     if (!window.showDirectoryPicker) {
       setStatus(
@@ -4493,9 +4811,11 @@ Write the text here.
       await loadTypographySettings();
       await loadDesignSettings();
       await loadSiteDefaults();
+      await restoreCurrentFile();
       newSubmitButton.disabled = true;
       newMessage.textContent =
         "Add Page requires the local development server connection.";
+      setPublishUnavailable("Local Git publishing requires the development server.");
       setStatus(
         `Opened ${directory.name}: ${fileHandles.size} editable files and ${imageHandles.size} images.`,
       );
@@ -4510,6 +4830,98 @@ Write the text here.
       );
     }
   };
+
+  const setUploadMessage = (
+    text: string,
+    kind: "normal" | "error" = "normal",
+  ) => {
+    if (imageUploadMessage) {
+      imageUploadMessage.textContent = text;
+      imageUploadMessage.dataset.kind = kind;
+    }
+    setStatus(text, kind);
+  };
+
+  // 上传图片：逐个二进制 PUT 到 /__admin/api/image，重名自动加序号，仅限 public/images。
+  // Upload images: binary PUT each to /__admin/api/image, auto-suffix on name clash, public/images only.
+  const uploadImages = async (files: FileList) => {
+    if (!apiConnected) {
+      setUploadMessage(
+        "Adding images needs the local dev server (npm run dev).",
+        "error",
+      );
+      return;
+    }
+    const folder = (imageFolderInput?.value ?? "public/images")
+      .trim()
+      .replaceAll("\\", "/")
+      .replace(/^\/+|\/+$/g, "");
+    if (folder !== "public/images" && !folder.startsWith("public/images/")) {
+      setUploadMessage(
+        "Folder must be public/images or a subfolder of it.",
+        "error",
+      );
+      return;
+    }
+    let added = 0;
+    for (const file of Array.from(files)) {
+      const ext = extensionOf(file.name);
+      if (!imageExtensions.has(ext)) {
+        setUploadMessage(`Skipped ${file.name}: not a supported image.`, "error");
+        continue;
+      }
+      let target = `${folder}/${file.name}`;
+      if (imageHandles.has(target)) {
+        const base = file.name.slice(0, file.name.length - ext.length);
+        let n = 1;
+        while (imageHandles.has(`${folder}/${base}-${n}${ext}`)) n += 1;
+        target = `${folder}/${base}-${n}${ext}`;
+      }
+      try {
+        const response = await fetch(
+          `/__admin/api/image?path=${encodeURIComponent(target)}`,
+          {
+            method: "PUT",
+            headers: authenticatedHeaders({
+              "Content-Type": file.type || "application/octet-stream",
+            }),
+            body: file,
+          },
+        );
+        if (!response.ok) throw new Error(await responseError(response));
+        imageHandles.set(target, createApiFileHandle(target));
+        added += 1;
+      } catch (error) {
+        setUploadMessage(
+          error instanceof Error ? error.message : `Could not add ${file.name}.`,
+          "error",
+        );
+      }
+    }
+    if (added > 0) {
+      renderImages();
+      setUploadMessage(
+        `Added ${added} image${added === 1 ? "" : "s"} to ${folder}.`,
+      );
+    }
+  };
+
+  imageAddButton?.addEventListener("click", () => {
+    if (!apiConnected) {
+      setUploadMessage(
+        "Adding images needs the local dev server (npm run dev).",
+        "error",
+      );
+      return;
+    }
+    imageInput?.click();
+  });
+  imageInput?.addEventListener("change", () => {
+    if (imageInput.files && imageInput.files.length > 0) {
+      void uploadImages(imageInput.files);
+    }
+    imageInput.value = "";
+  });
 
   openFolderButton.addEventListener("click", () => {
     void openProjectFolder();
@@ -4539,6 +4951,28 @@ Write the text here.
     searchResults.replaceChildren();
     searchBlock.hidden = true;
     globalSearchInput.focus();
+  });
+  publishRefreshButton.addEventListener("click", () => {
+    void refreshGitStatus();
+  });
+  publishSelectAllButton.addEventListener("click", () => {
+    const checkboxes = publishCheckboxes();
+    const allSelected =
+      checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = !allSelected;
+    });
+    updatePublishSubmitState();
+  });
+  publishFileList.addEventListener("change", () => {
+    updatePublishSubmitState();
+  });
+  publishCommitMessage.addEventListener("input", () => {
+    updatePublishSubmitState();
+  });
+  publishForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void publishSelectedChanges();
   });
   loadPreviewButton.addEventListener("click", () => {
     refreshPreview(previewPath.value);
@@ -4710,6 +5144,9 @@ Write the text here.
       .forEach((panel) => {
         panel.hidden = panel.dataset.sidebarPanel !== selected;
       });
+    if (selected === "publish") {
+      void refreshGitStatus();
+    }
   };
 
   studio
@@ -4737,6 +5174,7 @@ Write the text here.
   });
 
   const connected = await connectDevProject();
+  if (connected) await restoreCurrentFile();
   refreshPreview(storedPreviewPath);
   if (!connected) {
     setStatus(

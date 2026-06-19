@@ -69,6 +69,12 @@ Images normally belong in `public/images/`.
 **Images / 圖片** 會依資料夾分成相簿，開啟相簿時才載入縮圖；可複製公開網址
 或插入 Markdown。圖片通常放在 `public/images/`。
 
+**Publish / 發布** reads Git status, commits checked files only, then pushes to
+GitHub. Save the open file first. Leave unrelated files unchecked.
+
+**Publish / 發布** 讀取 Git 狀態，只提交勾選檔案，再推送至 GitHub。先儲存開啟中的
+檔案；無關檔案不要勾選。
+
 Use **Find in files / 在檔案中查詢** before renaming a class, URL, field, or
 component. Results open the matching file and line.
 
@@ -271,11 +277,11 @@ still belongs to the project.
 
 ## Publishing / 釋出
 
-The repository currently provides build commands, not a carrier-specific
-publishing button. Run the checks above, then use the deployment method
-configured for the hosting service. A successful local build produces `dist/`;
-that folder is generated and should not be edited.
+Use **Studio > Publish** for ordinary updates: refresh, check the intended
+files, write a message, commit and push. Run the checks above for structural
+changes. A successful local build produces `dist/`; that folder is generated
+and should not be edited.
 
-專案目前提供構建命令，並沒有與特定託管商繫結的釋出按鈕。執行上述檢查後，再
-使用託管服務所配置的部署方式。成功的本地構建會生成 `dist/`；該資料夾由程式
-生成，不應手動編輯。
+一般更新使用 **Studio > Publish**：重新整理、勾選預定檔案、寫訊息、提交並推送。
+結構性修改仍先執行上述檢查。成功的本地構建會生成 `dist/`；該資料夾由程式生成，
+不應手動編輯。
