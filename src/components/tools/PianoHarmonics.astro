@@ -4,11 +4,80 @@
 // string diagram.
 ---
 
-<section class="tool-panel" aria-label="Piano harmonics mapper">
-  <span class="tool-panel-label">String &amp; partial</span>
+<section class="tool-panel" aria-label="Find piano harmonic touch points by sounding pitch">
+  <span class="tool-panel-label">Find by sounding pitch</span>
   <div class="tool-controls">
     <label class="tool-field">
-      <span>Key (sounding pitch)</span>
+      <span>Target pitch</span>
+      <input type="text" id="ph-target" value="G4" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Lowest source string</span>
+      <input type="text" id="ph-low" value="A0" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Highest source string</span>
+      <input type="text" id="ph-high" value="C4" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Max partial</span>
+      <input type="number" id="ph-max-partial" value="22" min="2" max="22" step="1" />
+    </label>
+    <label class="tool-field">
+      <span>Node set</span>
+      <select id="ph-node-set">
+        <option value="practical" selected>Practical bass nodes</option>
+        <option value="all">All mathematical nodes</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Tolerance (¢)</span>
+      <input type="number" id="ph-tolerance" value="35" min="0" max="100" step="1" />
+    </label>
+    <label class="tool-field">
+      <span>Pitch model</span>
+      <select id="ph-pitch-model">
+        <option value="measured" selected>Steinway D average</option>
+        <option value="ideal">Ideal integer partials</option>
+        <option value="custom-b">Custom B</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Custom B</span>
+      <input type="number" id="ph-find-b" value="0" min="0" max="0.005" step="0.0001" />
+    </label>
+    <button type="button" class="tool-primary" id="ph-find">Find touch points</button>
+    <div id="ph-target-kb" style="width: 100%;"></div>
+  </div>
+  <p class="tool-error" id="ph-find-error" hidden></p>
+
+  <div class="tool-result" id="ph-find-result" hidden>
+    <p class="tool-result-figure" id="ph-find-figure"></p>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption>Closest source strings and nodes</caption>
+        <thead>
+          <tr>
+            <th>Source string</th>
+            <th>Partial</th>
+            <th>Score mark</th>
+            <th>Touch point(s)</th>
+            <th>Sounding result</th>
+            <th>Target diff.</th>
+          </tr>
+        </thead>
+        <tbody id="ph-find-table"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="ph-find-note"></p>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Map one piano string and partial">
+  <span class="tool-panel-label">Manual string &amp; partial</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Source string</span>
       <input type="text" id="ph-key" value="C2" size="8" />
     </label>
     <label class="tool-field">
@@ -21,13 +90,42 @@
         <option value="6">6 (two octaves + fifth)</option>
         <option value="7">7 (two octaves + flat seventh)</option>
         <option value="8">8 (three octaves)</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
       </select>
     </label>
     <label class="tool-field">
-      <span>Inharmonicity B</span>
+      <span>Node set</span>
+      <select id="ph-map-node-set">
+        <option value="practical" selected>Practical bass nodes</option>
+        <option value="all">All mathematical nodes</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Pitch model</span>
+      <select id="ph-map-pitch-model">
+        <option value="measured" selected>Steinway D average</option>
+        <option value="ideal">Ideal integer partials</option>
+        <option value="custom-b">Custom B</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Custom B</span>
       <input type="number" id="ph-b" value="0" min="0" max="0.005" step="0.0001" />
     </label>
-    <button type="button" class="tool-primary" id="ph-go">Map nodes</button>
+    <button type="button" class="tool-primary" id="ph-go">Map this string</button>
     <button type="button" id="ph-play">Hear (approx.)</button>
     <div id="ph-kb" style="width: 100%;"></div>
   </div>
@@ -39,7 +137,7 @@
     <div class="tool-table-wrap" style="margin-top: var(--space-sm);">
       <table class="tool-table">
         <caption>Touch points (fractions of speaking length from the agraffe)</caption>
-        <thead><tr><th>Node</th><th>Fraction</th><th>% of string</th></tr></thead>
+        <thead><tr><th>Score mark</th><th>Fraction</th><th>% of string</th></tr></thead>
         <tbody id="ph-table"></tbody>
       </table>
     </div>
@@ -49,37 +147,204 @@
 
 <script>
   import { harmonicNodes, partialFreq } from "../../lib/partials.js";
-  import { describeHz, formatCents, midiToHz, nameToMidi } from "../../lib/pitch.js";
+  import { describeHz, formatCents, midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
   import { sustain } from "../../lib/audio.js";
   import { mountKeyboard } from "../../lib/keyboard.js";
 
   const byId = (id: string) => document.getElementById(id) as any;
   const SVG_NS = "http://www.w3.org/2000/svg";
-  let current: { f0: number; n: number; B: number } | null = null;
+  const PRACTICAL_NODE_NUMERATORS: Record<number, number[]> = {
+    2: [1],
+    3: [1],
+    4: [1],
+    5: [1, 2],
+    6: [1],
+    7: [2],
+    8: [3],
+    9: [1, 2],
+    10: [1, 3],
+    11: [1, 2, 3, 4],
+    12: [1],
+    13: [1, 3, 4],
+    14: [1, 3],
+    15: [1, 4],
+    16: [3, 5],
+    17: [3, 4, 5],
+    18: [5],
+    19: [4, 5, 6],
+    21: [4, 5],
+    22: [5, 7],
+  };
+  const STEINWAY_D_AVERAGE_CENTS: Record<number, number> = {
+    2: 0,
+    3: -6,
+    4: -5,
+    5: -4,
+    6: -5,
+    7: -4,
+    8: 0,
+    9: -4,
+    10: -2,
+    11: 1,
+    12: 0,
+    13: 1,
+    14: 3,
+    15: 6,
+    16: 7,
+    17: 10,
+    18: 11,
+    19: 10,
+    21: 17,
+    22: 20,
+  };
+  let current: { f0: number; n: number; B: number; model: string } | null = null;
 
-  function map() {
+  function centsBetween(hz: number, targetHz: number) {
+    return 1200 * Math.log2(hz / targetHz);
+  }
+
+  function clampInt(value: number, min: number, max: number) {
+    return Math.min(max, Math.max(min, Math.round(value)));
+  }
+
+  function nodesForPartial(n: number, nodeSet: string) {
+    if (nodeSet === "practical") {
+      return (PRACTICAL_NODE_NUMERATORS[n] ?? []).map((k) => ({ k, n, position: k / n }));
+    }
+    return harmonicNodes(n);
+  }
+
+  function pitchForPartial(f0: number, n: number, model: string, B: number) {
+    if (model === "custom-b") return partialFreq(f0, n, B);
+    const hz = partialFreq(f0, n, 0);
+    if (model === "measured") {
+      const cents = STEINWAY_D_AVERAGE_CENTS[n] ?? 0;
+      return hz * Math.pow(2, cents / 1200);
+    }
+    return hz;
+  }
+
+  function modelText(model: string) {
+    if (model === "custom-b") return "custom inharmonicity";
+    if (model === "measured") return "Steinway D average offsets";
+    return "ideal integer partials";
+  }
+
+  function scoreMarks(nodes: Array<{ k: number; n: number }>) {
+    return nodes.map((node) => `${node.n}/${node.k}`).join(", ");
+  }
+
+  function nodeText(nodes: Array<{ k: number; n: number; position: number }>) {
+    return nodes
+      .map((node) => `${node.k}/${node.n} (${(node.position * 100).toFixed(1)}%)`)
+      .join(", ");
+  }
+
+  function findByTarget() {
+    const error = byId("ph-find-error");
+    const targetMidi = nameToMidi(byId("ph-target").value.trim());
+    const lowMidi = nameToMidi(byId("ph-low").value.trim());
+    const highMidi = nameToMidi(byId("ph-high").value.trim());
+    if (targetMidi === null || lowMidi === null || highMidi === null) {
+      error.hidden = false;
+      error.textContent = "Enter note names with octaves, e.g. target G4 and source range A0 to C4.";
+      return;
+    }
+    error.hidden = true;
+
+    const lo = Math.min(lowMidi, highMidi);
+    const hi = Math.max(lowMidi, highMidi);
+    const maxPartial = clampInt(Number(byId("ph-max-partial").value) || 22, 2, 22);
+    const nodeSet = byId("ph-node-set").value;
+    const model = byId("ph-pitch-model").value;
+    const tolerance = Math.max(0, Number(byId("ph-tolerance").value) || 0);
+    const B = Math.max(0, Number(byId("ph-find-b").value) || 0);
+    const targetHz = midiToHz(targetMidi);
+
+    const hits = [];
+    for (let sourceMidi = lo; sourceMidi <= hi; sourceMidi += 1) {
+      const f0 = midiToHz(sourceMidi);
+      for (let n = 2; n <= maxPartial; n += 1) {
+        const nodes = nodesForPartial(n, nodeSet);
+        if (nodes.length === 0) continue;
+        const hz = pitchForPartial(f0, n, model, B);
+        const targetCents = centsBetween(hz, targetHz);
+        const description = describeHz(hz);
+        hits.push({
+          sourceMidi,
+          sourceName: midiToName(sourceMidi),
+          n,
+          hz,
+          resultName: description.nearestName,
+          resultCents: description.centsFromNearest,
+          targetCents,
+          absCents: Math.abs(targetCents),
+          scoreMarks: scoreMarks(nodes),
+          nodes: nodeText(nodes),
+        });
+      }
+    }
+
+    hits.sort(
+      (a, b) =>
+        a.absCents - b.absCents ||
+        a.n - b.n ||
+        b.sourceMidi - a.sourceMidi,
+    );
+    const within = hits.filter((hit) => hit.absCents <= tolerance);
+    const rows = (within.length ? within : hits).slice(0, 12);
+    const targetName = midiToName(targetMidi);
+
+    byId("ph-find-figure").innerHTML = within.length
+      ? `<strong>${within.length}</strong> option${within.length === 1 ? "" : "s"} within ${tolerance}¢ of ${targetName}`
+      : `No options within ${tolerance}¢ of <strong>${targetName}</strong>; showing closest approaches`;
+
+    byId("ph-find-table").innerHTML = rows
+      .map((hit) => {
+        const rowClass = hit.absCents <= 10 ? ` class="is-accent"` : "";
+        return (
+          `<tr${rowClass}>` +
+          `<td>${hit.sourceName}</td>` +
+          `<td>${hit.n}</td>` +
+          `<td>${hit.scoreMarks}</td>` +
+          `<td>${hit.nodes}</td>` +
+          `<td>${hit.resultName} ${formatCents(hit.resultCents)} (${hit.hz.toFixed(2)} Hz)</td>` +
+          `<td>${formatCents(hit.targetCents)}</td>` +
+          `</tr>`
+        );
+      })
+      .join("");
+
+    byId("ph-find-note").textContent =
+      `Rows within ±10¢ of the target are highlighted. Using ${modelText(model)} and ${nodeSet === "practical" ? "practical bass-string nodes through the 22nd harmonic" : "all coprime mathematical nodes"}. Score marks use harmonic/node order, e.g. 9/2 = second node of the ninth harmonic.`;
+    byId("ph-find-result").hidden = false;
+  }
+
+  function mapDirect() {
     const midi = nameToMidi(byId("ph-key").value.trim());
     const error = byId("ph-error");
     if (midi === null) {
       error.hidden = false;
-      error.textContent = "Enter the key as a note name, e.g. C2 (low strings work best).";
+      error.textContent = "Enter the source string as a note name, e.g. C2 (low strings work best).";
       return;
     }
     error.hidden = true;
     const n = Number(byId("ph-partial").value);
+    const nodeSet = byId("ph-map-node-set").value;
+    const model = byId("ph-map-pitch-model").value;
     const B = Math.max(0, Number(byId("ph-b").value) || 0);
     const f0 = midiToHz(midi);
-    const hz = partialFreq(f0, n, B);
+    const hz = pitchForPartial(f0, n, model, B);
     const d = describeHz(hz);
-    current = { f0, n, B };
+    current = { f0, n, B, model };
 
     byId("ph-figure").innerHTML =
       `Partial ${n} sounds <strong>${d.nearestName}</strong> ${formatCents(d.centsFromNearest)} (${hz.toFixed(2)} Hz)`;
 
-    const nodes = harmonicNodes(n);
+    const nodes = nodesForPartial(n, nodeSet);
     byId("ph-table").innerHTML = nodes
       .map((node) =>
-        `<tr><td>${node.k}/${node.n}</td><td>${node.k}/${node.n}</td><td>${(node.position * 100).toFixed(2)}%</td></tr>`)
+        `<tr><td>${node.n}/${node.k}</td><td>${node.k}/${node.n}</td><td>${(node.position * 100).toFixed(2)}%</td></tr>`)
       .join("");
 
     const svg = byId("ph-string");
@@ -108,30 +373,32 @@
     svg.append(agraffe, bridge);
 
     byId("ph-note").textContent =
-      (B > 0
-        ? "Inharmonic mode: real piano strings sound this partial slightly sharp of the ideal; the node positions also shift marginally toward the ends. "
+      (nodes.length === 0
+        ? "No practical bass-string node is listed for this partial in the selected node set. "
         : "") +
-      "Practical range on a grand: partials 2–5 on bass and low-tenor strings (clear access over the dampers); " +
-      "above the capo bar the strings are too short to touch reliably. Mark the touch point in the score as a " +
-      "fraction of speaking length, never in centimeters — lengths differ between models.";
+      `Using ${modelText(model)} and ${nodeSet === "practical" ? "practical bass-string nodes" : "all coprime mathematical nodes"}. ` +
+      "Score marks use harmonic/node order; physical positions use fractions of speaking length from the agraffe.";
     byId("ph-result").hidden = false;
   }
 
-  byId("ph-go").addEventListener("click", map);
+  byId("ph-find").addEventListener("click", findByTarget);
+  byId("ph-go").addEventListener("click", mapDirect);
   byId("ph-play").addEventListener("click", () => {
-    map();
+    mapDirect();
     if (!current) return;
-    const { f0, n, B } = current;
+    const { f0, n, B, model } = current;
     // crude harmonic emphasis: fundamental ghost + strong selected partial
     sustain(
       [
-        { hz: partialFreq(f0, n, B), amp: 1 },
-        { hz: partialFreq(f0, 2 * n, B), amp: 0.18 },
+        { hz: pitchForPartial(f0, n, model, B), amp: 1 },
+        { hz: pitchForPartial(f0, 2 * n, model, B), amp: 0.18 },
         { hz: f0, amp: 0.08 },
       ],
       { dur: 2.8 },
     );
   });
+  mountKeyboard(byId("ph-target-kb"), { inputs: [byId("ph-target")], baseOctave: 3 });
   mountKeyboard(byId("ph-kb"), { inputs: [byId("ph-key")], baseOctave: 1 });
-  map();
+  findByTarget();
+  mapDirect();
 </script>

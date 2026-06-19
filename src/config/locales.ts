@@ -238,34 +238,44 @@ export interface DurationData {
 }
 
 export function formatDuration(duration: DurationData, locale: Locale) {
-  const number =
-    duration.minutes === undefined
+  const totalSeconds =
+    duration.minutes === undefined ? undefined : Math.round(duration.minutes * 60);
+  const minuteCount = totalSeconds === undefined ? undefined : Math.floor(totalSeconds / 60);
+  const secondCount = totalSeconds === undefined ? undefined : totalSeconds % 60;
+  const apostropheTime =
+    minuteCount === undefined
+      ? ""
+      : secondCount
+        ? `${minuteCount}'${String(secondCount).padStart(2, "0")}`
+        : `${minuteCount}'`;
+  const minuteText =
+    minuteCount === undefined
       ? ""
       : new Intl.NumberFormat(localeInfo[locale].intl, {
           maximumFractionDigits: 1,
-        }).format(duration.minutes);
+        }).format(duration.minutes ?? minuteCount);
 
   if (duration.continuous) {
-    if (!number) {
+    if (!minuteText) {
       return {
         en: "Continuous",
         zh: "持續播放",
       }[locale];
     }
     return {
-      en: `Continuous; approximately ${number}-minute cycle`,
-      zh: `持續播放；循環約 ${number} 分鐘`,
+      en: `Continuous; approx. ${apostropheTime} cycle`,
+      zh: `持續播放；循環約 ${minuteText} 分鐘`,
     }[locale];
   }
 
   const exact = {
-    en: `${number} ${duration.minutes === 1 ? "minute" : "minutes"}`,
-    zh: `${number} 分鐘`,
+    en: apostropheTime,
+    zh: `${minuteText} 分鐘`,
   }[locale];
 
   if (!duration.approximate) return exact;
   return {
-    en: `approximately ${exact}`,
+    en: `approx. ${exact}`,
     zh: `約 ${exact}`,
   }[locale];
 }

@@ -31,7 +31,6 @@ import PitchTuningLab from "../../../components/tools/PitchTuningLab.astro";
 import HarmonicPartials from "../../../components/tools/HarmonicPartials.astro";
 import SpectralRoughness from "../../../components/tools/SpectralRoughness.astro";
 import PianoHarmonics from "../../../components/tools/PianoHarmonics.astro";
-import MultiphonicsBrowser from "../../../components/tools/MultiphonicsBrowser.astro";
 
 const registry: Record<string, { component: any; file: string }> = {
   "metric-modulation": { component: MetricModulation, file: "MetricModulation.astro" },
@@ -47,11 +46,10 @@ const registry: Record<string, { component: any; file: string }> = {
   "harmonic-partials": { component: HarmonicPartials, file: "HarmonicPartials.astro" },
   "spectral-roughness": { component: SpectralRoughness, file: "SpectralRoughness.astro" },
   "piano-harmonics": { component: PianoHarmonics, file: "PianoHarmonics.astro" },
-  "multiphonics-browser": { component: MultiphonicsBrowser, file: "MultiphonicsBrowser.astro" },
 };
 
 export async function getStaticPaths() {
-  const all = await getCollection("tools");
+  const all = await getCollection("tools", ({ data }) => !data.hidden);
   const bySlug = Object.fromEntries(all.map((t) => [t.data.slug, t]));
   return toolTopicList.map((topic) => ({
     params: { topic: topic.id },

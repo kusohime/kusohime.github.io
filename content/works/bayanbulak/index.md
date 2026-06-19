@@ -5,7 +5,7 @@ category: "Solo"
 instrumentation:
   en: "Solo viola"
 duration:
-  minutes: 8.3
+  minutes: 8.3333333333
   approximate: true
 description: "A solo viola work completed in 2023."
 slug: "bayanbulak"

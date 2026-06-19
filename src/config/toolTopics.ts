@@ -75,7 +75,6 @@ export const toolTopicList: ToolTopicDef[] = [
       "harmonic-partials",
       "spectral-roughness",
       "piano-harmonics",
-      "multiphonics-browser",
     ],
   },
 ];

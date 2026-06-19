@@ -11,7 +11,7 @@ import { toolGroupLabel, translate } from "../../config/locales";
 import { topicsForGroup, toolTopicLabel } from "../../config/toolTopics";
 import "../../styles/tools.css";
 
-const tools = await getCollection("tools");
+const tools = await getCollection("tools", ({ data }) => !data.hidden);
 const bySlug = Object.fromEntries(tools.map((t) => [t.data.slug, t]));
 
 const compositionTopics = topicsForGroup("Composition").map((topic) => ({

@@ -6,6 +6,7 @@ group: "Composition"
 summary: "Filters technique entries by instrument and type. Every entry carries a source citation; unverified entries are flagged. The data set stays small until each entry is checked."
 status: "data-pending"
 slug: "multiphonics-browser"
+hidden: true
 references:
   - "Bartolozzi, B. (1967). *New Sounds for Woodwind*. Oxford University Press."
   - "Veale, P., & Mahnkopf, C.-S. (1994). *The Techniques of Oboe Playing*. Bärenreiter."

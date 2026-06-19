@@ -204,6 +204,14 @@ John Orr; #分析化是大势所趋
 
 ![Recovered chat image for #日记 1/12/2025](/images/chat-export-2026-06-19/photo_908@11-01-2025_11-07-15.jpg)
 
+![Recovered chat image for #日记 1/12/2025](/images/chat-export-2026-06-19/photo_909@11-01-2025_11-07-15.jpg)
+
+![Recovered chat image for #日记 1/12/2025](/images/chat-export-2026-06-19/photo_910@11-01-2025_11-07-15.jpg)
+
+![Recovered chat image for #日记 1/12/2025](/images/chat-export-2026-06-19/photo_911@11-01-2025_11-07-15.jpg)
+
+折腾一个星期写了一坨基于BDA三个音动机的片段（仍未完成），受仏人影响严重，基本完全基于五声音场（非常基础的古拜杜丽娜风序列+武满彻挂留），主题十二音化，四度（也即五度反转）和声；后期又在几处port基础上淡淡地微分音化了一咪咪（clocks and clouds那种）。最后因为还是太难被andrew劝退了，fall semester再见. . .
+
 现在有两个标题待选，一个是非常中二的就暂时按下不露出了，大概是*[ ][ ]；兰花的独*白
 
 另一个是援引周阿姨新作的章节名 *Translator, Traitor; Translator, Mourner*
@@ -231,6 +239,10 @@ John Orr; #分析化是大势所趋
 *Source: messages6.html, message6097, 02.04.2025 19:26:11.*
 
 ![Recovered chat image for #日记 4/2/2025](/images/chat-export-2026-06-19/photo_1111@02-04-2025_19-26-11.jpg)
+
+![Recovered chat image for #日记 4/2/2025](/images/chat-export-2026-06-19/photo_1112@02-04-2025_19-26-11.jpg)
+
+三个月后的日记，debit card已过期. . .
 
 Dress rehearsal 将近五个小时已累瘫呀。
 

@@ -22,7 +22,7 @@ const registry: Record<string, { component: any; file: string }> = {
 };
 
 export async function getStaticPaths() {
-  const tools = await getCollection("tools");
+  const tools = await getCollection("tools", ({ data }) => !data.hidden);
   return tools.map((tool) => {
     const topic = topicForSlug[tool.data.slug];
     const redirectTo = topic

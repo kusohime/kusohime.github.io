@@ -1,12 +1,13 @@
 ---
 title: "Piano Harmonics Mapper"
-subtitle: "String touch points and sounding pitches"
+subtitle: "Reverse lookup for source strings and touch points"
 number: 6
 group: "Composition"
-summary: "Computes the touch points on a piano string for a chosen partial, the sounding pitch with cents deviation, and optional inharmonicity correction."
+summary: "Finds source strings and touch points that approach a target sounding pitch, with a secondary string-and-partial mapper for checking exact nodes."
 status: "stable"
 slug: "piano-harmonics"
 references:
+  - "Olsson, J., Svensson, J., & Bauck, M. *pianoharmonics.com*. Practical node map, recordings, measured harmonic deviations, and notation guidance."
   - "Cowell, H. (1930). *New Musical Resources*. Knopf."
   - "Fletcher, N. H., & Rossing, T. D. (1998). *The Physics of Musical Instruments* (2nd ed.). Springer."
   - "Vaes, L. (2009). *Extended Piano Techniques in Theory, History and Performance Practice*. PhD diss., Leiden University."
@@ -14,25 +15,36 @@ references:
   - "Banowetz, J. (1985). *The Pianist's Guide to Pedaling*. Indiana University Press."
 ---
 
-Choose the key, choose the partial. The string diagram marks every valid
-touch point as a fraction of speaking length from the agraffe — for the
-n-th partial these are the points k/n with k coprime to n (touching at
-2/4 gives the 2nd partial, not the 4th; such duplicates are excluded).
-The readout gives the sounding pitch with its deviation from 12-EDO;
+Start with the pitch you want to hear. The reverse lookup searches source
+strings and partials through the 22nd harmonic, then ranks the closest
+touch points by cents distance from the target. By default it uses a
+practical bass-string node set and average measured pitch offsets drawn
+from pianoharmonics.com, which is based on a Steinway D. Switch to
+**All mathematical nodes** or **Ideal integer partials** when you want a
+theoretical table rather than a performer-first one.
+
+The manual mapper below still lets you choose one string and one partial
+directly. Its string diagram marks touch points as fractions of speaking
+length from the agraffe. For the n-th partial, the complete mathematical
+set is the points k/n with k coprime to n; the practical set removes
+nodes that are usually inaccessible or not part of the bass-string map.
 **Hear (approx.)** plays a synthetic approximation emphasizing the
 selected partial.
 
-Enable the inharmonicity coefficient for low strings to see the sounding
-pitch pulled sharp of the ideal harmonic — at partial 5 on a real bass
-string the stretch is already audible against a tempered reference.
+The table gives both the physical position and the more compact score
+mark. A physical position such as 2/9 means “touch at two ninths of the
+speaking length from the agraffe.” A score mark such as 9/2 means “second
+node of the ninth harmonic,” following the notation proposed on
+pianoharmonics.com. Use one convention clearly and explain it in the
+score.
 
-Notate touch points as fractions of speaking length (1/3 from the
-agraffe), never in centimeters: speaking lengths differ between a
-Steinway D and a baby grand, fractions do not. Practical range on a
-grand: partials 2–5 on bass and low-tenor (over-damper) strings; above
-the capo d'astro bar access disappears. Specify which hand silently
-depresses the key and which touches the string, and give the pianist
-time to find the node in rehearsal.
+Notate touch points as fractions, never in centimeters: speaking lengths
+differ between a Steinway D and a baby grand, fractions do not. The
+damper and stress-bar layout is model-dependent, so very high harmonics
+and higher-register strings should be treated cautiously unless the
+performer has time to test the instrument. Specify which hand silently
+depresses the key and which touches the string, and give the pianist time
+to find the node in rehearsal.
 
 The proposal's second mode — silently-depressed sympathetic resonance —
 needs no calculator: depress keys silently, play loud staccato elsewhere,
