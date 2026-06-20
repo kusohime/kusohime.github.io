@@ -130,11 +130,12 @@ const pageTitle = toolTopicLabel(topicId, "en");
 
     {
       modules.map(({ tool, Content, ContentZh, Instrument, instrumentFile, statusKey }) => (
-        <section class="group-tool" id={`tool-${tool.data.slug}`}>
-          <header
-            class="group-tool-head"
-            data-source-file={`content/tools/${tool.id}/index.md`}
-          >
+        <section
+          class="group-tool"
+          id={`tool-${tool.data.slug}`}
+          data-source-file={`content/tools/${tool.id}/index.md`}
+        >
+          <header class="group-tool-head">
             <h2>{tool.data.title}</h2>
             {tool.data.subtitle && (
               <p class="tool-subtitle">

@@ -1,5 +1,5 @@
 ---
-title: "Kanbun Kundoku Typesetter"
+title: "HTML Kanbun Kundoku"
 subtitle: ""
 subtitleZH: ""
 number: 17

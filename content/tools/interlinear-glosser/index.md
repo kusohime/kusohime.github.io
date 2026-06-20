@@ -1,5 +1,5 @@
 ---
-title: "Interlinear Glosser"
+title: "Interlinear Gloss"
 subtitle: "Leipzig-style gloss builder with multi-format export"
 subtitleZh: "萊比錫式逐詞對照標註器，附國際音標鍵盤與多格式匯出"
 number: 15
