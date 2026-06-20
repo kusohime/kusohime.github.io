@@ -1,4 +1,4 @@
-﻿---
+---
 title: "脆熊篇"
 date: "undated"
 displayDate: "Ongoing"
@@ -7,7 +7,7 @@ language: "Chinese / English / Japanese"
 excerpt: "感觉集结成册出版一千年后被当荷马研究"
 slug: "cui-xiong-pian"
 order: 1
-comments: false
+comments: true
 numberedContents: false
 ---
 * 感觉集结成册出版一千年后被当荷马研究

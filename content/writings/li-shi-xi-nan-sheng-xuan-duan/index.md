@@ -7,7 +7,7 @@ language: "Chinese"
 excerpt: "如此一来，我们便能得出这个不足为奇的结论：对诗人来说，世界第一大战是值得一番口诛笔伐的。"
 slug: "li-shi-xi-nan-sheng-xuan-duan"
 order: 2
-comments: false
+comments: true
 ---
 
 

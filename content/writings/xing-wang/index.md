@@ -7,7 +7,7 @@ language: "Chinese / Russian"
 excerpt: "他的面容像在天空最顶点时的太阳。"
 slug: "xing-wang"
 order: 3
-comments: false
+comments: true
 ---
 K. D. Balmont, 1907
 
