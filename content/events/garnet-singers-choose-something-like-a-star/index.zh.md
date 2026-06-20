@@ -1,0 +1,1 @@
+- [Randall Thompson](https://en.wikipedia.org/wiki/Randall_Thompson)，[*Choose Something Like a Star*](https://www.ecspublishing.com/frostiana-no-7-choose-something-like-a-star-thompson-2588.html)（選自《Frostiana》）。[Swarthmore College Garnet Singers](https://www.swarthmore.edu/music/swarthmore-college-chorus-garnet-singers)；崔浥新，指揮。

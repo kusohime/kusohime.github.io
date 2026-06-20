@@ -9,8 +9,11 @@ import LocalizedText from "../../components/LocalizedText.astro";
 import Comments from "../../components/Comments.astro";
 import PeerTubeEmbed from "../../components/PeerTubeEmbed.astro";
 import {
+  formatCommission,
   formatDate,
+  formatDedication,
   formatDuration,
+  formatPremiere,
   translate,
 } from "../../config/locales";
 import "../../styles/kanbun.css";
@@ -85,7 +88,13 @@ const {
 
       {commission && (
         <p class="work-commission">
-          <em><LocalizedText value={commission} /></em>
+          <em
+            data-i18n-commission
+            data-commission-en={commission.en}
+            data-commission-zh={commission.zh}
+          >
+            {formatCommission(commission, "en")}
+          </em>
         </p>
       )}
 
@@ -132,14 +141,12 @@ const {
         <footer class="work-credits">
           {dedication && (
             <p>
-              <em>
-                <span data-i18n-key="metadata.dedication">
-                  {translate("en", "metadata.dedication")}
-                </span>
-                <span data-i18n-key="metadata.labelSeparator">
-                  {translate("en", "metadata.labelSeparator")}
-                </span>
-                <LocalizedText value={dedication} />
+              <em
+                data-i18n-dedication
+                data-dedication-en={dedication.en}
+                data-dedication-zh={dedication.zh}
+              >
+                {formatDedication(dedication, "en")}
               </em>
             </p>
           )}
@@ -158,25 +165,17 @@ const {
           ))}
           {premiere && (
             <p>
-              <em>
-                <span data-i18n-key="metadata.premiere">
-                  {translate("en", "metadata.premiere")}
-                </span>
-                <span data-i18n-key="metadata.labelSeparator">
-                  {translate("en", "metadata.labelSeparator")}
-                </span>
-                <LocalizedText value={premiere.details} />
-                {premiere.date && (
-                  <>
-                    <span class="metadata-divider" aria-hidden="true"></span>
-                    <time
-                      datetime={String(premiere.date)}
-                      data-i18n-date={String(premiere.date)}
-                    >
-                      {formatDate(premiere.date, "en")}
-                    </time>
-                  </>
-                )}
+              <em
+                data-i18n-premiere
+                data-premiere-by-en={premiere.by.en}
+                data-premiere-by-zh={premiere.by.zh}
+                data-premiere-venue-en={premiere.venue?.en}
+                data-premiere-venue-zh={premiere.venue?.zh}
+                data-premiere-date={
+                  premiere.date !== undefined ? String(premiere.date) : undefined
+                }
+              >
+                {formatPremiere(premiere, "en")}
               </em>
             </p>
           )}

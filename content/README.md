@@ -71,22 +71,26 @@ Optional fields / 可選欄位:
 
 ```yaml
 subtitle: "Optional subtitle"
+# Recipient only — the page renders "Dedicated to …" / "題獻給 …".
 dedication:
-  en: "For Name"
-  zh: "獻給某人"
-  ja: "某氏に捧ぐ"
+  en: "Name"
+  zh: "某人"
+# Commissioner only — the page renders "Commissioned by …" / "受 … 委約".
 commission:
-  en: "Commissioned by Organization"
+  en: "Organization"
+  zh: "某機構"
 credits:
   - en: "Performer Name, instrument"
     zh: "演出者姓名，樂器"
-    ja: "演奏者名、楽器"
+# Renders "Premièred by {by} on {date} at {venue}" / "{date}由 {by} 於 {venue} 首演".
 premiere:
   date: "2026-06-11"
-  details:
-    en: "First performed by Name at Venue, City"
-    zh: "由某人於某地首演"
-    ja: "某氏により会場名で初演"
+  by:
+    en: "Performer Name; Conductor Name, conductor"
+    zh: "演出者姓名；指揮姓名 指揮"
+  venue:
+    en: "Venue, City"
+    zh: "某場地，某城市"
 recordingUrl: "https://example.com/recording"
 scoreUrl: "https://example.com/score"
 video:

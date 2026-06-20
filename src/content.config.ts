@@ -59,7 +59,11 @@ const works = defineCollection({
     credits: z.array(localizedText).optional(),
     premiere: z.object({
       date: z.union([z.string(), z.number()]).optional(),
-      details: localizedText,
+      // 中文：by 是演出者／指揮，venue 是場地；頁面組成「Premièred by … on … at …」。
+      // English: `by` is the performers/conductor, `venue` the place; the page
+      // composes them into "Premièred by … on … at …".
+      by: localizedText,
+      venue: localizedText.optional(),
     }).optional(),
     recordingUrl: z.url().optional(),
     scoreUrl: z.url().optional(),

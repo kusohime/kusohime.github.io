@@ -51,10 +51,7 @@ export const messages = {
     "resource.cvPdf": "Download PDF",
     "media.loadVideo": "Load video",
     "media.watchPeerTube": "Watch on PeerTube",
-    "metadata.dedication": "Dedication",
-    "metadata.commission": "Commission",
     "metadata.credits": "Credits",
-    "metadata.premiere": "Premiere",
     "metadata.labelSeparator": ": ",
     "theme.toLight": "Switch to light theme",
     "theme.toDark": "Switch to dark theme",
@@ -110,10 +107,7 @@ export const messages = {
     "resource.cvPdf": "下載 PDF",
     "media.loadVideo": "載入影片",
     "media.watchPeerTube": "在 PeerTube 觀看",
-    "metadata.dedication": "題獻",
-    "metadata.commission": "委約",
     "metadata.credits": "合作人員",
-    "metadata.premiere": "首演",
     "metadata.labelSeparator": "：",
     "theme.toLight": "切換至淺色主題",
     "theme.toDark": "切換至深色主題",
@@ -233,6 +227,55 @@ export interface LocalizedText {
 
 export function localizedText(value: LocalizedText, locale: Locale) {
   return value[locale] ?? value.en;
+}
+
+// 中文：把「題獻／委約／首演」資料組成自然語句，而非「標籤：值」。
+// English: Compose dedication / commission / premiere data into a natural
+// sentence rather than a "Label: value" pair. Word order differs per language,
+// so each locale gets its own phrasing (cf. formatDate / formatDuration).
+export function formatDedication(value: LocalizedText, locale: Locale) {
+  const who = localizedText(value, locale);
+  return {
+    en: `Dedicated to ${who}`,
+    zh: `題獻給 ${who}`,
+  }[locale];
+}
+
+export function formatCommission(value: LocalizedText, locale: Locale) {
+  const who = localizedText(value, locale);
+  return {
+    en: `Commissioned by ${who}`,
+    zh: `受 ${who} 委約`,
+  }[locale];
+}
+
+export interface PremiereData {
+  date?: string | number;
+  by: LocalizedText;
+  venue?: LocalizedText;
+}
+
+export function formatPremiere(premiere: PremiereData, locale: Locale) {
+  const by = localizedText(premiere.by, locale);
+  const venue = premiere.venue ? localizedText(premiere.venue, locale) : undefined;
+  const date =
+    premiere.date === undefined || premiere.date === ""
+      ? undefined
+      : formatDate(premiere.date, locale);
+
+  if (locale === "zh") {
+    // 首演：[日期]由 演出者[於 場地]首演
+    let text = date ?? "";
+    text += `由 ${by}`;
+    if (venue) text += ` 於 ${venue}`;
+    return `${text} 首演`;
+  }
+
+  // Premièred by [performers][ on date][ at venue]
+  let text = `Premièred by ${by}`;
+  if (date) text += ` on ${date}`;
+  if (venue) text += ` at ${venue}`;
+  return text;
 }
 
 export interface DurationData {

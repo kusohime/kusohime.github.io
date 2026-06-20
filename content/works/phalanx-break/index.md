@@ -8,8 +8,7 @@ instrumentation:
 duration:
   minutes: 6.5
 commission:
-  en: "Commissioned by Passacaglia Chamber Music Collective"
-  zh: "受 Passacaglia Chamber Music Collective 委約"
+  en: "Passacaglia Chamber Music Collective"
 description: "A piccolo and piano work commissioned by Passacaglia Chamber Music Collective."
 slug: "phalanx-break"
 order: 3

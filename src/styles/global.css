@@ -1513,6 +1513,45 @@ main {
   color: inherit;
 }
 
+/* PDF embed (e.g. recital programs) — mirrors .peertube-embed. */
+.pdf-embed {
+  max-width: var(--content-width);
+  margin: var(--space-md) 0 var(--space-lg);
+}
+
+.pdf-embed-shell {
+  width: 100%;
+  height: min(80vh, 46rem);
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  background: var(--color-rule);
+}
+
+.pdf-embed-shell object,
+.pdf-embed-shell iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.pdf-embed-fallback {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  align-items: flex-start;
+  height: 100%;
+  margin: 0;
+  padding: var(--space-md);
+  background: var(--color-background);
+  color: var(--color-muted);
+}
+
+.pdf-embed figcaption {
+  margin-top: var(--space-xs);
+  color: var(--color-muted);
+}
+
 .prose,
 .writing-opening,
 .writing-contents {

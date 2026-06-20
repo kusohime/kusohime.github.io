@@ -84,14 +84,17 @@ content:
           - { name: minutes, label: Minutes, type: number }
           - { name: continuous, label: Continuous (no pause), type: boolean }
           - { name: approximate, label: Approximate, type: boolean }
+      # 题献／委约只填对象本身；页面会补上 "Dedicated to …" / "Commissioned by …"。
+      # Enter the recipient / commissioner only — the page prepends
+      # "Dedicated to …" / "Commissioned by …" (受 … 委约) automatically.
       - name: dedication
-        label: Dedication / 题献 (optional)
+        label: Dedication / 题献 (optional) — recipient only, e.g. "the X Orchestra"
         type: object
         fields:
           - { name: en, label: English, type: string, required: true }
           - { name: zh, label: 中文, type: string }
       - name: commission
-        label: Commission / 委约 (optional)
+        label: Commission / 委约 (optional) — commissioner only, e.g. "the X Foundation"
         type: object
         fields:
           - { name: en, label: English, type: string, required: true }
@@ -108,8 +111,14 @@ content:
         type: object
         fields:
           - { name: date, label: Date (e.g. 2025-04-18), type: string }
-          - name: details
-            label: Details
+          - name: by
+            label: Performers / 演出者 (e.g. "Ensemble; Conductor, conductor")
+            type: object
+            fields:
+              - { name: en, label: English, type: string, required: true }
+              - { name: zh, label: 中文, type: string }
+          - name: venue
+            label: Venue / 場地 (e.g. "Lang Concert Hall, Swarthmore, PA")
             type: object
             fields:
               - { name: en, label: English, type: string, required: true }

@@ -12,8 +12,11 @@ import type {
 } from "../config/contentTaxonomy";
 import {
   contentLanguageLabel,
+  formatCommission,
   formatDate,
+  formatDedication,
   formatDuration,
+  formatPremiere,
   localeCodes,
   localeInfo,
   toolGroupLabel,
@@ -229,6 +232,63 @@ function applyLanguage(language: Locale, animate = false) {
         shouldAnimate,
       );
   });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-dedication]")
+    .forEach((element) => {
+      setLocalizedText(
+        element,
+        formatDedication(
+          {
+            en: element.dataset.dedicationEn ?? "",
+            zh: element.dataset.dedicationZh,
+          },
+          language,
+        ),
+        shouldAnimate,
+      );
+    });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-commission]")
+    .forEach((element) => {
+      setLocalizedText(
+        element,
+        formatCommission(
+          {
+            en: element.dataset.commissionEn ?? "",
+            zh: element.dataset.commissionZh,
+          },
+          language,
+        ),
+        shouldAnimate,
+      );
+    });
+
+  document
+    .querySelectorAll<HTMLElement>("[data-i18n-premiere]")
+    .forEach((element) => {
+      setLocalizedText(
+        element,
+        formatPremiere(
+          {
+            date: element.dataset.premiereDate,
+            by: {
+              en: element.dataset.premiereByEn ?? "",
+              zh: element.dataset.premiereByZh,
+            },
+            venue: element.dataset.premiereVenueEn
+              ? {
+                  en: element.dataset.premiereVenueEn,
+                  zh: element.dataset.premiereVenueZh,
+                }
+              : undefined,
+          },
+          language,
+        ),
+        shouldAnimate,
+      );
+    });
 
   document.querySelectorAll<HTMLElement>("[data-current-language]").forEach((element) => {
     setLocalizedText(element, localeInfo[language].short, shouldAnimate);

@@ -13,6 +13,8 @@ slug: cui-yixin-senior-recital
 order: 1
 draft: false
 links:
+  - label: "Program (PDF)"
+    url: "https://yixincui.com/files/yixin-cui-senior-recital-program.pdf"
   - label: "Phoenix review"
     url: "https://swarthmorephoenix.com/2025/04/17/an-anti-colonial-international-students-final-struggle-a-review-on-cui-yixins-senior-recital/"
   - label: "Swarthmore profile"
@@ -22,3 +24,12 @@ links:
 ---
 
 Senior recital in [Lang Concert Hall](https://www.swarthmore.edu/music/facilities), with press coverage from [The Phoenix](https://swarthmorephoenix.com/2025/04/17/an-anti-colonial-international-students-final-struggle-a-review-on-cui-yixins-senior-recital/) and a [Swarthmore Music profile](https://www.swarthmore.edu/music/yixin-cui-25).
+
+<figure class="pdf-embed">
+<div class="pdf-embed-shell">
+<object data="/files/yixin-cui-senior-recital-program.pdf#view=FitH" type="application/pdf" aria-label="Senior recital program (PDF)">
+<p class="pdf-embed-fallback">Your browser can’t display the embedded program. <a href="/files/yixin-cui-senior-recital-program.pdf">Open the recital program (PDF) ↗</a></p>
+</object>
+</div>
+<figcaption>Recital program — <a href="/files/yixin-cui-senior-recital-program.pdf" download>download PDF</a></figcaption>
+</figure>
