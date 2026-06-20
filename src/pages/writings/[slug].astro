@@ -42,6 +42,7 @@ const { title, subtitle, date, displayDate, type, language, excerpt } = writing.
 const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
+const isClairieres = writing.data.slug === "tian-jian-qing-che";
 const normalizedLanguage = language.toLowerCase();
 const contentLang = normalizedLanguage.includes("traditional")
   ? "zh-Hant-TW"
@@ -90,6 +91,138 @@ const contentLang = normalizedLanguage.includes("traditional")
         <Content />
       </div>
     </section>
+
+    {
+      isClairieres && (
+        <script is:inline>
+          (() => {
+            const article = document.querySelector(
+              '[data-writing-slug="tian-jian-qing-che"]',
+            );
+            const body = article?.querySelector(".writing-body");
+            const toggle = article?.querySelector("[data-clairieres-pronoun-toggle]");
+            if (!body || !toggle) return;
+
+            const skipSelector =
+              "[data-clairieres-pronoun-toggle], .footnotes, rt, script, style";
+            const isLatin = (value) => /^[A-Za-z]$/.test(value ?? "");
+
+            const shouldWrap = (text, index) =>
+              text[index] === "L" &&
+              !isLatin(text[index - 1]) &&
+              !isLatin(text[index + 1]);
+
+            const wrapPronounsInNode = (node) => {
+              const text = node.nodeValue ?? "";
+              if (!text.includes("L")) return;
+              const fragment = document.createDocumentFragment();
+              let cursor = 0;
+
+              for (let index = 0; index < text.length; index += 1) {
+                if (!shouldWrap(text, index)) continue;
+                if (index > cursor) {
+                  fragment.append(document.createTextNode(text.slice(cursor, index)));
+                }
+                const pronoun = document.createElement("span");
+                pronoun.dataset.clairieresPronoun = "true";
+                pronoun.textContent = "L";
+                fragment.append(pronoun);
+                cursor = index + 1;
+              }
+
+              if (cursor === 0) return;
+              if (cursor < text.length) {
+                fragment.append(document.createTextNode(text.slice(cursor)));
+              }
+              node.parentNode?.replaceChild(fragment, node);
+            };
+
+            const nodes = [];
+            const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+              const node = walker.currentNode;
+              const parent = node.parentElement;
+              if (!parent || parent.closest(skipSelector)) continue;
+              nodes.push(node);
+            }
+            nodes.forEach(wrapPronounsInNode);
+
+            const pronouns = Array.from(
+              body.querySelectorAll("[data-clairieres-pronoun]"),
+            );
+            let showingShe = false;
+            const flapTimers = new WeakMap();
+
+            const localFlapText = (element, text) => {
+              const existingTimer = flapTimers.get(element);
+              if (existingTimer) window.clearTimeout(existingTimer);
+
+              const fragment = document.createDocumentFragment();
+              const accessibleText = document.createElement("span");
+              accessibleText.className = "visually-hidden";
+              accessibleText.textContent = text;
+              fragment.append(accessibleText);
+
+              let longestDelay = 0;
+              Array.from(text).forEach((glyph, index) => {
+                const patternedDelay = Math.min(index * 4, 110);
+                const laneDelay = (index % 6) * 5;
+                const jitter = Math.random() * 65;
+                const delay = Math.round(patternedDelay + laneDelay + jitter);
+                const flap = document.createElement("span");
+                longestDelay = Math.max(longestDelay, delay);
+                flap.className = "flap-glyph";
+                flap.ariaHidden = "true";
+                flap.textContent = glyph === " " ? "\u00a0" : glyph;
+                flap.style.setProperty("--flap-delay", `${delay}ms`);
+                flap.style.setProperty(
+                  "--flap-lean",
+                  `${(Math.random() * 4 - 2).toFixed(2)}deg`,
+                );
+                fragment.append(flap);
+              });
+
+              element.replaceChildren(fragment);
+              element.dataset.flapping = "true";
+              const timer = window.setTimeout(() => {
+                element.textContent = text;
+                delete element.dataset.flapping;
+                flapTimers.delete(element);
+              }, longestDelay + 190);
+              flapTimers.set(element, timer);
+            };
+
+            const setAnimatedText = (element, text) => {
+              const withFlap = window.ycSetFlapText;
+              if (typeof withFlap === "function") {
+                withFlap(element, text, true);
+              } else {
+                localFlapText(element, text);
+              }
+            };
+
+            const syncToggle = () => {
+              const label = showingShe
+                ? "将译文中的她切换回 L"
+                : "将译文中的 L 切换为她";
+              toggle.setAttribute("aria-label", label);
+              toggle.setAttribute("aria-pressed", String(showingShe));
+              toggle.title = label;
+            };
+
+            toggle.addEventListener("click", (event) => {
+              event.preventDefault();
+              showingShe = !showingShe;
+              const nextText = showingShe ? "她" : "L";
+              pronouns.forEach((element) => setAnimatedText(element, nextText));
+              syncToggle();
+            });
+
+            syncToggle();
+          })();
+        </script>
+      )
+    }
 
     {
       hasChapters && (

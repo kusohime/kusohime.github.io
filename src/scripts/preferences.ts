@@ -300,6 +300,14 @@ function applyFontSize(fontSize: FontSize, animate = false) {
 
 export function initializePreferences() {
   const root = document.documentElement;
+  const windowWithFlapText = window as Window & {
+    ycSetFlapText?: (element: HTMLElement, text: string, animate?: boolean) => void;
+  };
+  windowWithFlapText.ycSetFlapText = (element, text, animate = true) => {
+    if (!(element instanceof HTMLElement)) return;
+    setLocalizedText(element, text, animate && motionSettings.languageFlap);
+  };
+
   root.dataset.motionLanguage = String(motionSettings.languageFlap);
   root.dataset.motionTheme = String(motionSettings.themeFade);
   root.dataset.motionFontSize = String(motionSettings.fontSizeScale);

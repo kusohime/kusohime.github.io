@@ -13,7 +13,7 @@ comments: true
 
 ## I.L 走下原野
 
-<ruby>L<rt>Elle</rt></ruby>^[原文为 Elle （她），也是Lili Boulanger众多自指的符号之一。为了加强这种感受，这版翻译将原文所有“她”替换为 L。可以通过按钮将L换回“她”，获得不一样的体验。] 走下原野，<br />
+<a href="#clairieres-pronoun-toggle" id="clairieres-pronoun-toggle" class="clairieres-pronoun-toggle" data-clairieres-pronoun-toggle aria-pressed="false" aria-label="将译文中的 L 切换为她"><ruby><span data-clairieres-pronoun>L</span><rt>Elle</rt></ruby></a>^[原文为 Elle （她），也是Lili Boulanger众多自指的符号之一。为了加强这种感受，这版翻译将原文所有“她”替换为 L。点击这个 L 可将译文中的 L 换回“她”。] 走下原野，<br />
 另，鉴其开遍了<br />
 水生的草木，<br />
 我得摘下那些泡在水里的花。<br />
@@ -57,8 +57,8 @@ L 在菩提花开前走了，<br />
 ## V. 我床脚下
 
 我妈往我床脚下放了一个<br />
-<ruby>黑皮处女<rt>Vierge Négresse</rt></ruby>。我爱这个处女<br />
-及其淡淡的意大利宗教。<br />
+<ruby>黑皮处女<rt>Vierge Négresse</rt></ruby>[^2]。我爱这个处女<br />
+及其淡淡的意大利宗教味。<br />
 <ruby>洛雷托的处女<rt>Virgo Lauretana</rt></ruby>^[圣母的别称。]，站在金色背墙前，<br />
 你让我想起了一千种港市售卖<br />
 的<ruby>海味<rt>fruits de mer</rt></ruby>，0丝风<br />
@@ -173,3 +173,6 @@ L 在菩提花开前走了，<br />
 
 
 没了。什么都没了，没东西维系我。
+
+
+[^2]: 即[<ruby>黑圣母<rt>Black Madonna</rt></ruby>](https://en.wikipedia.org/wiki/Black_Madonna)。

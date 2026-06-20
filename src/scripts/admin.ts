@@ -175,7 +175,7 @@ export async function initializeAdminStudio() {
 
   const [
     { basicSetup },
-    { defaultKeymap, historyKeymap, indentWithTab },
+    { indentWithTab },
     { css },
     { html },
     { javascript },
@@ -507,6 +507,12 @@ export async function initializeAdminStudio() {
   // Stable non-null references preserve the DOM checks inside later nested helpers.
   const fileListElement = fileList;
   const fileFilterInput = fileFilter;
+  const isImeKeyEvent = (event: KeyboardEvent) => {
+    const legacyKeyCode = Number(
+      (event as unknown as { keyCode?: number }).keyCode ?? 0,
+    );
+    return event.isComposing || event.key === "Process" || legacyKeyCode === 229;
+  };
 
   type PaneName = "sidebar" | "editor" | "preview";
   interface PaneLayout {
@@ -762,6 +768,14 @@ export async function initializeAdminStudio() {
   const storedLineWrap = localStorage.getItem(LINE_WRAP_STORAGE_KEY) === "true";
   lineWrapInput.checked = storedLineWrap;
 
+  // CodeMirror's bracket closer is convenient for code, but it can fight CJK
+  // IME punctuation because some fullwidth marks are treated as brackets.
+  // The Studio is primarily a content editor, so typed punctuation should pass
+  // through exactly as the input method commits it.
+  const imeFriendlyPunctuation = EditorState.languageData.of(() => [
+    { closeBrackets: { brackets: [] } },
+  ]);
+
   const editor = new EditorView({
     parent: editorHost,
     state: EditorState.create({
@@ -771,10 +785,9 @@ export async function initializeAdminStudio() {
         languageCompartment.of([]),
         syntaxHighlighting(studioHighlightStyle),
         lineWrapCompartment.of(storedLineWrap ? EditorView.lineWrapping : []),
+        imeFriendlyPunctuation,
         Prec.high(
           keymap.of([
-            ...defaultKeymap,
-            ...historyKeymap,
             indentWithTab,
             {
               key: "Mod-s",
@@ -3506,6 +3519,7 @@ Write the text here.
     };
 
     const handleKeydown = (event: KeyboardEvent) => {
+      if (isImeKeyEvent(event)) return;
       if (event.key === "Escape") {
         event.preventDefault();
         unpin();
@@ -4135,6 +4149,7 @@ Write the text here.
       void applyEdit();
     });
     textarea.addEventListener("keydown", (event) => {
+      if (isImeKeyEvent(event)) return;
       if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
         event.preventDefault();
         void applyEdit();
@@ -5029,6 +5044,7 @@ Write the text here.
     installPreviewVisualEditor();
   });
   previewPath.addEventListener("keydown", (event) => {
+    if (isImeKeyEvent(event)) return;
     if (event.key === "Enter") refreshPreview(previewPath.value);
   });
   previewPath.addEventListener("input", () => {
@@ -5179,6 +5195,7 @@ Write the text here.
   // 与常见代码编辑器一致：Ctrl/Cmd + Shift + F 打开全局查找。
   // Match common editors: Ctrl/Cmd + Shift + F opens project-wide Find.
   window.addEventListener("keydown", (event) => {
+    if (isImeKeyEvent(event)) return;
     if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "F") {
       event.preventDefault();
       selectSidebarTab("files");
