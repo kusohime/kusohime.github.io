@@ -1,13 +1,15 @@
 ---
 title: "Piano Harmonics Mapper"
 subtitle: "Reverse lookup for source strings and touch points"
+subtitleZh: "源弦與觸弦點的反查"
 number: 6
 group: "Composition"
 summary: "Finds source strings and touch points that approach a target sounding pitch, with a secondary string-and-partial mapper for checking exact nodes."
+summaryZh: "找出能逼近目標發聲音高的源弦與觸弦點，並附一個輔助的弦—分音對應器以核對精確節點。"
 status: "stable"
 slug: "piano-harmonics"
 references:
-  - "Olsson, J., Svensson, J., & Bauck, M. *pianoharmonics.com*. Practical node map, recordings, measured harmonic deviations, and notation guidance."
+  - "Olsson, J., Svensson, J., & Bauck, M. [*pianoharmonics.com*](https://www.pianoharmonics.com/). Practical node map, recordings, measured harmonic deviations, and notation guidance."
   - "Cowell, H. (1930). *New Musical Resources*. Knopf."
   - "Fletcher, N. H., & Rossing, T. D. (1998). *The Physics of Musical Instruments* (2nd ed.). Springer."
   - "Vaes, L. (2009). *Extended Piano Techniques in Theory, History and Performance Practice*. PhD diss., Leiden University."
@@ -19,7 +21,7 @@ Start with the pitch you want to hear. The reverse lookup searches source
 strings and partials through the 22nd harmonic, then ranks the closest
 touch points by cents distance from the target. By default it uses a
 practical bass-string node set and average measured pitch offsets drawn
-from pianoharmonics.com, which is based on a Steinway D. Switch to
+from [pianoharmonics.com](https://www.pianoharmonics.com/), which is based on a Steinway D. Switch to
 **All mathematical nodes** or **Ideal integer partials** when you want a
 theoretical table rather than a performer-first one.
 

@@ -1,9 +1,11 @@
 ---
 title: "Twelve-Tone Row Calculator"
 subtitle: "Matrix, row forms, invariance checks"
+subtitleZh: "矩陣、序列形式、不變性檢查"
 number: 8
 group: "Composition"
 summary: "Builds the 12×12 matrix, looks up P/I/R/RI forms, and tests all-interval and combinatorial properties."
+summaryZh: "建立 12×12 矩陣，查找 P/I/R/RI 各形式，並檢驗全音程與組合性等性質。"
 status: "stable"
 slug: "twelve-tone-lab"
 references:

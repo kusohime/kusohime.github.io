@@ -1,9 +1,11 @@
 ---
 title: "Metric Modulation Calculator"
 subtitle: "Tempo equivalence solver with chaining"
+subtitleZh: "速度等價求解，可串接"
 number: 1
 group: "Composition"
 summary: "Computes the new tempo from an old-value = new-value equivalence, with dots, tuplets, and chained steps. Results are exact."
+summaryZh: "由「舊值 = 新值」的等價關係算出新速度，支援附點、連音與串接步驟；結果為精確值。"
 status: "stable"
 slug: "metric-modulation"
 references:
@@ -43,7 +45,10 @@ tuplet cases that are error-prone late at night. The chain log covers the
 practice of long modulation paths where each local equivalence is simple
 but the cumulative ratio is not.
 
-Relevant repertoire: Elliott Carter, *Cello Sonata* (1948) and *String
+Cowell's *New Musical Resources* (1930) had already proposed deriving
+tempo relationships from whole-number ratios; Carter turned the idea into
+a notational practice. Relevant repertoire: Elliott Carter, *Cello
+Sonata* (1948) and *String
 Quartet No. 1* (1951), whose openings chain modulations much as the log
 table does; Nancarrow's player-piano studies (Study No. 36 is a
 17:18:19:20 canon); Kampela's "micro-metric modulation" inside the beat;

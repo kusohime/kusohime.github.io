@@ -1,0 +1,1 @@
+於 [Lang Concert Hall](https://www.swarthmore.edu/music/facilities) 舉行的畢業獨奏會，並獲 [The Phoenix](https://swarthmorephoenix.com/2025/04/17/an-anti-colonial-international-students-final-struggle-a-review-on-cui-yixins-senior-recital/) 報導，以及一篇 [Swarthmore Music 介紹](https://www.swarthmore.edu/music/yixin-cui-25)。

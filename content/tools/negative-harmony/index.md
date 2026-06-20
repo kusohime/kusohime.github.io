@@ -1,9 +1,11 @@
 ---
 title: "Axis Reflection"
 subtitle: "Negative harmony and registral inversion"
+subtitleZh: "負和聲與音區倒影"
 number: 12
 group: "Composition"
 summary: "Reflects material around any axis, in pitch-class space or absolute pitch; the common negative-harmony mapping is one preset among twelve."
+summaryZh: "繞任意軸反射素材，於音級空間或絕對音高皆可；常見的負和聲映射只是十二個預設之一。"
 status: "stable"
 slug: "negative-harmony"
 references:

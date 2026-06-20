@@ -1,0 +1,132 @@
+---
+// 中文：工具頁的「本頁目錄」浮動側欄。客戶端掃描頁面區段（每個工具及其
+//       面板、說明），建立可跳轉的目錄，隨捲動高亮當前區段，並在切換語言時
+//       重建。窄屏隱藏（見 tools.css 的 .tool-layout 網格）。
+// English: Floating "On this page" rail for tool pages. A client script scans the
+// page's sections (each tool and its panels / notes), builds a jump-to table of
+// contents, highlights the current section on scroll, and rebuilds on language
+// change. Hidden on narrow screens (see the .tool-layout grid in tools.css).
+import { translate } from "../config/locales";
+---
+
+<nav class="tool-rail" aria-label="On this page" data-tool-rail>
+  <p class="tool-rail-title" data-i18n-key="tools.onThisPage">
+    {translate("en", "tools.onThisPage")}
+  </p>
+  <ul class="tool-rail-list"></ul>
+</nav>
+
+<script>
+  const layout = document.querySelector<HTMLElement>(".tool-layout");
+  const article = document.querySelector<HTMLElement>(".tool-page");
+  const list = document.querySelector<HTMLUListElement>(".tool-rail-list");
+
+  interface Entry { id: string; title: string; level: 1 | 2; i18nKey?: string; }
+
+  let uid = 0;
+  const slugify = (s: string) =>
+    s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "sec";
+
+  function ensureId(el: HTMLElement, base: string) {
+    if (!el.id) el.id = `rail-${slugify(base)}-${uid++}`;
+    return el.id;
+  }
+
+  // Panels (Input / Preview / …) plus the collapsible Notes within a scope.
+  function subsections(scope: HTMLElement): Entry[] {
+    const out: Entry[] = [];
+    scope.querySelectorAll<HTMLElement>(".tool-panel").forEach((panel) => {
+      const label = panel.querySelector(".tool-panel-label");
+      const title = label?.textContent?.trim();
+      if (!title) return;
+      ensureId(panel, title);
+      out.push({ id: panel.id, title, level: 2 });
+    });
+    const notes = scope.querySelector<HTMLElement>("details.group-tool-notes");
+    if (notes) {
+      ensureId(notes, "notes");
+      const summary = notes.querySelector("summary");
+      // The Notes label is the one translated entry; tag it so the site's i18n
+      // updates it on language change (the static tool/panel titles don't move).
+      out.push({
+        id: notes.id,
+        title: summary?.textContent?.trim() || "Notes",
+        level: 2,
+        i18nKey: "tools.notes",
+      });
+    }
+    return out;
+  }
+
+  function collect(): Entry[] {
+    if (!article) return [];
+    const entries: Entry[] = [];
+    const units = article.querySelectorAll<HTMLElement>(".group-tool");
+    if (units.length) {
+      // Composition group page: one entry per stacked tool, then its sections.
+      units.forEach((unit) => {
+        const title = unit.querySelector("h2")?.textContent?.trim() || "Tool";
+        entries.push({ id: unit.id || ensureId(unit, title), title, level: 1 });
+        subsections(unit).forEach((s) => entries.push(s));
+      });
+    } else {
+      // Single tool page: the tool itself, then its sections.
+      const header = article.querySelector<HTMLElement>(".tool-header");
+      const title = header?.querySelector("h1")?.textContent?.trim() || "Tool";
+      if (header) entries.push({ id: ensureId(header, title), title, level: 1 });
+      subsections(article).forEach((s) => entries.push(s));
+    }
+    return entries;
+  }
+
+  let entries: Entry[] = [];
+
+  function render() {
+    if (!list) return;
+    entries = collect();
+    list.replaceChildren();
+    for (const e of entries) {
+      const li = document.createElement("li");
+      li.className = `tool-rail-item level-${e.level}`;
+      const a = document.createElement("a");
+      a.href = `#${e.id}`;
+      a.textContent = e.title;
+      a.dataset.railTarget = e.id;
+      if (e.i18nKey) a.dataset.i18nKey = e.i18nKey;
+      li.append(a);
+      list.append(li);
+    }
+    if (entries.length > 1 && layout) layout.classList.add("has-rail");
+    syncActive();
+  }
+
+  // Classic scroll-spy: the active entry is the last section whose top has
+  // scrolled above an offset line near the top of the viewport.
+  function syncActive() {
+    if (!list || !entries.length) return;
+    const offset = 140;
+    let activeId = entries[0].id;
+    for (const e of entries) {
+      const el = document.getElementById(e.id);
+      if (!el) continue;
+      if (el.getBoundingClientRect().top <= offset) activeId = e.id;
+      else break;
+    }
+    list.querySelectorAll<HTMLAnchorElement>("a").forEach((a) =>
+      a.classList.toggle("active", a.dataset.railTarget === activeId),
+    );
+  }
+
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { syncActive(); ticking = false; });
+  }
+
+  if (article && list) {
+    render();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+  }
+</script>

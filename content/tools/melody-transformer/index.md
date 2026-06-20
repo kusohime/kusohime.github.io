@@ -1,9 +1,11 @@
 ---
 title: "Melody & Chord Transformer"
 subtitle: "Transposition, inversion, retrograde, rotation"
+subtitleZh: "移位、倒影、逆行、旋轉"
 number: 10
 group: "Composition"
 summary: "Applies chained operations to a note list and records the chain; original and result are shown and played side by side."
+summaryZh: "對一串音符施加可串接的操作並記錄操作鏈；原型與結果並列顯示、並列播放。"
 status: "stable"
 slug: "melody-transformer"
 references:

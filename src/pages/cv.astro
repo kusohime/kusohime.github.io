@@ -1,21 +1,35 @@
 ---
 // 中文：网站版 C.V.；PDF 另存于 public/files。
 // English: Website C.V.; the downloadable PDF lives in public/files.
+// 中文：标题、机构名、人名与西方曲目保留原文；标题、职衔、描述与地名提供中文。
+// English: Headings, roles, descriptions, and place names carry Chinese; institutions,
+// people, scholarship names, and Western repertoire stay in the original.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
-import { translate } from "../config/locales";
+import LocalizedText from "../components/LocalizedText.astro";
+import { translate, type LocalizedText as LT } from "../config/locales";
 
-const sections = [
-  { id: "cv-education", label: "Education" },
-  { id: "cv-teachers", label: "Teachers" },
-  { id: "cv-masterclasses", label: "Masterclass and Workshop Appearances" },
-  { id: "cv-experience", label: "Professional Experience" },
-  { id: "cv-ensembles", label: "Ensemble Experience" },
-  { id: "cv-compositions", label: "Selected Compositions" },
-  { id: "cv-scholarships", label: "Scholarships and Fellowships" },
-  { id: "cv-languages", label: "Languages" },
-  { id: "cv-repertoire", label: "Selected Performance Repertoire" },
+const sections: { id: string; label: LT }[] = [
+  { id: "cv-education", label: { en: "Education", zh: "學歷" } },
+  { id: "cv-teachers", label: { en: "Teachers", zh: "師承" } },
+  {
+    id: "cv-masterclasses",
+    label: { en: "Masterclass and Workshop Appearances", zh: "大師班與工作坊" },
+  },
+  { id: "cv-experience", label: { en: "Professional Experience", zh: "工作經歷" } },
+  { id: "cv-ensembles", label: { en: "Ensemble Experience", zh: "樂團與合奏經歷" } },
+  { id: "cv-compositions", label: { en: "Selected Compositions", zh: "作品選錄" } },
+  {
+    id: "cv-scholarships",
+    label: { en: "Scholarships and Fellowships", zh: "獎助學金" },
+  },
+  { id: "cv-languages", label: { en: "Languages", zh: "語言" } },
+  {
+    id: "cv-repertoire",
+    label: { en: "Selected Performance Repertoire", zh: "演出曲目選錄" },
+  },
 ];
+const L = Object.fromEntries(sections.map((s) => [s.id, s.label])) as Record<string, LT>;
 
 const hrefs = {
   eastman: "https://www.esm.rochester.edu/",
@@ -53,42 +67,42 @@ const hrefs = {
   passacaglia: "https://westsidemusicfoundation.org/passacaglia/",
 };
 
-const compositions = [
+const compositions: { heading: LT; works: [string, string, LT, string][] }[] = [
   {
-    heading: "Chamber and Instrumental",
+    heading: { en: "Chamber and Instrumental", zh: "室內樂與器樂" },
     works: [
-      ["Bayanbulak", "2023", "8'20, solo viola", "/works/bayanbulak/"],
-      ["Urtonforschungen I", "2024", "5', piano and vibraphone", "/works/urtonforschungen-i/"],
-      ["Urtonforschungen II", "2024", "4', chamber ensemble", "/works/urtonforschungen-ii/"],
-      ["A Song in the Winter", "2025", "6', soprano and piano", "/works/a-song-in-the-winter/"],
-      ["A Past Life", "2025", "5', solo sign-singer in CSL", "/works/a-past-life/"],
-      ["Saijōtai Yamata[i]-K[h]itan No. 2", "2025", "9', percussion and voice", "/works/saijotai-yamatai-khitan-no-2/"],
-      ["Phalanx Break", "2025", "6'30, piccolo and piano; commissioned by Passacaglia Chamber Music Collective", "/works/phalanx-break/"],
+      ["Bayanbulak", "2023", { en: "8'20, solo viola", zh: "8'20，中提琴獨奏" }, "/works/bayanbulak/"],
+      ["Urtonforschungen I", "2024", { en: "5', piano and vibraphone", zh: "5'，鋼琴與顫音琴" }, "/works/urtonforschungen-i/"],
+      ["Urtonforschungen II", "2024", { en: "4', chamber ensemble", zh: "4'，室內合奏" }, "/works/urtonforschungen-ii/"],
+      ["A Song in the Winter", "2025", { en: "6', soprano and piano", zh: "6'，女高音與鋼琴" }, "/works/a-song-in-the-winter/"],
+      ["A Past Life", "2025", { en: "5', solo sign-singer in CSL", zh: "5'，中國手語獨演手語歌者" }, "/works/a-past-life/"],
+      ["Saijōtai Yamata[i]-K[h]itan No. 2", "2025", { en: "9', percussion and voice", zh: "9'，打擊樂與人聲" }, "/works/saijotai-yamatai-khitan-no-2/"],
+      ["Phalanx Break", "2025", { en: "6'30, piccolo and piano; commissioned by Passacaglia Chamber Music Collective", zh: "6'30，短笛與鋼琴；受 Passacaglia Chamber Music Collective 委約" }, "/works/phalanx-break/"],
     ],
   },
   {
-    heading: "Large Ensemble",
+    heading: { en: "Large Ensemble", zh: "大型合奏" },
     works: [
-      ["Twink Death", "2025", "approx. 65', two actors, high voice, and large ensemble", "/works/twink-death/"],
+      ["Twink Death", "2025", { en: "approx. 65', two actors, high voice, and large ensemble", zh: "約 65'，兩名演員、高音聲部與大型合奏" }, "/works/twink-death/"],
     ],
   },
   {
-    heading: "Choral",
+    heading: { en: "Choral", zh: "合唱" },
     works: [
-      ["DU:: nouvelle prière bouddhique", "2025", "9', SATB, percussion, piano", "/works/du-nouvelle-priere-bouddhique/"],
+      ["DU:: nouvelle prière bouddhique", "2025", { en: "9', SATB, percussion, piano", zh: "9'，混聲合唱（SATB）、打擊樂、鋼琴" }, "/works/du-nouvelle-priere-bouddhique/"],
     ],
   },
   {
-    heading: "Orchestral",
+    heading: { en: "Orchestral", zh: "管弦樂" },
     works: [
-      ["Impasse of the Weasels", "2025", "6'20, orchestra", "/works/impasse-of-the-weasels/"],
+      ["Impasse of the Weasels", "2025", { en: "6'20, orchestra", zh: "6'20，管弦樂團" }, "/works/impasse-of-the-weasels/"],
     ],
   },
 ];
 
-const repertoire = [
+const repertoire: { heading: LT; items: string[] }[] = [
   {
-    heading: "Voice",
+    heading: { en: "Voice", zh: "聲樂" },
     items: [
       "Richard Strauss: Befreit, Op. 39, No. 4",
       "Jules Massenet: Pourquoi me réveiller?, Werther, Act III",
@@ -100,7 +114,7 @@ const repertoire = [
     ],
   },
   {
-    heading: "Piano",
+    heading: { en: "Piano", zh: "鋼琴" },
     items: [
       "Sofia Gubaidulina: Toccata-Troncata",
       "Tōru Takemitsu: Rain Tree Sketch II",
@@ -110,7 +124,7 @@ const repertoire = [
     ],
   },
   {
-    heading: "Organ",
+    heading: { en: "Organ", zh: "管風琴" },
     items: [
       "J. Pachelbel: Toccata in E minor, P. 462",
       "A. Vivaldi / J. S. Bach: Concerto in D minor, BWV 596",
@@ -120,7 +134,7 @@ const repertoire = [
     ],
   },
   {
-    heading: "Chamber and Ensemble",
+    heading: { en: "Chamber and Ensemble", zh: "室內樂與合奏" },
     items: [
       "G. F. Handel: Organ Concerto, Op. 4, No. 4, HWV 292, continuo on harpsichord",
       "J. S. Bach: Ich habe genug, BWV 82, continuo on chamber organ",
@@ -135,7 +149,7 @@ const repertoire = [
     ],
   },
   {
-    heading: "Conducting",
+    heading: { en: "Conducting", zh: "指揮" },
     items: [
       "J. Haydn: Symphony No. 45",
       "Pärt Uusberg: Õhtul",
@@ -143,6 +157,9 @@ const repertoire = [
     ],
   },
 ];
+
+// 行内双语片段的简写。Inline bilingual snippet helper.
+const t = (en: string, zh: string): LT => ({ en, zh });
 ---
 
 <BaseLayout
@@ -155,7 +172,9 @@ const repertoire = [
         {
           sections.map((section) => (
             <li>
-              <a href={`#${section.id}`}>{section.label}</a>
+              <a href={`#${section.id}`}>
+                <LocalizedText value={section.label} />
+              </a>
             </li>
           ))
         }
@@ -164,9 +183,15 @@ const repertoire = [
 
     <article class="detail-page cv-page">
       <header class="detail-header cv-header">
-        <p class="detail-kicker">Curriculum vitae</p>
+        <p class="detail-kicker">
+          <LocalizedText value={t("Curriculum vitae", "履歷")} />
+        </p>
         <h1><NamePronunciation /></h1>
-        <p>tenor, composer, keyboardist, conductor</p>
+        <p>
+          <LocalizedText
+            value={t("tenor, composer, keyboardist, conductor", "男高音、作曲家、鍵盤演奏家、指揮")}
+          />
+        </p>
         <nav class="detail-actions" aria-label="CV downloads">
           <a href="/files/yixin-cui-cv.pdf" download data-i18n-key="resource.cvPdf">
             {translate("en", "resource.cvPdf")}
@@ -175,106 +200,109 @@ const repertoire = [
       </header>
 
       <section class="cv-section" aria-labelledby="cv-education">
-        <h2 id="cv-education">Education</h2>
+        <h2 id="cv-education"><LocalizedText value={L["cv-education"]} /></h2>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
             <h3><a href={hrefs.eastman}>Eastman School of Music</a></h3>
-            <p>Rochester, NY</p>
+            <p><LocalizedText value={t("Rochester, NY", "紐約州羅徹斯特")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Master of Arts, Composition</em></p>
-            <p>2026-2028, anticipated</p>
+            <p><em><LocalizedText value={t("Master of Arts, Composition", "文學碩士，作曲")} /></em></p>
+            <p><LocalizedText value={t("2026-2028, anticipated", "2026–2028（預計）")} /></p>
           </div>
         </div>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
             <h3><a href={hrefs.swarthmore}>Swarthmore College</a></h3>
-            <p>Swarthmore, PA</p>
+            <p><LocalizedText value={t("Swarthmore, PA", "賓州斯沃斯莫爾")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Bachelor of Arts, Philosophy; minor in Music</em></p>
+            <p><em><LocalizedText value={t("Bachelor of Arts, Philosophy; minor in Music", "文學士，哲學；輔修音樂")} /></em></p>
             <p>2021-2025</p>
           </div>
           <ul>
-            <li>Cumulative GPA 3.97/4.00.</li>
-            <li>Senior theses: <em>Contingency, Difference, and Reproducibility in the Ontological Problems of Aleatoric Music</em>; <em>The Archaeology of Olympics: On Instrumentalized Bodies</em>.</li>
+            <li><LocalizedText value={t("Cumulative GPA 3.97/4.00.", "累計 GPA 3.97／4.00。")} /></li>
+            <li>
+              <LocalizedText value={t("Senior theses: ", "畢業論文：")} />
+              <em>Contingency, Difference, and Reproducibility in the Ontological Problems of Aleatoric Music</em>; <em>The Archaeology of Olympics: On Instrumentalized Bodies</em>.
+            </li>
           </ul>
         </div>
       </section>
 
       <section class="cv-section" aria-labelledby="cv-teachers">
-        <h2 id="cv-teachers">Teachers</h2>
+        <h2 id="cv-teachers"><LocalizedText value={L["cv-teachers"]} /></h2>
         <div class="cv-lines">
-          <p><span>Voice</span><span><a href={hrefs.laraNie}>Lara Nie</a></span></p>
-          <p><span>Vocal Coach</span><span><a href={hrefs.debraScurtoDavis}>Debra Scurto-Davis</a></span></p>
-          <p><span>Piano</span><span><a href={hrefs.marcantonio}>Marcantonio Barone</a>; <a href={hrefs.keikoSato}>Keiko Sato</a></span></p>
-          <p><span>Organ</span><span><a href={hrefs.edwardSenn}>Edward Landin Senn</a></span></p>
-          <p><span>Composition</span><span><a href={hrefs.geraldLevinson}>Gerald Levinson</a>; <a href={hrefs.tomWhitman}>Thomas Whitman</a>; <a href={hrefs.erinBusch}>Erin Busch</a></span></p>
-          <p><span>Conducting</span><span><a href={hrefs.andrewHauze}>Andrew Hauze</a>; <a href={hrefs.nathanReiff}>Nathan Reiff</a></span></p>
+          <p><span><LocalizedText value={t("Voice", "聲樂")} /></span><span><a href={hrefs.laraNie}>Lara Nie</a></span></p>
+          <p><span><LocalizedText value={t("Vocal Coach", "聲樂指導")} /></span><span><a href={hrefs.debraScurtoDavis}>Debra Scurto-Davis</a></span></p>
+          <p><span><LocalizedText value={t("Piano", "鋼琴")} /></span><span><a href={hrefs.marcantonio}>Marcantonio Barone</a>; <a href={hrefs.keikoSato}>Keiko Sato</a></span></p>
+          <p><span><LocalizedText value={t("Organ", "管風琴")} /></span><span><a href={hrefs.edwardSenn}>Edward Landin Senn</a></span></p>
+          <p><span><LocalizedText value={t("Composition", "作曲")} /></span><span><a href={hrefs.geraldLevinson}>Gerald Levinson</a>; <a href={hrefs.tomWhitman}>Thomas Whitman</a>; <a href={hrefs.erinBusch}>Erin Busch</a></span></p>
+          <p><span><LocalizedText value={t("Conducting", "指揮")} /></span><span><a href={hrefs.andrewHauze}>Andrew Hauze</a>; <a href={hrefs.nathanReiff}>Nathan Reiff</a></span></p>
         </div>
       </section>
 
       <section class="cv-section" aria-labelledby="cv-masterclasses">
-        <h2 id="cv-masterclasses">Masterclass and Workshop Appearances</h2>
+        <h2 id="cv-masterclasses"><LocalizedText value={L["cv-masterclasses"]} /></h2>
         <ul class="cv-dot-list">
-          <li>American Guild of Organists, Philadelphia Chapter, organ (2023)</li>
-          <li><a href={hrefs.daminSpritzer}>Damin Spritzer</a>, organ (2023)</li>
-          <li><a href={hrefs.markLoria}>Mark Loria</a>, organ (2023)</li>
-          <li>Violafest with <a href={hrefs.hannahRoseNicholas}>Hannah Rose Nicholas</a>, composition (2023)</li>
-          <li><a href={hrefs.roderickWilliams}>Roderick Williams OBE</a>, composition (2024)</li>
-          <li><a href={hrefs.jasperQuartet}>Jasper String Quartet</a>, conducting (2024)</li>
-          <li><a href={hrefs.wildflowerLab}>Wildflower Lab</a> with <a href={hrefs.relache}>Relâche Ensemble</a>, composition (2025)</li>
-          <li><a href={hrefs.roderickWilliams}>Roderick Williams OBE</a>, voice (2025)</li>
-          <li><a href={hrefs.tamaraLukasheva}>Tamara Lukasheva</a> and <a href={hrefs.hansLuedemann}>Hans Lüdemann</a>, voice and composition (2025)</li>
-          <li>American Choral Directors Association, Pennsylvania, conducting (2025)</li>
-          <li><a href={hrefs.peggyDettwiler}>Peggy Dettwiler</a> and <a href={hrefs.antonArmstrong}>Anton Armstrong</a>, conducting (2025)</li>
+          <li>American Guild of Organists, Philadelphia Chapter, <LocalizedText value={t("organ", "管風琴")} /> (2023)</li>
+          <li><a href={hrefs.daminSpritzer}>Damin Spritzer</a>, <LocalizedText value={t("organ", "管風琴")} /> (2023)</li>
+          <li><a href={hrefs.markLoria}>Mark Loria</a>, <LocalizedText value={t("organ", "管風琴")} /> (2023)</li>
+          <li>Violafest <LocalizedText value={t("with", "偕")} /> <a href={hrefs.hannahRoseNicholas}>Hannah Rose Nicholas</a>, <LocalizedText value={t("composition", "作曲")} /> (2023)</li>
+          <li><a href={hrefs.roderickWilliams}>Roderick Williams OBE</a>, <LocalizedText value={t("composition", "作曲")} /> (2024)</li>
+          <li><a href={hrefs.jasperQuartet}>Jasper String Quartet</a>, <LocalizedText value={t("conducting", "指揮")} /> (2024)</li>
+          <li><a href={hrefs.wildflowerLab}>Wildflower Lab</a> <LocalizedText value={t("with", "偕")} /> <a href={hrefs.relache}>Relâche Ensemble</a>, <LocalizedText value={t("composition", "作曲")} /> (2025)</li>
+          <li><a href={hrefs.roderickWilliams}>Roderick Williams OBE</a>, <LocalizedText value={t("voice", "聲樂")} /> (2025)</li>
+          <li><a href={hrefs.tamaraLukasheva}>Tamara Lukasheva</a> <LocalizedText value={t("and", "與")} /> <a href={hrefs.hansLuedemann}>Hans Lüdemann</a>, <LocalizedText value={t("voice and composition", "聲樂與作曲")} /> (2025)</li>
+          <li>American Choral Directors Association, Pennsylvania, <LocalizedText value={t("conducting", "指揮")} /> (2025)</li>
+          <li><a href={hrefs.peggyDettwiler}>Peggy Dettwiler</a> <LocalizedText value={t("and", "與")} /> <a href={hrefs.antonArmstrong}>Anton Armstrong</a>, <LocalizedText value={t("conducting", "指揮")} /> (2025)</li>
         </ul>
       </section>
 
       <section class="cv-section" aria-labelledby="cv-experience">
-        <h2 id="cv-experience">Professional Experience</h2>
+        <h2 id="cv-experience"><LocalizedText value={L["cv-experience"]} /></h2>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
             <h3>Eastman School of Music Instrument Office</h3>
-            <p>Rochester, NY</p>
+            <p><LocalizedText value={t("Rochester, NY", "紐約州羅徹斯特")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Piano Technology Apprentice</em></p>
-            <p>2026-present</p>
+            <p><em><LocalizedText value={t("Piano Technology Apprentice", "鋼琴技術學徒")} /></em></p>
+            <p><LocalizedText value={t("2026-present", "2026 至今")} /></p>
           </div>
           <ul>
-            <li>Apprenticeship in piano technology through Eastman's instrument office.</li>
+            <li><LocalizedText value={t("Apprenticeship in piano technology through Eastman's instrument office.", "透過 Eastman 樂器辦公室進行的鋼琴技術學徒訓練。")} /></li>
           </ul>
         </div>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
             <h3>Pagoda Artworks, Inc., <a href={hrefs.westside}>Westside Music Conservatory</a></h3>
-            <p>Los Angeles, CA</p>
+            <p><LocalizedText value={t("Los Angeles, CA", "加州洛杉磯")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Intern</em></p>
+            <p><em><LocalizedText value={t("Intern", "實習生")} /></em></p>
             <p>2025-2026</p>
           </div>
           <ul>
-            <li>Illustrator and designer for a young children's piano pedagogy book republishing project.</li>
-            <li>Maintenance of professional composer's website.</li>
+            <li><LocalizedText value={t("Illustrator and designer for a young children's piano pedagogy book republishing project.", "為一個幼兒鋼琴教學書再版計畫擔任插畫與設計。")} /></li>
+            <li><LocalizedText value={t("Maintenance of professional composer's website.", "維護一位職業作曲家的網站。")} /></li>
           </ul>
         </div>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
             <h3><a href={hrefs.cooper}>Cooper Series, Swarthmore College</a></h3>
-            <p>Swarthmore, PA</p>
+            <p><LocalizedText value={t("Swarthmore, PA", "賓州斯沃斯莫爾")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Tenor</em></p>
+            <p><em><LocalizedText value={t("Tenor", "男高音")} /></em></p>
             <p>2025-2026</p>
           <ul>
-             <li>Soloist for a newly commissioned cantata by <a href={hrefs.raybon}>C. Leonard Raybon</a>.</li>
+             <li><LocalizedText value={t("Soloist for a newly commissioned cantata by ", "新受委約清唱劇的獨唱，作曲為 ")} /><a href={hrefs.raybon}>C. Leonard Raybon</a>.</li>
           </ul>
           </div>
         </div>
@@ -282,64 +310,64 @@ const repertoire = [
         <div class="cv-entry">
           <div class="cv-entry-head">
             <h3><a href={hrefs.garnetSingers}>Swarthmore Garnet Singers</a></h3>
-            <p>Swarthmore, PA</p>
+            <p><LocalizedText value={t("Swarthmore, PA", "賓州斯沃斯莫爾")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Conductor and Pianist</em></p>
+            <p><em><LocalizedText value={t("Conductor and Pianist", "指揮與鋼琴")} /></em></p>
             <p>2026</p>
           </div>
         </div>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
-            <h3>Concert Musician</h3>
-            <p>Swarthmore, PA</p>
+            <h3><LocalizedText value={t("Concert Musician", "音樂會演奏者")} /></h3>
+            <p><LocalizedText value={t("Swarthmore, PA", "賓州斯沃斯莫爾")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p>2025-present</p>
+            <p><LocalizedText value={t("2025-present", "2025 至今")} /></p>
           </div>
           <ul>
-            <li>Collaborative keyboard work for rehearsal, sight-reading, and concert performance for Choir, Orchestra, and other ensembles.</li>
+            <li><LocalizedText value={t("Collaborative keyboard work for rehearsal, sight-reading, and concert performance for Choir, Orchestra, and other ensembles.", "為合唱團、管弦樂團及其他樂團擔任排練、視奏與音樂會演出的合作鍵盤。")} /></li>
           </ul>
         </div>
 
         <div class="cv-entry">
           <div class="cv-entry-head">
             <h3><a href={hrefs.swarthmore}>Swarthmore College</a></h3>
-            <p>Swarthmore, PA</p>
+            <p><LocalizedText value={t("Swarthmore, PA", "賓州斯沃斯莫爾")} /></p>
           </div>
           <div class="cv-entry-subhead">
-            <p><em>Tutor, Grader</em></p>
+            <p><em><LocalizedText value={t("Tutor, Grader", "助教、評分員")} /></em></p>
             <p>2021-2024</p>
           </div>
           <ul>
-            <li>Tutoring and grading for mathematics, modern languages, and music theory.</li>
+            <li><LocalizedText value={t("Tutoring and grading for mathematics, modern languages, and music theory.", "為數學、現代語言與音樂理論提供輔導與評分。")} /></li>
           </ul>
         </div>
       </section>
 
       <section class="cv-section" aria-labelledby="cv-ensembles">
-        <h2 id="cv-ensembles">Music Ensemble Experience</h2>
+        <h2 id="cv-ensembles"><LocalizedText value={L["cv-ensembles"]} /></h2>
         <ul class="cv-dot-list">
-          <li><a href={hrefs.garnetSingers}>Swarthmore Chorus</a>, section leader, soloist, octet singer</li>
-          <li><a href={hrefs.garnetSingers}>Swarthmore Garnet Singers</a>, senior student conductor, composer, pianist</li>
-          <li><a href={hrefs.orchestra}>Swarthmore Orchestra</a>, celesta, piano, organ, percussion, composer</li>
-          <li><a href={hrefs.labOrchestra}>Swarthmore Lab Orchestra</a>, senior student conductor, percussion</li>
-          <li><a href={hrefs.theaterDepartment}>Swarthmore Theatre Department</a>, student keyboardist</li>
-          <li><a href={hrefs.chineseMusicEnsemble}>Swarthmore Chinese Music Ensemble</a>, erhu, zheng, voice, yangqin, conducting assistant</li>
+          <li><a href={hrefs.garnetSingers}>Swarthmore Chorus</a>, <LocalizedText value={t("section leader, soloist, octet singer", "聲部長、獨唱、八重唱團員")} /></li>
+          <li><a href={hrefs.garnetSingers}>Swarthmore Garnet Singers</a>, <LocalizedText value={t("senior student conductor, composer, pianist", "高年級學生指揮、作曲、鋼琴")} /></li>
+          <li><a href={hrefs.orchestra}>Swarthmore Orchestra</a>, <LocalizedText value={t("celesta, piano, organ, percussion, composer", "鋼片琴、鋼琴、管風琴、打擊樂、作曲")} /></li>
+          <li><a href={hrefs.labOrchestra}>Swarthmore Lab Orchestra</a>, <LocalizedText value={t("senior student conductor, percussion", "高年級學生指揮、打擊樂")} /></li>
+          <li><a href={hrefs.theaterDepartment}>Swarthmore Theatre Department</a>, <LocalizedText value={t("student keyboardist", "學生鍵盤手")} /></li>
+          <li><a href={hrefs.chineseMusicEnsemble}>Swarthmore Chinese Music Ensemble</a>, <LocalizedText value={t("erhu, zheng, voice, yangqin, conducting assistant", "二胡、箏、人聲、揚琴、指揮助理")} /></li>
         </ul>
       </section>
 
       <section class="cv-section" aria-labelledby="cv-compositions">
-        <h2 id="cv-compositions">Selected Compositions</h2>
+        <h2 id="cv-compositions"><LocalizedText value={L["cv-compositions"]} /></h2>
         <div class="cv-composition-groups">
           {
             compositions.map((group) => (
-              <section class="cv-subsection" aria-label={group.heading}>
-                <h3>{group.heading}</h3>
+              <section class="cv-subsection" aria-label={group.heading.en}>
+                <h3><LocalizedText value={group.heading} /></h3>
                 <ul class="cv-dot-list">
                   {group.works.map(([title, year, detail, href]) => (
-                    <li><a href={href}>{title}</a> ({year}), {detail}</li>
+                    <li><a href={href}>{title}</a> ({year}), <LocalizedText value={detail} /></li>
                   ))}
                 </ul>
               </section>
@@ -349,7 +377,7 @@ const repertoire = [
       </section>
 
       <section class="cv-section" aria-labelledby="cv-scholarships">
-        <h2 id="cv-scholarships">Scholarships and Fellowships</h2>
+        <h2 id="cv-scholarships"><LocalizedText value={L["cv-scholarships"]} /></h2>
 
         <div class="cv-lines">
           <p>
@@ -358,7 +386,7 @@ const repertoire = [
           </p>
           <p>
             <span>Merit Scholarships, University of Rochester</span>
-            <span>2026-present</span>
+            <span><LocalizedText value={t("2026-present", "2026 至今")} /></span>
           </p>
           <p>
             <span>Freeman Scholars, Swarthmore College Music Department</span>
@@ -368,21 +396,30 @@ const repertoire = [
       </section>
 
       <section class="cv-section" aria-labelledby="cv-languages">
-        <h2 id="cv-languages">Languages</h2>
-        <p class="cv-note">Listed from higher to lower proficiency.</p>
-        <p>Mandarin, English, Japanese, Classical Chinese, Classical Japanese, French, Chinese Sign Language (PRC standard), German, Tibetan.</p>
+        <h2 id="cv-languages"><LocalizedText value={L["cv-languages"]} /></h2>
+        <p class="cv-note">
+          <LocalizedText value={t("Listed from higher to lower proficiency.", "依熟練度由高至低排列。")} />
+        </p>
+        <p>
+          <LocalizedText
+            value={t(
+              "Mandarin, English, Japanese, Classical Chinese, Classical Japanese, French, Chinese Sign Language (PRC standard), German, Tibetan.",
+              "官話、英語、日語、古典漢語、古典日語、法語、中國手語（中國大陸標準）、德語、藏語。",
+            )}
+          />
+        </p>
       </section>
 
       <section class="cv-section cv-fold-section" aria-labelledby="cv-repertoire">
         <details class="cv-fold">
           <summary id="cv-repertoire">
-            <span>Selected Performance Repertoire</span>
+            <span><LocalizedText value={L["cv-repertoire"]} /></span>
           </summary>
           <div class="cv-repertoire-groups">
             {
               repertoire.map((group) => (
-                <section class="cv-subsection" aria-label={group.heading}>
-                  <h3>{group.heading}</h3>
+                <section class="cv-subsection" aria-label={group.heading.en}>
+                  <h3><LocalizedText value={group.heading} /></h3>
                   <ul>
                     {group.items.map((item) => <li>{item}</li>)}
                   </ul>

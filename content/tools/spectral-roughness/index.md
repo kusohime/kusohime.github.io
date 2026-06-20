@@ -1,9 +1,11 @@
 ---
 title: "Spectral Roughness Calculator"
 subtitle: "Sensory dissonance curves and chord comparison"
+subtitleZh: "感官不協和曲線與和弦比較"
 number: 5
 group: "Composition"
 summary: "Computes Plomp–Levelt/Sethares roughness for swept dyads and chords, and compares two voicings under the same spectrum model."
+summaryZh: "為掃描的雙音與和弦計算 Plomp–Levelt／Sethares 粗糙度，並在同一頻譜模型下比較兩種聲部配置。"
 status: "stable"
 slug: "spectral-roughness"
 references:
@@ -29,9 +31,9 @@ voicing A, locating which pair of notes produces the bite. Try
 the low-register third is responsible, as orchestration manuals have
 always said.
 
-The model is Plomp & Levelt's critical-band roughness as parameterized by
-Sethares (b₁ = 3.5, b₂ = 5.75, s = 0.24/(0.0207·fmin + 18.96)), summed
-over all partial pairs. Values are unitless; only rankings within one
+The model is Plomp & Levelt's (1965) critical-band roughness as
+parameterized by Sethares (1993; b₁ = 3.5, b₂ = 5.75,
+s = 0.24/(0.0207·fmin + 18.96)), summed over all partial pairs. Values are unitless; only rankings within one
 spectrum model are meaningful. This is a model of sensory roughness, not
 of musical dissonance — context, voice leading, and style are outside its
 competence.

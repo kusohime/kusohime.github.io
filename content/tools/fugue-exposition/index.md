@@ -1,9 +1,11 @@
 ---
 title: "Fugue Exposition Builder"
 subtitle: "Subject, answer, entries, stretto"
+subtitleZh: "主題、答題、各次進入、緊接段"
 number: 14
 group: "Composition"
 summary: "Lays out a fugue exposition for up to four voices from your subject — answer at the fifth by default, tonal answer and countersubject optional, entry distance adjustable down to stretto."
+summaryZh: "由你的主題鋪排至多四聲部的賦格呈示部——預設答題在五度，可選用守調答題與對題，進入間距可縮短至緊接段。"
 status: "stable"
 slug: "fugue-exposition"
 references:

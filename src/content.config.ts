@@ -12,6 +12,11 @@ import { toolGroups, workCategories, writingTypes } from "./config/contentTaxono
 const folderId = ({ entry }: { entry: string }) =>
   entry.replaceAll("\\", "/").replace(/\/index\.md$/, "");
 
+// 中文：中文正文存为同目录的 index.zh.md，按文件夹名归到对应作品/活动/工具。
+// English: A Chinese body lives beside its entry as index.zh.md, keyed by folder name.
+const folderIdZh = ({ entry }: { entry: string }) =>
+  entry.replaceAll("\\", "/").replace(/\/index\.zh\.md$/, "");
+
 const filePathId = ({ entry }: { entry: string }) =>
   entry.replaceAll("\\", "/").replace(/\.md$/, "");
 
@@ -38,6 +43,9 @@ const works = defineCollection({
   schema: z.object({
     title: z.string(),
     subtitle: z.string().optional(),
+    // 中文：标题保持原文；副标题等描述性文字可加中文。
+    // English: Titles stay in the original; descriptive fields may carry Chinese.
+    subtitleZh: z.string().optional(),
     year: z.number().int(),
     category: z.enum(workCategories),
     instrumentation: localizedText,
@@ -121,6 +129,13 @@ const events = defineCollection({
     location: z.string().optional(),
     role: z.string().optional(),
     brief: z.string(),
+    // 中文：活动标题保持原文；以下为可选中文描述字段（正文另存 index.zh.md）。
+    // English: Event titles stay original; these optional Chinese fields cover the
+    // descriptive metadata. The Chinese body, if any, lives in index.zh.md.
+    venueZh: z.string().optional(),
+    locationZh: z.string().optional(),
+    roleZh: z.string().optional(),
+    briefZh: z.string().optional(),
     slug: z.string(),
     order: z.number().int().default(999),
     draft: z.boolean().default(false),
@@ -161,7 +176,14 @@ const tools = defineCollection({
     subtitle: z.string().optional(),
     number: z.number().int(),
     group: z.enum(toolGroups),
-    summary: z.string(),
+    // 中文：摘要可选；缺省时列表页回退到副标题。
+    // English: Summary is optional; the index falls back to the subtitle when absent.
+    summary: z.string().optional(),
+    // 中文：工具名保持原文；副标题与摘要可加中文（说明正文另存 index.zh.md）。
+    // English: Tool names stay original; subtitle and summary may carry Chinese.
+    // The Chinese Notes body lives in index.zh.md.
+    subtitleZh: z.string().optional(),
+    summaryZh: z.string().optional(),
     status: z.enum(["stable", "beta", "data-pending"]).default("stable"),
     slug: z.string(),
     hidden: z.boolean().default(false),
@@ -194,6 +216,27 @@ const comments = defineCollection({
   }),
 });
 
+// 中文：中文正文集合——只取 index.zh.md，正文以外不需 frontmatter；按文件夹名与主条目对应。
+// English: Chinese-body collections — only index.zh.md, body-only (frontmatter optional);
+// matched to the main entry by folder id.
+const toolsZh = defineCollection({
+  loader: glob({
+    base: "./content/tools",
+    pattern: "*/index.zh.md",
+    generateId: folderIdZh,
+  }),
+  schema: z.object({ title: z.string().optional() }),
+});
+
+const eventsZh = defineCollection({
+  loader: glob({
+    base: "./content/events",
+    pattern: "*/index.zh.md",
+    generateId: folderIdZh,
+  }),
+  schema: z.object({ title: z.string().optional() }),
+});
+
 export const collections = {
   works,
   events,
@@ -201,4 +244,10 @@ export const collections = {
   writingChapters,
   tools,
   comments,
+  toolsZh,
+  eventsZh,
 };
+
+// 中文：toolsZh / eventsZh 取同目录下的 index.zh.md（仅正文，无需 frontmatter）。
+// English: toolsZh / eventsZh load the sibling index.zh.md (body only, frontmatter optional).
+

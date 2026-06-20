@@ -1,9 +1,11 @@
 ---
 title: "Neo-Riemannian Transformations"
 subtitle: "L, P, R, S, N chains; hexatonic cycles"
+subtitleZh: "L、P、R、S、N 串接；六音循環"
 number: 11
 group: "Composition"
 summary: "Applies triadic transformations step by step, with common-tone tracking and voice-led playback."
+summaryZh: "逐步施加三和弦變換，附共同音追蹤與聲部進行式播放。"
 status: "stable"
 slug: "neo-riemannian"
 references:

@@ -1,9 +1,11 @@
 ---
 title: "Polyrhythm & Canon Lab"
 subtitle: "Coincidence cycles, phase canon, multi-track metronome"
+subtitleZh: "重合循環、相位卡農、多軌節拍器"
 number: 2
 group: "Composition"
 summary: "Plots pulse streams in one cycle with their coincidence points, states a pattern in canon with locked, gradual, or stepped phasing, and runs a metronome of independent tracks."
+summaryZh: "在一個循環內繪出脈衝流及其重合點，以鎖定、漸進或階梯式相位陳述卡農，並運行多條獨立軌道的節拍器。"
 status: "stable"
 slug: "polyrhythm-cycles"
 references:
@@ -78,5 +80,6 @@ canon by ratio rather than displacement, i.e. this lab's phasing mode
 held permanently); the mensuration canons of Ockeghem's *Missa
 prolationum*, the historical ancestor of the metronome panel's
 one-tempo-many-values case; Ligeti's études and Birtwistle's pulse
-labyrinths for the coincidence panel; and the ensemble repertoires
+labyrinths for the coincidence panel; Messiaen's superimposed rhythmic
+canons, codified in his *Technique*, for the canon panel; and the ensemble repertoires
 analyzed by Arom, whose cycle diagrams the circular view reproduces.

@@ -1,9 +1,11 @@
 ---
 title: "Harmonic Partials Calculator"
 subtitle: "Partial frequencies with 12-EDO deviations"
+subtitleZh: "分音頻率及其相對十二平均律的偏差"
 number: 4
 group: "Composition"
 summary: "Lists the partials of a fundamental with cents deviations, optional string inharmonicity, and additive playback of selected partials."
+summaryZh: "列出某基音的各分音及其音分偏差，可選加入弦的非諧性，並對所選分音作加法式播放。"
 status: "stable"
 slug: "harmonic-partials"
 references:
@@ -32,7 +34,7 @@ much spectral harmony grows.
 The inharmonicity coefficient B switches to a stiff-string model:
 fₙ = n·f₀·√(1+Bn²). Real piano strings have B roughly between 0.0002
 (long bass strings) and 0.001+ (short treble strings); upper partials
-stretch sharp. This is why pianos are stretch-tuned and why a "harmonic"
+stretch sharp (Fletcher & Rossing, 1998). This is why pianos are stretch-tuned and why a "harmonic"
 spectrum on paper is not what a piano hands you.
 
 Deviations are measured from the nearest 12-EDO pitch with A4 = 440. The

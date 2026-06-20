@@ -22,6 +22,7 @@ export const messages = {
   en: {
     "nav.works": "Works",
     "nav.events": "Events",
+    "nav.press": "Press",
     "nav.writings": "Writings",
     "nav.tools": "Tools",
     "nav.cv": "C.V.",
@@ -30,6 +31,7 @@ export const messages = {
     "common.backTools": "Back to Tools",
     "common.backEvents": "Back to Events",
     "tools.numberPrefix": "Tool No.",
+    "tools.onThisPage": "On this page",
     "tools.notes": "Notes",
     "tools.references": "References",
     "tools.statusBeta": "beta",
@@ -79,6 +81,7 @@ export const messages = {
   zh: {
     "nav.works": "作品",
     "nav.events": "活動",
+    "nav.press": "媒體",
     "nav.writings": "文字",
     "nav.tools": "工具",
     "nav.cv": "履歷",
@@ -87,6 +90,7 @@ export const messages = {
     "common.backTools": "返回工具",
     "common.backEvents": "返回活動",
     "tools.numberPrefix": "工具編號",
+    "tools.onThisPage": "本頁目錄",
     "tools.notes": "說明",
     "tools.references": "參考文獻",
     "tools.statusBeta": "測試版",

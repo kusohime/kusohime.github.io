@@ -1,0 +1,947 @@
+---
+// English: String and piano harmonics workbench: natural lookup, direct node map,
+// artificial harmonics, piano interior strings, and acoustic-string derivation.
+---
+
+<section class="tool-panel" aria-label="Find string harmonics by target pitch">
+  <span class="tool-panel-label">Bowed, lute &amp; guqin lookup</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Preset tuning</span>
+      <select id="sh-preset">
+        <optgroup label="Concert bowed strings">
+          <option value="violin">Violin: G D A E</option>
+          <option value="viola">Viola: C G D A</option>
+          <option value="cello" selected>Cello: C G D A</option>
+          <option value="double-bass">Double bass: E A D G</option>
+          <option value="bowed-family-high">Family high-to-low: E A D G C</option>
+          <option value="five-string-cello">Five-string cello: C G D A E</option>
+        </optgroup>
+        <optgroup label="Lute / plucked strings">
+          <option value="guitar">Classical guitar: E A D G B E</option>
+          <option value="lute-g">Renaissance lute in G: G C F A D G</option>
+          <option value="oud-c">Oud in C: C F A D G C</option>
+          <option value="pipa">Pipa: A D E A</option>
+        </optgroup>
+        <optgroup label="Guqin">
+          <option value="guqin-zhengdiao-c">Zheng diao in C: C D F G A C D</option>
+          <option value="guqin-zhengdiao-d">Zheng diao in D: D E G A B D E</option>
+          <option value="guqin-zhengdiao-g">Zheng diao in G: G A C D E G A</option>
+          <option value="guqin-manjiao-c">Manjiao in C: C D E G A C D</option>
+          <option value="guqin-ruibin-c">Ruibin in C: C D F G B C D</option>
+        </optgroup>
+        <option value="custom">Custom string list</option>
+      </select>
+    </label>
+    <label class="tool-field" style="flex: 1; min-width: 18rem;">
+      <span>Open strings (low to high, note names or Hz)</span>
+      <input type="text" id="sh-strings" value="C2 G2 D3 A3" />
+    </label>
+    <label class="tool-field">
+      <span>Target sounding pitch</span>
+      <input type="text" id="sh-target" value="E5" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Max partial</span>
+      <input type="number" id="sh-max" value="12" min="2" max="24" step="1" />
+    </label>
+    <label class="tool-field">
+      <span>Tolerance (cents)</span>
+      <input type="number" id="sh-tolerance" value="25" min="0" max="100" step="1" />
+    </label>
+    <button type="button" class="tool-primary" id="sh-find">Find harmonics</button>
+    <div id="sh-target-kb" style="width: 100%;"></div>
+  </div>
+  <p class="tool-error" id="sh-find-error" hidden></p>
+
+  <div class="tool-result" id="sh-find-result" hidden>
+    <p class="tool-result-figure" id="sh-find-figure"></p>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption>Closest natural harmonics from the selected strings</caption>
+        <thead>
+          <tr>
+            <th>String</th>
+            <th>Partial</th>
+            <th>Sounds</th>
+            <th>Target diff.</th>
+            <th>Touch points from nut</th>
+            <th>Lowest diamond touch</th>
+          </tr>
+        </thead>
+        <tbody id="sh-find-table"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="sh-find-note"></p>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Map natural harmonics on one open string">
+  <span class="tool-panel-label">Natural harmonic map</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Source from string list</span>
+      <select id="sh-source-select"></select>
+    </label>
+    <label class="tool-field">
+      <span>Or type source string</span>
+      <input type="text" id="sh-source" value="C2" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Partial</span>
+      <input type="number" id="sh-partial" value="4" min="2" max="24" step="1" />
+    </label>
+    <button type="button" class="tool-primary" id="sh-map">Map natural harmonic</button>
+    <button type="button" id="sh-play-natural">Hear harmonic</button>
+    <div id="sh-source-kb" style="width: 100%;"></div>
+  </div>
+  <p class="tool-error" id="sh-map-error" hidden></p>
+
+  <div class="tool-result" id="sh-map-result" hidden>
+    <p class="tool-result-figure" id="sh-map-figure"></p>
+    <svg id="sh-string-svg" class="tool-svg" viewBox="0 0 720 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Open string diagram with harmonic nodes"></svg>
+    <div class="tool-table-wrap" style="margin-top: var(--space-sm);">
+      <table class="tool-table">
+        <caption>Natural harmonic nodes for this partial</caption>
+        <thead>
+          <tr>
+            <th>Touch from nut</th>
+            <th>Touch from bridge</th>
+            <th>Diamond touch pitch</th>
+            <th>Sounding pitch</th>
+          </tr>
+        </thead>
+        <tbody id="sh-map-table"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="sh-map-note"></p>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Artificial harmonics and acoustic string model">
+  <span class="tool-panel-label">Artificial / acoustic string</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Source mode</span>
+      <select id="sh-art-mode">
+        <option value="pitch" selected>Any stopped/open pitch</option>
+        <option value="physics">Derive from length, tension, mass</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Stopped or open pitch</span>
+      <input type="text" id="sh-art-source" value="D4" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Length L (cm)</span>
+      <input type="number" id="sh-length" value="65" min="1" max="400" step="0.1" />
+    </label>
+    <label class="tool-field">
+      <span>Tension T (N)</span>
+      <input type="number" id="sh-tension" value="55" min="0.1" max="1000" step="0.1" />
+    </label>
+    <label class="tool-field">
+      <span>Linear density mu (g/m)</span>
+      <input type="number" id="sh-density" value="4" min="0.01" max="200" step="0.01" />
+    </label>
+    <label class="tool-field">
+      <span>Partial</span>
+      <input type="number" id="sh-art-partial" value="4" min="2" max="24" step="1" />
+    </label>
+    <button type="button" class="tool-primary" id="sh-art-map">Compute</button>
+    <button type="button" id="sh-play-art">Hear harmonic</button>
+    <div id="sh-art-kb" style="width: 100%;"></div>
+  </div>
+  <p class="tool-error" id="sh-art-error" hidden></p>
+
+  <div class="tool-result" id="sh-art-result" hidden>
+    <p class="tool-result-figure" id="sh-art-figure"></p>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption>Artificial harmonic placement from the stopped finger toward the bridge</caption>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Touch distance</th>
+            <th>Touch pitch</th>
+            <th>Sounding pitch</th>
+            <th>Interval above source</th>
+          </tr>
+        </thead>
+        <tbody id="sh-art-table"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="sh-art-note"></p>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Find piano interior-string harmonics by sounding pitch">
+  <span class="tool-panel-label">Piano interior strings</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Target pitch</span>
+      <input type="text" id="shp-target" value="G4" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Lowest source string</span>
+      <input type="text" id="shp-low" value="A0" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Highest source string</span>
+      <input type="text" id="shp-high" value="C4" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Max partial</span>
+      <input type="number" id="shp-max-partial" value="22" min="2" max="22" step="1" />
+    </label>
+    <label class="tool-field">
+      <span>Node set</span>
+      <select id="shp-node-set">
+        <option value="practical" selected>Practical bass nodes</option>
+        <option value="all">All mathematical nodes</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Tolerance (cents)</span>
+      <input type="number" id="shp-tolerance" value="35" min="0" max="100" step="1" />
+    </label>
+    <label class="tool-field">
+      <span>Pitch model</span>
+      <select id="shp-pitch-model">
+        <option value="measured" selected>Steinway D average</option>
+        <option value="ideal">Ideal integer partials</option>
+        <option value="custom-b">Custom B</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Custom B</span>
+      <input type="number" id="shp-find-b" value="0" min="0" max="0.005" step="0.0001" />
+    </label>
+    <button type="button" class="tool-primary" id="shp-find">Find touch points</button>
+    <div id="shp-target-kb" style="width: 100%;"></div>
+  </div>
+  <p class="tool-error" id="shp-find-error" hidden></p>
+
+  <div class="tool-result" id="shp-find-result" hidden>
+    <p class="tool-result-figure" id="shp-find-figure"></p>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <caption>Closest source strings and nodes</caption>
+        <thead>
+          <tr>
+            <th>Source string</th>
+            <th>Partial</th>
+            <th>Score mark</th>
+            <th>Touch point(s)</th>
+            <th>Sounding result</th>
+            <th>Target diff.</th>
+          </tr>
+        </thead>
+        <tbody id="shp-find-table"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="shp-find-note"></p>
+  </div>
+</section>
+
+<section class="tool-panel" aria-label="Map one piano interior string and partial">
+  <span class="tool-panel-label">Piano manual string</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Source string</span>
+      <input type="text" id="shp-key" value="C2" size="8" />
+    </label>
+    <label class="tool-field">
+      <span>Partial</span>
+      <select id="shp-partial">
+        <option value="2">2 (octave)</option>
+        <option value="3" selected>3 (octave + fifth)</option>
+        <option value="4">4 (two octaves)</option>
+        <option value="5">5 (two octaves + major third)</option>
+        <option value="6">6 (two octaves + fifth)</option>
+        <option value="7">7 (two octaves + flat seventh)</option>
+        <option value="8">8 (three octaves)</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Node set</span>
+      <select id="shp-map-node-set">
+        <option value="practical" selected>Practical bass nodes</option>
+        <option value="all">All mathematical nodes</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Pitch model</span>
+      <select id="shp-map-pitch-model">
+        <option value="measured" selected>Steinway D average</option>
+        <option value="ideal">Ideal integer partials</option>
+        <option value="custom-b">Custom B</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Custom B</span>
+      <input type="number" id="shp-b" value="0" min="0" max="0.005" step="0.0001" />
+    </label>
+    <button type="button" class="tool-primary" id="shp-go">Map this string</button>
+    <button type="button" id="shp-play">Hear approx.</button>
+    <div id="shp-kb" style="width: 100%;"></div>
+  </div>
+  <p class="tool-error" id="shp-error" hidden></p>
+
+  <div class="tool-result" id="shp-result" hidden>
+    <p class="tool-result-figure" id="shp-figure"></p>
+    <svg id="shp-string" class="tool-svg" viewBox="0 0 720 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Piano string diagram with touch nodes"></svg>
+    <div class="tool-table-wrap" style="margin-top: var(--space-sm);">
+      <table class="tool-table">
+        <caption>Touch points from the agraffe</caption>
+        <thead>
+          <tr>
+            <th>Score mark</th>
+            <th>Fraction</th>
+            <th>% of string</th>
+          </tr>
+        </thead>
+        <tbody id="shp-table"></tbody>
+      </table>
+    </div>
+    <p class="tool-note" id="shp-note"></p>
+  </div>
+</section>
+
+<script>
+  import { harmonicNodes, partialFreq } from "../../lib/partials.js";
+  import { describeHz, formatCents, midiToHz, midiToName, nameToMidi } from "../../lib/pitch.js";
+  import { sustain } from "../../lib/audio.js";
+  import { mountKeyboard } from "../../lib/keyboard.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const PRESETS: Record<string, string> = {
+    violin: "G3 D4 A4 E5",
+    viola: "C3 G3 D4 A4",
+    cello: "C2 G2 D3 A3",
+    "double-bass": "E1 A1 D2 G2",
+    "bowed-family-high": "E5 A4 D4 G3 C3",
+    "five-string-cello": "C2 G2 D3 A3 E4",
+    guitar: "E2 A2 D3 G3 B3 E4",
+    "lute-g": "G2 C3 F3 A3 D4 G4",
+    "oud-c": "C2 F2 A2 D3 G3 C4",
+    pipa: "A2 D3 E3 A3",
+    "guqin-zhengdiao-c": "C2 D2 F2 G2 A2 C3 D3",
+    "guqin-zhengdiao-d": "D2 E2 G2 A2 B2 D3 E3",
+    "guqin-zhengdiao-g": "G2 A2 C3 D3 E3 G3 A3",
+    "guqin-manjiao-c": "C2 D2 E2 G2 A2 C3 D3",
+    "guqin-ruibin-c": "C2 D2 F2 G2 B2 C3 D3",
+  };
+  const PIANO_PRACTICAL_NODE_NUMERATORS: Record<number, number[]> = {
+    2: [1],
+    3: [1],
+    4: [1],
+    5: [1, 2],
+    6: [1],
+    7: [2],
+    8: [3],
+    9: [1, 2],
+    10: [1, 3],
+    11: [1, 2, 3, 4],
+    12: [1],
+    13: [1, 3, 4],
+    14: [1, 3],
+    15: [1, 4],
+    16: [3, 5],
+    17: [3, 4, 5],
+    18: [5],
+    19: [4, 5, 6],
+    21: [4, 5],
+    22: [5, 7],
+  };
+  const PIANO_STEINWAY_D_AVERAGE_CENTS: Record<number, number> = {
+    2: 0,
+    3: -6,
+    4: -5,
+    5: -4,
+    6: -5,
+    7: -4,
+    8: 0,
+    9: -4,
+    10: -2,
+    11: 1,
+    12: 0,
+    13: 1,
+    14: 3,
+    15: 6,
+    16: 7,
+    17: 10,
+    18: 11,
+    19: 10,
+    21: 17,
+    22: 20,
+  };
+
+  type StringEntry = { label: string; hz: number; token: string };
+  type NodeEntry = { k: number; n: number; position: number };
+  let lastNatural: { sourceHz: number; partial: number } | null = null;
+  let lastArtificial: { sourceHz: number; partial: number } | null = null;
+  let lastPiano: { f0: number; n: number; B: number; model: string } | null = null;
+
+  function escapeHtml(value: string) {
+    return value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function parsePitch(text: string) {
+    const trimmed = String(text).trim();
+    const midi = nameToMidi(trimmed);
+    if (midi !== null) {
+      return { label: midiToName(midi), hz: midiToHz(midi), token: trimmed };
+    }
+    const match = trimmed.match(/^(\d+(?:\.\d+)?)\s*(?:hz)?$/i);
+    if (!match) return null;
+    const hz = Number(match[1]);
+    if (!(hz > 0)) return null;
+    return { label: `${hz.toFixed(hz < 100 ? 2 : 1).replace(/\.?0+$/, "")} Hz`, hz, token: trimmed };
+  }
+
+  function parseStrings(): StringEntry[] {
+    return byId("sh-strings").value
+      .split(/[\s,;|]+/)
+      .map((token: string) => token.trim())
+      .filter(Boolean)
+      .map(parsePitch)
+      .filter(Boolean) as StringEntry[];
+  }
+
+  function centsBetween(hz: number, targetHz: number) {
+    return 1200 * Math.log2(hz / targetHz);
+  }
+
+  function clampPartial(value: number) {
+    return Math.min(24, Math.max(2, Math.round(value || 2)));
+  }
+
+  function clampInt(value: number, min: number, max: number) {
+    return Math.min(max, Math.max(min, Math.round(value)));
+  }
+
+  function describePitch(hz: number) {
+    const d = describeHz(hz);
+    return `${d.nearestName} ${formatCents(d.centsFromNearest)}`;
+  }
+
+  function fractionText(num: number, den: number) {
+    return `${num}/${den}`;
+  }
+
+  function percentText(value: number) {
+    return `${(value * 100).toFixed(1)}%`;
+  }
+
+  function nodeSummary(n: number) {
+    const nodes = harmonicNodes(n);
+    const text = nodes.map((node) => fractionText(node.k, node.n));
+    if (text.length <= 5) return text.join(", ");
+    return `${text.slice(0, 5).join(", ")}, ...`;
+  }
+
+  function lowestDiamondPitch(sourceHz: number, n: number) {
+    const position = 1 / n;
+    return sourceHz / (1 - position);
+  }
+
+  function updateSourceSelect() {
+    const strings = parseStrings();
+    const select = byId("sh-source-select") as HTMLSelectElement;
+    select.innerHTML = strings
+      .map((entry, index) => `<option value="${index}">${escapeHtml(entry.label)}</option>`)
+      .join("");
+    if (strings.length) byId("sh-source").value = strings[0].token;
+  }
+
+  function applyPreset() {
+    const preset = byId("sh-preset").value;
+    if (preset !== "custom" && PRESETS[preset]) {
+      byId("sh-strings").value = PRESETS[preset];
+    }
+    updateSourceSelect();
+    findTarget();
+  }
+
+  function findTarget() {
+    const error = byId("sh-find-error");
+    const strings = parseStrings();
+    const target = parsePitch(byId("sh-target").value);
+    if (!strings.length || !target) {
+      error.hidden = false;
+      error.textContent = "Enter at least one open string and a target pitch, e.g. C2 G2 D3 A3 and E5.";
+      return;
+    }
+    error.hidden = true;
+
+    const maxPartial = clampPartial(Number(byId("sh-max").value));
+    const tolerance = Math.max(0, Number(byId("sh-tolerance").value) || 0);
+    const hits = [];
+    for (const string of strings) {
+      for (let n = 2; n <= maxPartial; n += 1) {
+        const hz = partialFreq(string.hz, n, 0);
+        const d = describeHz(hz);
+        const targetCents = centsBetween(hz, target.hz);
+        hits.push({
+          string,
+          n,
+          hz,
+          targetCents,
+          absCents: Math.abs(targetCents),
+          sounds: `${d.nearestName} ${formatCents(d.centsFromNearest)}`,
+          diamond: describePitch(lowestDiamondPitch(string.hz, n)),
+        });
+      }
+    }
+    hits.sort((a, b) => a.absCents - b.absCents || a.n - b.n || a.string.hz - b.string.hz);
+    const within = hits.filter((hit) => hit.absCents <= tolerance);
+    const rows = (within.length ? within : hits).slice(0, 14);
+
+    byId("sh-find-figure").innerHTML = within.length
+      ? `<strong>${within.length}</strong> option${within.length === 1 ? "" : "s"} within ${tolerance} cents of ${escapeHtml(target.label)}`
+      : `No natural harmonic within ${tolerance} cents of <strong>${escapeHtml(target.label)}</strong>; showing closest approaches`;
+    byId("sh-find-table").innerHTML = rows
+      .map((hit) => {
+        const accent = hit.absCents <= 10 ? ` class="is-accent"` : "";
+        return (
+          `<tr${accent}>` +
+          `<td>${escapeHtml(hit.string.label)}</td>` +
+          `<td>${hit.n}</td>` +
+          `<td>${hit.sounds}</td>` +
+          `<td>${formatCents(hit.targetCents)}</td>` +
+          `<td>${nodeSummary(hit.n)}</td>` +
+          `<td>${hit.diamond}</td>` +
+          `</tr>`
+        );
+      })
+      .join("");
+    byId("sh-find-note").textContent =
+      "Touch points are fractions of open-string length from the nut; mirrored points from the bridge speak the same partial. The lowest diamond touch pitch uses the 1/n node.";
+    byId("sh-find-result").hidden = false;
+  }
+
+  function drawString(nodes: NodeEntry[], sourceLabel: string, partial: number) {
+    const svg = byId("sh-string-svg") as SVGSVGElement;
+    svg.innerHTML = "";
+    const el = (name: string, attrs: Record<string, string | number>) => {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+      return node;
+    };
+    const left = 42;
+    const right = 678;
+    const y = 52;
+    svg.append(el("line", { x1: left, y1: y - 24, x2: left, y2: y + 24, stroke: "currentColor", "stroke-width": 2 }));
+    svg.append(el("line", { x1: right, y1: y - 24, x2: right, y2: y + 24, stroke: "currentColor", "stroke-width": 2 }));
+    svg.append(el("line", { x1: left, y1: y, x2: right, y2: y, stroke: "currentColor", "stroke-width": 1.2 }));
+
+    for (const node of nodes) {
+      const x = left + (right - left) * node.position;
+      svg.append(el("circle", { cx: x, cy: y, r: 5, fill: "#c81e1e" }));
+      const label = el("text", { x, y: y - 14, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+      label.textContent = fractionText(node.k, node.n);
+      svg.append(label);
+    }
+    const nut = el("text", { x: left, y: y + 38, "font-size": 10, "text-anchor": "middle", fill: "currentColor" });
+    nut.textContent = "nut";
+    const bridge = el("text", { x: right, y: y + 38, "font-size": 10, "text-anchor": "middle", fill: "currentColor" });
+    bridge.textContent = "bridge";
+    const title = el("text", { x: 360, y: 18, "font-size": 11, "text-anchor": "middle", fill: "currentColor" });
+    title.textContent = `${sourceLabel} string, partial ${partial}`;
+    svg.append(nut, bridge, title);
+  }
+
+  function mapNatural() {
+    const error = byId("sh-map-error");
+    const source = parsePitch(byId("sh-source").value);
+    if (!source) {
+      error.hidden = false;
+      error.textContent = "Enter one source string as a note name or Hz value.";
+      return;
+    }
+    error.hidden = true;
+    const n = clampPartial(Number(byId("sh-partial").value));
+    byId("sh-partial").value = String(n);
+    const nodes = harmonicNodes(n);
+    const soundingHz = partialFreq(source.hz, n, 0);
+    lastNatural = { sourceHz: source.hz, partial: n };
+
+    byId("sh-map-figure").innerHTML =
+      `${escapeHtml(source.label)} partial <strong>${n}</strong> sounds <strong>${describePitch(soundingHz)}</strong> (${soundingHz.toFixed(2)} Hz)`;
+    drawString(nodes, source.label, n);
+    byId("sh-map-table").innerHTML = nodes
+      .map((node) => {
+        const fromBridge = 1 - node.position;
+        const diamondHz = source.hz / (1 - node.position);
+        return (
+          `<tr>` +
+          `<td>${fractionText(node.k, node.n)} (${percentText(node.position)})</td>` +
+          `<td>${fractionText(node.n - node.k, node.n)} (${percentText(fromBridge)})</td>` +
+          `<td>${describePitch(diamondHz)}</td>` +
+          `<td>${describePitch(soundingHz)}</td>` +
+          `</tr>`
+        );
+      })
+      .join("");
+    byId("sh-map-note").textContent =
+      "The diamond pitch is the pitch under the finger if the string were stopped at that touch point. Bowed-string notation often uses a diamond notehead at this touch pitch plus, when useful, the sounding pitch above it.";
+    byId("sh-map-result").hidden = false;
+  }
+
+  function acousticFundamental() {
+    const lengthM = Number(byId("sh-length").value) / 100;
+    const tensionN = Number(byId("sh-tension").value);
+    const muKgM = Number(byId("sh-density").value) / 1000;
+    if (!(lengthM > 0) || !(tensionN > 0) || !(muKgM > 0)) return null;
+    return (1 / (2 * lengthM)) * Math.sqrt(tensionN / muKgM);
+  }
+
+  function intervalAboveSource(n: number) {
+    const touchRatio = n / (n - 1);
+    const cents = 1200 * Math.log2(touchRatio);
+    const d = describeHz(440 * touchRatio);
+    return `${d.nearestName.replace(/\d+$/, "")} ${formatCents(d.centsFromNearest)} (${cents.toFixed(1)} cents)`;
+  }
+
+  function mapArtificial() {
+    const error = byId("sh-art-error");
+    const mode = byId("sh-art-mode").value;
+    let source = parsePitch(byId("sh-art-source").value);
+    let physicsText = "";
+    if (mode === "physics") {
+      const hz = acousticFundamental();
+      if (!hz) {
+        error.hidden = false;
+        error.textContent = "Length, tension, and linear density must be positive numbers.";
+        return;
+      }
+      const d = describeHz(hz);
+      source = {
+        label: `${d.nearestName} ${formatCents(d.centsFromNearest)}`,
+        hz,
+        token: `${hz.toFixed(2)} Hz`,
+      };
+      physicsText =
+        `Derived f0 = ${hz.toFixed(2)} Hz from f = (1 / 2L) sqrt(T / mu). `;
+    }
+    if (!source) {
+      error.hidden = false;
+      error.textContent = "Enter a stopped/open source pitch, or switch to physics mode.";
+      return;
+    }
+    error.hidden = true;
+
+    const n = clampPartial(Number(byId("sh-art-partial").value));
+    byId("sh-art-partial").value = String(n);
+    const soundingHz = partialFreq(source.hz, n, 0);
+    const touchHz = source.hz * (n / (n - 1));
+    lastArtificial = { sourceHz: source.hz, partial: n };
+
+    byId("sh-art-figure").innerHTML =
+      `${escapeHtml(source.label)} at partial <strong>${n}</strong> sounds <strong>${describePitch(soundingHz)}</strong> (${soundingHz.toFixed(2)} Hz)`;
+    byId("sh-art-table").innerHTML =
+      `<tr class="is-accent">` +
+      `<td>${escapeHtml(source.label)}</td>` +
+      `<td>1/${n} of active length</td>` +
+      `<td>${describePitch(touchHz)}</td>` +
+      `<td>${describePitch(soundingHz)}</td>` +
+      `<td>${intervalAboveSource(n)}</td>` +
+      `</tr>`;
+    byId("sh-art-note").textContent =
+      `${physicsText}For artificial harmonics, the fraction is measured from the stopped finger toward the bridge. 1/4 is the familiar touch a perfect fourth above the stopped pitch; it sounds two octaves higher.`;
+    byId("sh-art-result").hidden = false;
+  }
+
+  function playHarmonic(sourceHz: number, n: number) {
+    const harmonic = partialFreq(sourceHz, n, 0);
+    sustain(
+      [
+        { hz: harmonic, amp: 1 },
+        { hz: partialFreq(sourceHz, 2 * n, 0), amp: 0.16 },
+        { hz: sourceHz, amp: 0.05 },
+      ],
+      { dur: 2.4, type: "sine" },
+    );
+  }
+
+  function pianoNodesForPartial(n: number, nodeSet: string) {
+    if (nodeSet === "practical") {
+      return (PIANO_PRACTICAL_NODE_NUMERATORS[n] ?? []).map((k) => ({ k, n, position: k / n }));
+    }
+    return harmonicNodes(n);
+  }
+
+  function pianoPitchForPartial(f0: number, n: number, model: string, B: number) {
+    if (model === "custom-b") return partialFreq(f0, n, B);
+    const hz = partialFreq(f0, n, 0);
+    if (model === "measured") {
+      const cents = PIANO_STEINWAY_D_AVERAGE_CENTS[n] ?? 0;
+      return hz * Math.pow(2, cents / 1200);
+    }
+    return hz;
+  }
+
+  function pianoModelText(model: string) {
+    if (model === "custom-b") return "custom inharmonicity";
+    if (model === "measured") return "Steinway D average offsets";
+    return "ideal integer partials";
+  }
+
+  function pianoScoreMarks(nodes: Array<{ k: number; n: number }>) {
+    return nodes.map((node) => `${node.n}/${node.k}`).join(", ");
+  }
+
+  function pianoNodeText(nodes: Array<{ k: number; n: number; position: number }>) {
+    return nodes
+      .map((node) => `${node.k}/${node.n} (${(node.position * 100).toFixed(1)}%)`)
+      .join(", ");
+  }
+
+  function findPianoByTarget() {
+    const error = byId("shp-find-error");
+    const targetMidi = nameToMidi(byId("shp-target").value.trim());
+    const lowMidi = nameToMidi(byId("shp-low").value.trim());
+    const highMidi = nameToMidi(byId("shp-high").value.trim());
+    if (targetMidi === null || lowMidi === null || highMidi === null) {
+      error.hidden = false;
+      error.textContent = "Enter note names with octaves, e.g. target G4 and source range A0 to C4.";
+      return;
+    }
+    error.hidden = true;
+
+    const lo = Math.min(lowMidi, highMidi);
+    const hi = Math.max(lowMidi, highMidi);
+    const maxPartial = clampInt(Number(byId("shp-max-partial").value) || 22, 2, 22);
+    const nodeSet = byId("shp-node-set").value;
+    const model = byId("shp-pitch-model").value;
+    const tolerance = Math.max(0, Number(byId("shp-tolerance").value) || 0);
+    const B = Math.max(0, Number(byId("shp-find-b").value) || 0);
+    const targetHz = midiToHz(targetMidi);
+    byId("shp-max-partial").value = String(maxPartial);
+
+    const hits = [];
+    for (let sourceMidi = lo; sourceMidi <= hi; sourceMidi += 1) {
+      const f0 = midiToHz(sourceMidi);
+      for (let n = 2; n <= maxPartial; n += 1) {
+        const nodes = pianoNodesForPartial(n, nodeSet);
+        if (nodes.length === 0) continue;
+        const hz = pianoPitchForPartial(f0, n, model, B);
+        const targetCents = centsBetween(hz, targetHz);
+        const description = describeHz(hz);
+        hits.push({
+          sourceMidi,
+          sourceName: midiToName(sourceMidi),
+          n,
+          hz,
+          resultName: description.nearestName,
+          resultCents: description.centsFromNearest,
+          targetCents,
+          absCents: Math.abs(targetCents),
+          scoreMarks: pianoScoreMarks(nodes),
+          nodes: pianoNodeText(nodes),
+        });
+      }
+    }
+
+    hits.sort(
+      (a, b) =>
+        a.absCents - b.absCents ||
+        a.n - b.n ||
+        b.sourceMidi - a.sourceMidi,
+    );
+    const within = hits.filter((hit) => hit.absCents <= tolerance);
+    const rows = (within.length ? within : hits).slice(0, 12);
+    const targetName = midiToName(targetMidi);
+
+    byId("shp-find-figure").innerHTML = within.length
+      ? `<strong>${within.length}</strong> option${within.length === 1 ? "" : "s"} within ${tolerance} cents of ${targetName}`
+      : `No options within ${tolerance} cents of <strong>${targetName}</strong>; showing closest approaches`;
+
+    byId("shp-find-table").innerHTML = rows
+      .map((hit) => {
+        const rowClass = hit.absCents <= 10 ? ` class="is-accent"` : "";
+        return (
+          `<tr${rowClass}>` +
+          `<td>${hit.sourceName}</td>` +
+          `<td>${hit.n}</td>` +
+          `<td>${hit.scoreMarks}</td>` +
+          `<td>${hit.nodes}</td>` +
+          `<td>${hit.resultName} ${formatCents(hit.resultCents)} (${hit.hz.toFixed(2)} Hz)</td>` +
+          `<td>${formatCents(hit.targetCents)}</td>` +
+          `</tr>`
+        );
+      })
+      .join("");
+
+    byId("shp-find-note").textContent =
+      `Rows within ±10 cents of the target are highlighted. Using ${pianoModelText(model)} and ${nodeSet === "practical" ? "practical bass-string nodes through the 22nd harmonic" : "all coprime mathematical nodes"}. Score marks use harmonic/node order, e.g. 9/2 = second node of the ninth harmonic.`;
+    byId("shp-find-result").hidden = false;
+  }
+
+  function drawPianoString(nodes: Array<{ k: number; n: number; position: number }>) {
+    const svg = byId("shp-string") as SVGSVGElement;
+    svg.innerHTML = "";
+    const el = (name: string, attrs: Record<string, string | number>) => {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+      return node;
+    };
+    const left = 30;
+    const right = 690;
+    const y = 40;
+    svg.append(el("line", { x1: left, y1: y - 18, x2: left, y2: y + 18, stroke: "currentColor", "stroke-width": 2 }));
+    svg.append(el("line", { x1: right, y1: y - 18, x2: right, y2: y + 18, stroke: "currentColor", "stroke-width": 2 }));
+    svg.append(el("line", { x1: left, y1: y, x2: right, y2: y, stroke: "currentColor", "stroke-width": 1 }));
+    for (const node of nodes) {
+      const x = left + (right - left) * node.position;
+      svg.append(el("circle", { cx: x, cy: y, r: 5, fill: "#c81e1e" }));
+      const label = el("text", { x, y: y - 12, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+      label.textContent = `${node.k}/${node.n}`;
+      svg.append(label);
+    }
+    const agraffe = el("text", { x: left, y: y + 32, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+    agraffe.textContent = "agraffe";
+    const bridge = el("text", { x: right, y: y + 32, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
+    bridge.textContent = "bridge";
+    svg.append(agraffe, bridge);
+  }
+
+  function mapPianoDirect() {
+    const midi = nameToMidi(byId("shp-key").value.trim());
+    const error = byId("shp-error");
+    if (midi === null) {
+      error.hidden = false;
+      error.textContent = "Enter the source string as a note name, e.g. C2. Low strings work best.";
+      return;
+    }
+    error.hidden = true;
+    const n = Number(byId("shp-partial").value);
+    const nodeSet = byId("shp-map-node-set").value;
+    const model = byId("shp-map-pitch-model").value;
+    const B = Math.max(0, Number(byId("shp-b").value) || 0);
+    const f0 = midiToHz(midi);
+    const hz = pianoPitchForPartial(f0, n, model, B);
+    const d = describeHz(hz);
+    lastPiano = { f0, n, B, model };
+
+    byId("shp-figure").innerHTML =
+      `Partial ${n} sounds <strong>${d.nearestName}</strong> ${formatCents(d.centsFromNearest)} (${hz.toFixed(2)} Hz)`;
+
+    const nodes = pianoNodesForPartial(n, nodeSet);
+    byId("shp-table").innerHTML = nodes
+      .map(
+        (node) =>
+          `<tr><td>${node.n}/${node.k}</td><td>${node.k}/${node.n}</td><td>${(node.position * 100).toFixed(2)}%</td></tr>`,
+      )
+      .join("");
+    drawPianoString(nodes);
+
+    byId("shp-note").textContent =
+      (nodes.length === 0
+        ? "No practical bass-string node is listed for this partial in the selected node set. "
+        : "") +
+      `Using ${pianoModelText(model)} and ${nodeSet === "practical" ? "practical bass-string nodes" : "all coprime mathematical nodes"}. ` +
+      "Score marks use harmonic/node order; physical positions use fractions of speaking length from the agraffe.";
+    byId("shp-result").hidden = false;
+  }
+
+  function playPianoHarmonic() {
+    mapPianoDirect();
+    if (!lastPiano) return;
+    const { f0, n, B, model } = lastPiano;
+    sustain(
+      [
+        { hz: pianoPitchForPartial(f0, n, model, B), amp: 1 },
+        { hz: pianoPitchForPartial(f0, 2 * n, model, B), amp: 0.18 },
+        { hz: f0, amp: 0.08 },
+      ],
+      { dur: 2.8 },
+    );
+  }
+
+  byId("sh-preset").addEventListener("change", applyPreset);
+  byId("sh-strings").addEventListener("input", () => {
+    byId("sh-preset").value = "custom";
+    updateSourceSelect();
+  });
+  byId("sh-source-select").addEventListener("change", () => {
+    const strings = parseStrings();
+    const selected = strings[Number(byId("sh-source-select").value)];
+    if (selected) byId("sh-source").value = selected.token;
+    mapNatural();
+  });
+  byId("sh-find").addEventListener("click", findTarget);
+  byId("sh-map").addEventListener("click", mapNatural);
+  byId("sh-art-map").addEventListener("click", mapArtificial);
+  byId("shp-find").addEventListener("click", findPianoByTarget);
+  byId("shp-go").addEventListener("click", mapPianoDirect);
+  byId("shp-play").addEventListener("click", playPianoHarmonic);
+  ["sh-target", "sh-max", "sh-tolerance"].forEach((id) => {
+    byId(id).addEventListener("input", findTarget);
+    byId(id).addEventListener("change", findTarget);
+  });
+  ["sh-source", "sh-partial"].forEach((id) => {
+    byId(id).addEventListener("input", mapNatural);
+    byId(id).addEventListener("change", mapNatural);
+  });
+  ["sh-art-source", "sh-length", "sh-tension", "sh-density", "sh-art-partial"].forEach((id) => {
+    byId(id).addEventListener("input", mapArtificial);
+    byId(id).addEventListener("change", mapArtificial);
+  });
+  ["shp-target", "shp-low", "shp-high", "shp-max-partial", "shp-tolerance", "shp-find-b"].forEach((id) => {
+    byId(id).addEventListener("input", findPianoByTarget);
+    byId(id).addEventListener("change", findPianoByTarget);
+  });
+  ["shp-node-set", "shp-pitch-model"].forEach((id) => {
+    byId(id).addEventListener("change", findPianoByTarget);
+  });
+  ["shp-key", "shp-partial", "shp-b"].forEach((id) => {
+    byId(id).addEventListener("input", mapPianoDirect);
+    byId(id).addEventListener("change", mapPianoDirect);
+  });
+  ["shp-map-node-set", "shp-map-pitch-model"].forEach((id) => {
+    byId(id).addEventListener("change", mapPianoDirect);
+  });
+  byId("sh-play-natural").addEventListener("click", () => {
+    mapNatural();
+    if (lastNatural) playHarmonic(lastNatural.sourceHz, lastNatural.partial);
+  });
+  byId("sh-play-art").addEventListener("click", () => {
+    mapArtificial();
+    if (lastArtificial) playHarmonic(lastArtificial.sourceHz, lastArtificial.partial);
+  });
+  byId("sh-art-mode").addEventListener("change", mapArtificial);
+
+  mountKeyboard(byId("sh-target-kb"), { inputs: [byId("sh-target"), byId("sh-strings")], baseOctave: 2, octaves: 3 });
+  mountKeyboard(byId("sh-source-kb"), { inputs: [byId("sh-source")], baseOctave: 1, octaves: 3 });
+  mountKeyboard(byId("sh-art-kb"), { inputs: [byId("sh-art-source")], baseOctave: 2, octaves: 3 });
+  mountKeyboard(byId("shp-target-kb"), { inputs: [byId("shp-target")], baseOctave: 3 });
+  mountKeyboard(byId("shp-kb"), { inputs: [byId("shp-key")], baseOctave: 1 });
+
+  updateSourceSelect();
+  findTarget();
+  mapNatural();
+  mapArtificial();
+  findPianoByTarget();
+  mapPianoDirect();
+</script>

@@ -1,9 +1,11 @@
 ---
 title: "Pitch-Class Set Analyzer"
 subtitle: "Normal order, prime form, Forte class, interval vector"
+subtitleZh: "標準序、原型、Forte 類、音程向量"
 number: 7
 group: "Composition"
 summary: "Identifies the set class of any pitch-class collection, with Z-relation, complement, and clockface display."
+summaryZh: "辨識任意音級集合的集合類，附 Z 關係、補集與時鐘面顯示。"
 status: "stable"
 slug: "pc-set-analysis"
 references:

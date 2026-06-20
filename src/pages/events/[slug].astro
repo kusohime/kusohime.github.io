@@ -3,6 +3,7 @@
 // English: Generates an individual event detail page from its Markdown file.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
 import { formatDate, translate } from "../../config/locales";
 
 export async function getStaticPaths() {
@@ -23,7 +24,31 @@ interface Props {
 
 const { event } = Astro.props;
 const { Content } = await render(event);
-const { title, date, time, venue, location, role, brief, links } = event.data;
+const eventsZh = await getCollection("eventsZh");
+const zhEntry = eventsZh.find((entry) => entry.id === event.id);
+const { Content: ContentZh } = zhEntry
+  ? await render(zhEntry)
+  : { Content: null as any };
+const {
+  title,
+  date,
+  time,
+  venue,
+  venueZh,
+  location,
+  locationZh,
+  role,
+  roleZh,
+  brief,
+  briefZh,
+  links,
+} = event.data;
+const facts = [
+  { en: time, zh: time },
+  { en: venue, zh: venueZh },
+  { en: location, zh: locationZh },
+  { en: role, zh: roleZh },
+].filter((fact) => fact.en);
 ---
 
 <BaseLayout title={title} description={brief} noindex={event.data.draft}>
@@ -44,10 +69,10 @@ const { title, date, time, venue, location, role, brief, links } = event.data;
           </time>
         </p>
       </div>
-      <p>{brief}</p>
+      <p><LocalizedText value={{ en: brief, zh: briefZh }} /></p>
       <p class="event-facts">
-        {[time, venue, location, role].filter(Boolean).map((item) => (
-          <span>{item}</span>
+        {facts.map((fact) => (
+          <span><LocalizedText value={{ en: fact.en as string, zh: fact.zh }} /></span>
         ))}
       </p>
 
@@ -67,7 +92,18 @@ const { title, date, time, venue, location, role, brief, links } = event.data;
     </header>
 
     <div class="prose event-notes">
-      <Content />
+      {ContentZh ? (
+        <>
+          <div class="lang-block" data-lang="en">
+            <Content />
+          </div>
+          <div class="lang-block" data-lang="zh">
+            <ContentZh />
+          </div>
+        </>
+      ) : (
+        <Content />
+      )}
     </div>
 
     <p class="back-link">

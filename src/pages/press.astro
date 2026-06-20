@@ -1,0 +1,115 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LocalizedText from "../components/LocalizedText.astro";
+import { translate } from "../config/locales";
+
+// 中文：媒体名称、文章标题与引文保留原文；描述与导言提供中文。
+// English: Outlet names, article titles, and pull-quotes stay original; the
+// descriptions and lede carry Chinese.
+const pressEntries = [
+  {
+    outlet: "The Phoenix",
+    date: "April 17, 2025",
+    title: "Review on Cui Yixin's Senior Recital",
+    excerpt: "a strikingly thoughtful senior recital",
+    description:
+      "Elaina Pan reviewed the recital as a curated performance of Chinese art song, literary history, theater, and political wit.",
+    descriptionZh:
+      "Elaina Pan 將這場獨奏會評為一場精心策劃的演出，糅合中文藝術歌曲、文學史、戲劇與政治機鋒。",
+    url: "https://swarthmorephoenix.com/2025/04/17/an-anti-colonial-international-students-final-struggle-a-review-on-cui-yixins-senior-recital/",
+  },
+  {
+    outlet: "Swarthmore College Music",
+    date: "March 28, 2025",
+    title: "Yixin Cui '25",
+    excerpt: "explored their own sound through composition",
+    description:
+      "A Music Department profile traces Yixin's work across chorus, chamber music, Chinese Music Ensemble, Orchestra, Lab Orchestra, and composition.",
+    descriptionZh:
+      "一篇音樂系的人物介紹，追溯崔浥新橫跨合唱、室內樂、中樂團、管弦樂團、實驗樂團與作曲的工作。",
+    url: "https://www.swarthmore.edu/music/yixin-cui-25",
+  },
+  {
+    outlet: "Swarthmore College News & Events",
+    date: "May 7, 2025",
+    title: "Senior Music Students Take a Bow",
+    excerpt: "futures filled with musical endeavors",
+    description:
+      "The College's senior music feature places Yixin among graduating music majors and minors reflecting on creative lives beyond Swarthmore.",
+    descriptionZh:
+      "學院的畢業音樂專題，把崔浥新與其他即將畢業的音樂主修、輔修學生並列，一同回望 Swarthmore 以外的創作生涯。",
+    url: "https://www.swarthmore.edu/news-events/senior-music-students-take-a-bow",
+  },
+  {
+    outlet: "Swarthmore College Music",
+    date: "December 4, 2025",
+    title: "Swarthmore College Orchestra Fall 2025 Performance",
+    excerpt: "musical imagination, student creativity",
+    description:
+      "The orchestra preview includes Yixin Cui '25's newly composed Impasse of the Weasels alongside Bruch and Holst.",
+    descriptionZh:
+      "管弦樂團的演出預告，將崔浥新（’25 屆）新作《Impasse of the Weasels》與 Bruch、Holst 的作品並列。",
+    url: "https://www.swarthmore.edu/music/swarthmore-college-orchestras-fall-2025-performance-featuring-david-kim-violin",
+  },
+  {
+    outlet: "Swarthmore Music",
+    date: "April 2025",
+    title: "Twink Death Announcement",
+    excerpt: "intriguing mind",
+    description:
+      "Swarthmore Music's concert-series announcement previewed Twink Death before its Fetter Chamber Music Program première.",
+    descriptionZh:
+      "Swarthmore Music 的音樂會系列公告，在《Twink Death》於 Fetter Chamber Music Program 首演前作了預告。",
+    url: "https://www.instagram.com/reel/DI_sAWZNBix/",
+  },
+];
+
+const lede = {
+  en: "Selected notices, reviews, and program features about Yixin Cui's work as a composer and performer.",
+  zh: "關於崔浥新作為作曲家與演奏者的若干報導、評論與節目專題選輯。",
+};
+---
+
+<BaseLayout
+  title="Press"
+  description="Press and public mentions of Yixin Cui's music."
+>
+  <article class="detail-page press-page" data-source-file="src/pages/press.astro">
+    <header class="detail-header press-header">
+      <p class="detail-kicker" data-i18n-key="nav.music">
+        {translate("en", "nav.music")}
+      </p>
+      <h1 data-i18n-key="nav.press">{translate("en", "nav.press")}</h1>
+      <p class="press-lede">
+        <LocalizedText value={lede} />
+      </p>
+    </header>
+
+    <ol class="press-list">
+      {
+        pressEntries.map((entry) => (
+          <li class="press-item">
+            <div class="press-meta">
+              <p>{entry.outlet}</p>
+              <time>{entry.date}</time>
+            </div>
+            <article>
+              <h2>{entry.title}</h2>
+              <blockquote class="press-quote">
+                <p>{entry.excerpt}</p>
+              </blockquote>
+              <p class="press-description">
+                <LocalizedText value={{ en: entry.description, zh: entry.descriptionZh }} />
+              </p>
+              <p class="press-read-more">
+                <a href={entry.url}>
+                  <LocalizedText value={{ en: "Read more", zh: "閱讀全文" }} />
+                </a>
+              </p>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+  </article>
+</BaseLayout>

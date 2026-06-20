@@ -9,24 +9,30 @@
 // in it and render in full as before.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
+import ToolContentsRail from "../../components/ToolContentsRail.astro";
 import { toolGroupLabel, translate } from "../../config/locales";
-import { topicForSlug } from "../../config/toolTopics";
+import { anchorForSlug, topicForSlug } from "../../config/toolTopics";
 import "../../styles/tools.css";
+import "../../styles/kanbun.css";
 
 import InterlinearGlosser from "../../components/tools/InterlinearGlosser.astro";
 import KinshipCalculator from "../../components/tools/KinshipCalculator.astro";
+import Kanbun from "../../components/tools/Kanbun.astro";
 
 const registry: Record<string, { component: any; file: string }> = {
   "interlinear-glosser": { component: InterlinearGlosser, file: "InterlinearGlosser.astro" },
   "kinship-calculator": { component: KinshipCalculator, file: "KinshipCalculator.astro" },
+  "kanbun": { component: Kanbun, file: "Kanbun.astro" },
 };
 
 export async function getStaticPaths() {
   const tools = await getCollection("tools", ({ data }) => !data.hidden);
   return tools.map((tool) => {
     const topic = topicForSlug[tool.data.slug];
+    const anchorSlug = anchorForSlug[tool.data.slug] ?? tool.data.slug;
     const redirectTo = topic
-      ? `/tools/composition/${topic}/#tool-${tool.data.slug}`
+      ? `/tools/composition/${topic}/#tool-${anchorSlug}`
       : null;
     return { params: { slug: tool.data.slug }, props: { tool, redirectTo } };
   });
@@ -39,6 +45,11 @@ interface Props {
 
 const { tool, redirectTo } = Astro.props;
 const { Content } = redirectTo ? { Content: null as any } : await render(tool);
+const toolsZh = await getCollection("toolsZh");
+const zhEntry = redirectTo ? null : toolsZh.find((entry) => entry.id === tool.id);
+const { Content: ContentZh } = zhEntry
+  ? await render(zhEntry)
+  : { Content: null as any };
 const entry = registry[tool.data.slug];
 const Instrument = entry?.component;
 const instrumentFile = entry ? `src/components/tools/${entry.file}` : null;
@@ -49,7 +60,11 @@ const refHtml = (text: string) =>
   text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener">$1</a>',
+    );
 ---
 
 {
@@ -62,8 +77,10 @@ const refHtml = (text: string) =>
       <script is:inline set:html={`location.replace(${JSON.stringify(redirectTo)});`} />
     </BaseLayout>
   ) : (
-    <BaseLayout title={tool.data.title} description={tool.data.summary}>
-      <article
+    <BaseLayout title={tool.data.title} description={tool.data.summary ?? tool.data.subtitle}>
+      <div class="tool-layout">
+        <ToolContentsRail />
+        <article
         class="detail-page tool-page"
         data-source-file={`content/tools/${tool.id}/index.md`}
       >
@@ -74,7 +91,11 @@ const refHtml = (text: string) =>
             </span>
           </p>
           <h1>{tool.data.title}</h1>
-          {tool.data.subtitle && <p class="tool-subtitle">{tool.data.subtitle}</p>}
+          {tool.data.subtitle && (
+            <p class="tool-subtitle">
+              <LocalizedText value={{ en: tool.data.subtitle, zh: tool.data.subtitleZh }} />
+            </p>
+          )}
           {tool.data.status !== "stable" && (
             <p class="tool-status" data-i18n-key={statusKey}>
               {translate("en", statusKey)}
@@ -96,7 +117,18 @@ const refHtml = (text: string) =>
             <span data-i18n-key="tools.notes">{translate("en", "tools.notes")}</span>
           </summary>
           <div class="prose">
-            <Content />
+            {ContentZh ? (
+              <>
+                <div class="lang-block" data-lang="en">
+                  <Content />
+                </div>
+                <div class="lang-block" data-lang="zh">
+                  <ContentZh />
+                </div>
+              </>
+            ) : (
+              <Content />
+            )}
             {tool.data.references.length > 0 && (
               <>
                 <h3 data-i18n-key="tools.references">
@@ -124,7 +156,8 @@ const refHtml = (text: string) =>
             </span>
           </a>
         </p>
-      </article>
+        </article>
+      </div>
     </BaseLayout>
   )
 }

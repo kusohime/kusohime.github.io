@@ -74,7 +74,7 @@ export const toolTopicList: ToolTopicDef[] = [
       "pitch-tuning-lab",
       "harmonic-partials",
       "spectral-roughness",
-      "piano-harmonics",
+      "string-harmonics",
     ],
   },
 ];
@@ -84,9 +84,20 @@ export const toolTopicById = Object.fromEntries(
 ) as Record<string, ToolTopicDef>;
 
 // slug → topic id, so a tool's page can redirect to its group page.
-export const topicForSlug: Record<string, string> = Object.fromEntries(
-  toolTopicList.flatMap((topic) => topic.tools.map((slug) => [slug, topic.id])),
-);
+const legacyTopicForSlug: Record<string, string> = {
+  "piano-harmonics": "tuning-spectra",
+};
+
+export const topicForSlug: Record<string, string> = {
+  ...Object.fromEntries(
+    toolTopicList.flatMap((topic) => topic.tools.map((slug) => [slug, topic.id])),
+  ),
+  ...legacyTopicForSlug,
+};
+
+export const anchorForSlug: Record<string, string> = {
+  "piano-harmonics": "string-harmonics",
+};
 
 export function topicsForGroup(group: ToolGroup) {
   return toolTopicList.filter((topic) => topic.group === group);

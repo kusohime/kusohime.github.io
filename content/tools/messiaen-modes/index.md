@@ -1,9 +1,11 @@
 ---
 title: "Modes of Limited Transposition"
 subtitle: "Messiaen's seven modes"
+subtitleZh: "梅湘的七種有限移位調式"
 number: 9
 group: "Composition"
 summary: "Lists each mode's distinct transpositions and symmetry axes, and checks which of your pitches fall inside a chosen transposition."
+summaryZh: "列出每種調式的相異移位與對稱軸，並檢查你的哪些音落在所選移位之內。"
 status: "stable"
 slug: "messiaen-modes"
 references:

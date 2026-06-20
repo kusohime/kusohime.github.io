@@ -1,8 +1,9 @@
 ---
-// 中文：按年份与月份列出近期活动。
-// English: Lists upcoming events by year and month.
+// 中文：按年份与月份列出活动，默认显示近期活动，并在同页侧栏切换历史月份。
+// English: Lists events by year and month, defaulting to upcoming events with same-page archive navigation.
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
 import { formatDate, translate } from "../../config/locales";
 
 type EventEntry = CollectionEntry<"events">;
@@ -40,17 +41,17 @@ const sortEventsDescending = (a: EventEntry, b: EventEntry) =>
 
 const groupEvents = (eventsToGroup: EventEntry[]) => {
   const groupedEvents = eventsToGroup.reduce((years, event) => {
-  const date = eventDate(event);
-  const year = String(date.getUTCFullYear());
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const yearGroup = years.get(year) ?? new Map<string, EventEntry[]>();
-  const monthGroup = yearGroup.get(month) ?? [];
+    const date = eventDate(event);
+    const year = String(date.getUTCFullYear());
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const yearGroup = years.get(year) ?? new Map<string, EventEntry[]>();
+    const monthGroup = yearGroup.get(month) ?? [];
 
-  monthGroup.push(event);
-  yearGroup.set(month, monthGroup);
-  years.set(year, yearGroup);
-  return years;
-}, new Map<string, Map<string, EventEntry[]>>());
+    monthGroup.push(event);
+    yearGroup.set(month, monthGroup);
+    years.set(year, yearGroup);
+    return years;
+  }, new Map<string, Map<string, EventEntry[]>>());
 
   return Array.from(groupedEvents.entries()).map(([year, months]) => ({
     year,
@@ -75,7 +76,8 @@ const pastEvents = events
 
 const upcomingYearGroups = groupEvents(upcomingEvents);
 const pastYearGroups = groupEvents(pastEvents);
-const hasEvents = upcomingYearGroups.length > 0 || pastYearGroups.length > 0;
+const hasUpcomingEvents = upcomingYearGroups.length > 0;
+const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
 ---
 
 <BaseLayout
@@ -83,154 +85,267 @@ const hasEvents = upcomingYearGroups.length > 0 || pastYearGroups.length > 0;
   description="Upcoming performances and events by Yixin Cui."
 >
   <div
-    class="index-page events-index"
+    class={`index-page events-index${hasEvents ? "" : " events-index--empty"}`}
     data-source-file="src/pages/events/index.astro"
   >
     <h1 class="visually-hidden" data-i18n-key="nav.events">
       {translate("en", "nav.events")}
     </h1>
 
-    <nav class="catalog-rail event-rail" aria-label="Browse events by date">
-      {
-        hasEvents && (
-          <ul class="event-archive">
-            {upcomingYearGroups.map(({ year, months }) => (
-              <li>
-                <details open>
-                  <summary>{year}</summary>
-                  <ul>
-                    {months.map(({ month, label, events: monthEvents }) => (
-                      <li>
-                        <a href={`#${monthAnchor("future", year, month)}`}>
-                          {label} ({monthEvents.length})
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              </li>
-            ))}
-            {pastYearGroups.map(({ year, months }) => (
-              <li class="event-archive-past">
-                <details>
-                  <summary>{year}</summary>
-                  <ul>
-                    {months.map(({ month, label, events: monthEvents }) => (
-                      <li>
-                        <a href={`#${monthAnchor("past", year, month)}`}>
-                          {label} ({monthEvents.length})
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              </li>
-            ))}
-          </ul>
-        )
-      }
-    </nav>
+    {
+      hasEvents && (
+        <nav class="catalog-rail event-rail" aria-label="Browse events by date">
+          <div class="event-rail-section">
+            <a
+              class="event-rail-home"
+              href="#events-upcoming"
+              data-event-nav
+              aria-current="page"
+            >
+              Upcoming
+            </a>
+            {upcomingYearGroups.length > 0 && (
+              <ul class="event-archive event-archive-upcoming">
+                {upcomingYearGroups.map(({ year, months }) => (
+                  <li>
+                    <details open>
+                      <summary>{year}</summary>
+                      <ul>
+                        {months.map(({ month, label, events: monthEvents }) => (
+                          <li>
+                            <a
+                              href={`#${monthAnchor("future", year, month)}`}
+                              data-event-nav
+                            >
+                              {label} ({monthEvents.length})
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {pastYearGroups.length > 0 && (
+            <div class="event-rail-section event-rail-section--archive">
+              <p class="event-rail-label">Archive</p>
+              <ul class="event-archive event-archive-past">
+                {pastYearGroups.map(({ year, months }) => (
+                  <li>
+                    <details>
+                      <summary>{year}</summary>
+                      <ul>
+                        {months.map(({ month, label, events: monthEvents }) => (
+                          <li>
+                            <a
+                              href={`#${monthAnchor("past", year, month)}`}
+                              data-event-nav
+                            >
+                              {label} ({monthEvents.length})
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </nav>
+      )
+    }
 
     <div class="catalog-groups event-groups">
-      {
-        hasEvents ? (
-          <>
-            {upcomingYearGroups.map(({ year, months }) => (
-            <section
-              class="event-year-group"
-              id={yearAnchor("future", year)}
-              aria-labelledby={`${yearAnchor("future", year)}-heading`}
-            >
-              <h2 id={`${yearAnchor("future", year)}-heading`}>{year}</h2>
-              {months.map(({ month, label, events: monthEvents }) => (
+      <section
+        class="event-panel event-panel--upcoming"
+        id="events-upcoming"
+        data-event-panel
+        tabindex="-1"
+        aria-labelledby="events-upcoming-heading"
+      >
+        <h2 id="events-upcoming-heading">Upcoming</h2>
+        {
+          hasUpcomingEvents ? (
+            <>
+              {upcomingYearGroups.map(({ year, months }) => (
                 <section
-                  class="event-month-group"
-                  id={monthAnchor("future", year, month)}
-                  aria-labelledby={`${monthAnchor("future", year, month)}-heading`}
+                  class="event-year-group"
+                  id={yearAnchor("future", year)}
+                  aria-labelledby={`${yearAnchor("future", year)}-heading`}
                 >
-                  <h3 id={`${monthAnchor("future", year, month)}-heading`}>{label}</h3>
-                  <ol class="catalog-list event-list">
-                    {monthEvents.map((event) => (
-                      <li data-source-file={`content/events/${event.id}/index.md`}>
-                        <time
-                          datetime={event.data.date}
-                          data-i18n-date={event.data.date}
-                        >
-                          {formatDate(event.data.date, "en")}
-                        </time>
-                        <article class="entry-summary event-summary">
-                          <h4>
-                            <a href={`/events/${event.data.slug}/`}>
-                              {event.data.title}
-                            </a>
-                          </h4>
-                          <p class="event-brief">{event.data.brief}</p>
-                          <p class="event-meta">
-                            {[event.data.time, event.data.venue, event.data.location]
-                              .filter(Boolean)
-                              .join(" / ")}
-                          </p>
-                        </article>
-                      </li>
-                    ))}
-                  </ol>
+                  <h3 id={`${yearAnchor("future", year)}-heading`}>{year}</h3>
+                  {months.map(({ month, label, events: monthEvents }) => (
+                    <section
+                      class="event-month-group"
+                      id={monthAnchor("future", year, month)}
+                      aria-labelledby={`${monthAnchor("future", year, month)}-heading`}
+                    >
+                      <h4 id={`${monthAnchor("future", year, month)}-heading`}>{label}</h4>
+                      <ol class="catalog-list event-list">
+                        {monthEvents.map((event) => (
+                          <li data-source-file={`content/events/${event.id}/index.md`}>
+                            <time
+                              datetime={event.data.date}
+                              data-i18n-date={event.data.date}
+                            >
+                              {formatDate(event.data.date, "en")}
+                            </time>
+                            <article class="entry-summary event-summary">
+                              <h5>
+                                <a href={`/events/${event.data.slug}/`}>
+                                  {event.data.title}
+                                </a>
+                              </h5>
+                              <p class="event-brief"><LocalizedText value={{ en: event.data.brief, zh: event.data.briefZh }} /></p>
+                              <p class="event-meta">
+                                {[event.data.time, event.data.venue, event.data.location]
+                                  .filter(Boolean)
+                                  .join(" / ")}
+                              </p>
+                            </article>
+                          </li>
+                        ))}
+                      </ol>
+                    </section>
+                  ))}
                 </section>
               ))}
-            </section>
-            ))}
-            {pastYearGroups.map(({ year, months }) => (
-              <section
-                class="event-year-group event-year-group--past"
-                id={yearAnchor("past", year)}
-                aria-labelledby={`${yearAnchor("past", year)}-heading`}
-              >
-                <h2 id={`${yearAnchor("past", year)}-heading`}>{year}</h2>
-                {months.map(({ month, label, events: monthEvents }) => (
-                  <section
-                    class="event-month-group"
-                    id={monthAnchor("past", year, month)}
-                    aria-labelledby={`${monthAnchor("past", year, month)}-heading`}
+            </>
+          ) : (
+            <p class="events-empty" data-i18n-key="events.noUpcoming">
+              {translate("en", "events.noUpcoming")}
+            </p>
+          )
+        }
+      </section>
+
+      {
+        pastYearGroups.flatMap(({ year, months }) =>
+          months.map(({ month, label, events: monthEvents }) => (
+            <section
+              class="event-panel event-panel--archive"
+              id={monthAnchor("past", year, month)}
+              data-event-panel
+              hidden
+              tabindex="-1"
+              aria-labelledby={`${monthAnchor("past", year, month)}-heading`}
+            >
+              <p class="event-panel-kicker">{year}</p>
+              <h2 id={`${monthAnchor("past", year, month)}-heading`}>
+                {label}
+              </h2>
+              <ol class="catalog-list event-list">
+                {monthEvents.map((event) => (
+                  <li
+                    class="event-list-item--past"
+                    data-source-file={`content/events/${event.id}/index.md`}
                   >
-                    <h3 id={`${monthAnchor("past", year, month)}-heading`}>{label}</h3>
-                    <ol class="catalog-list event-list">
-                      {monthEvents.map((event) => (
-                        <li
-                          class="event-list-item--past"
-                          data-source-file={`content/events/${event.id}/index.md`}
-                        >
-                          <time
-                            datetime={event.data.date}
-                            data-i18n-date={event.data.date}
-                          >
-                            {formatDate(event.data.date, "en")}
-                          </time>
-                          <article class="entry-summary event-summary">
-                            <h4>
-                              <a href={`/events/${event.data.slug}/`}>
-                                {event.data.title}
-                              </a>
-                            </h4>
-                            <p class="event-brief">{event.data.brief}</p>
-                            <p class="event-meta">
-                              {[event.data.time, event.data.venue, event.data.location]
-                                .filter(Boolean)
-                                .join(" / ")}
-                            </p>
-                          </article>
-                        </li>
-                      ))}
-                    </ol>
-                  </section>
+                    <time
+                      datetime={event.data.date}
+                      data-i18n-date={event.data.date}
+                    >
+                      {formatDate(event.data.date, "en")}
+                    </time>
+                    <article class="entry-summary event-summary">
+                      <h3>
+                        <a href={`/events/${event.data.slug}/`}>
+                          {event.data.title}
+                        </a>
+                      </h3>
+                      <p class="event-brief"><LocalizedText value={{ en: event.data.brief, zh: event.data.briefZh }} /></p>
+                      <p class="event-meta">
+                        {[event.data.time, event.data.venue, event.data.location]
+                          .filter(Boolean)
+                          .join(" / ")}
+                      </p>
+                    </article>
+                  </li>
                 ))}
-              </section>
-            ))}
-          </>
-        ) : (
-          <p class="events-empty" data-i18n-key="events.noUpcoming">
-            {translate("en", "events.noUpcoming")}
-          </p>
+              </ol>
+            </section>
+          )),
         )
       }
     </div>
   </div>
+
+  <script>
+    const defaultPanelId = "events-upcoming";
+    const panels = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-event-panel]"),
+    );
+    const panelIds = new Set(panels.map((panel) => panel.id));
+    const navLinks = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>("[data-event-nav]"),
+    );
+
+    const hashId = () => decodeURIComponent(window.location.hash.slice(1));
+
+    const resolvePanelId = () => {
+      const requestedId = hashId();
+      if (panelIds.has(requestedId)) return requestedId;
+      if (requestedId.startsWith("events-future-")) return defaultPanelId;
+      return defaultPanelId;
+    };
+
+    const syncEventPanel = (scroll = false) => {
+      const requestedId = hashId();
+      const panelId = resolvePanelId();
+      const activeNavId =
+        requestedId && (panelIds.has(requestedId) || requestedId.startsWith("events-future-"))
+          ? requestedId
+          : panelId;
+
+      panels.forEach((panel) => {
+        panel.hidden = panel.id !== panelId;
+      });
+
+      navLinks.forEach((link) => {
+        const linkId = decodeURIComponent(link.hash.slice(1));
+        const isCurrent = linkId === activeNavId;
+
+        if (isCurrent) {
+          link.setAttribute("aria-current", "page");
+          link.closest("details")?.setAttribute("open", "");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+
+      if (!scroll) return;
+
+      window.requestAnimationFrame(() => {
+        const target =
+          document.getElementById(requestedId) ?? document.getElementById(panelId);
+        target?.scrollIntoView({ block: "start" });
+        document.getElementById(panelId)?.focus({ preventScroll: true });
+      });
+    };
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const requestedId = decodeURIComponent(link.hash.slice(1));
+        const canHandle =
+          panelIds.has(requestedId) ||
+          requestedId === defaultPanelId ||
+          requestedId.startsWith("events-future-");
+
+        if (!canHandle) return;
+
+        event.preventDefault();
+        if (window.location.hash !== link.hash) {
+          history.pushState(null, "", link.hash);
+        }
+        syncEventPanel(true);
+      });
+    });
+
+    syncEventPanel(Boolean(window.location.hash));
+    window.addEventListener("popstate", () => syncEventPanel(true));
+    window.addEventListener("hashchange", () => syncEventPanel(true));
+  </script>
 </BaseLayout>

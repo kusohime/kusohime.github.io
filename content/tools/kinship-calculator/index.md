@@ -1,13 +1,13 @@
 ---
-title: "Kinship Term Calculator"
-subtitle: "Build a genealogy path; compute the correct kin term across complex terminologies"
+title: "Kinship Terms"
+subtitle: ""
+subtitleZh: ""
 number: 16
 group: "Linguistics"
-summary: "Walk a genealogy tree from ego to any blood relative; the path is resolved to a canonical kin relation (side, cross/parallel, degree, removal, Korean chon) and the correct term is composed or looked up in fifteen languages and structural systems, with romanization, Wiktionary links, and caveats."
 status: "beta"
 slug: "kinship-calculator"
 references:
-  - "Passmore, S., et al. (2023). Kinbank: A global database of kinship terminology. *PLOS ONE*, 18(5), e0283218."
+  - "Passmore, S., et al. (2023). [Kinbank: A global database of kinship terminology](https://doi.org/10.1371/journal.pone.0283218). *PLOS ONE*, 18(5), e0283218."
   - "Qian, L. *Chinese Kinship Semantic Structure and an Annotation Scheme*. UCREL / CL2007."
   - "Sidnell, J. (2013). Kinship and personal reference in Vietnamese interaction. *Journal of the Royal Anthropological Institute*."
   - "Suryanarayan, N. (2021). Kinship terms in Hindi and Syrian Arabic. *Russian Journal of Linguistics*."

@@ -14,8 +14,8 @@ references:
   - "Weiss, M., & Netti, G. (2010). *The Techniques of Saxophone Playing*. Bärenreiter."
   - "Bok, H. (2011). *New Techniques for the Bass Clarinet*. Shoepair Music."
   - "Dick, R. (1989). *The Other Flute* (2nd ed.). Multiple Breath Music."
-  - "Roche, H. heatherroche.net (performer-verified clarinet catalogues)."
-  - "Oakes, G. gregoryoakes.com/multiphonics (clarinet)."
+  - "Roche, H. [heatherroche.net](https://heatherroche.net/) (performer-verified clarinet catalogues)."
+  - "Oakes, G. [gregoryoakes.com/multiphonics](https://www.gregoryoakes.com/multiphonics) (clarinet)."
 ---
 
 Filter by instrument and technique, or search free text. Each card shows

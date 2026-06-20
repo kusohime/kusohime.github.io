@@ -1,0 +1,162 @@
+---
+// 中文：漢文訓読排版器。輸入帶標註的漢文，即時轉成豎排 HTML（振假名、送假名、
+//       返り點、再讀文字）。引擎移植自 untunt 的 kanbunHTML（AGPL-3.0）。
+// English: Kanbun kundoku typesetter. Type bracket-annotated kanbun and see it
+// set vertically in real time (furigana, okurigana, kaeriten, saidoku). The
+// engine is ported from untunt's kanbunHTML (AGPL-3.0).
+---
+
+<section class="tool-panel kb" aria-label="Kanbun input">
+  <span class="tool-panel-label">Input</span>
+  <p class="tool-note kb-syntax">
+    After a kanji: <code>(…)</code> furigana, <code>&#123;…&#125;</code> okurigana
+    (braces optional on bare kana), <code>[…]</code> kaeriten. For saidoku
+    再読文字 use <code>‹…›</code> / <code>«…»</code>; <code>‘…’</code> groups
+    several kanji under one ruby. One line = one column.
+  </p>
+  <div class="tool-controls kb-insert" aria-label="Insert special marks">
+    <button type="button" data-pair="‹|›" title="saidoku furigana 再読文字振り仮名">‹ ›</button>
+    <button type="button" data-pair="«|»" title="saidoku okurigana 再読文字送り仮名">« »</button>
+    <button type="button" data-ins="―" title="tateten たて点">―</button>
+    <button type="button" data-ins="〻" title="ninojiten 二の字点">〻</button>
+    <button type="button" data-pair="‘|’()" title="multiple kanji in one ruby">‘ ’( )</button>
+  </div>
+  <textarea id="kb-input" class="kb-input" rows="6" lang="ja" spellcheck="false"></textarea>
+</section>
+
+<section class="tool-panel kb" aria-label="Layout">
+  <span class="tool-panel-label">Layout</span>
+  <div class="tool-controls">
+    <label class="tool-field">
+      <span>Spacing</span>
+      <select id="kb-layout">
+        <option value="akigumi">akigumi アキ組 (fixed spacing)</option>
+        <option value="betagumi">betagumi ベタ組 (solid)</option>
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Font size (px)</span>
+      <input type="number" id="kb-size" value="28" min="16" max="64" />
+    </label>
+    <label class="tool-field">
+      <span>Height (em)</span>
+      <input type="number" id="kb-height" value="14" min="5" max="40" />
+    </label>
+  </div>
+  <div class="tool-controls kb-opts">
+    <label class="kb-check">
+      <input type="checkbox" id="kb-split" checked />
+      <span>split touching kana</span>
+    </label>
+    <label class="kb-check">
+      <input type="checkbox" id="kb-sink" />
+      <span>okurigana sinking</span>
+    </label>
+    <label class="kb-check">
+      <input type="checkbox" id="kb-center" />
+      <span>furigana centred (betagumi)</span>
+    </label>
+    <label class="kb-check">
+      <input type="checkbox" id="kb-borders" />
+      <span>show borders</span>
+    </label>
+  </div>
+</section>
+
+<section class="tool-panel kb" aria-label="Preview">
+  <span class="tool-panel-label">Preview</span>
+  <div class="kb-preview-wrap">
+    <div id="kb-sample" class="kanbun split-touching-kana" lang="ja" aria-live="polite"></div>
+  </div>
+  <div class="tool-controls">
+    <button type="button" id="kb-copy">Copy HTML</button>
+  </div>
+</section>
+
+<script>
+  import { renderKanbun } from "../../lib/kanbun.js";
+
+  const byId = (id: string) => document.getElementById(id) as any;
+
+  const input = byId("kb-input") as HTMLTextAreaElement;
+  const sample = byId("kb-sample") as HTMLDivElement;
+
+  const demo = [
+    "感ジテハ[レ]時ニ花ニモ濺(そそ)ギ[レ]淚ヲ，恨ミデハ[レ]別レヲ鳥ニモ驚カス[レ]心ヲ。",
+    "使メバ[人]籍(せき)ヲシテ誠ニ不[乙]以テ[下]畜(やしな)ヒ[二]妻子ヲ[一]，憂フルヲ[中]饑(き)寒(かん)ヲ[上]亂サ[甲レ]心ヲ，有リテ[二]錢財[一]以(もつ)テ濟(な)サ[地]醫藥ヲ[天]…",
+    "子曰ク，盍ゾ«ル»[三]各〻言ハ[二]爾ノ志ヲ[一]。",
+    "孤之有ルハ[二]孔明[一]，猶ホ‹ごと›«キ»[二]魚之有ルガ[一レ]水也。",
+    "此レ乃チ信(しん)之‘所―[三]以’(ゆゑん)為ル[二]陛下ノ禽(とりこ)ト[一]也。",
+  ].join("\n");
+
+  function render() {
+    sample.innerHTML = renderKanbun(input.value);
+  }
+
+  // ---- live preview ----
+  input.addEventListener("input", render);
+
+  // ---- insert buttons ----
+  function insertPair(left: string, right: string) {
+    const s = input.value;
+    const l = input.selectionStart;
+    const r = input.selectionEnd;
+    input.value = s.slice(0, l) + left + s.slice(l, r) + right + s.slice(r);
+    const caret = r + left.length + right.length;
+    input.selectionStart = input.selectionEnd = caret;
+    input.focus();
+    render();
+  }
+  document.querySelectorAll<HTMLButtonElement>(".kb-insert button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const pair = btn.dataset.pair;
+      if (pair) {
+        const [left, right] = pair.split("|");
+        insertPair(left, right);
+      } else if (btn.dataset.ins) {
+        insertPair("", btn.dataset.ins);
+      }
+    });
+  });
+
+  // ---- layout / option controls ----
+  byId("kb-layout").addEventListener("change", (e: any) => {
+    sample.classList.toggle("betagumi", e.target.value === "betagumi");
+  });
+  byId("kb-size").addEventListener("input", (e: any) => {
+    sample.style.fontSize = (Number(e.target.value) || 28) + "px";
+  });
+  byId("kb-height").addEventListener("input", (e: any) => {
+    sample.style.height = (Number(e.target.value) || 14) + "em";
+  });
+  const optClass: Record<string, string> = {
+    "kb-split": "split-touching-kana",
+    "kb-sink": "okurigana-sinking",
+    "kb-center": "furigana-center-align",
+    "kb-borders": "show-borders",
+  };
+  Object.entries(optClass).forEach(([id, cls]) => {
+    byId(id).addEventListener("change", (e: any) => {
+      sample.classList.toggle(cls, e.target.checked);
+    });
+  });
+
+  // ---- copy HTML ----
+  byId("kb-copy").addEventListener("click", async (e: any) => {
+    const btn = e.target as HTMLButtonElement;
+    const old = btn.textContent;
+    try {
+      await navigator.clipboard.writeText(sample.innerHTML);
+      btn.textContent = "Copied";
+    } catch {
+      btn.textContent = "Copy failed";
+    }
+    setTimeout(() => { btn.textContent = old; }, 1200);
+  });
+
+  // ---- boot ----
+  input.value = demo;
+  sample.style.fontSize = "28px";
+  sample.style.height = "14em";
+  render();
+</script>

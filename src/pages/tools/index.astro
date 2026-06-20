@@ -6,6 +6,7 @@
 // Caveat: Topic grouping lives in src/config/toolTopics.ts; this page is a catalogue.
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
 import { toAnchor, toolGroups } from "../../config/contentTaxonomy";
 import { toolGroupLabel, translate } from "../../config/locales";
 import { topicsForGroup, toolTopicLabel } from "../../config/toolTopics";
@@ -139,7 +140,9 @@ const railGroups = [
                     <h3>
                       <a href={`/tools/${tool.data.slug}/`}>{tool.data.title}</a>
                     </h3>
-                    <p>{tool.data.summary}</p>
+                    <p>
+                      <LocalizedText value={{ en: tool.data.summary ?? tool.data.subtitle ?? tool.data.title, zh: tool.data.summaryZh ?? tool.data.subtitleZh }} />
+                    </p>
                     {tool.data.status !== "stable" && (
                       <p
                         class="tool-status"

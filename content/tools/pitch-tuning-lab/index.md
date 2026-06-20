@@ -1,16 +1,18 @@
 ---
 title: "Pitch & Tuning Converter"
 subtitle: "Note name, Hz, MIDI, cents, JI ratio, EDO"
+subtitleZh: "音名、赫茲、MIDI、音分、純律比率、等分八度"
 number: 3
 group: "Composition"
 summary: "Converts between pitch representations, measures just-intonation ratios in cents, and tabulates equal divisions of the octave."
+summaryZh: "在各種音高表示法之間換算，以音分度量純律比率，並列表呈現各種等分八度。"
 status: "stable"
 slug: "pitch-tuning-lab"
 references:
   - "Partch, H. (1974). *Genesis of a Music* (2nd ed.). Da Capo."
   - "Johnston, B. (2006). *\"Maximum Clarity\" and Other Writings on Music*, ed. B. Gilmore. University of Illinois Press."
   - "Helmholtz, H. (1877/1954). *On the Sensations of Tone*, trans. A. Ellis. Dover."
-  - "Sabat, M., & von Schweinitz, W. (2005). *The Extended Helmholtz-Ellis JI Pitch Notation*. plainsound.org."
+  - "Sabat, M., & von Schweinitz, W. (2005). *The Extended Helmholtz-Ellis JI Pitch Notation*. [plainsound.org](https://www.plainsound.org/)."
   - "Sethares, W. (2005). *Tuning, Timbre, Spectrum, Scale* (2nd ed.). Springer."
 ---
 

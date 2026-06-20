@@ -717,6 +717,7 @@ main {
 .home-page,
 .index-page,
 .work-detail,
+.press-page,
 .writing-title-page,
 .writing-chapter-page {
   max-width: var(--content-width);
@@ -798,6 +799,18 @@ main {
   display: inline;
 }
 
+/* 中文：通用的整块双语正文——两种语言都在 DOM，按 <html lang> 只显示其一。 */
+/* English: Generic block-level bilingual body — both languages in the DOM, only the
+   one matching <html lang> is shown. Used for work/event/tool prose bodies. */
+.lang-block {
+  display: none;
+}
+
+:root:lang(en) .lang-block[data-lang="en"],
+:root:lang(zh) .lang-block[data-lang="zh"] {
+  display: block;
+}
+
 /* 首段与姓名同行，其余段落正常成块。 First paragraph runs inline with the name. */
 .home-intro-lead {
   margin: 0 0 var(--paragraph-spacing);
@@ -846,6 +859,10 @@ main {
 .events-index,
 .cv-index {
   max-width: min(100%, 64rem);
+}
+
+.events-index--empty {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .catalog-rail {
@@ -913,6 +930,36 @@ main {
   margin-bottom: var(--space-md);
 }
 
+.event-rail {
+  display: grid;
+  gap: var(--space-md);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.event-rail-section {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.event-rail-home,
+.event-rail-label {
+  margin: 0;
+  font-weight: bold;
+}
+
+.event-rail-label {
+  color: var(--color-muted);
+}
+
+.event-rail a[aria-current="page"] {
+  color: var(--theme-color);
+  font-weight: bold;
+  text-decoration: underline;
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.16em;
+}
+
 .event-archive details {
   margin-bottom: var(--space-xs);
 }
@@ -949,12 +996,34 @@ main {
   color: var(--color-muted);
 }
 
-.event-year-group--past {
-  color: var(--color-muted);
+.event-archive-past a[aria-current="page"] {
+  color: var(--theme-color);
 }
 
-.event-year-group--past a {
-  color: inherit;
+.event-panel[hidden] {
+  display: none;
+}
+
+.event-panel {
+  scroll-margin-top: var(--space-md);
+}
+
+.event-panel:focus {
+  outline: none;
+}
+
+.event-panel > h2 {
+  margin: 0 0 var(--space-md);
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.event-panel-kicker {
+  margin: 0 0 var(--space-xs);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .catalog-groups section > h2 {
@@ -992,11 +1061,23 @@ main {
   font-size: 1rem;
 }
 
+.event-month-group h4 {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.95rem;
+}
+
 .event-list > li {
   display: grid;
   grid-template-columns: minmax(7rem, 8rem) minmax(0, 1fr);
   gap: 0.2rem 1rem;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid color-mix(in srgb, var(--color-rule) 80%, transparent);
+}
+
+.event-list > li:first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .event-list time,
@@ -1006,8 +1087,13 @@ main {
 }
 
 .event-summary h4,
+.event-summary h5,
 .event-summary p {
   margin: 0;
+}
+
+.event-summary h5 {
+  font-size: 1rem;
 }
 
 .event-brief {
@@ -1120,6 +1206,12 @@ main {
   margin-top: var(--space-sm) !important;
 }
 
+.work-commission {
+  margin-top: var(--space-xs);
+  color: var(--color-muted);
+  font-style: italic;
+}
+
 .work-facts span + span::before {
   color: var(--color-muted);
   content: " · ";
@@ -1172,6 +1264,102 @@ main {
 
 .resource-links {
   margin-bottom: var(--space-lg);
+}
+
+.press-page {
+  max-width: min(100%, 64rem);
+}
+
+.press-header h1,
+.press-header p {
+  margin: 0;
+}
+
+.press-header h1 {
+  margin-bottom: var(--space-xs);
+}
+
+.press-lede {
+  color: var(--color-muted);
+}
+
+.press-list {
+  display: grid;
+  max-width: 50rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.press-item {
+  display: grid;
+  grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr);
+  gap: var(--space-sm) var(--space-lg);
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.press-item:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.press-meta p,
+.press-meta time,
+.press-item h2,
+.press-description,
+.press-read-more {
+  margin: 0;
+}
+
+.press-meta {
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.press-meta p {
+  color: var(--color-text);
+  font-weight: bold;
+}
+
+.press-item h2 {
+  font-size: 1rem;
+}
+
+.press-quote {
+  margin: var(--space-xs) 0;
+  padding-left: var(--space-sm);
+  border-left: 0.18rem solid var(--theme-color);
+  color: var(--theme-color);
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+
+.press-quote p {
+  margin: 0;
+}
+
+.press-quote p::before {
+  content: open-quote;
+}
+
+.press-quote p::after {
+  content: close-quote;
+}
+
+.press-description {
+  max-width: var(--reading-width);
+}
+
+.press-read-more {
+  margin-top: var(--space-xs);
+}
+
+.press-read-more a {
+  font-weight: bold;
+  text-decoration-color: var(--theme-color);
+  text-decoration-thickness: 0.09em;
 }
 
 .work-credits {
@@ -1338,6 +1526,17 @@ main {
 
 .prose > :last-child,
 .writing-opening > :last-child {
+  margin-bottom: 0;
+}
+
+/* 中文：当正文按语言拆成 .lang-block 时，让显示中的块首尾间距与未包裹时一致。 */
+/* English: When a prose body is split into .lang-block wrappers, keep the visible
+   block's first/last spacing identical to the unwrapped layout. */
+.prose > .lang-block > :first-child {
+  margin-top: 0;
+}
+
+.prose > .lang-block > :last-child {
   margin-bottom: 0;
 }
 
@@ -1926,9 +2125,14 @@ main {
   .cv-entry-subhead,
   .cv-lines p,
   .event-title-line,
-  .event-list > li {
+  .event-list > li,
+  .press-item {
     grid-template-columns: 1fr;
     gap: 0.05rem;
+  }
+
+  .press-quote {
+    font-size: 1.15rem;
   }
 
   .cv-entry-head p,

@@ -10,6 +10,8 @@
 // Caveat: A new tool needs a component in src/components/tools registered below.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import LocalizedText from "../../../components/LocalizedText.astro";
+import ToolContentsRail from "../../../components/ToolContentsRail.astro";
 import { toolGroupLabel, translate } from "../../../config/locales";
 import {
   toolTopicList,
@@ -30,7 +32,7 @@ import NegativeHarmony from "../../../components/tools/NegativeHarmony.astro";
 import PitchTuningLab from "../../../components/tools/PitchTuningLab.astro";
 import HarmonicPartials from "../../../components/tools/HarmonicPartials.astro";
 import SpectralRoughness from "../../../components/tools/SpectralRoughness.astro";
-import PianoHarmonics from "../../../components/tools/PianoHarmonics.astro";
+import StringHarmonics from "../../../components/tools/StringHarmonics.astro";
 
 const registry: Record<string, { component: any; file: string }> = {
   "metric-modulation": { component: MetricModulation, file: "MetricModulation.astro" },
@@ -45,7 +47,7 @@ const registry: Record<string, { component: any; file: string }> = {
   "pitch-tuning-lab": { component: PitchTuningLab, file: "PitchTuningLab.astro" },
   "harmonic-partials": { component: HarmonicPartials, file: "HarmonicPartials.astro" },
   "spectral-roughness": { component: SpectralRoughness, file: "SpectralRoughness.astro" },
-  "piano-harmonics": { component: PianoHarmonics, file: "PianoHarmonics.astro" },
+  "string-harmonics": { component: StringHarmonics, file: "StringHarmonics.astro" },
 };
 
 export async function getStaticPaths() {
@@ -74,21 +76,32 @@ const refHtml = (text: string) =>
   text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener">$1</a>',
+    );
+
+const toolsZh = await getCollection("toolsZh");
+const toolsZhById = new Map(toolsZh.map((entry) => [entry.id, entry]));
 
 const modules = [] as Array<{
   tool: CollectionEntry<"tools">;
   Content: any;
+  ContentZh: any;
   Instrument: any;
   instrumentFile: string | null;
   statusKey: string;
 }>;
 for (const tool of tools) {
   const { Content } = await render(tool);
+  const zhEntry = toolsZhById.get(tool.id);
+  const ContentZh = zhEntry ? (await render(zhEntry)).Content : null;
   const entry = registry[tool.data.slug];
   modules.push({
     tool,
     Content,
+    ContentZh,
     Instrument: entry?.component,
     instrumentFile: entry ? `src/components/tools/${entry.file}` : null,
     statusKey:
@@ -100,7 +113,9 @@ const pageTitle = toolTopicLabel(topicId, "en");
 ---
 
 <BaseLayout title={pageTitle} description={topic.blurb.en}>
-  <article class="detail-page tool-page tools-group-page">
+  <div class="tool-layout">
+    <ToolContentsRail />
+    <article class="detail-page tool-page tools-group-page">
     <header class="tool-header">
       <p class="tool-number">
         <span data-i18n-tool-group={topic.group}>
@@ -114,7 +129,7 @@ const pageTitle = toolTopicLabel(topicId, "en");
     </header>
 
     {
-      modules.map(({ tool, Content, Instrument, instrumentFile, statusKey }) => (
+      modules.map(({ tool, Content, ContentZh, Instrument, instrumentFile, statusKey }) => (
         <section class="group-tool" id={`tool-${tool.data.slug}`}>
           <header
             class="group-tool-head"
@@ -122,7 +137,9 @@ const pageTitle = toolTopicLabel(topicId, "en");
           >
             <h2>{tool.data.title}</h2>
             {tool.data.subtitle && (
-              <p class="tool-subtitle">{tool.data.subtitle}</p>
+              <p class="tool-subtitle">
+                <LocalizedText value={{ en: tool.data.subtitle, zh: tool.data.subtitleZh }} />
+              </p>
             )}
             {tool.data.status !== "stable" && (
               <p class="tool-status" data-i18n-key={statusKey}>
@@ -147,7 +164,18 @@ const pageTitle = toolTopicLabel(topicId, "en");
               </span>
             </summary>
             <div class="prose">
-              <Content />
+              {ContentZh ? (
+                <>
+                  <div class="lang-block" data-lang="en">
+                    <Content />
+                  </div>
+                  <div class="lang-block" data-lang="zh">
+                    <ContentZh />
+                  </div>
+                </>
+              ) : (
+                <Content />
+              )}
               {tool.data.references.length > 0 && (
                 <>
                   <h3 data-i18n-key="tools.references">
@@ -178,5 +206,6 @@ const pageTitle = toolTopicLabel(topicId, "en");
         </span>
       </a>
     </p>
-  </article>
+    </article>
+  </div>
 </BaseLayout>

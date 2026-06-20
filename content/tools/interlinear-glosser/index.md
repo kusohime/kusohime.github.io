@@ -1,16 +1,18 @@
 ---
 title: "Interlinear Glosser"
-subtitle: "Leipzig-style gloss builder with IPA keyboard and multi-format export"
+subtitle: "Leipzig-style gloss builder with multi-format export"
+subtitleZh: "萊比錫式逐詞對照標註器，附國際音標鍵盤與多格式匯出"
 number: 15
 group: "Linguistics"
-summary: "Aligns object-language morphemes with their glosses by column, with a built-in IPA keyboard, live small-caps for grammatical labels, and export to plain text, image (SVG/PNG), and LaTeX (expex / gb4e)."
+summary: "Leipzig-style gloss builder with multi-format export"
+summaryZh: "萊比錫式逐詞對照標註器，附國際音標鍵盤與多格式匯出"
 status: "beta"
 slug: "interlinear-glosser"
 references:
-  - "Comrie, B., Haspelmath, M., & Bickel, B. (2008). *The Leipzig Glossing Rules: Conventions for Interlinear Morpheme-by-Morpheme Glosses*. Max Planck Institute for Evolutionary Anthropology."
+  - "Comrie, B., Haspelmath, M., & Bickel, B. (2008). [*The Leipzig Glossing Rules: Conventions for Interlinear Morpheme-by-Morpheme Glosses*](https://www.eva.mpg.de/lingua/resources/glossing-rules.php). Max Planck Institute for Evolutionary Anthropology."
   - "International Phonetic Association. (1999). *Handbook of the International Phonetic Association*. Cambridge University Press."
-  - "*expex* package documentation (J. Frampton). CTAN."
-  - "*gb4e* package documentation (H． Koba et al.). CTAN."
+  - "*expex* package documentation (J. Frampton). [CTAN](https://ctan.org/pkg/expex)."
+  - "*gb4e* package documentation (A. Dimitriadis, H.-P. Kolb, & C. Thiersch). [CTAN](https://ctan.org/pkg/gb4e)."
 ---
 
 Enter the object language on the first aligned tier and its

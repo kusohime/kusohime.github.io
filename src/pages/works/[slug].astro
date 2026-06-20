@@ -13,6 +13,7 @@ import {
   formatDuration,
   translate,
 } from "../../config/locales";
+import "../../styles/kanbun.css";
 
 export async function getStaticPaths() {
   const works = await getCollection(
@@ -35,6 +36,7 @@ const { Content } = await render(work);
 const {
   title,
   subtitle,
+  subtitleZh,
   year,
   instrumentation,
   duration,
@@ -66,7 +68,9 @@ const {
           </time>
         </p>
       </div>
-      {subtitle && <p>{subtitle}</p>}
+      {subtitle && (
+        <p><LocalizedText value={{ en: subtitle, zh: subtitleZh }} /></p>
+      )}
       <p class="work-facts">
         <span><LocalizedText value={instrumentation} /></span>
         <span
@@ -78,6 +82,12 @@ const {
           {formatDuration(duration, "en")}
         </span>
       </p>
+
+      {commission && (
+        <p class="work-commission">
+          <em><LocalizedText value={commission} /></em>
+        </p>
+      )}
 
       {
         (recordingUrl || scoreUrl) && (
@@ -118,7 +128,7 @@ const {
     </div>
 
     {
-      (dedication || commission || credits || premiere) && (
+      (dedication || credits || premiere) && (
         <footer class="work-credits">
           {dedication && (
             <p>
@@ -130,19 +140,6 @@ const {
                   {translate("en", "metadata.labelSeparator")}
                 </span>
                 <LocalizedText value={dedication} />
-              </em>
-            </p>
-          )}
-          {commission && (
-            <p>
-              <em>
-                <span data-i18n-key="metadata.commission">
-                  {translate("en", "metadata.commission")}
-                </span>
-                <span data-i18n-key="metadata.labelSeparator">
-                  {translate("en", "metadata.labelSeparator")}
-                </span>
-                <LocalizedText value={commission} />
               </em>
             </p>
           )}

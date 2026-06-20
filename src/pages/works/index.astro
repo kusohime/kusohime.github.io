@@ -5,6 +5,7 @@
 // Caveat: Category order comes from config/contentTaxonomy.ts.
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
 import { toAnchor, workCategories } from "../../config/contentTaxonomy";
 import {
   formatDate,
@@ -88,7 +89,9 @@ const worksByCategory = workCategories.map((category) => ({
                         </a>
                       </h3>
                       {work.data.subtitle && (
-                        <p class="catalog-entry-subtitle">{work.data.subtitle}</p>
+                        <p class="catalog-entry-subtitle">
+                          <LocalizedText value={{ en: work.data.subtitle, zh: work.data.subtitleZh }} />
+                        </p>
                       )}
                     </div>
                   </article>
