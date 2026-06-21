@@ -1,7 +1,7 @@
 ---
 // 中文：根据活动 Markdown 生成单个活动详情页。
 // English: Generates an individual event detail page from its Markdown file.
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import { formatDate, translate } from "../../config/locales";
@@ -16,10 +16,6 @@ export async function getStaticPaths() {
     params: { slug: event.data.slug },
     props: { event },
   }));
-}
-
-interface Props {
-  event: CollectionEntry<"events">;
 }
 
 const { event } = Astro.props;

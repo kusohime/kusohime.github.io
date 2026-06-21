@@ -7,7 +7,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
-import { toAnchor, toolGroups } from "../../config/contentTaxonomy";
+import { toAnchor } from "../../config/contentTaxonomy";
 import { toolGroupLabel, translate } from "../../config/locales";
 import { topicsForGroup, toolTopicLabel } from "../../config/toolTopics";
 import "../../styles/tools.css";
@@ -79,7 +79,10 @@ const railGroups = [
         <div class="topic-list">
           {
             compositionTopics.map(({ topic, tools: topicTools }) => (
-              <article class="topic-entry">
+              <article
+                class="topic-entry"
+                data-source-file="src/config/toolTopics.ts"
+              >
                 <h3>
                   <a
                     href={`/tools/composition/${topic.id}/`}
@@ -88,12 +91,14 @@ const railGroups = [
                     {toolTopicLabel(topic.id, "en")}
                   </a>
                 </h3>
-                <p class="topic-blurb" data-i18n-tool-topic-blurb={topic.id}>
-                  {topic.blurb.en}
-                </p>
+                {topic.blurb && (
+                  <p class="topic-blurb" data-i18n-tool-topic-blurb={topic.id}>
+                    {topic.blurb.en}
+                  </p>
+                )}
                 <ul class="topic-members">
                   {topicTools.map((tool) => (
-                    <li>
+                    <li data-source-file={`content/tools/${tool.id}/index.md`}>
                       <a
                         href={`/tools/composition/${topic.id}/#tool-${tool.data.slug}`}
                       >

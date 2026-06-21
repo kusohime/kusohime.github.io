@@ -4,10 +4,10 @@
  * Sethares (2005), Messiaen (1944), and standard acoustics texts.
  */
 import assert from "node:assert/strict";
-import { frac, fadd, fmul, fdiv, fnum, fstr, flcm, parseFrac } from "../src/lib/fraction.js";
+import { frac, fadd, fmul, fdiv, fstr, flcm, parseFrac } from "../src/lib/fraction.js";
 import { unitValue, solveModulation, cycleAttacks } from "../src/lib/tempo.js";
 import {
-  midiToHz, hzToMidi, ratioToCents, nameToMidi, midiToName, nearest12, edoStep,
+  midiToHz, hzToMidi, ratioToCents, nameToMidi, midiToName, edoStep,
 } from "../src/lib/pitch.js";
 import {
   analyzeSet, primeForm, normalOrder, intervalVector, catalog, pfString,
@@ -18,7 +18,7 @@ import {
 import { MESSIAEN_MODES, uniqueTranspositions, symmetryAxes } from "../src/lib/modes.js";
 import { partialFreq, partialTable, harmonicNodes, reduceToOctave } from "../src/lib/partials.js";
 import { chordRoughness, dyadSweep, pairRoughness } from "../src/lib/roughness.js";
-import { applyOp, applyChain, triadPcs, hexatonicCycle, commonTones } from "../src/lib/triads.js";
+import { applyOp, applyChain, hexatonicCycle, commonTones } from "../src/lib/triads.js";
 import { reflectPc, reflectMidi, negativeHarmonySum, pcMappingTable } from "../src/lib/reflect.js";
 import { validateEntry, ENTRIES } from "../src/lib/multiphonics-data.js";
 
@@ -276,7 +276,7 @@ test("classic negative harmony in C: C->G, E->Eb (sum 7)", () => {
 
 /* ---------- canon & phase ---------- */
 test("pattern parsing: Piano Phase pitched, Clapping Music compact", async () => {
-  const { parsePattern, driftPeriodSeconds, PRESETS } = await import("../src/lib/canon.js");
+  const { parsePattern, PRESETS } = await import("../src/lib/canon.js");
   const pianoPhase = parsePattern("E4 F#4 B4 C#5 D5 F#4 E4 C#5 B4 F#4 D5 C#5");
   assert.ok(pianoPhase.ok && pianoPhase.pitched);
   assert.equal(pianoPhase.steps.length, 12);
@@ -326,7 +326,7 @@ test("voice parsing: durations persist, dots, rests", async () => {
   assert.equal(parseVoice("").ok, false);
 });
 test("exposition: real answer +7 by default, entries at subject length", async () => {
-  const { parseVoice, buildExposition, totalBeats } = await import("../src/lib/fugue.js");
+  const { parseVoice, buildExposition } = await import("../src/lib/fugue.js");
   const subject = parseVoice("C4:q D4 E4 F4");
   const exposition = buildExposition({
     subjectEvents: subject.events,

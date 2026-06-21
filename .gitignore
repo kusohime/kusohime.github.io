@@ -1,5 +1,7 @@
 node_modules/
 dist/
+desktop-dist/
+.desktop-build/
 .astro/
 .npm-cache/
 .DS_Store
@@ -7,3 +9,4 @@ dist/
 .tmp-*
 .publish-source.*
 .deploy-test/
+*.crdownload

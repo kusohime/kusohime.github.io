@@ -29,7 +29,7 @@ function ageSexKey(rel) {
  * Realize one entry.
  * @returns {{ term, roman, gloss, note, assumed, etym, usage, nb, kind, wikt }}
  */
-export function realize(entry, rel, langId, opts = {}) {
+export function realize(entry, rel, langId, _opts = {}) {
   const lang = LANG[langId] || {};
   if (!entry) {
     return {

@@ -50,6 +50,17 @@ function replaceBetween(str, left, right, from, to, condition = function () { re
 }
 
 export function toHTML(str) {
+    // Lead-in dash run (e.g. "――タイトル"): a leading ― has no preceding unit to
+    // attach to, so the engine would set the first as a kanji glyph and merge the
+    // rest as punctuation into that one cell — they collide side by side. Pull the
+    // run out and render it as a single transparent span; .kanbun-dash-lead draws
+    // one continuous centred vertical rule over it (length follows the run).
+    let lead = '';
+    const leadMatch = str.match(/^―+/);
+    if (leadMatch) {
+        lead = `<span class="kanbun-dash-lead" aria-hidden="true">${'―'.repeat(leadMatch[0].length)}</span>`;
+        str = str.slice(leadMatch[0].length);
+    }
     let arr = [...str];
     for (let i = 0, lastBracketIndex = -1; i < arr.length; i++) {
         if (leftBrackets.includes(arr[i])) lastBracketIndex = i;
@@ -108,7 +119,7 @@ export function toHTML(str) {
     str = str.replace(/\[(.)\]/g, '<span class="kunten kaeriten"><sub>$1</sub></span>');
     str = str.replace(/\[(.)(レ)\]/g, '<span class="kunten kaeriten"><sub>$1</sub><sub>$2</sub></span>');
     str = str.replace(/(kaeriten"><sub)(>一)/g, '$1 class="ichiten"$2');
-    return str;
+    return lead + str;
 }
 
 /**

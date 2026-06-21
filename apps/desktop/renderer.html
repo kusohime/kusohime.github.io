@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Yixin Studio</title>
+    <link rel="stylesheet" href="./renderer.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">YS</span>
+        <div class="brand-copy">
+          <strong>Yixin Studio</strong>
+          <span data-repo-path>Locating website repository</span>
+        </div>
+      </div>
+
+      <div class="server-summary">
+        <span data-server-pill class="status-pill">Starting</span>
+        <span data-local-url class="local-url">Preparing localhost</span>
+      </div>
+
+      <nav class="actions" aria-label="Desktop actions">
+        <button type="button" data-open-site disabled>Preview</button>
+        <button type="button" data-refresh-frame disabled>Reload</button>
+        <button type="button" data-run-check>Check</button>
+        <button type="button" data-run-build>Build</button>
+        <button type="button" class="primary-action" data-open-publish>Publish</button>
+        <button type="button" data-open-logs>Logs</button>
+        <button type="button" data-open-repo>Folder</button>
+        <button type="button" data-restart>Restart</button>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <section class="loading" data-loading>
+        <div class="loading-panel">
+          <p class="eyebrow">Local Website Studio</p>
+          <h1>Starting your editing workspace</h1>
+          <p data-loading-detail>
+            Opening Astro on localhost and connecting the desktop controls.
+          </p>
+          <dl class="startup-facts">
+            <div>
+              <dt>Repository</dt>
+              <dd data-loading-repo>Checking project folder</dd>
+            </div>
+            <div>
+              <dt>Server</dt>
+              <dd data-loading-server>Waiting for localhost</dd>
+            </div>
+          </dl>
+          <pre data-loading-log class="startup-log">No server output yet.</pre>
+        </div>
+      </section>
+
+      <iframe
+        title="Website Studio"
+        data-studio-frame
+        class="studio-frame"
+        hidden
+      ></iframe>
+    </main>
+
+    <dialog data-logs-dialog class="modal log-modal">
+      <header>
+        <div>
+          <strong>Studio Logs</strong>
+          <span>Server output and desktop launcher messages</span>
+        </div>
+        <div class="modal-actions">
+          <button type="button" data-show-log-file>Show file</button>
+          <button type="button" data-close-dialog="logs">Close</button>
+        </div>
+      </header>
+      <pre data-log-output></pre>
+    </dialog>
+
+    <dialog data-publish-dialog class="modal publish-modal">
+      <header>
+        <div>
+          <strong>Publish Changes</strong>
+          <span data-publish-count>Reading Git status</span>
+        </div>
+        <button type="button" data-close-dialog="publish">Close</button>
+      </header>
+
+      <section class="publish-overview">
+        <p data-publish-meta>Reading Git status...</p>
+        <div class="selection-actions" aria-label="File selection">
+          <button type="button" data-select-all>All</button>
+          <button type="button" data-select-none>None</button>
+          <button type="button" data-refresh-publish>Refresh</button>
+        </div>
+      </section>
+
+      <ol class="changed-files" data-changed-files></ol>
+
+      <label class="commit-field">
+        Commit message
+        <textarea rows="3" data-commit-message placeholder="Describe this update"></textarea>
+      </label>
+
+      <footer>
+        <p class="publish-message" data-publish-message></p>
+        <button type="button" class="primary-action" data-submit-publish disabled>
+          Commit and push selected
+        </button>
+      </footer>
+    </dialog>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>

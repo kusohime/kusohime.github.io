@@ -2,6 +2,7 @@
   "name": "yixin-cui-portfolio",
   "description": "Yixin Cui portfolio and local bilingual Website Studio.",
   "type": "module",
+  "main": "apps/desktop/main.cjs",
   "version": "0.1.0",
   "private": true,
   "fileGuide": {
@@ -14,7 +15,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "node tests/tools-core.test.mjs && node tests/site-integrity.test.mjs",
+    "desktop": "electron apps/desktop/main.cjs",
+    "desktop:build": "electron-packager . \"Yixin Studio\" --platform=win32 --arch=x64 --out=desktop-dist --overwrite --ignore=\"^/(content|src|public|scripts|tests|docs|icon-sources|node_modules|dist|desktop-dist|\\.desktop-build|\\.git|\\.astro|\\.claude|\\.github|\\.npm-cache|.*\\.log|\\.publish-source\\..*|\\.pages\\.yml|CNAME|README\\.md|tsconfig\\.json|package-lock\\.json)($|/)\""
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
@@ -37,6 +41,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
+    "@electron/packager": "^20.0.1",
+    "electron": "^42.4.1",
     "esbuild-wasm": "^0.27.7",
     "typescript": "^5.9.3"
   }

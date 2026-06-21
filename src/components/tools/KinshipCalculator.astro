@@ -95,7 +95,7 @@
 
 <script>
   import {
-    step, resolve, chonLabel, degreePhrase,
+    resolve, chonLabel, degreePhrase,
     sigOf, genOffset, allowedAdds, appendStep,
     serializeTree, deserializeTree,
   } from "../../lib/kinship-core.js";
@@ -573,34 +573,54 @@
       const nb = entry && entry.nb ? entry.nb : "";
       return `<tr><td>${escapeHtml((RELATIONS as any)[rid]?.label || rid)}</td><td class="s">${escapeHtml(term)}</td><td class="r">${escapeHtml(roman)}</td><td class="n">${escapeHtml(nb)}</td></tr>`;
     }).join("");
-    const w = window.open("", "_blank", "width=820,height=900");
-    if (!w) { alert("Allow pop-ups to print the reference sheet."); return; }
-    w.document.write(
-      `<!doctype html><meta charset="utf-8"><title>Kinship terms — ${escapeHtml(lang.name)}</title>` +
+    const html =
+      `<!doctype html><html><head><meta charset="utf-8"><title>Kinship terms - ${escapeHtml(lang.name)}</title>` +
       `<style>body{font:14px/1.5 system-ui,sans-serif;margin:2rem;color:#1a1a1a}` +
       `h1{font-size:1.2rem}small{color:#666}table{border-collapse:collapse;width:100%;margin-top:1rem}` +
       `th,td{border:1px solid #ccc;padding:.35rem .5rem;text-align:left;vertical-align:top}` +
-      `td.s{font-size:1.1rem}td.r,td.n{color:#555;font-size:.85rem}th{background:#f3f1ea}</style>` +
-      `<h1>Kinship terms — ${escapeHtml(lang.name)}</h1>` +
+      `td.s{font-size:1.1rem}td.r,td.n{color:#555;font-size:.85rem}th{background:#f3f1ea}</style></head><body>` +
+      `<h1>Kinship terms - ${escapeHtml(lang.name)}</h1>` +
       `<small>${escapeHtml(lang.family)} · romanization: ${escapeHtml(lang.roman || "—")}. Generated from the comparative chart.</small>` +
-      `<table><thead><tr><th>Relation</th><th>Term</th><th>Romanization</th><th>N.B.</th></tr></thead><tbody>${rows}</tbody></table>`,
-    );
-    w.document.close();
-    w.focus();
-    setTimeout(() => w.print(), 250);
+      `<table><thead><tr><th>Relation</th><th>Term</th><th>Romanization</th><th>N.B.</th></tr></thead><tbody>${rows}</tbody></table>` +
+      `</body></html>`;
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    const w = window.open(url, "_blank", "width=820,height=900");
+    if (!w) {
+      URL.revokeObjectURL(url);
+      alert("Allow pop-ups to print the reference sheet.");
+      return;
+    }
+    w.addEventListener("load", () => {
+      w.focus();
+      w.print();
+      URL.revokeObjectURL(url);
+    }, { once: true });
   }
 
   // ---- hash persistence ----
+  function encodeSharePayload(value: string) {
+    const bytes = new TextEncoder().encode(value);
+    let binary = "";
+    bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+    return btoa(binary);
+  }
+
+  function decodeSharePayload(value: string) {
+    const binary = atob(value);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+
   function writeHash() {
     try {
-      const enc = btoa(unescape(encodeURIComponent(serializeTree(state))));
+      const enc = encodeSharePayload(serializeTree(state));
       history.replaceState(null, "", "#k=" + enc);
     } catch { /* ignore */ }
   }
   function loadFromHash() {
     const m = location.hash.match(/k=([^&]+)/);
     if (!m) return null;
-    try { return deserializeTree(decodeURIComponent(escape(atob(m[1])))); }
+    try { return deserializeTree(decodeSharePayload(m[1])); }
     catch { return null; }
   }
 

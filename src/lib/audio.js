@@ -10,7 +10,7 @@ let liveNodes = [];
 
 export function audioContext() {
   if (!context) {
-    context = new (window.AudioContext || window.webkitAudioContext)();
+    context = new (window.AudioContext || window["webkitAudioContext"])();
     master = context.createGain();
     master.gain.value = 0.5;
     master.connect(context.destination);

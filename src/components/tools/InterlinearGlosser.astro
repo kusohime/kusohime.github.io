@@ -133,7 +133,7 @@
 
 <script>
   import {
-    demoExample, makeTier, validate, serialize, deserialize, tierName,
+    demoExample, makeTier, validate, serialize, deserialize,
   } from "../../lib/igt-core.js";
   import {
     renderText, renderHtml, renderLatex, renderSvg, svgToPng,
@@ -380,9 +380,22 @@
     byId(id).addEventListener("input", refresh));
 
   // ---- hash persistence ----
+  function encodeSharePayload(value: string) {
+    const bytes = new TextEncoder().encode(value);
+    let binary = "";
+    bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+    return btoa(binary);
+  }
+
+  function decodeSharePayload(value: string) {
+    const binary = atob(value);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+
   function writeHash() {
     try {
-      const enc = btoa(unescape(encodeURIComponent(serialize(ex))));
+      const enc = encodeSharePayload(serialize(ex));
       history.replaceState(null, "", "#g=" + enc);
     } catch { /* ignore */ }
   }
@@ -390,7 +403,7 @@
     const m = location.hash.match(/g=([^&]+)/);
     if (!m) return null;
     try {
-      return deserialize(decodeURIComponent(escape(atob(m[1]))));
+      return deserialize(decodeSharePayload(m[1]));
     } catch {
       return null;
     }

@@ -199,3 +199,66 @@ const {
     </p>
   </article>
 </BaseLayout>
+
+<script>
+  // Progressive enhancement for an embedded kanbun figure (only the saijōtai
+  // work has one). Wires up the 疏/密 layout toggle, highlights 「…」 quotes in
+  // the accent colour, and makes loanword readings flip to their source word.
+  const embed = document.querySelector<HTMLElement>("[data-kanbun-embed]");
+  const kanbun = embed?.querySelector<HTMLElement>(".kanbun");
+  if (embed && kanbun) {
+    // 疏排 (akigumi) ⇄ 密排 (betagumi)
+    const toggles = embed.querySelectorAll<HTMLButtonElement>("[data-kb-layout]");
+    toggles.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        kanbun.classList.toggle("betagumi", btn.dataset.kbLayout === "dense");
+        toggles.forEach((b) =>
+          b.setAttribute("aria-pressed", String(b === btn)),
+        );
+      });
+    });
+
+    // Colour everything between 「 and 」 (a quote can span column breaks, so walk
+    // the whole figure in source order rather than per column).
+    const walker = document.createTreeWalker(kanbun, NodeFilter.SHOW_TEXT);
+    let inQuote = false;
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      const text = node.textContent ?? "";
+      if (text.includes("「")) inQuote = true;
+      if (inQuote) node.parentElement?.classList.add("kb-quote");
+      if (text.includes("」")) inQuote = false;
+    }
+
+    // Click a loanword reading to flip between its kana and its source word.
+    const flips: Record<string, string> = {
+      あすとら: "astra",
+      へりおとろぷ: "heliotropism",
+      りびど: "libido",
+      じゅいさんす: "jouissance",
+      だいなみっく: "dynamics",
+    };
+    kanbun.querySelectorAll<HTMLElement>("rt.furigana").forEach((rt) => {
+      const orig = rt.textContent ?? "";
+      const alt = flips[orig];
+      if (!alt) return;
+      rt.classList.add("kb-flip");
+      rt.setAttribute("role", "button");
+      rt.setAttribute("tabindex", "0");
+      rt.setAttribute("aria-label", `${orig} — tap to read ${alt}`);
+      rt.title = `${alt} ⇄ ${orig}`;
+      const flip = () => {
+        const showAlt = rt.textContent === orig;
+        rt.textContent = showAlt ? alt : orig;
+        rt.classList.toggle("kb-flipped", showAlt);
+      };
+      rt.addEventListener("click", flip);
+      rt.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          flip();
+        }
+      });
+    });
+  }
+</script>

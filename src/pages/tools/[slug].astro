@@ -7,12 +7,13 @@
 // Caveat / 注意：分组映射在 src/config/toolTopics.ts；语言学工具不在其中，照常整页渲染。
 // Caveat: The slug→topic map is src/config/toolTopics.ts; Linguistics slugs are not
 // in it and render in full as before.
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import ToolContentsRail from "../../components/ToolContentsRail.astro";
 import { toolGroupLabel, translate } from "../../config/locales";
 import { anchorForSlug, topicForSlug } from "../../config/toolTopics";
+import { renderSafeInlineMarkdown } from "../../lib/safeHtml.js";
 import "../../styles/tools.css";
 import "../../styles/kanbun.css";
 
@@ -38,11 +39,6 @@ export async function getStaticPaths() {
   });
 }
 
-interface Props {
-  tool: CollectionEntry<"tools">;
-  redirectTo: string | null;
-}
-
 const { tool, redirectTo } = Astro.props;
 const { Content } = redirectTo ? { Content: null as any } : await render(tool);
 const toolsZh = await getCollection("toolsZh");
@@ -56,15 +52,6 @@ const instrumentFile = entry ? `src/components/tools/${entry.file}` : null;
 const statusKey =
   tool.data.status === "beta" ? "tools.statusBeta" : "tools.statusDataPending";
 
-const refHtml = (text: string) =>
-  text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
-    .replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" target="_blank" rel="noopener">$1</a>',
-    );
 ---
 
 {
@@ -136,7 +123,7 @@ const refHtml = (text: string) =>
                 </h3>
                 <ul>
                   {tool.data.references.map((reference) => (
-                    <li set:html={refHtml(reference)} />
+                    <li set:html={renderSafeInlineMarkdown(reference)} />
                   ))}
                 </ul>
               </>

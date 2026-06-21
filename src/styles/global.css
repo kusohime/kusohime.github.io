@@ -4,7 +4,7 @@
  * Caveat / 注意：優先修改 :root 變數；大範圍選擇器會影響所有頁面。
  * Caveat: Prefer :root variables; broad selectors affect every public page.
  */
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=Hina+Mincho&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
 
 :root {
   color-scheme: light;
@@ -86,6 +86,16 @@
                    Garamond,
                    Georgia,
                    var(--font-cjk-serif);
+
+  /*
+   * OPTION 7: STIX Two + 思源宋体 / STIX Two + Source Han Serif
+   * STIX Two Text 負責拉丁、希臘、數學符號；CJK 交給 var(--font-cjk-serif)，
+   * 也就是各語言對應的思源宋体（Noto Serif）。
+   * STIX Two Text covers Latin/Greek/symbols; CJK falls to var(--font-cjk-serif),
+   * i.e. the per-language Source Han Serif (Noto Serif) family.
+   */
+  --font-stix-serif: "STIX Two Text",
+                     var(--font-cjk-serif);
 
   /*
    * DESIGN DASHBOARD / 设计面板
@@ -2001,6 +2011,100 @@ main {
 
 .writing-body sup {
   line-height: 0;
+}
+
+/*
+ * 脚注边注实验 / Footnote sidenote experiment
+ * 标记变成红色括号 (n)；脚注内容（由 footnoteSidenotes.ts 复制到引用旁）整段
+ * 红色、外加括号，宽屏浮到右栏边空白，窄屏退化为行内括注。底部脚注列表在屏幕上
+ * 隐藏，但打印时保留。要关掉这个实验：移除 BaseLayout 里的脚本引入即可。
+ * The marker becomes a red "(n)"; the cloned note (placed beside the reference by
+ * footnoteSidenotes.ts) is all red and parenthesized — floated into the right margin
+ * on wide screens, inline on narrow ones. The bottom list is hidden on screen but
+ * kept for print. To disable: remove the script import in BaseLayout.astro.
+ */
+:root {
+  --sidenote-width: 13rem;
+  --sidenote-gap: 2rem;
+}
+
+/* In-text marker: a red "(n)" on the baseline rather than a bare superscript. */
+.prose.has-sidenotes .fn-ref {
+  font-size: 0.82em;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+.prose.has-sidenotes .fn-ref a {
+  color: var(--theme-color);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.prose.has-sidenotes .fn-ref a::before {
+  content: "(";
+}
+
+.prose.has-sidenotes .fn-ref a::after {
+  content: ")";
+}
+
+/* The note: all red, wrapped in parentheses. Narrow-screen default is inline. */
+.prose.has-sidenotes .sidenote {
+  color: var(--theme-color);
+  font-size: 0.82em;
+  text-indent: 0;
+}
+
+.prose.has-sidenotes .sidenote::before {
+  content: " (";
+}
+
+.prose.has-sidenotes .sidenote::after {
+  content: ")";
+}
+
+.prose.has-sidenotes .sidenote-num {
+  margin-right: 0.3em;
+  font-weight: bold;
+  vertical-align: baseline;
+  font-size: 0.9em;
+}
+
+/* 内容已搬到正文旁，屏幕上隐藏底部列表；打印时再显示。 */
+/* Notes now sit beside the text — hide the bottom list on screen, keep it for print. */
+@media screen {
+  .prose.has-sidenotes section.footnotes,
+  .prose.has-sidenotes [data-footnotes] {
+    display: none;
+  }
+}
+
+/* 宽屏：把边注浮到右栏外的空白；clear 让多条边注上下堆叠而不重叠。 */
+/* Wide screens: float the note into the margin to the right of the reading column;
+   clear:right stacks multiple notes so they never overlap. */
+@media screen and (min-width: 64rem) {
+  .prose.has-sidenotes .sidenote {
+    float: right;
+    clear: right;
+    width: var(--sidenote-width);
+    /* 负的 margin-right 把边注推到正文栏右侧的空白里。 */
+    /* Negative margin-right pushes the note out past the column into the margin. */
+    margin: 0.15rem calc(-1 * (var(--sidenote-width) + var(--sidenote-gap)))
+      var(--space-sm) 0;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  .prose.has-sidenotes .sidenote::before {
+    content: "(";
+  }
+}
+
+@media print {
+  .prose.has-sidenotes .sidenote {
+    display: none;
+  }
 }
 
 /* 中文着重号：强调用字符下方的点，而非加粗或斜体。 */

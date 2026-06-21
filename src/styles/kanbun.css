@@ -16,13 +16,14 @@
 .kanbun,
 .kanbun:lang(ja),
 .kanbun :lang(ja) {
-  font-family: "A-OTF Shuei Mincho Pr6N", YuMincho, "Yu Mincho",
+  font-family: "Hina Mincho", "A-OTF Shuei Mincho Pr6N", YuMincho, "Yu Mincho",
     "Hiragino Mincho ProN", "MS Mincho", serif;
 }
 
 .kanbun .dash,
 .kanbun .ellipsis {
-  font-family: YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
+  font-family: "Hina Mincho", YuMincho, "Yu Mincho", "Hiragino Mincho ProN",
+    "MS Mincho", serif;
 }
 
 .kanbun .kaeriten ~ .ellipsis {
@@ -243,6 +244,48 @@
   left: 1em;
 }
 
+/* Lead-in dash run (――…): one transparent span carrying the ― chars, with a
+   single centred vertical rule drawn over its whole length so consecutive
+   dashes read as one continuous line. See toHTML() in src/lib/kanbun.js. */
+.kanbun .kanbun-dash-lead {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  color: transparent;
+}
+
+.kanbun .kanbun-dash-lead::after {
+  content: "";
+  position: absolute;
+  top: 0.12em;
+  bottom: 0.12em;
+  left: 0;
+  right: 0;
+  width: 0.05em;
+  margin: 0 auto;
+  background: var(--color-text, #111);
+}
+
+/* Text inside 「…」 is highlighted in the site accent (wired up per page from
+   the embed script, which walks the run across column breaks). */
+.kanbun .kb-quote {
+  color: var(--theme-color, #c81e1e);
+}
+
+/* Loanword readings that flip between kana and their source word on click. */
+.kanbun rt.kb-flip {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+
+.kanbun rt.kb-flip:hover,
+.kanbun rt.kb-flip:focus-visible,
+.kanbun rt.kb-flipped {
+  text-decoration-style: solid;
+  outline: none;
+}
+
 .kanbun.show-borders .unit > * {
   outline: 1px solid #2196f3;
 }
@@ -264,4 +307,50 @@
 
 .kanbun-embed .kanbun {
   height: auto;
+}
+
+/* 疏排 / 密排 (akigumi ⇄ betagumi) toggle above the embedded kanbun. */
+.kanbun-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.kanbun-toggle {
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0.35em 0.8em;
+  border: 1px solid var(--color-rule, #aaa);
+  background: transparent;
+  color: var(--color-muted, #555);
+  cursor: pointer;
+}
+
+.kanbun-toggle:hover {
+  color: var(--color-text, #000);
+}
+
+.kanbun-toggle[aria-pressed="true"] {
+  color: var(--color-background, #fff);
+  background: var(--color-text, #000);
+  border-color: var(--color-text, #000);
+}
+
+/* Small reference link to the Kanbun tool, beneath the embed. */
+.kanbun-ref {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--color-muted, #555);
+}
+
+.kanbun-ref a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.kanbun-ref a:hover {
+  color: var(--theme-color, #c81e1e);
 }

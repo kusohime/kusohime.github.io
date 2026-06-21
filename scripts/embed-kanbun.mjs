@@ -15,8 +15,13 @@ const START = "<!-- kanbun:rendered";
 const END = "<!-- /kanbun -->";
 const block =
   `${START} — source: ${SRC}; re-render: node scripts/embed-kanbun.mjs -->\n` +
-  `<figure class="kanbun-embed">\n` +
-  `<div class="kanbun split-touching-kana" lang="ja">${html}</div>\n` +
+  `<figure class="kanbun-embed" data-kanbun-embed>\n` +
+  `<div class="kanbun-controls" role="group" aria-label="排版 / layout">\n` +
+  `<button type="button" class="kanbun-toggle" data-kb-layout="sparse" aria-pressed="false">疏排</button>\n` +
+  `<button type="button" class="kanbun-toggle" data-kb-layout="dense" aria-pressed="true">密排</button>\n` +
+  `</div>\n` +
+  `<div class="kanbun split-touching-kana betagumi" lang="ja">${html}</div>\n` +
+  `<figcaption class="kanbun-ref"><a href="/tools/kanbun">via Kanbun tool</a></figcaption>\n` +
   `</figure>\n` +
   `${END}`;
 
