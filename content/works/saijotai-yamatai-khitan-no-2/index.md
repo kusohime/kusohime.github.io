@@ -24,7 +24,7 @@ Soviet agents reportedly sought it during the Cold War, but the anonymous keeper
 
 > *sempre ad lib. e espr. assai...*
 
-## Text (click red furigana)
+## Text (Right to Left)
 
 <!-- kanbun:rendered — source: scripts/saijotai-kanbun.txt; re-render: node scripts/embed-kanbun.mjs -->
 <figure class="kanbun-embed" data-kanbun-embed>

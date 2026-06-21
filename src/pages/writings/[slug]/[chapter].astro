@@ -51,7 +51,7 @@ const nextChapter =
     : undefined;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isBenQun = isCuiXiong && chapter.data.slug.startsWith("ben-qun");
-const normalizedLanguage = writing.data.language.toLowerCase();
+const normalizedLanguage = (writing.data.language ?? "").toLowerCase();
 const contentLang = normalizedLanguage.includes("traditional")
   ? "zh-Hant-TW"
   : normalizedLanguage.includes("simplified") || normalizedLanguage.includes("chinese")

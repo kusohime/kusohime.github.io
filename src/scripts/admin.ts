@@ -1763,8 +1763,10 @@ More information will be posted when details are confirmed.
       newField<HTMLInputElement>("[data-new-date]")?.value.trim() ||
       new Date().toISOString().slice(0, 10);
     const type = newTypeSelect?.value ?? "Other";
+    // 语言可选：未选时省略 frontmatter 行。Language is optional — omit the line when blank.
     const language =
-      newField<HTMLSelectElement>("[data-new-language]")?.value ?? "English";
+      newField<HTMLSelectElement>("[data-new-language]")?.value.trim() ?? "";
+    const languageLine = language ? `language: ${yamlQuote(language)}\n` : "";
     return {
       path: `content/writings/${slug}/index.md`,
       previewPath: `/writings/${slug}/`,
@@ -1772,8 +1774,7 @@ More information will be posted when details are confirmed.
 title: ${yamlQuote(title)}
 date: ${yamlQuote(date)}
 type: ${yamlQuote(type)}
-language: ${yamlQuote(language)}
-excerpt: ${yamlQuote(summary || title)}
+${languageLine}excerpt: ${yamlQuote(summary || title)}
 slug: ${yamlQuote(slug)}
 order: 999${draft ? "\ndraft: true" : ""}
 ---
@@ -2239,7 +2240,8 @@ Write the text here.
         text("date") || new Date().toISOString().slice(0, 10),
       );
       setTopScalar(lines, "type", text("type") || "Other");
-      setTopScalar(lines, "language", text("language") || "English");
+      // 语言可选：留空则移除该字段。Language is optional — clear it to drop the field.
+      setTopScalar(lines, "language", text("language"), { omitEmpty: true });
       setTopScalar(lines, "excerpt", text("summary") || text("title"));
     } else {
       removeTopKey(lines, "subtitle");
@@ -2306,7 +2308,7 @@ Write the text here.
       role: readTopScalar(lines, "role"),
       category: readTopScalar(lines, "category") || "Other",
       type: readTopScalar(lines, "type") || "Other",
-      language: readTopScalar(lines, "language") || "English",
+      language: readTopScalar(lines, "language"),
       instrumentation: readNestedScalar(lines, "instrumentation", "en"),
       duration: readNestedScalar(lines, "duration", "minutes"),
       videoEmbedUrl: readNestedScalar(lines, "video", "embedUrl"),

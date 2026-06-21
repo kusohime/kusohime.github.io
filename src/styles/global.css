@@ -2015,24 +2015,24 @@ main {
 
 /*
  * 脚注边注实验 / Footnote sidenote experiment
- * 标记变成红色括号 (n)；脚注内容（由 footnoteSidenotes.ts 复制到引用旁）整段
- * 红色、外加括号，宽屏浮到右栏边空白，窄屏退化为行内括注。底部脚注列表在屏幕上
- * 隐藏，但打印时保留。要关掉这个实验：移除 BaseLayout 里的脚本引入即可。
- * The marker becomes a red "(n)"; the cloned note (placed beside the reference by
- * footnoteSidenotes.ts) is all red and parenthesized — floated into the right margin
- * on wide screens, inline on narrow ones. The bottom list is hidden on screen but
- * kept for print. To disable: remove the script import in BaseLayout.astro.
+ * 标记是红色上标编号 (n)；脚注内容（由 footnoteSidenotes.ts 复制到引用旁）正文色、
+ * 不加外括号，只有前导编号是红色上标。宽屏浮到右栏边空白，窄屏退化为行内。底部脚注
+ * 列表在屏幕上隐藏，但打印时保留。要关掉这个实验：移除 BaseLayout 里的脚本引入即可。
+ * The marker is a red superscript "(n)". The cloned note (placed beside the reference
+ * by footnoteSidenotes.ts) uses the normal text color with no wrapping parentheses —
+ * only its leading number is a red superscript. It floats into the right margin on
+ * wide screens and falls back inline on narrow ones. The bottom list is hidden on
+ * screen but kept for print. To disable: remove the script import in BaseLayout.astro.
  */
 :root {
   --sidenote-width: 13rem;
   --sidenote-gap: 2rem;
 }
 
-/* In-text marker: a red "(n)" on the baseline rather than a bare superscript. */
+/* In-text marker: a red superscript "(n)" (the <sup> stays superscript). */
 .prose.has-sidenotes .fn-ref {
   font-size: 0.82em;
   line-height: 0;
-  vertical-align: baseline;
 }
 
 .prose.has-sidenotes .fn-ref a {
@@ -2049,26 +2049,34 @@ main {
   content: ")";
 }
 
-/* The note: all red, wrapped in parentheses. Narrow-screen default is inline. */
+/* The note: normal text color, no wrapping parentheses. Narrow default is inline. */
 .prose.has-sidenotes .sidenote {
-  color: var(--theme-color);
+  margin-left: 0.2em;
   font-size: 0.82em;
   text-indent: 0;
 }
 
-.prose.has-sidenotes .sidenote::before {
-  content: " (";
-}
-
-.prose.has-sidenotes .sidenote::after {
-  content: ")";
-}
-
+/*
+ * 边注前导编号：红色 "(n)"，放在基线上（不是上标）。
+ * 元素本身是 <sup>，所以要覆盖它默认的 super 对齐与缩小字号。
+ * Leading number of the note: a red "(n)" sitting on the baseline (NOT a superscript).
+ * The element is a <sup>, so override its default super alignment and smaller size.
+ */
 .prose.has-sidenotes .sidenote-num {
+  display: none; /* narrow: marker already shows the number — see wide override below */
   margin-right: 0.3em;
+  color: var(--theme-color);
   font-weight: bold;
+  font-size: 1em;
   vertical-align: baseline;
-  font-size: 0.9em;
+}
+
+.prose.has-sidenotes .sidenote-num::before {
+  content: "(";
+}
+
+.prose.has-sidenotes .sidenote-num::after {
+  content: ")";
 }
 
 /* 内容已搬到正文旁，屏幕上隐藏底部列表；打印时再显示。 */
@@ -2096,8 +2104,10 @@ main {
     text-align: left;
   }
 
-  .prose.has-sidenotes .sidenote::before {
-    content: "(";
+  /* 浮到右栏后，编号要显示出来以对应正文里的标记。 */
+  /* Once floated to the margin, show the number so it pairs with the in-text marker. */
+  .prose.has-sidenotes .sidenote-num {
+    display: inline;
   }
 }
 

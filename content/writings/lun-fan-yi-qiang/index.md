@@ -11,7 +11,7 @@ comments: true
 ---
 
 
-[原文 See Original](https://www.theparisreview.org/blog/2020/06/23/on-translationese/)
+查看原文 See Original: [巴黎评论 Paris Review](https://www.theparisreview.org/blog/2020/06/23/on-translationese/)
 
 
 ![村上春树与大江健三郎；村上由 © Elena Seibert 摄](/images/murakamiandoe.jpg)

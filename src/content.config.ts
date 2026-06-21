@@ -106,7 +106,9 @@ const writings = defineCollection({
     date: z.union([z.string(), z.number()]),
     displayDate: z.string().optional(),
     type: z.enum(writingTypes),
-    language: z.string(),
+    // 中文：语言可选——未标注时页面不显示语言一栏，正文按默认排版。
+    // English: Optional — when absent, the page omits the language line and uses default typography.
+    language: z.string().optional(),
     excerpt: z.string(),
     slug: z.string(),
     order: z.number().int().default(999),

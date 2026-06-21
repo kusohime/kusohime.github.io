@@ -43,7 +43,7 @@ const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isClairieres = writing.data.slug === "tian-jian-qing-che";
-const normalizedLanguage = language.toLowerCase();
+const normalizedLanguage = (language ?? "").toLowerCase();
 const contentLang = normalizedLanguage.includes("traditional")
   ? "zh-Hant-TW"
   : normalizedLanguage.includes("simplified") || normalizedLanguage.includes("chinese")
@@ -70,9 +70,11 @@ const contentLang = normalizedLanguage.includes("traditional")
         <time datetime={String(date)} data-i18n-date={dateLabel}>
           {formatDate(dateLabel, "en")}
         </time>
-        <span data-i18n-content-language={language}>
-          {contentLanguageLabel(language, "en")}
-        </span>
+        {language && (
+          <span data-i18n-content-language={language}>
+            {contentLanguageLabel(language, "en")}
+          </span>
+        )}
       </p>
     </header>
 
