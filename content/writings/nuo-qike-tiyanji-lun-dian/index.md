@@ -10,7 +10,7 @@ order: 6
 comments: true
 ---
 
-[查看原文 See Original](https://www.bu.edu/wcp/Papers/Valu/ValuRive.htm)
+[查看原文 See Original](https://philpapers.org/rec/RIVWDN)
 
 Eduardo Rivera-López
 
