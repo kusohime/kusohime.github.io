@@ -1,5 +1,5 @@
 ---
-title: "Metric Modulation Calculator"
+title: "Metric Modulation"
 subtitle: "Tempo equivalence solver with chaining"
 subtitleZh: "速度等價求解，可串接"
 number: 1

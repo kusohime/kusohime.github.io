@@ -1,5 +1,5 @@
 ---
-title: "Polyrhythm & Canon Lab"
+title: "Polyrhythm, Canon, Phase"
 subtitle: "Coincidence cycles, phase canon, multi-track metronome"
 subtitleZh: "重合循環、相位卡農、多軌節拍器"
 number: 2

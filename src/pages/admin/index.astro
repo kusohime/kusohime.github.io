@@ -956,8 +956,39 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   </main>
 
   <script>
-    import { initializeAdminStudio } from "../../scripts/admin";
+    const START_RETRY_KEY = "yixin-cui-studio-start-retried";
 
-    initializeAdminStudio();
+    const showStartupError = (error: unknown) => {
+      const studio = document.querySelector("[data-admin-studio]");
+      const status = document.querySelector("[data-status]");
+      if (studio instanceof HTMLElement) studio.hidden = false;
+      if (status instanceof HTMLElement) {
+        const message =
+          error instanceof Error ? error.message : "Studio could not start.";
+        status.dataset.kind = "error";
+        status.textContent = `Studio could not start: ${message}`;
+      }
+    };
+
+    const startStudio = async () => {
+      try {
+        const { initializeAdminStudio } = await import("../../scripts/admin");
+        await initializeAdminStudio();
+        sessionStorage.removeItem(START_RETRY_KEY);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (
+          message.includes("Failed to fetch dynamically imported module") &&
+          sessionStorage.getItem(START_RETRY_KEY) !== "true"
+        ) {
+          sessionStorage.setItem(START_RETRY_KEY, "true");
+          location.reload();
+          return;
+        }
+        showStartupError(error);
+      }
+    };
+
+    startStudio();
   </script>
 </AdminLayout>

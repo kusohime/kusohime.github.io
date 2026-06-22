@@ -6,6 +6,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { contentFolder } from "../../../utils/contentPaths";
+import { cjkLangFromContentLanguage } from "../../../utils/cjkLanguage";
 import { translate } from "../../../config/locales";
 
 export async function getStaticPaths() {
@@ -51,12 +52,16 @@ const nextChapter =
     : undefined;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isBenQun = isCuiXiong && chapter.data.slug.startsWith("ben-qun");
-const normalizedLanguage = (writing.data.language ?? "").toLowerCase();
-const contentLang = normalizedLanguage.includes("traditional")
-  ? "zh-Hant-TW"
-  : normalizedLanguage.includes("simplified") || normalizedLanguage.includes("chinese")
-    ? "zh-Hans-CN"
-    : undefined;
+const contentLang = cjkLangFromContentLanguage(
+  writing.data.language,
+  [
+    writing.data.title,
+    writing.data.subtitle,
+    writing.data.excerpt,
+    chapter.data.title,
+    chapter.data.excerpt,
+  ].filter(Boolean).join(" "),
+);
 ---
 
 <BaseLayout
@@ -118,7 +123,7 @@ const contentLang = normalizedLanguage.includes("traditional")
       }
     </nav>
 
-    <p class="back-link">
+    <nav class="back-link" aria-label="Footer navigation">
       <a href={`/writings/${writing.data.slug}/`}>
         <span
           class="glyph-arrow glyph-arrow--back"
@@ -129,6 +134,6 @@ const contentLang = normalizedLanguage.includes("traditional")
           {translate("en", "common.backContents")}
         </span>
       </a>
-    </p>
+    </nav>
   </article>
 </BaseLayout>

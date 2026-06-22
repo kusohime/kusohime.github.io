@@ -7,6 +7,7 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Comments from "../../components/Comments.astro";
 import { contentFolder } from "../../utils/contentPaths";
+import { cjkLangFromContentLanguage } from "../../utils/cjkLanguage";
 import {
   contentLanguageLabel,
   formatDate,
@@ -43,12 +44,10 @@ const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isClairieres = writing.data.slug === "tian-jian-qing-che";
-const normalizedLanguage = (language ?? "").toLowerCase();
-const contentLang = normalizedLanguage.includes("traditional")
-  ? "zh-Hant-TW"
-  : normalizedLanguage.includes("simplified") || normalizedLanguage.includes("chinese")
-    ? "zh-Hans-CN"
-    : undefined;
+const contentLang = cjkLangFromContentLanguage(
+  language,
+  [title, subtitle, excerpt].filter(Boolean).join(" "),
+);
 ---
 
 <BaseLayout title={title} description={excerpt} noindex={writing.data.draft}>
@@ -251,7 +250,7 @@ const contentLang = normalizedLanguage.includes("traditional")
 
     {writing.data.comments && <Comments collection="writings" slug={writing.data.slug} />}
 
-    <p class="back-link">
+    <nav class="back-link" aria-label="Footer navigation">
       <a href="/writings/">
         <span
           class="glyph-arrow glyph-arrow--back"
@@ -262,6 +261,6 @@ const contentLang = normalizedLanguage.includes("traditional")
           {translate("en", "common.backWritings")}
         </span>
       </a>
-    </p>
+    </nav>
   </article>
 </BaseLayout>

@@ -54,6 +54,14 @@
                    "PingFang TC",
                    "Microsoft JhengHei",
                    monospace;
+  --font-cjk-punctuation: "Noto Sans TC",
+                          "Noto Sans SC",
+                          "Noto Sans JP",
+                          "PingFang TC",
+                          "PingFang SC",
+                          "Microsoft JhengHei",
+                          "Microsoft YaHei",
+                          sans-serif;
 
   /* OPTION 1: classic typewriter / 經典打字機 */
   --font-typewriter: "Lucida Console",
@@ -129,14 +137,16 @@
   --space-lg: 2.8rem;
   --space-xl: 4rem;
 
-  --line-height: 1.3;
-  --heading-line-height: 1.2;
+  --line-height: 1.42;
+  --prose-line-height: 1.52;
+  --heading-line-height: 1.18;
   --heading-size: 1rem;
   --header-padding: 0.7rem;
   --footer-min-height: 5rem;
   --paragraph-indent: 0em;
-  --paragraph-spacing: 1rem;
+  --paragraph-spacing: 1.05rem;
   --cjk-letter-spacing: 0em;
+  --cjk-autospace-width: 0.12em;
   /* END DESIGN DASHBOARD / 设计面板结束 */
 }
 
@@ -162,6 +172,65 @@
                    "PingFang TC",
                    "Microsoft JhengHei",
                    monospace;
+  --font-cjk-punctuation: "Noto Sans TC",
+                          "PingFang TC",
+                          "Microsoft JhengHei",
+                          "Noto Sans SC",
+                          sans-serif;
+}
+
+:where(.cjk-run:lang(zh), .cjk-punctuation:lang(zh)) {
+  --font-cjk-sans: "Noto Sans TC",
+                   "Noto Sans SC",
+                   "Noto Sans JP",
+                   "PingFang TC",
+                   "PingFang SC",
+                   "Microsoft JhengHei",
+                   "Microsoft YaHei",
+                   sans-serif;
+  --font-cjk-serif: "Noto Serif TC",
+                    "Noto Serif SC",
+                    "Noto Serif JP",
+                    "Songti TC",
+                    "Songti SC",
+                    serif;
+  --font-cjk-mono: "Noto Sans TC",
+                   "Noto Sans SC",
+                   "Noto Sans JP",
+                   "Sarasa Mono TC",
+                   "Sarasa Mono SC",
+                   monospace;
+  --font-cjk-punctuation: "Noto Sans TC",
+                          "Noto Sans SC",
+                          "PingFang TC",
+                          "PingFang SC",
+                          sans-serif;
+  font-family: var(--font-body);
+}
+
+:where(:lang(zh-Hant), :lang(zh-TW)) {
+  --font-cjk-sans: "Noto Sans TC",
+                   "PingFang TC",
+                   "Noto Sans CJK TC",
+                   "Source Han Sans TC",
+                   "Microsoft JhengHei",
+                   sans-serif;
+  --font-cjk-serif: "Noto Serif TC",
+                    "Songti TC",
+                    "Noto Serif CJK TC",
+                    "Source Han Serif TC",
+                    serif;
+  --font-cjk-mono: "Noto Sans TC",
+                   "Sarasa Mono TC",
+                   "PingFang TC",
+                   "Microsoft JhengHei",
+                   monospace;
+  --font-cjk-punctuation: "Noto Sans TC",
+                          "PingFang TC",
+                          "Microsoft JhengHei",
+                          "Noto Sans SC",
+                          sans-serif;
+  font-family: var(--font-body);
 }
 
 :where(:lang(zh-Hans), :lang(zh-CN)) {
@@ -181,6 +250,11 @@
                    "PingFang SC",
                    "Microsoft YaHei",
                    monospace;
+  --font-cjk-punctuation: "Noto Sans SC",
+                          "PingFang SC",
+                          "Microsoft YaHei",
+                          "Noto Sans TC",
+                          sans-serif;
   font-family: var(--font-body);
 }
 
@@ -240,16 +314,35 @@ body {
   line-height: var(--line-height);
 }
 
-:root:lang(zh-Hant-TW) body,
-:root:lang(ja) body {
+:where(:lang(zh), :lang(zh-Hant), :lang(zh-Hans), :lang(zh-CN), :lang(zh-TW), :lang(ja)) {
   /* 不使用 palt：比例寬度會破壞全形標點的置中與佔位。 */
   /* No palt: proportional widths break fullwidth punctuation centering. */
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   letter-spacing: var(--cjk-letter-spacing);
   line-break: strict;
-  text-autospace: normal;
+  text-autospace: ideograph-alpha ideograph-numeric;
   word-break: normal;
+}
+
+.cjk-run,
+.cjk-punctuation {
+  line-height: inherit;
+}
+
+.cjk-run {
+  font-family: var(--font-cjk-mono);
+}
+
+.cjk-punctuation {
+  font-family: var(--font-cjk-punctuation);
+  font-feature-settings: "kern" 1;
+}
+
+.cjk-autospace {
+  display: inline;
+  padding-inline-start: var(--cjk-autospace-width);
+  user-select: none;
 }
 
 :root[data-motion-theme="true"] body {
@@ -289,39 +382,6 @@ body {
   animation: font-shrink 280ms ease;
 }
 
-.site-notice {
-  position: relative;
-  width: 100%;
-  border-bottom: 1px solid var(--theme-color);
-  padding: var(--space-xs) calc(var(--page-gutter) + 2rem);
-  text-align: center;
-}
-
-.site-notice p {
-  margin: 0;
-}
-
-.site-notice-dismiss {
-  position: absolute;
-  top: 50%;
-  right: var(--page-gutter);
-  border: 0;
-  padding: 0.15rem 0.35rem;
-  background: transparent;
-  cursor: pointer;
-  transform: translateY(-50%);
-}
-
-.site-notice-dismiss:hover,
-.site-notice-dismiss:focus-visible {
-  color: var(--theme-color);
-  outline: 1px solid var(--theme-color);
-}
-
-:root[data-site-notice="dismissed"] .site-notice {
-  display: none;
-}
-
 a {
   color: inherit;
   text-decoration-color: var(--theme-color);
@@ -331,7 +391,6 @@ a {
 
 a:hover,
 a:focus-visible {
-  font-weight: bold;
   text-decoration-color: var(--theme-color);
 }
 
@@ -351,6 +410,7 @@ h6 {
   font-size: var(--heading-size);
   font-weight: bold;
   line-height: var(--heading-line-height);
+  margin-block: 0 var(--space-sm);
 }
 
 button,
@@ -826,6 +886,10 @@ main {
   margin: 0 0 var(--paragraph-spacing);
 }
 
+.home-intro p {
+  margin-block: 0 var(--paragraph-spacing);
+}
+
 .page-introduction {
   max-width: var(--reading-width);
 }
@@ -836,7 +900,7 @@ main {
 }
 
 .category-navigation p {
-  margin-bottom: var(--space-xs);
+  margin: 0 0 var(--space-xs);
 }
 
 .entry-summary {
@@ -845,7 +909,7 @@ main {
 
 .entry-summary h2,
 .entry-summary h3 {
-  margin-bottom: var(--space-xs);
+  margin: 0 0 var(--space-xs);
 }
 
 .writing-groups {
@@ -1168,6 +1232,26 @@ main {
   margin: 0 0 var(--space-lg);
 }
 
+.detail-header h1 {
+  margin: 0;
+}
+
+.detail-header p {
+  margin: var(--space-xs) 0 0;
+}
+
+.detail-header > :first-child {
+  margin-top: 0;
+}
+
+.detail-header > :last-child {
+  margin-bottom: 0;
+}
+
+.detail-header .draft-flag {
+  margin-bottom: var(--space-sm);
+}
+
 .detail-actions {
   margin-top: var(--space-sm);
 }
@@ -1214,6 +1298,9 @@ main {
 
 .work-facts {
   margin-top: var(--space-sm) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
 .work-commission {
@@ -1222,9 +1309,11 @@ main {
   font-style: italic;
 }
 
-.work-facts span + span::before {
+/* 中文：編制與時長各佔一行，避免縮寫編制中的中點與時長分隔號混淆。 */
+/* English: Instrumentation and duration each get their own line so the middots
+   inside the abbreviated scoring don't blur into a duration separator. */
+.work-facts .work-duration {
   color: var(--color-muted);
-  content: " · ";
 }
 
 .writing-metadata {
@@ -1238,8 +1327,6 @@ main {
   content: " · ";
 }
 
-:root:lang(zh-Hant-TW) .work-facts span + span::before,
-:root:lang(ja) .work-facts span + span::before,
 :root:lang(zh-Hant-TW) .writing-metadata > * + *::before,
 :root:lang(ja) .writing-metadata > * + *::before {
   content: "・";
@@ -1385,8 +1472,20 @@ main {
 }
 
 .work-credits em {
-  display: inline-flex;
-  flex-wrap: wrap;
+  /* 中文：用普通行內流。改成 inline-flex 後，cjkTypography 注入的間隔 span 會變成
+     獨立 flex 項目，把日期（如 2025年12月7日）拆到不同行。keep-all 讓 CJK 連寫
+     不在字間斷行，使日期保持完整。 */
+  /* English: Normal inline flow. Under inline-flex the cjk-autospace spacer spans
+     became separate flex items and split runs like the première date across lines.
+     keep-all stops CJK runs (incl. the date) from breaking between characters. */
+  word-break: keep-all;
+}
+
+/* 中文：題獻／首演的中日文不用斜體（合成傾斜對 CJK 不適用）。 */
+/* English: Don't synthetically slant CJK in the dedication / première credits. */
+:root:lang(zh) .work-credits em,
+:root:lang(ja) .work-credits em {
+  font-style: normal;
 }
 
 .metadata-divider::before {
@@ -1568,6 +1667,10 @@ main {
   max-width: var(--reading-width);
 }
 
+.prose {
+  line-height: var(--prose-line-height);
+}
+
 .prose > :first-child,
 .writing-opening > :first-child {
   margin-top: 0;
@@ -1591,7 +1694,7 @@ main {
 
 .prose h2,
 .prose h3 {
-  margin-top: var(--space-lg);
+  margin-block: var(--space-lg) var(--space-sm);
   scroll-margin-top: var(--space-md);
 }
 
@@ -1599,7 +1702,27 @@ main {
 .prose ul,
 .prose ol,
 .prose blockquote {
-  margin-block: var(--space-sm);
+  margin-block: 0 var(--paragraph-spacing);
+}
+
+.prose h2 + p,
+.prose h2 + ul,
+.prose h2 + ol,
+.prose h2 + blockquote,
+.prose h3 + p,
+.prose h3 + ul,
+.prose h3 + ol,
+.prose h3 + blockquote {
+  margin-top: 0;
+}
+
+.prose li + li {
+  margin-top: 0.18rem;
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-block: var(--space-xs) 0;
 }
 
 .chicago-prose > p {
@@ -1621,7 +1744,10 @@ main {
 }
 
 .prose blockquote {
-  margin: var(--space-md) 0;
+  /* 中文：引文縮排成一個區塊，正體不用斜體（斜體由內容層的 * 控制，已移除）。 */
+  /* English: Indent quotations as a block; keep them upright (italics, if any,
+     come from the content's own markup, not from here). */
+  margin: var(--space-md) 0 var(--space-md) var(--space-md);
   padding-left: var(--space-sm);
   border-left: 0.18rem solid var(--theme-color);
 }
@@ -1926,7 +2052,12 @@ main {
 }
 
 .back-link {
+  max-width: var(--reading-width);
   margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-muted);
+  font-size: 0.88rem;
 }
 
 .back-link-top {
@@ -1936,8 +2067,24 @@ main {
 
 .back-link a {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.4em;
+  align-items: center;
+  gap: 0.35em;
+  color: inherit;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.back-link a:hover,
+.back-link a:focus-visible {
+  color: var(--color-text);
+  font-weight: normal;
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+.back-link .glyph-arrow {
+  width: 0.68em;
+  height: 0.68em;
 }
 
 .guide-chapter-navigation {
@@ -2117,15 +2264,25 @@ main {
   }
 }
 
-/* 中文着重号：强调用字符下方的点，而非加粗或斜体。 */
-/* Chinese emphasis marks (zhuzhong): dots beneath each character, not bold or italic. */
+/* 中文着重号：用不撑行高的背景点模拟字下加点。 */
+/* Chinese emphasis marks: background dots avoid the line-height growth of text-emphasis. */
 .zh-em {
+  background-image: radial-gradient(
+    circle at center,
+    currentColor 0 0.075em,
+    transparent 0.088em
+  );
+  background-position: 0 100%;
+  background-repeat: repeat-x;
+  background-size: 1em 0.27em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding-bottom: 0.06em;
   font-style: normal;
   font-weight: inherit;
-  text-emphasis: filled dot;
-  text-emphasis-position: under right;
-  -webkit-text-emphasis: filled dot;
-  -webkit-text-emphasis-position: under right;
+  line-height: inherit;
+  text-emphasis: none;
+  -webkit-text-emphasis: none;
 }
 
 .prose hr {

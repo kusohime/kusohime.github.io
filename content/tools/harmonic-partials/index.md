@@ -1,5 +1,5 @@
 ---
-title: "Harmonic Partials Calculator"
+title: "Harmonic Partials"
 subtitle: "Partial frequencies with 12-EDO deviations"
 subtitleZh: "分音頻率及其相對十二平均律的偏差"
 number: 4

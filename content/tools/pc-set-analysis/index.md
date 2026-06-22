@@ -1,5 +1,5 @@
 ---
-title: "Pitch-Class Set Analyzer"
+title: "Pitch-Class Set"
 subtitle: "Normal order, prime form, Forte class, interval vector"
 subtitleZh: "標準序、原型、Forte 類、音程向量"
 number: 7

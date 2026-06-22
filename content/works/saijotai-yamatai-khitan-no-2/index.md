@@ -12,7 +12,17 @@ slug: "saijotai-yamatai-khitan-no-2"
 order: 3
 subtitle: "for percussion and vocal actor"
 subtitleZh: "為打擊樂與聲音演員"
+premiere:
+  date: "2025-12-07"
+  by:
+    en: "Yixin Cui, voice; [Spencer Klaw Kennedy](https://spencerklawkennedy.com/), percussion"
+    zh: "Yixin Cui · 人聲; [Spencer Klaw Kennedy](https://spencerklawkennedy.com/) · 打擊樂"
+  venue:
+    en: "Lang Concert Hall, Swarthmore, PA"
+    zh: "Lang 音樂廳，賓州斯沃斯莫爾"
 ---
+
+<div class="lang-block" data-lang="en">
 
 ## Program Notes
 
@@ -23,6 +33,22 @@ For several centuries it remained with a female Japanese collector-scholar who, 
 Soviet agents reportedly sought it during the Cold War, but the anonymous keeper chose to destroy the physical manuscript and commit the entire piece to memory instead. I was fortunate to be able to transcribe the music on the day before the final keeper passed away. His last word was:
 
 > *sempre ad lib. e espr. assai...*
+
+</div>
+
+<div class="lang-block" data-lang="zh">
+
+## 節目說明
+
+這部作品已知最早的版本，據說出自義大利作曲家 <ruby>佩羅坦<rt>Pérotin</rt></ruby> 之手。傳說中，這份手稿經威尼斯探險家馬可‧波羅之手抵達朝鮮半島。據說有一隻巨大的貝類吐出一團霧氣，霧中浮現出一座山；山上一位僧人取得了手稿，將它譯成一種不明的古代漢語，最終把它帶到了日本。
+
+此後數百年間，它一直由一位日本的女性收藏家兼學者保存；儘管她竭盡心力，卻始終未能真正讀懂。唯一的成果，是一張玄奧的圖表——我已將它譯成英文，置於右側。第二次世界大戰期間，一位兼為業餘音樂學者的日本將領，將手稿帶到上海，盼能尋得能解讀之人。當時謄抄了若干副本，其中一份落入一位富商之手；他後來移居北美，隨身帶著一份標註著令人費解、不合文法的日語讀音的版本。這似乎是僅存的最後一份。
+
+冷戰期間，據傳蘇聯特工曾尋訪此稿，但那位匿名的守護者選擇銷毀手稿實物，轉而將整部作品全數記誦於心。我有幸在最後一位守護者離世的前一天，將這部作品記譜下來。他的遺言是：
+
+> *sempre ad lib. e espr. assai...*
+
+</div>
 
 ## Text (Right to Left)
 

@@ -82,7 +82,7 @@ const works = defineCollection({
     }).optional(),
     image: z.string().optional(),
     imageAlt: z.string().optional(),
-    description: z.string(),
+    description: z.string().optional(),
     slug: z.string(),
     order: z.number().int().default(999),
     // 草稿不出现在公开目录页，只在 /drafts/ 与直接网址下可见。

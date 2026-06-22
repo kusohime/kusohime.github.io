@@ -6,7 +6,7 @@ number: 15
 group: "Linguistics"
 summary: "Leipzig-style gloss builder with multi-format export"
 summaryZh: "萊比錫式逐詞對照標註器，附國際音標鍵盤與多格式匯出"
-status: "beta"
+status: "stable"
 slug: "interlinear-glosser"
 references:
   - "Comrie, B., Haspelmath, M., & Bickel, B. (2008). [*The Leipzig Glossing Rules: Conventions for Interlinear Morpheme-by-Morpheme Glosses*](https://www.eva.mpg.de/lingua/resources/glossing-rules.php). Max Planck Institute for Evolutionary Anthropology."

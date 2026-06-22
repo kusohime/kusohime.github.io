@@ -5,6 +5,17 @@
  * Caveat / 注意：这里的文件 API 只应连接 astro.config.mjs 中的本地开发中间件；
  * it must never be treated as production authentication or a public CMS backend.
  */
+import { indentWithTab } from "@codemirror/commands";
+import { css } from "@codemirror/lang-css";
+import { html } from "@codemirror/lang-html";
+import { javascript } from "@codemirror/lang-javascript";
+import { json } from "@codemirror/lang-json";
+import { markdown } from "@codemirror/lang-markdown";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { Compartment, EditorState, Prec } from "@codemirror/state";
+import { EditorView, keymap } from "@codemirror/view";
+import { tags } from "@lezer/highlight";
+import { basicSetup } from "codemirror";
 import { workCategories, writingTypes } from "../config/contentTaxonomy";
 
 interface DirectoryPickerOptions {
@@ -172,32 +183,6 @@ export async function initializeAdminStudio() {
 
   const activePasscode = ADMIN_PASSCODE;
   studio.hidden = false;
-
-  const [
-    { basicSetup },
-    { indentWithTab },
-    { css },
-    { html },
-    { javascript },
-    { json },
-    { markdown },
-    { HighlightStyle, syntaxHighlighting },
-    { tags },
-    { Compartment, EditorState, Prec },
-    { EditorView, keymap },
-  ] = await Promise.all([
-    import("codemirror"),
-    import("@codemirror/commands"),
-    import("@codemirror/lang-css"),
-    import("@codemirror/lang-html"),
-    import("@codemirror/lang-javascript"),
-    import("@codemirror/lang-json"),
-    import("@codemirror/lang-markdown"),
-    import("@codemirror/language"),
-    import("@lezer/highlight"),
-    import("@codemirror/state"),
-    import("@codemirror/view"),
-  ]);
 
   // 低饱和度但有明显区分的语法色；JSON 与 Astro 标记会比默认主题更易读。
   // Restrained but distinct syntax colors make JSON and Astro markup easier to scan.
@@ -1684,6 +1669,9 @@ export async function initializeAdminStudio() {
         newField<HTMLInputElement>("[data-new-duration]")?.value,
       );
       const durationBlock = minutes > 0 ? `\n  minutes: ${minutes}` : " {}";
+      const descriptionLine = summary
+        ? `description: ${yamlQuote(summary)}\n`
+        : "";
       const videoBlock = peerTubeBlockText({
         embedUrl:
           newField<HTMLInputElement>("[data-new-video-embed-url]")?.value ?? "",
@@ -1712,8 +1700,7 @@ category: ${yamlQuote(category)}
 instrumentation:
   en: ${yamlQuote(instrumentation)}
 duration:${durationBlock}
-description: ${yamlQuote(summary || title)}
-slug: ${yamlQuote(slug)}
+${descriptionLine}slug: ${yamlQuote(slug)}
 order: 999${draft ? "\ndraft: true" : ""}${videoBlock}
 ---
 
@@ -2219,7 +2206,7 @@ Write the text here.
         text("instrumentation") || "To be decided",
       );
       setDurationMinutes(lines, text("duration"));
-      setTopScalar(lines, "description", text("summary") || text("title"));
+      setTopScalar(lines, "description", text("summary"), { omitEmpty: true });
       setVideoBlock(lines, {
         embedUrl: text("videoEmbedUrl"),
         watchUrl: text("videoWatchUrl"),

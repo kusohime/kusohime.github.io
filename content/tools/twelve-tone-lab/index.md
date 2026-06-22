@@ -1,5 +1,5 @@
 ---
-title: "Twelve-Tone Row Calculator"
+title: "Twelve-Tone Table"
 subtitle: "Matrix, row forms, invariance checks"
 subtitleZh: "矩陣、序列形式、不變性檢查"
 number: 8

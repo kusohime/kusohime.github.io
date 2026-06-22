@@ -4,9 +4,10 @@ import type {
   WritingType,
 } from "./contentTaxonomy";
 
-// 中文：本站使用两种语言——英文与中文（繁体）。新增语言需在此处与各翻译表同时补齐。
-// English: The site uses two languages — English and Traditional Chinese. Adding a
-// language means extending this list and every translation table below together.
+// 中文：本站使用两种语言——英文与中文。中文入口不拆繁简；正文可按内容
+// 标记为繁体或简体以取得正确字形。
+// English: The site uses two languages — English and Chinese. The Chinese UI is
+// one locale; content may still mark Traditional or Simplified text for shaping.
 export const localeCodes = ["en", "zh"] as const;
 export type Locale = (typeof localeCodes)[number];
 
@@ -28,8 +29,8 @@ export const messages = {
     "nav.cv": "C.V.",
     "nav.music": "Music",
     "nav.blog": "Blog",
-    "common.backTools": "Back to Tools",
-    "common.backEvents": "Back to Events",
+    "common.backTools": "Tools",
+    "common.backEvents": "Events",
     "tools.numberPrefix": "Tool No.",
     "tools.onThisPage": "On this page",
     "tools.notes": "Notes",
@@ -37,15 +38,14 @@ export const messages = {
     "tools.statusBeta": "beta",
     "tools.statusDataPending": "data pending",
     "common.skip": "Skip to content",
-    "common.notice": "Site under construction.",
     "common.noWorks": "No works in this category yet.",
     "common.noEntries": "No entries yet.",
     "events.noUpcoming": "No upcoming events.",
     "common.brief": "Brief",
     "common.contents": "Contents",
-    "common.backWorks": "Back to Works",
-    "common.backWritings": "Back to Writings",
-    "common.backContents": "Back to Contents",
+    "common.backWorks": "Works",
+    "common.backWritings": "Writings",
+    "common.backContents": "Contents",
     "resource.recording": "Recording",
     "resource.score": "Score",
     "resource.cvPdf": "Download PDF",
@@ -59,17 +59,17 @@ export const messages = {
     "comments.empty": "No responses yet.",
     "comments.leave": "Leave a response",
     "comments.lead":
-      "Moderated — your response appears after the author reviews it. Your email is never shown.",
+      "Your response appears after the author reviews it.",
     "comments.name": "Name",
-    "comments.email": "Email — private, optional",
-    "comments.body": "Your response",
-    "comments.markdown": "Markdown — safe subset",
+    "comments.email": "Optional Email (Hidden)",
+    "comments.body": "Response",
+    "comments.markdown": "Markdown",
     "comments.preview": "Preview",
     "comments.attach": "Attach one image (optional)",
     "comments.notify": "Email me when the author replies",
-    "comments.submit": "Submit for review",
+    "comments.submit": "Submit",
     "comments.sending": "Sending…",
-    "comments.success": "Thank you — your response is awaiting review. ",
+    "comments.success": "Thank you — your response is under review. ",
     "comments.successDetail": "Nothing is published until the author approves it.",
     "comments.error": "Something went wrong. Please check your entry and try again.",
     "comments.disabled": "Responses aren't open here yet.",
@@ -84,8 +84,8 @@ export const messages = {
     "nav.cv": "履歷",
     "nav.music": "音樂",
     "nav.blog": "網誌",
-    "common.backTools": "返回工具",
-    "common.backEvents": "返回活動",
+    "common.backTools": "工具",
+    "common.backEvents": "活動",
     "tools.numberPrefix": "工具編號",
     "tools.onThisPage": "本頁目錄",
     "tools.notes": "說明",
@@ -93,15 +93,14 @@ export const messages = {
     "tools.statusBeta": "測試版",
     "tools.statusDataPending": "資料待補",
     "common.skip": "跳至正文",
-    "common.notice": "本站建置中。",
     "common.noWorks": "此類別目前尚無作品。",
     "common.noEntries": "目前尚無條目。",
     "events.noUpcoming": "近期暫無活動。",
     "common.brief": "簡介",
     "common.contents": "目錄",
-    "common.backWorks": "返回作品",
-    "common.backWritings": "返回文字",
-    "common.backContents": "返回目錄",
+    "common.backWorks": "作品",
+    "common.backWritings": "文字",
+    "common.backContents": "目錄",
     "resource.recording": "錄音",
     "resource.score": "樂譜",
     "resource.cvPdf": "下載 PDF",
@@ -114,17 +113,17 @@ export const messages = {
     "comments.heading": "回應",
     "comments.empty": "目前尚無回應。",
     "comments.leave": "留言",
-    "comments.lead": "需審核——你的回應會在作者審核後顯示，電子郵件不會公開。",
+    "comments.lead": "你的回應會在作者審核後顯示，電子郵件不會公開。",
     "comments.name": "名稱",
-    "comments.email": "電子郵件——保密，可留空",
-    "comments.body": "你的回應",
+    "comments.email": "電子郵件（可留空）",
+    "comments.body": "回應",
     "comments.markdown": "支援部分 Markdown 語法",
     "comments.preview": "預覽",
     "comments.attach": "附加一張圖片（可選）",
     "comments.notify": "作者回覆時以電子郵件通知我",
-    "comments.submit": "送出待審",
+    "comments.submit": "提交",
     "comments.sending": "傳送中…",
-    "comments.success": "謝謝你——你的回應正在等待審核。",
+    "comments.success": "感謝——您的回應正在等待審核。",
     "comments.successDetail": "在作者核准前不會公開顯示。",
     "comments.error": "發生問題，請檢查內容後再試一次。",
     "comments.disabled": "此頁面尚未開放回應。",
@@ -289,12 +288,14 @@ export function formatDuration(duration: DurationData, locale: Locale) {
     duration.minutes === undefined ? undefined : Math.round(duration.minutes * 60);
   const minuteCount = totalSeconds === undefined ? undefined : Math.floor(totalSeconds / 60);
   const secondCount = totalSeconds === undefined ? undefined : totalSeconds % 60;
-  const apostropheTime =
+  // 中文：時長使用 prime／double-prime 字符（′ ″），而非直引號 ' "。
+  // English: Durations use prime / double-prime glyphs (′ ″), not straight quotes.
+  const primeTime =
     minuteCount === undefined
       ? ""
       : secondCount
-        ? `${minuteCount}'${String(secondCount).padStart(2, "0")}`
-        : `${minuteCount}'`;
+        ? `${minuteCount}′${String(secondCount).padStart(2, "0")}″`
+        : `${minuteCount}′`;
   const minuteText =
     minuteCount === undefined
       ? ""
@@ -310,13 +311,13 @@ export function formatDuration(duration: DurationData, locale: Locale) {
       }[locale];
     }
     return {
-      en: `Continuous; approx. ${apostropheTime} cycle`,
+      en: `Continuous; approx. ${primeTime} cycle`,
       zh: `持續播放；循環約 ${minuteText} 分鐘`,
     }[locale];
   }
 
   const exact = {
-    en: apostropheTime,
+    en: primeTime,
     zh: `${minuteText} 分鐘`,
   }[locale];
 

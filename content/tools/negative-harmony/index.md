@@ -1,5 +1,5 @@
 ---
-title: "Axis Reflection"
+title: "Advanced Reflection"
 subtitle: "Negative harmony and registral inversion"
 subtitleZh: "負和聲與音區倒影"
 number: 12

@@ -1,16 +1,20 @@
 ---
 import type { LocalizedText } from "../config/locales";
+import { renderSafeInlineMarkdown } from "../lib/safeHtml.js";
 
 interface Props {
   value: LocalizedText;
 }
 
 const { value } = Astro.props;
+// 中文：元数据文本可含行内 Markdown 链接／强调，渲染为 HTML（脚本会在切换语言时同样处理）。
+// English: Metadata text may carry inline Markdown links/emphasis; render it as HTML
+// (the language script renders the other locale the same way on switch).
 ---
 
 <span
   data-i18n-en={value.en}
   data-i18n-zh={value.zh}
->
-  {value.en}
-</span>
+  data-i18n-rich
+  set:html={renderSafeInlineMarkdown(value.en)}
+/>

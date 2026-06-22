@@ -69,7 +69,6 @@ duration:
   minutes: 10
   continuous: false
   approximate: false
-description: "Short description used on lists and in page metadata."
 slug: "work-title"
 ---
 ```
@@ -78,6 +77,7 @@ Optional work fields / 作品可選欄位:
 
 ```yaml
 subtitle: "Optional subtitle"
+description: "Optional page metadata summary."
 # Recipient only — the page renders "Dedicated to …" / "題獻給 …".
 dedication:
   en: "Name"

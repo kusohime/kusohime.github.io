@@ -80,8 +80,6 @@ const defaultLanguage = siteDefaults.defaultLanguage;
         const fontSize = localStorage.getItem("yc-font-size");
         const storedLanguage = localStorage.getItem("yc-language");
         const language = storedLanguage ?? defaultLanguage;
-        const noticeDismissed =
-          sessionStorage.getItem("yc-site-notice-dismissed") === "true";
 
         if (theme === "light" || theme === "dark") {
           document.documentElement.dataset.theme = theme;
@@ -94,10 +92,6 @@ const defaultLanguage = siteDefaults.defaultLanguage;
         if (language === "en" || language === "zh") {
           document.documentElement.lang = language === "zh" ? "zh-Hant-TW" : language;
         }
-
-        if (noticeDismissed) {
-          document.documentElement.dataset.siteNotice = "dismissed";
-        }
       } catch {}
     </script>
     <title>{pageTitle}</title>
@@ -106,21 +100,6 @@ const defaultLanguage = siteDefaults.defaultLanguage;
     <a class="skip-link" href="#main-content" data-i18n-key="common.skip">
       {translate("en", "common.skip")}
     </a>
-    {
-      !adminOnly && (
-        <aside class="site-notice" role="status" aria-label="Website status">
-          <p data-i18n-key="common.notice">{translate("en", "common.notice")}</p>
-          <button
-            type="button"
-            class="site-notice-dismiss"
-            aria-label="Dismiss website status notice"
-            data-site-notice-dismiss
-          >
-            X
-          </button>
-        </aside>
-      )
-    }
     <div class="site-shell">
       <Header />
       <main id="main-content">
@@ -128,15 +107,6 @@ const defaultLanguage = siteDefaults.defaultLanguage;
       </main>
       <Footer />
     </div>
-    {
-      !adminOnly && (
-        <script>
-          import { initializeSiteNotice } from "../scripts/siteNotice";
-
-          initializeSiteNotice();
-        </script>
-      )
-    }
     <script>
       import { initializeDecorativeGlyphs } from "../scripts/decorativeGlyphs";
 
@@ -146,6 +116,11 @@ const defaultLanguage = siteDefaults.defaultLanguage;
       import { initializeFootnoteSidenotes } from "../scripts/footnoteSidenotes";
 
       initializeFootnoteSidenotes();
+    </script>
+    <script>
+      import { initializeCjkTypography } from "../scripts/cjkTypography";
+
+      initializeCjkTypography();
     </script>
   </body>
 </html>

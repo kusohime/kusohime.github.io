@@ -1,5 +1,5 @@
 ---
-title: "Spectral Roughness Calculator"
+title: "Spectral Roughness"
 subtitle: "Sensory dissonance curves and chord comparison"
 subtitleZh: "感官不協和曲線與和弦比較"
 number: 5

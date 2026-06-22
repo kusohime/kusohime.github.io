@@ -280,6 +280,13 @@ function localStudioPlugin() {
   return {
     name: "local-website-studio",
     configureServer(server) {
+      const notifyProjectChange = (filePath) => {
+        server.watcher.add(filePath);
+        server.watcher.emit("change", filePath);
+        server.moduleGraph.invalidateAll();
+        server.ws.send({ type: "full-reload", path: "*" });
+      };
+
       server.middlewares.use(async (request, response, next) => {
         if (!request.url?.startsWith("/__admin/api/")) {
           next();
@@ -401,6 +408,8 @@ function localStudioPlugin() {
 
             await mkdir(dirname(toPath), { recursive: true });
             await rename(fromPath, toPath);
+            notifyProjectChange(fromPath);
+            notifyProjectChange(toPath);
             sendJson(response, 200, { moved: from, to });
             return;
           }
@@ -425,6 +434,7 @@ function localStudioPlugin() {
             }
             await mkdir(dirname(filePath), { recursive: true });
             await writeFile(filePath, await readBody(request), "utf8");
+            notifyProjectChange(filePath);
             sendJson(response, 200, { saved: requestedPath });
             return;
           }
@@ -451,6 +461,7 @@ function localStudioPlugin() {
             }
             await mkdir(dirname(filePath), { recursive: true });
             await writeFile(filePath, await readBodyBuffer(request));
+            notifyProjectChange(filePath);
             sendJson(response, 200, { saved: requestedPath });
             return;
           }
@@ -514,6 +525,21 @@ export default defineConfig({
     enabled: false,
   },
   vite: {
+    optimizeDeps: {
+      include: [
+        "codemirror",
+        "@codemirror/commands",
+        "@codemirror/lang-css",
+        "@codemirror/lang-html",
+        "@codemirror/lang-javascript",
+        "@codemirror/lang-json",
+        "@codemirror/lang-markdown",
+        "@codemirror/language",
+        "@codemirror/state",
+        "@codemirror/view",
+        "@lezer/highlight",
+      ],
+    },
     plugins: [localStudioPlugin()],
   },
   markdown: {

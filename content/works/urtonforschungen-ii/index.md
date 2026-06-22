@@ -8,6 +8,14 @@ instrumentation:
 duration:
   minutes: 4
 description: "A chamber ensemble work for winds, piano, viola, double bass, and percussion."
+premiere:
+  date: "2025-02-09"
+  by:
+    en: "[Relâche Ensemble](https://www.relachemusic.org/)"
+    zh: "[Relâche Ensemble](https://www.relachemusic.org/)"
+  venue:
+    en: "Presser Hall, Boyer College of Music and Dance, Philadelphia, PA"
+    zh: "Presser Hall，Boyer 音樂舞蹈學院，賓州費城"
 slug: "urtonforschungen-ii"
 order: 2
 ---

@@ -119,17 +119,15 @@ Path: `content/works/<folder>/index.md`.
 
 路徑：`content/works/<folder>/index.md`。
 
-Required: `title`, `year`, `category`, `instrumentation.en`, `duration`,
-`description`, `slug`.
+Required: `title`, `year`, `category`, `instrumentation.en`, `duration`, `slug`.
 
-必填：`title`、`year`、`category`、`instrumentation.en`、`duration`、
-`description`、`slug`。
+必填：`title`、`year`、`category`、`instrumentation.en`、`duration`、`slug`。
 
-Optional: `subtitle`, `dedication`, `commission`, `credits`, `premiere`,
-`recordingUrl`, `scoreUrl`, `video`, `image`, `imageAlt`, `order`, `draft`,
-`comments`.
+Optional: `subtitle`, `description`, `dedication`, `commission`, `credits`,
+`premiere`, `recordingUrl`, `scoreUrl`, `video`, `image`, `imageAlt`, `order`,
+`draft`, `comments`.
 
-可選：`subtitle`、`dedication`、`commission`、`credits`、`premiere`、
+可選：`subtitle`、`description`、`dedication`、`commission`、`credits`、`premiere`、
 `recordingUrl`、`scoreUrl`、`video`、`image`、`imageAlt`、`order`、`draft`、
 `comments`。
 

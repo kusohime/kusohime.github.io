@@ -24,8 +24,8 @@ export const toolTopicList: ToolTopicDef[] = [
     id: "rhythm",
     group: "Composition",
     label: {
-      en: "Rhythm Counterpoint",
-      zh: "節奏對位",
+      en: "Rhythm",
+      zh: "節奏",
     },
     tools: ["metric-modulation", "polyrhythm-cycles", "fugue-exposition"],
   },
@@ -33,8 +33,8 @@ export const toolTopicList: ToolTopicDef[] = [
     id: "sets-scales",
     group: "Composition",
     label: {
-      en: "Sets, Scales & Rows",
-      zh: "音級集合、音階與序列",
+      en: "Pitch",
+      zh: "音高",
     },
     tools: ["pc-set-analysis", "twelve-tone-lab", "messiaen-modes"],
   },
@@ -42,8 +42,8 @@ export const toolTopicList: ToolTopicDef[] = [
     id: "harmony",
     group: "Composition",
     label: {
-      en: "Harmony & Transformation",
-      zh: "和聲與變換",
+      en: "Motif",
+      zh: "動機",
     },
     tools: ["melody-transformer", "neo-riemannian", "negative-harmony"],
   },
@@ -51,8 +51,8 @@ export const toolTopicList: ToolTopicDef[] = [
     id: "tuning-spectra",
     group: "Composition",
     label: {
-      en: "Tuning, Spectra & Acoustics",
-      zh: "調律、頻譜與聲學",
+      en: "Acoustics",
+      zh: "律制",
     },
     tools: [
       "pitch-tuning-lab",

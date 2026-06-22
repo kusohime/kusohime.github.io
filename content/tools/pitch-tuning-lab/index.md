@@ -1,5 +1,5 @@
 ---
-title: "Pitch & Tuning Converter"
+title: "Tuning Convert"
 subtitle: "Note name, Hz, MIDI, cents, JI ratio, EDO"
 subtitleZh: "音名、赫茲、MIDI、音分、純律比率、等分八度"
 number: 3

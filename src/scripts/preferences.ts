@@ -5,6 +5,8 @@
 import motionSettings from "../config/motion.json";
 import siteDefaults from "../config/siteDefaults.json";
 import typographySettings from "../config/typography.json";
+import { initializeCjkTypography } from "./cjkTypography";
+import { renderSafeInlineMarkdown } from "../lib/safeHtml.js";
 import type {
   ToolGroup,
   WorkCategory,
@@ -129,6 +131,25 @@ function setLocalizedText(element: HTMLElement, text: string, animate: boolean) 
   }
 }
 
+// 中文：元数据（题献／首演／乐器编制／合作人员）可含行内 Markdown 链接或强调。
+// 含标记时渲染为 HTML（放弃逐字翻牌动画）；纯文本仍走 setLocalizedText 以保留动画。
+// English: Metadata (dedication / première / instrumentation / credits) may carry
+// inline Markdown links or emphasis. When markup is present, render HTML (dropping
+// the per-character flap); plain text still flaps via setLocalizedText.
+const INLINE_MARKDOWN = /\[[^\]]+\]\([^)\s]+\)|\*\*?[^*]+\*\*?/;
+
+function setLocalizedRich(element: HTMLElement, text: string, animate: boolean) {
+  if (element.hasAttribute("data-i18n-rich") || INLINE_MARKDOWN.test(text)) {
+    const existingTimer = flapTimers.get(element);
+    if (existingTimer) window.clearTimeout(existingTimer);
+    flapTimers.delete(element);
+    element.innerHTML = renderSafeInlineMarkdown(text);
+    delete element.dataset.flapping;
+  } else {
+    setLocalizedText(element, text, animate);
+  }
+}
+
 function applyLanguage(language: Locale, animate = false) {
   const shouldAnimate = animate && motionSettings.languageFlap;
   const root = document.documentElement;
@@ -147,7 +168,7 @@ function applyLanguage(language: Locale, animate = false) {
   document.querySelectorAll<HTMLElement>("[data-i18n-en]").forEach((element) => {
     const translation = translationFor(element, language);
     if (translation !== undefined) {
-      setLocalizedText(element, translation, shouldAnimate);
+      setLocalizedRich(element, translation, shouldAnimate);
     }
   });
 
@@ -236,7 +257,7 @@ function applyLanguage(language: Locale, animate = false) {
   document
     .querySelectorAll<HTMLElement>("[data-i18n-dedication]")
     .forEach((element) => {
-      setLocalizedText(
+      setLocalizedRich(
         element,
         formatDedication(
           {
@@ -252,7 +273,7 @@ function applyLanguage(language: Locale, animate = false) {
   document
     .querySelectorAll<HTMLElement>("[data-i18n-commission]")
     .forEach((element) => {
-      setLocalizedText(
+      setLocalizedRich(
         element,
         formatCommission(
           {
@@ -268,7 +289,7 @@ function applyLanguage(language: Locale, animate = false) {
   document
     .querySelectorAll<HTMLElement>("[data-i18n-premiere]")
     .forEach((element) => {
-      setLocalizedText(
+      setLocalizedRich(
         element,
         formatPremiere(
           {
@@ -299,6 +320,11 @@ function applyLanguage(language: Locale, animate = false) {
   applyGuideLanguage(language);
   updatePressedState("[data-language-option]", language);
   store("yc-language", language);
+  document.dispatchEvent(
+    new CustomEvent("yc-language-applied", { detail: { language, animate } }),
+  );
+  (window as Window & { ycRefreshCjkTypography?: () => void })
+    .ycRefreshCjkTypography?.();
 }
 
 function updateThemeToggleLabel(theme: Theme, language: Locale) {
@@ -359,6 +385,8 @@ function applyFontSize(fontSize: FontSize, animate = false) {
 }
 
 export function initializePreferences() {
+  initializeCjkTypography();
+
   const root = document.documentElement;
   const windowWithFlapText = window as Window & {
     ycSetFlapText?: (element: HTMLElement, text: string, animate?: boolean) => void;

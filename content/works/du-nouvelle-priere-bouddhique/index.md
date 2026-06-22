@@ -8,6 +8,14 @@ instrumentation:
 duration:
   minutes: 9
 description: "A choral work for SATB, percussion, and piano."
+premiere:
+  date: "2025-04-25"
+  by:
+    en: "Swarthmore Garnet Singers conducted by Nathan Reiff; Chung Sze Kwok, piano; [Spencer Klaw Kennedy](https://spencerklawkennedy.com/), percussion"
+    zh: "Swarthmore Garnet Singers，Nathan Reiff 指揮；Chung Sze Kwok，鋼琴；[Spencer Klaw Kennedy](https://spencerklawkennedy.com/)，打擊樂"
+  venue:
+    en: "Lang Concert Hall, Swarthmore, PA"
+    zh: "Lang 音樂廳，賓州斯沃斯莫爾"
 slug: "du-nouvelle-priere-bouddhique"
 order: 4
 ---

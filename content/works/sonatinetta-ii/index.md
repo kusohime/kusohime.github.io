@@ -10,6 +10,14 @@ duration:
 description: "Commissioned by Duncan Wall for his senior recital."
 slug: "sonatinetta-ii"
 order: 999
+premiere:
+  date: "2026-02-28"
+  by:
+    en: "[Duncan Wall](https://www.swarthmore.edu/music/duncan-wall-26), horn; Yixin Cui, piano"
+    zh: "[Duncan Wall](https://www.swarthmore.edu/music/duncan-wall-26)，法國號；崔浥新，鋼琴"
+  venue:
+    en: "Lang Concert Hall, Swarthmore, PA"
+    zh: "Lang 音樂廳，賓州斯沃斯莫爾"
 ---
 
 ## Program Notes

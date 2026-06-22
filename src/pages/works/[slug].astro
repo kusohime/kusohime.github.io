@@ -16,6 +16,7 @@ import {
   formatPremiere,
   translate,
 } from "../../config/locales";
+import { renderSafeInlineMarkdown } from "../../lib/safeHtml.js";
 import "../../styles/kanbun.css";
 
 export async function getStaticPaths() {
@@ -75,8 +76,9 @@ const {
         <p><LocalizedText value={{ en: subtitle, zh: subtitleZh }} /></p>
       )}
       <p class="work-facts">
-        <span><LocalizedText value={instrumentation} /></span>
+        <span class="work-instrumentation"><LocalizedText value={instrumentation} /></span>
         <span
+          class="work-duration"
           data-i18n-duration
           data-duration-minutes={duration.minutes}
           data-duration-continuous={String(duration.continuous)}
@@ -92,9 +94,8 @@ const {
             data-i18n-commission
             data-commission-en={commission.en}
             data-commission-zh={commission.zh}
-          >
-            {formatCommission(commission, "en")}
-          </em>
+            set:html={renderSafeInlineMarkdown(formatCommission(commission, "en"))}
+          />
         </p>
       )}
 
@@ -145,9 +146,8 @@ const {
                 data-i18n-dedication
                 data-dedication-en={dedication.en}
                 data-dedication-zh={dedication.zh}
-              >
-                {formatDedication(dedication, "en")}
-              </em>
+                set:html={renderSafeInlineMarkdown(formatDedication(dedication, "en"))}
+              />
             </p>
           )}
           {credits?.map((credit) => (
@@ -174,9 +174,8 @@ const {
                 data-premiere-date={
                   premiere.date !== undefined ? String(premiere.date) : undefined
                 }
-              >
-                {formatPremiere(premiere, "en")}
-              </em>
+                set:html={renderSafeInlineMarkdown(formatPremiere(premiere, "en"))}
+              />
             </p>
           )}
         </footer>
@@ -185,7 +184,7 @@ const {
 
     {work.data.comments && <Comments collection="works" slug={work.data.slug} />}
 
-    <p class="back-link">
+    <nav class="back-link" aria-label="Footer navigation">
       <a href="/works/">
         <span
           class="glyph-arrow glyph-arrow--back"
@@ -196,7 +195,7 @@ const {
           {translate("en", "common.backWorks")}
         </span>
       </a>
-    </p>
+    </nav>
   </article>
 </BaseLayout>
 

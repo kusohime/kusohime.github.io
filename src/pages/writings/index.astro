@@ -14,6 +14,7 @@ import {
   translate,
   writingTypeLabel,
 } from "../../config/locales";
+import { cjkLangFromContentLanguage } from "../../utils/cjkLanguage";
 
 const writings = (
   await getCollection("writings", ({ data }) => !data.draft)
@@ -79,6 +80,14 @@ const writingGroups = writingTypes.map((type) => ({
             <ul class="catalog-list dated-list">
               {groupedWritings.map((writing) => {
                 const dateLabel = writing.data.displayDate ?? String(writing.data.date);
+                const titleLang = cjkLangFromContentLanguage(
+                  writing.data.language,
+                  [
+                    writing.data.title,
+                    writing.data.subtitle,
+                    writing.data.excerpt,
+                  ].filter(Boolean).join(" "),
+                );
                 return (
                 <li data-source-file={`content/writings/${writing.id}/index.md`}>
                   <time
@@ -88,7 +97,7 @@ const writingGroups = writingTypes.map((type) => ({
                   >
                     {formatDate(dateLabel, "en", "short")}
                   </time>
-                  <a href={`/writings/${writing.data.slug}/`}>
+                  <a href={`/writings/${writing.data.slug}/`} lang={titleLang}>
                     {writing.data.title}
                   </a>
                   {writing.data.subtitle && (

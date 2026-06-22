@@ -1,5 +1,5 @@
 ---
-title: "Melody & Chord Transformer"
+title: "Melodic Transformation"
 subtitle: "Transposition, inversion, retrograde, rotation"
 subtitleZh: "移位、倒影、逆行、旋轉"
 number: 10

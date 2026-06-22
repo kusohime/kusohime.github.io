@@ -1,5 +1,5 @@
 ---
-title: "String & Piano Harmonics Workbench"
+title: "String & Piano Harmonics"
 subtitle: "Natural, artificial, acoustic, and interior-piano harmonic finder"
 subtitleZh: "自然、人工、聲學弦與鋼琴內部弦泛音查找"
 number: 6

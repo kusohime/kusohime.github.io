@@ -4,7 +4,7 @@ subtitle: ""
 subtitleZH: ""
 number: 17
 group: "Linguistics"
-status: "beta"
+status: "stable"
 slug: "kanbun"
 references:
   - "untunt. *kanbunHTML* — a kanbun kundoku (漢文訓読) HTML display solution. [GitHub](https://github.com/untunt/kanbunHTML) · [live demo](https://phesoca.com/kanbun-html/). Licensed AGPL-3.0; the display engine here is a port of that project."
