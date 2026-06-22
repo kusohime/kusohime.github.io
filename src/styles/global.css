@@ -126,7 +126,7 @@
   --theme-color: #c81e1e;
 
   --page-width: 76rem;
-  --content-width: 38rem;
+  --content-width: 39rem;
   --reading-width: 40rem;
   --page-gutter: 1.25rem;
   --home-image-fade-width: 5%;
@@ -143,7 +143,7 @@
   --heading-size: 1rem;
   --header-padding: 0.7rem;
   --footer-min-height: 5rem;
-  --paragraph-indent: 0em;
+  --paragraph-indent: 2em;
   --paragraph-spacing: 1.05rem;
   --cjk-letter-spacing: 0em;
   --cjk-autospace-width: 0.12em;
