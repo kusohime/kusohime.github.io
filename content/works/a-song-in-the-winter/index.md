@@ -18,6 +18,8 @@ premiere:
     zh: "Lang 音樂廳，賓州斯沃斯莫爾"
 slug: "a-song-in-the-winter"
 order: 1
+subtitle: "for voice and piano"
+subtitleZh: "聲樂與鋼琴"
 ---
 
 Poet: Qing Hao

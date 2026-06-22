@@ -18,6 +18,8 @@ premiere:
   venue:
     en: "Lang Concert Hall, Swarthmore, PA"
     zh: "Lang 音樂廳，賓州斯沃斯莫爾"
+subtitle: "for horn and piano"
+subtitleZh: "法國號與鋼琴"
 ---
 
 ## Program Notes

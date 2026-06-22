@@ -10,6 +10,9 @@ duration:
 description: "A compact duo for piano and vibraphone."
 slug: "urtonforschungen-i"
 order: 1
+subtitle: "for piano and vibraphone"
+subtitleZh: "鋼琴與顫音琴"
+draft: true
 ---
 
 ## Program Notes

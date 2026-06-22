@@ -12,7 +12,7 @@ description: "A solo viola work completed in 2023."
 slug: "bayanbulak"
 order: 1
 subtitle: "for solo viola"
-subtitleZh: "為中提琴獨奏"
+subtitleZh: "中提琴獨奏"
 premiere:
   date: "2023-12-04"
   by:

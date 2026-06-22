@@ -18,6 +18,8 @@ premiere:
     zh: "Lang 音樂廳，賓州斯沃斯莫爾"
 slug: "du-nouvelle-priere-bouddhique"
 order: 4
+subtitle: "for SATB, percussion, and piano"
+subtitleZh: "為混聲合唱、打擊樂與鋼琴"
 ---
 
 <div class="lang-block" data-lang="en">

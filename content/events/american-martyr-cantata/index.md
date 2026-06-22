@@ -23,4 +23,11 @@ links:
     url: "https://www.swarthmore.edu/music/facilities"
 ---
 
-- [C. Leonard Raybon](https://liberalarts.tulane.edu/music/people/c-leonard-raybon), *American Martyr* (world premiere). Yixin Cui, tenor; C. Leonard Raybon, voice; Olivia Scarozza, soprano; Ava Pressman, alto; Gregory Boatman, baritone; [Swarthmore College Chorus](https://www.swarthmore.edu/music/swarthmore-college-chorus-garnet-singers); Hsaio-Han Yang, piano and organ; [Nathan Reiff](https://www.swarthmore.edu/profile/nathan-reiff), conductor.
+- [C. Leonard Raybon](https://liberalarts.tulane.edu/music/people/c-leonard-raybon), *American Martyr* (world premiere).
+- Yixin Cui, tenor
+- Olivia Scarozza, soprano
+- [Ava Pressman](https://www.avapressman.com/), mezzo-soprano
+- Gregory Boatman, baritone
+- [Swarthmore College Chorus](https://www.swarthmore.edu/music/swarthmore-college-chorus-garnet-singers)
+- [Hsaio-Han Yang](https://www.haliceyang.com/about), piano and organ
+- [Nathan Reiff](https://www.swarthmore.edu/profile/nathan-reiff), conductor
