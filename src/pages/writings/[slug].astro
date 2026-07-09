@@ -6,10 +6,10 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Comments from "../../components/Comments.astro";
+import { toAnchor } from "../../config/contentTaxonomy";
 import { contentFolder } from "../../utils/contentPaths";
 import { cjkLangFromContentLanguage } from "../../utils/cjkLanguage";
 import {
-  contentLanguageLabel,
   formatDate,
   translate,
   writingTypeLabel,
@@ -42,6 +42,10 @@ const chapters = allChapters
 const { title, subtitle, date, displayDate, type, language, excerpt } = writing.data;
 const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
+const writingTags = writing.data.tags && writing.data.tags.length > 0
+  ? writing.data.tags
+  : [type];
+const isTranslation = writingTags.includes("Translation");
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isClairieres = writing.data.slug === "tian-jian-qing-che";
 const contentLang = cjkLangFromContentLanguage(
@@ -60,20 +64,23 @@ const contentLang = cjkLangFromContentLanguage(
       {writing.data.draft && (
         <p class="draft-flag">Draft — not listed publicly</p>
       )}
-      <h1 lang={contentLang}>{title}</h1>
+      <div class="writing-title-line writing-title-line--detail">
+        <h1 lang={contentLang}>{title}</h1>
+        {isTranslation && (
+          <a
+            class="writing-tag writing-tag--translation"
+            href={`/writings/#writings-tag-${toAnchor("Translation")}`}
+            data-i18n-writing-type="Translation"
+          >
+            {writingTypeLabel("Translation", "en")}
+          </a>
+        )}
+      </div>
       {subtitle && <p lang={contentLang}>{subtitle}</p>}
       <p class="writing-metadata">
-        <span data-i18n-writing-type={type}>
-          {writingTypeLabel(type, "en")}
-        </span>
         <time datetime={String(date)} data-i18n-date={dateLabel}>
           {formatDate(dateLabel, "en")}
         </time>
-        {language && (
-          <span data-i18n-content-language={language}>
-            {contentLanguageLabel(language, "en")}
-          </span>
-        )}
       </p>
     </header>
 
@@ -247,6 +254,21 @@ const contentLang = cjkLangFromContentLanguage(
         </nav>
       )
     }
+
+    <footer class="writing-footer-tags" aria-label="Writing tags">
+      {writingTags.map((tag) => (
+        <a
+          class:list={[
+            "writing-tag",
+            { "writing-tag--translation": tag === "Translation" },
+          ]}
+          href={`/writings/#writings-tag-${toAnchor(tag)}`}
+          data-i18n-writing-type={tag}
+        >
+          {writingTypeLabel(tag, "en")}
+        </a>
+      ))}
+    </footer>
 
     {writing.data.comments && <Comments collection="writings" slug={writing.data.slug} />}
 

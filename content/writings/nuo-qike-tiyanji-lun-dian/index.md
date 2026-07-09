@@ -3,6 +3,7 @@ title: "诺齐克的体验机论点究竟证明了什么"
 subtitle: "What Nozick's Experience Machine Argument Really Proves — Eduardo Rivera-López"
 date: "2020-06-30"
 type: "Translation"
+tags: ["Translation", "Philosophy", "Moral Philosophy"]
 language: "Chinese"
 excerpt: "诺齐克著名的体验机论点可以说是一个非常典型且成功的论点——据我所知，没什么人讨论过这个论点的可靠性。"
 slug: "nuo-qike-tiyanji-lun-dian"

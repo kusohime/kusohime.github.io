@@ -9,7 +9,7 @@ duration:
   minutes: 5
 credits:
   - en: "Chinese Sign Language translation by Miao Lisheng (苗利昇) and Yixin Cui, 2025"
-    zh: "中國手語翻譯：苗利昇、Yixin Cui，2025"
+    zh: "中國手語翻譯：苗利昇、崔浥新，2025"
 description: "A solo work for sign-singer in Chinese Sign Language."
 slug: "a-past-life"
 order: 2

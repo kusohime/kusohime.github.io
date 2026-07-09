@@ -37,7 +37,7 @@ const pronunciation = "崔浥新 · Ee-Hseen Tsway · Cuī Yìxīn · [tsʰweɪ�
     border: 1px solid var(--theme-color, #c81e1e);
     background: var(--color-background, #fff);
     color: var(--color-text, #000);
-    content: attr(data-pronunciation);
+    content: none;
     font-family: var(--font-body, serif);
     font-size: 0.75rem;
     font-weight: normal;
@@ -57,6 +57,7 @@ const pronunciation = "崔浥新 · Ee-Hseen Tsway · Cuī Yìxīn · [tsʰweɪ�
   .name-pronunciation:hover::after,
   .name-pronunciation:focus-visible::after,
   :global(a:focus-visible) .name-pronunciation::after {
+    content: attr(data-pronunciation);
     opacity: 1;
     transform: translateY(0);
   }

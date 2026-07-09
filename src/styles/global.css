@@ -128,7 +128,7 @@
   --page-width: 76rem;
   --content-width: 39rem;
   --reading-width: 40rem;
-  --page-gutter: 1.25rem;
+  --page-gutter: 1.5rem;
   --home-image-fade-width: 5%;
 
   --space-xs: 0.35rem;
@@ -428,11 +428,27 @@ summary {
 
 .skip-link {
   position: absolute;
-  left: -9999px;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: 100;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .skip-link:focus {
-  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid var(--theme-color);
+  background: var(--color-background);
+  color: var(--color-text);
 }
 
 .visually-hidden {
@@ -912,10 +928,6 @@ main {
   margin: 0 0 var(--space-xs);
 }
 
-.writing-groups {
-  max-width: var(--reading-width);
-}
-
 .works-index,
 .writings-index,
 .tools-index,
@@ -1004,14 +1016,16 @@ main {
   margin-bottom: var(--space-md);
 }
 
-.event-rail {
+.event-rail,
+.writing-rail {
   display: grid;
   gap: var(--space-md);
   font-size: 0.92rem;
   line-height: 1.35;
 }
 
-.event-rail-section {
+.event-rail-section,
+.writing-rail-section {
   display: grid;
   gap: var(--space-xs);
 }
@@ -1026,12 +1040,26 @@ main {
   color: var(--color-muted);
 }
 
-.event-rail a[aria-current="page"] {
+.event-rail a[aria-current="page"],
+.writing-rail a[aria-current="page"] {
   color: var(--theme-color);
   font-weight: bold;
   text-decoration: underline;
   text-decoration-thickness: 0.14em;
   text-underline-offset: 0.16em;
+}
+
+.writing-date-archive,
+.writing-tag-archive {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.writing-date-year {
+  font-weight: bold;
 }
 
 .event-archive details {
@@ -1078,26 +1106,51 @@ main {
   display: none;
 }
 
-.event-panel {
+.event-panel,
+.writing-panel,
+.writing-year-group,
+.writing-month-group {
   scroll-margin-top: var(--space-md);
 }
 
-.event-panel:focus {
+.event-panel:focus,
+.writing-panel:focus {
   outline: none;
 }
 
-.event-panel > h2 {
+.event-panel > h2,
+.writing-panel > h2 {
   margin: 0 0 var(--space-md);
   padding-bottom: 0.25rem;
   border-bottom: 1px solid var(--color-rule);
 }
 
-.event-panel-kicker {
+.event-panel-kicker,
+.writing-panel-kicker {
   margin: 0 0 var(--space-xs);
   color: var(--color-muted);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.writing-panel[hidden] {
+  display: none;
+}
+
+.writing-year-group,
+.writing-month-group {
+  margin-bottom: var(--space-md);
+}
+
+.writing-year-group > h3,
+.writing-month-group > h4 {
+  margin: 0 0 var(--space-sm);
+}
+
+.writing-month-group > h4 {
+  color: var(--color-muted);
+  font-size: 0.95rem;
 }
 
 .catalog-groups section > h2 {
@@ -1217,10 +1270,80 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+.writing-summary {
+  min-width: 0;
+}
+
+.writing-title-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.45rem;
+}
+
+.writing-title-line h1,
+.writing-title-line h3,
+.writing-title-line h4,
+.writing-title-line h5 {
+  margin: 0;
+}
+
+.writing-title-line h3,
+.writing-title-line h4,
+.writing-title-line h5 {
+  font-size: 1rem;
+}
+
+.writing-title-line--detail {
+  margin-bottom: var(--space-xs);
+}
+
+.writing-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  align-items: baseline;
+}
+
+.writing-tags .writing-tag + .writing-tag::before {
+  color: var(--color-muted);
+  content: ",";
+  margin-right: 0.2rem;
+}
+
 .writing-list-subtitle {
-  grid-column: 2;
+  margin: 0.15rem 0 0;
   color: var(--color-muted);
   font-size: 0.95em;
+}
+
+.writing-tag {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.writing-tag:hover,
+.writing-tag:focus-visible {
+  color: var(--theme-color);
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+.writing-tag--translation {
+  display: inline-block;
+  border: 1px solid var(--theme-color);
+  padding: 0.05rem 0.45rem;
+  color: var(--theme-color);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.writing-tag--translation:hover,
+.writing-tag--translation:focus-visible {
+  text-decoration: none;
+  background: color-mix(in srgb, var(--theme-color) 8%, transparent);
 }
 
 .detail-page {
@@ -1330,6 +1453,37 @@ main {
 :root:lang(zh-Hant-TW) .writing-metadata > * + *::before,
 :root:lang(ja) .writing-metadata > * + *::before {
   content: "・";
+}
+
+.writing-footer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: var(--space-md) 0 0;
+  font-size: 0.78em;
+}
+
+.writing-footer-tags .writing-tag {
+  color: var(--color-muted);
+}
+
+.writing-footer-tags .writing-tag + .writing-tag::before {
+  content: ",";
+  margin-right: 0.25rem;
+}
+
+.writing-footer-tags .writing-tag--translation {
+  border: 0;
+  padding: 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.writing-footer-tags .writing-tag--translation:hover,
+.writing-footer-tags .writing-tag--translation:focus-visible {
+  background: transparent;
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
 }
 
 .work-detail-header .resource-links {
@@ -1747,9 +1901,23 @@ main {
   /* 中文：引文縮排成一個區塊，正體不用斜體（斜體由內容層的 * 控制，已移除）。 */
   /* English: Indent quotations as a block; keep them upright (italics, if any,
      come from the content's own markup, not from here). */
+  position: relative;
   margin: var(--space-md) 0 var(--space-md) var(--space-md);
   padding-left: var(--space-sm);
-  border-left: 0.18rem solid var(--theme-color);
+}
+
+.prose blockquote::before {
+  /* 中文：以主題色的引號替代原先的豎線，掛在引文左側的空隙裡。 */
+  /* English: A theme-colored opening quotation mark hangs in the gutter
+     where the vertical bar used to sit; purely decorative. */
+  content: "“" / "";
+  position: absolute;
+  top: -0.08em;
+  left: -0.5em;
+  font-size: 2.2em;
+  line-height: 1;
+  color: var(--theme-color);
+  pointer-events: none;
 }
 
 .poetry {
@@ -2188,6 +2356,13 @@ main {
   text-decoration: none;
 }
 
+.writing-title-page .prose.has-sidenotes .fn-ref a,
+.writing-title-page .prose a[data-footnote-backref] {
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
+}
+
 .prose.has-sidenotes .fn-ref a::before {
   content: "(";
 }
@@ -2289,6 +2464,10 @@ main {
   border: 0;
   border-top: 1px solid var(--theme-color);
   margin-block: var(--space-md);
+}
+
+.writing-title-page .prose hr {
+  display: none;
 }
 
 .prose pre,
@@ -2440,7 +2619,13 @@ main {
   }
 
   .header-row {
+    flex-wrap: wrap;
     font-size: 0.8rem;
+    white-space: normal;
+  }
+
+  .header-tools {
+    margin-left: 0;
   }
 
   .cv-entry-head,

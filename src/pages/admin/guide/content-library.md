@@ -153,6 +153,7 @@ edit the file. Do not create a `chapters` folder.
 title: "Writing title"
 date: 2026
 type: "Essay"
+tags: ["Essay"]
 language: "English"
 excerpt: "Short description shown on the writing title page."
 slug: "writing-title"
@@ -162,8 +163,8 @@ order: 1
 
 Valid types / 可用型別:
 
-`Translation`, `Essay`, `Fiction`, `Blog`, `Poem`, `Program Note`, `Review`,
-`Other`
+`Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`, `French`,
+`Russian`, `Philosophy`, `Moral Philosophy`, `Program Note`, `Review`, `Other`
 
 Shared category names, writing types, language labels, and interface text live
 in `src/config/locales.ts`. Edit that one file when adding or changing a

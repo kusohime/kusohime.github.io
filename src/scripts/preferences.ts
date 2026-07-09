@@ -74,7 +74,12 @@ function applyGuideLanguage(language: Locale) {
 }
 
 function translationFor(element: HTMLElement, language: Locale) {
-  if (language === "zh") return element.dataset.i18nZh ?? element.dataset.i18nEn;
+  if (language === "zh") {
+    return (element.dataset.i18nZh ?? element.dataset.i18nEn)?.replaceAll(
+      "Yixin Cui",
+      "崔浥新",
+    );
+  }
   return element.dataset.i18nEn;
 }
 
@@ -230,7 +235,12 @@ function applyLanguage(language: Locale, animate = false) {
 
   document.querySelectorAll<HTMLElement>("[data-i18n-date]").forEach((element) => {
     const date = element.dataset.i18nDate ?? "";
-    const monthStyle = element.dataset.i18nDateFormat === "short" ? "short" : "long";
+    const monthStyle =
+      element.dataset.i18nDateFormat === "short"
+        ? "short"
+        : element.dataset.i18nDateFormat === "month"
+          ? "month"
+          : "long";
     setLocalizedText(element, formatDate(date, language, monthStyle), shouldAnimate);
   });
 

@@ -43,6 +43,7 @@ function enhanceProse(prose: HTMLElement): void {
   });
 
   const refs = prose.querySelectorAll<HTMLAnchorElement>("a[data-footnote-ref]");
+  const disableJumpLinks = prose.closest(".writing-title-page") !== null;
   let placed = 0;
 
   refs.forEach((ref) => {
@@ -55,6 +56,10 @@ function enhanceProse(prose: HTMLElement): void {
 
     // 标记：红色括号 (n)，样式在 CSS。Marker becomes a red "(n)" via CSS.
     marker.classList.add("fn-ref");
+    if (disableJumpLinks) {
+      ref.removeAttribute("href");
+      ref.removeAttribute("id");
+    }
 
     // 边注：行内 <span>，宽屏浮到右侧。Inline span; floats right on wide screens.
     const sidenote = document.createElement("span");

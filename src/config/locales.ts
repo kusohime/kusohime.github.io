@@ -40,6 +40,9 @@ export const messages = {
     "common.skip": "Skip to content",
     "common.noWorks": "No works in this category yet.",
     "common.noEntries": "No entries yet.",
+    "common.date": "Date",
+    "common.tags": "Tags",
+    "common.undated": "Undated",
     "events.noUpcoming": "No upcoming events.",
     "common.brief": "Brief",
     "common.contents": "Contents",
@@ -95,6 +98,9 @@ export const messages = {
     "common.skip": "跳至正文",
     "common.noWorks": "此類別目前尚無作品。",
     "common.noEntries": "目前尚無條目。",
+    "common.date": "日期",
+    "common.tags": "標籤",
+    "common.undated": "未標日期",
     "events.noUpcoming": "近期暫無活動。",
     "common.brief": "簡介",
     "common.contents": "目錄",
@@ -161,6 +167,10 @@ const writingTypeTranslations: Record<
     singular: { en: "Essay", zh: "隨筆" },
     plural: { en: "Essays", zh: "隨筆" },
   },
+  Drama: {
+    singular: { en: "Drama", zh: "戲劇" },
+    plural: { en: "Drama", zh: "戲劇" },
+  },
   Fiction: {
     singular: { en: "Fiction", zh: "小說" },
     plural: { en: "Fiction", zh: "小說" },
@@ -169,9 +179,37 @@ const writingTypeTranslations: Record<
     singular: { en: "Blog", zh: "網誌" },
     plural: { en: "Blog", zh: "網誌" },
   },
-  Poem: {
-    singular: { en: "Poem", zh: "詩" },
-    plural: { en: "Poems", zh: "詩" },
+  Poetry: {
+    singular: { en: "Poetry", zh: "詩" },
+    plural: { en: "Poetry", zh: "詩" },
+  },
+  French: {
+    singular: { en: "French", zh: "法文" },
+    plural: { en: "French", zh: "法文" },
+  },
+  Russian: {
+    singular: { en: "Russian", zh: "俄文" },
+    plural: { en: "Russian", zh: "俄文" },
+  },
+  Philosophy: {
+    singular: { en: "Philosophy", zh: "哲學" },
+    plural: { en: "Philosophy", zh: "哲學" },
+  },
+  "Moral Philosophy": {
+    singular: { en: "Moral Philosophy", zh: "道德哲學" },
+    plural: { en: "Moral Philosophy", zh: "道德哲學" },
+  },
+  "Affect Theory": {
+    singular: { en: "Affect Theory", zh: "情動理論" },
+    plural: { en: "Affect Theory", zh: "情動理論" },
+  },
+  Psychoanalysis: {
+    singular: { en: "Psychoanalysis", zh: "精神分析" },
+    plural: { en: "Psychoanalysis", zh: "精神分析" },
+  },
+  Philology: {
+    singular: { en: "Philology", zh: "語文學" },
+    plural: { en: "Philology", zh: "語文學" },
   },
   "Program Note": {
     singular: { en: "Program Note", zh: "節目說明" },
@@ -225,7 +263,8 @@ export interface LocalizedText {
 }
 
 export function localizedText(value: LocalizedText, locale: Locale) {
-  return value[locale] ?? value.en;
+  const text = value[locale] ?? value.en;
+  return locale === "zh" ? text.replaceAll("Yixin Cui", "崔浥新") : text;
 }
 
 // 中文：把「題獻／委約／首演」資料組成自然語句，而非「標籤：值」。
@@ -331,9 +370,21 @@ export function formatDuration(duration: DurationData, locale: Locale) {
 export function formatDate(
   value: string | number,
   locale: Locale,
-  monthStyle: "long" | "short" = "long",
+  monthStyle: "long" | "short" | "month" = "long",
 ) {
   const raw = String(value);
+  const customDateTranslations: Record<string, Record<Locale, string>> = {
+    Ongoing: { en: "Ongoing", zh: "進行中" },
+    "Draft review": { en: "Draft review", zh: "草稿整理" },
+    "Recovered from chat export": {
+      en: "Recovered from chat export",
+      zh: "聊天記錄整理",
+    },
+  };
+  if (customDateTranslations[raw]) {
+    return customDateTranslations[raw][locale];
+  }
+
   const match = raw.match(/^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$/);
   if (!match) return raw;
 
@@ -341,10 +392,13 @@ export function formatDate(
   const date = new Date(
     Date.UTC(Number(year), Number(month ?? 1) - 1, Number(day ?? 1)),
   );
-  const options: Intl.DateTimeFormatOptions = day
-    ? { year: "numeric", month: monthStyle, day: "numeric", timeZone: "UTC" }
+  const dateMonthStyle = monthStyle === "month" ? "long" : monthStyle;
+  const options: Intl.DateTimeFormatOptions = monthStyle === "month" && month
+    ? { month: "long", timeZone: "UTC" }
+    : day
+    ? { year: "numeric", month: dateMonthStyle, day: "numeric", timeZone: "UTC" }
     : month
-      ? { year: "numeric", month: monthStyle, timeZone: "UTC" }
+      ? { year: "numeric", month: dateMonthStyle, timeZone: "UTC" }
       : { year: "numeric", timeZone: "UTC" };
 
   return new Intl.DateTimeFormat(localeInfo[locale].intl, options).format(date);

@@ -2,7 +2,8 @@
 title: "论翻译腔"
 subtitle: "On Translationese — Masatsugu Ono 小野正嗣"
 date: "2022-02-16"
-type: "Translation"
+type: "Essay"
+tags: ["Translation", "Essay"]
 language: "Chinese"
 excerpt: "我至今仍清楚地记得那位文静的同学，和他常在课间阅读的那两册书的颜色——一册是红的，另一册是绿的。"
 slug: "lun-fan-yi-qiang"

@@ -3,6 +3,7 @@ title: "天上隙"
 subtitle: "Clairières dans le ciel — Lili Boulanger / Francis Jammes"
 date: "2025-03-04"
 type: "Translation"
+tags: ["Translation", "Poetry", "French"]
 language: "Chinese / French"
 excerpt: "悉以那种能唤起仍充满新鲜感的过去的情感演唱这些旋律。"
 slug: "tian-jian-qing-che"

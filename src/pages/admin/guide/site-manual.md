@@ -161,14 +161,16 @@ Required: `title`, `date`, `type`, `language`, `excerpt`, `slug`.
 
 必填：`title`、`date`、`type`、`language`、`excerpt`、`slug`。
 
-Optional: `subtitle`, `order`, `draft`, `comments`.
+Optional: `subtitle`, `tags`, `order`, `draft`, `comments`.
 
-可選：`subtitle`、`order`、`draft`、`comments`。
+可選：`subtitle`、`tags`、`order`、`draft`、`comments`。
 
-Types: `Translation`, `Essay`, `Fiction`, `Blog`, `Poem`, `Program Note`,
-`Review`, `Other`.
+Types and tags: `Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`,
+`French`, `Russian`, `Philosophy`, `Moral Philosophy`, `Program Note`, `Review`,
+`Other`.
 
-類型：`Translation`、`Essay`、`Fiction`、`Blog`、`Poem`、`Program Note`、
+類型與標籤：`Translation`、`Essay`、`Drama`、`Fiction`、`Blog`、`Poetry`、
+`French`、`Russian`、`Philosophy`、`Moral Philosophy`、`Program Note`、
 `Review`、`Other`。
 
 Chapters live in `content/writings/<folder>/chapters/*.md`; each chapter needs

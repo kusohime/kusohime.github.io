@@ -162,12 +162,13 @@ Optional fields / 可選欄位:
 ```yaml
 subtitle: "Optional subtitle"
 order: 1
+tags: ["Translation", "Essay"]
 ```
 
 Valid types / 可用型別:
 
-`Translation`, `Essay`, `Fiction`, `Blog`, `Poem`, `Program Note`, `Review`,
-`Other`
+`Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`, `French`,
+`Russian`, `Philosophy`, `Moral Philosophy`, `Program Note`, `Review`, `Other`
 
 Writing types, content-language labels, and dates are translated centrally in
 `src/config/locales.ts`. Add or revise shared translations there instead of

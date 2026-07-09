@@ -16,7 +16,7 @@ premiere:
   date: "2025-12-07"
   by:
     en: "Yixin Cui, voice; [Spencer Klaw Kennedy](https://spencerklawkennedy.com/), percussion"
-    zh: "Yixin Cui · 人聲; [Spencer Klaw Kennedy](https://spencerklawkennedy.com/) · 打擊樂"
+    zh: "崔浥新 · 人聲; [Spencer Klaw Kennedy](https://spencerklawkennedy.com/) · 打擊樂"
   venue:
     en: "Lang Concert Hall, Swarthmore, PA"
     zh: "Lang 音樂廳，賓州斯沃斯莫爾"
