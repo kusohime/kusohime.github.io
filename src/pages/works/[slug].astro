@@ -5,6 +5,7 @@
 // Caveat: The public URL uses the frontmatter slug, not the folder name.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LanguageAvailabilityNote from "../../components/LanguageAvailabilityNote.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import Comments from "../../components/Comments.astro";
 import PeerTubeEmbed from "../../components/PeerTubeEmbed.astro";
@@ -17,6 +18,7 @@ import {
   translate,
 } from "../../config/locales";
 import { renderSafeInlineMarkdown } from "../../lib/safeHtml.js";
+import { proseCounts } from "../../utils/cjkLanguage";
 import "../../styles/kanbun.css";
 
 export async function getStaticPaths() {
@@ -37,6 +39,15 @@ interface Props {
 
 const { work } = Astro.props;
 const { Content } = await render(work);
+// 中文：作品说明采用「同页双语段落」写法，而非 index.zh.md；正文里几乎
+// 没有汉字时视为只有英文，切到中文界面时给出提示。
+// English: Work notes are written bilingually inline (no index.zh.md); when the
+// body carries almost no Han text, treat it as English-only and note that in
+// the Chinese UI.
+const { han, latinWords } = proseCounts(work.body ?? "");
+// 一两句以内的说明不值得挂提示，只对有实际英文段落的作品显示。
+// Skip the note when the body is only a line or two of text.
+const notesEnglishOnly = han < 20 && latinWords >= 15;
 const {
   title,
   subtitle,
@@ -133,6 +144,7 @@ const {
       )
     }
 
+    {notesEnglishOnly && <LanguageAvailabilityNote available="en" />}
     <div class="prose work-notes">
       <Content />
     </div>

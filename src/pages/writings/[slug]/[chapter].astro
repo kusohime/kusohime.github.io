@@ -5,8 +5,10 @@
 // Caveat: The parent writing is inferred from the shared content/writings folder.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CuiXiongReader from "../../../components/CuiXiongReader.astro";
+import LanguageAvailabilityNote from "../../../components/LanguageAvailabilityNote.astro";
 import { contentFolder } from "../../../utils/contentPaths";
-import { cjkLangFromText } from "../../../utils/cjkLanguage";
+import { cjkLangFromText, dominantContentLang } from "../../../utils/cjkLanguage";
 import { translate } from "../../../config/locales";
 
 export async function getStaticPaths() {
@@ -61,6 +63,12 @@ const contentLang = cjkLangFromText(
     chapter.data.excerpt,
   ].filter(Boolean).join(" "),
 );
+// 中文：章节没有译本机制，正文必为单语；按主导语言提示另一语言不可用
+// （纯图片章节等无正文时不提示）。
+// English: Chapters have no translation mechanism, so the body is always
+// single-language; note the unavailable locale from its dominant language
+// (image-only chapters yield undefined and get no note).
+const bodyLang = dominantContentLang(chapter.body ?? "");
 ---
 
 <BaseLayout
@@ -73,66 +81,92 @@ const contentLang = cjkLangFromText(
     data-writing-slug={writing.data.slug}
     data-source-file={`content/writings/${chapter.id}.md`}
   >
-    <header class="detail-header">
-      <p lang={contentLang}>{writing.data.title}</p>
-      <h1 lang={contentLang}>{chapter.data.title}</h1>
-    </header>
+    {
+      isCuiXiong ? (
+        <CuiXiongReader
+          writing={writing}
+          chapters={chapters}
+          currentChapter={chapter}
+          contentLang={contentLang}
+        >
+          {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
+          <div
+            lang={contentLang}
+            class:list={[
+              "prose",
+              "writing-body",
+              "chicago-prose",
+              {
+                "cui-dialogue": !isBenQun,
+                "poly-dialogue": isBenQun,
+              },
+            ]}
+          >
+            <Content />
+          </div>
+        </CuiXiongReader>
+      ) : (
+        <>
+          <header class="detail-header">
+            <p lang={contentLang}>{writing.data.title}</p>
+            <h1 lang={contentLang}>{chapter.data.title}</h1>
+          </header>
 
-    <div
-      lang={contentLang}
-      class:list={[
-        "prose",
-        "writing-body",
-        "chicago-prose",
-        {
-          "cui-dialogue": isCuiXiong && !isBenQun,
-          "poly-dialogue": isBenQun,
-        },
-      ]}
-    >
-      <Content />
-    </div>
+          {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
+          <div
+            lang={contentLang}
+            class="prose writing-body chicago-prose"
+          >
+            <Content />
+          </div>
 
-    <nav class="guide-chapter-navigation" aria-label="Adjacent chapters">
-      {
-        previousChapter ? (
-          <a href={`/writings/${writing.data.slug}/${previousChapter.data.slug}/`}>
+          <nav class="guide-chapter-navigation" aria-label="Adjacent chapters">
+            {
+              previousChapter ? (
+                <a href={`/writings/${writing.data.slug}/${previousChapter.data.slug}/`}>
+                  <span
+                    class="glyph-arrow glyph-arrow--back"
+                    data-arrow-glyph
+                    aria-hidden="true"
+                  ></span>
+                  <span lang={contentLang}>{previousChapter.data.title}</span>
+                </a>
+              ) : (
+                <span></span>
+              )
+            }
+            {
+              nextChapter && (
+                <a href={`/writings/${writing.data.slug}/${nextChapter.data.slug}/`}>
+                  <span lang={contentLang}>{nextChapter.data.title}</span>
+                  <span
+                    class="glyph-arrow glyph-arrow--forward"
+                    data-arrow-glyph
+                    aria-hidden="true"
+                  ></span>
+                </a>
+              )
+            }
+          </nav>
+        </>
+      )
+    }
+
+    {
+      !isCuiXiong && (
+        <nav class="back-link" aria-label="Footer navigation">
+          <a href={`/writings/${writing.data.slug}/`}>
             <span
               class="glyph-arrow glyph-arrow--back"
               data-arrow-glyph
               aria-hidden="true"
             ></span>
-            <span lang={contentLang}>{previousChapter.data.title}</span>
+            <span data-i18n-key="common.backContents">
+              {translate("en", "common.backContents")}
+            </span>
           </a>
-        ) : (
-          <span></span>
-        )
-      }
-      {
-        nextChapter && (
-          <a href={`/writings/${writing.data.slug}/${nextChapter.data.slug}/`}>
-            <span lang={contentLang}>{nextChapter.data.title}</span>
-            <span
-              class="glyph-arrow glyph-arrow--forward"
-              data-arrow-glyph
-              aria-hidden="true"
-            ></span>
-          </a>
-        )
-      }
-    </nav>
-
-    <nav class="back-link" aria-label="Footer navigation">
-      <a href={`/writings/${writing.data.slug}/`}>
-        <span
-          class="glyph-arrow glyph-arrow--back"
-          data-arrow-glyph
-          aria-hidden="true"
-        ></span>
-        <span data-i18n-key="common.backContents">
-          {translate("en", "common.backContents")}
-        </span>
-      </a>
-    </nav>
+        </nav>
+      )
+    }
   </article>
 </BaseLayout>

@@ -9,6 +9,7 @@
 // in it and render in full as before.
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LanguageAvailabilityNote from "../../components/LanguageAvailabilityNote.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import ToolContentsRail from "../../components/ToolContentsRail.astro";
 import { toolGroupLabel, translate } from "../../config/locales";
@@ -114,7 +115,10 @@ const statusKey =
                 </div>
               </>
             ) : (
-              <Content />
+              <>
+                <LanguageAvailabilityNote available="en" />
+                <Content />
+              </>
             )}
             {tool.data.references.length > 0 && (
               <>

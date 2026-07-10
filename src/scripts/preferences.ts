@@ -83,6 +83,13 @@ function translationFor(element: HTMLElement, language: Locale) {
   return element.dataset.i18nEn;
 }
 
+function closeMenuAndRestoreFocus(control: HTMLElement) {
+  const menu = control.closest<HTMLDetailsElement>("details");
+  if (!menu) return;
+  menu.open = false;
+  menu.querySelector<HTMLElement>("summary")?.focus();
+}
+
 function setFlapText(element: HTMLElement, text: string) {
   const existingTimer = flapTimers.get(element);
   if (existingTimer) window.clearTimeout(existingTimer);
@@ -430,7 +437,7 @@ export function initializePreferences() {
   document.querySelectorAll<HTMLButtonElement>("[data-language-option]").forEach((button) => {
     button.addEventListener("click", () => {
       applyLanguage(button.dataset.languageOption as Locale, true);
-      button.closest("details")?.removeAttribute("open");
+      closeMenuAndRestoreFocus(button);
     });
   });
 
@@ -449,7 +456,7 @@ export function initializePreferences() {
   document.querySelectorAll<HTMLButtonElement>("[data-font-size-option]").forEach((button) => {
     button.addEventListener("click", () => {
       applyFontSize(button.dataset.fontSizeOption as FontSize, true);
-      button.closest("details")?.removeAttribute("open");
+      closeMenuAndRestoreFocus(button);
     });
   });
 
@@ -474,9 +481,14 @@ export function initializePreferences() {
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
+      const focusedMenu =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement.closest<HTMLDetailsElement>("details[open]")
+          : null;
       menus.forEach((menu) => {
         menu.open = false;
       });
+      focusedMenu?.querySelector<HTMLElement>("summary")?.focus();
     }
   });
 }

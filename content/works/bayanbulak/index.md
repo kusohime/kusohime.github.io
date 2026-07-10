@@ -1,5 +1,5 @@
 ---
-title: "Bayanbulak 巴音布鲁克"
+title: "Bayanbulak 巴音布魯克"
 year: 2023
 category: "Solo"
 instrumentation:

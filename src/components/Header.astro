@@ -3,8 +3,6 @@
 // English: Public header, primary navigation, and three preference menus.
 import NamePronunciation from "./NamePronunciation.astro";
 import {
-  localeCodes,
-  localeInfo,
   translate,
   type TranslationKey,
 } from "../config/locales";
@@ -85,72 +83,5 @@ const navGroups = [
       </ul>
     </nav>
 
-    <div class="header-tools" aria-label="Site preferences">
-      <details
-        class="preference-menu"
-        data-nav-menu
-        data-preference-menu
-        data-preference-type="language"
-      >
-        <summary>
-          <span
-            class="glyph-arrow glyph-arrow--disclosure"
-            data-arrow-glyph
-            aria-hidden="true"
-          ></span>
-          <span class="preference-value" data-current-language>EN</span>
-        </summary>
-        <div class="preference-options" role="group" aria-label="Language">
-          {
-            localeCodes.map((locale) => (
-              <button type="button" data-language-option={locale}>
-                {localeInfo[locale].name}
-              </button>
-            ))
-          }
-        </div>
-      </details>
-
-      <details
-        class="preference-menu font-size-menu"
-        data-nav-menu
-        data-preference-menu
-        data-preference-type="font-size"
-      >
-        <summary>
-          <span
-            class="glyph-arrow glyph-arrow--disclosure"
-            data-arrow-glyph
-            aria-hidden="true"
-          ></span>
-          <span class="preference-value" data-current-font-size>M</span>
-        </summary>
-        <div class="preference-options font-size-options" role="group" aria-label="Font size">
-          <button type="button" data-font-size-option="s" aria-label="Small text">S</button>
-          <button type="button" data-font-size-option="m" aria-label="Medium text">M</button>
-          <button type="button" data-font-size-option="l" aria-label="Large text">L</button>
-        </div>
-      </details>
-
-      <button
-        type="button"
-        class="theme-toggle"
-        data-theme-toggle
-        aria-label="Switch to dark theme"
-        title="Switch to dark theme"
-      >
-        <span
-          class="theme-glyph"
-          data-theme-glyph
-          aria-hidden="true"
-        ></span>
-      </button>
-    </div>
   </div>
 </header>
-
-<script>
-  import { initializePreferences } from "../scripts/preferences";
-
-  initializePreferences();
-</script>

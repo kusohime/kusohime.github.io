@@ -1,0 +1,109 @@
+---
+// 中文：浮動偏好控制：語言、字號與深淺主題。
+// English: Floating preference controls for language, text size, and theme.
+import {
+  localeCodes,
+  localeInfo,
+  translate,
+} from "../config/locales";
+---
+
+<div
+  class="header-tools"
+  role="group"
+  aria-labelledby="site-preferences-label"
+>
+  <span
+    id="site-preferences-label"
+    class="visually-hidden"
+    data-i18n-key="preferences.group"
+  >
+    {translate("en", "preferences.group")}
+  </span>
+  <details
+    class="preference-menu"
+    data-nav-menu
+    data-preference-menu
+    data-preference-type="language"
+  >
+    <summary>
+      <span class="visually-hidden" data-i18n-key="preferences.language">
+        {translate("en", "preferences.language")}
+      </span>
+      <span
+        class="glyph-arrow glyph-arrow--disclosure"
+        data-arrow-glyph
+        aria-hidden="true"
+      ></span>
+      <span class="preference-value" data-current-language>EN</span>
+    </summary>
+    <div class="preference-options" role="group" aria-label="Language">
+      {
+        localeCodes.map((locale) => (
+          <button type="button" data-language-option={locale}>
+            {localeInfo[locale].name}
+          </button>
+        ))
+      }
+    </div>
+  </details>
+
+  <details
+    class="preference-menu font-size-menu"
+    data-nav-menu
+    data-preference-menu
+    data-preference-type="font-size"
+  >
+    <summary>
+      <span class="visually-hidden" data-i18n-key="preferences.textSize">
+        {translate("en", "preferences.textSize")}
+      </span>
+      <span
+        class="glyph-arrow glyph-arrow--disclosure"
+        data-arrow-glyph
+        aria-hidden="true"
+      ></span>
+      <span class="preference-value" data-current-font-size>M</span>
+    </summary>
+    <div class="preference-options font-size-options" role="group" aria-label="Font size">
+      <button type="button" data-font-size-option="s">
+        <span aria-hidden="true">S</span>
+        <span class="visually-hidden" data-i18n-key="preferences.small">
+          {translate("en", "preferences.small")}
+        </span>
+      </button>
+      <button type="button" data-font-size-option="m">
+        <span aria-hidden="true">M</span>
+        <span class="visually-hidden" data-i18n-key="preferences.medium">
+          {translate("en", "preferences.medium")}
+        </span>
+      </button>
+      <button type="button" data-font-size-option="l">
+        <span aria-hidden="true">L</span>
+        <span class="visually-hidden" data-i18n-key="preferences.large">
+          {translate("en", "preferences.large")}
+        </span>
+      </button>
+    </div>
+  </details>
+
+  <button
+    type="button"
+    class="theme-toggle"
+    data-theme-toggle
+    aria-label="Switch to dark theme"
+    title="Switch to dark theme"
+  >
+    <span
+      class="theme-glyph"
+      data-theme-glyph
+      aria-hidden="true"
+    ></span>
+  </button>
+</div>
+
+<script>
+  import { initializePreferences } from "../scripts/preferences";
+
+  initializePreferences();
+</script>

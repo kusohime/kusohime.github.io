@@ -1,0 +1,64 @@
+---
+// 中文：《脆熊篇》專用的雙欄閱讀器；左側只保留篇號，右側顯示當前正文。
+// English: Two-column reader for Cui Xiong Pian; the left rail contains titles
+// only, while the current chapter is rendered in the right reading pane.
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "../config/locales";
+
+interface Props {
+  writing: CollectionEntry<"writings">;
+  chapters: CollectionEntry<"writingChapters">[];
+  currentChapter?: CollectionEntry<"writingChapters">;
+  contentLang?: string;
+}
+
+const { writing, chapters, currentChapter, contentLang } = Astro.props;
+const parentHref = `/writings/${writing.data.slug}/`;
+const dateLabel = writing.data.displayDate ?? String(writing.data.date);
+---
+
+<div class="cui-reader">
+  <aside class="cui-reader-rail">
+    <a
+      class="cui-reader-title"
+      href={parentHref}
+      lang={contentLang}
+      aria-current={!currentChapter ? "page" : undefined}
+    >
+      {writing.data.title}
+    </a>
+    <nav aria-label="脆熊篇目錄">
+      <ol>
+        {
+          chapters.map((chapter) => (
+            <li>
+              <a
+                href={`${parentHref}${chapter.data.slug}/`}
+                lang={contentLang}
+                aria-current={currentChapter?.id === chapter.id ? "page" : undefined}
+              >
+                {chapter.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+  </aside>
+
+  <section class="cui-reader-main">
+    {
+      !currentChapter && (
+        <header class="detail-header cui-reader-header">
+            <h1 lang={contentLang}>{writing.data.title}</h1>
+            <p class="writing-metadata">
+              <time datetime={String(writing.data.date)} data-i18n-date={dateLabel}>
+                {formatDate(dateLabel, "en")}
+              </time>
+            </p>
+        </header>
+      )
+    }
+    <slot />
+  </section>
+</div>

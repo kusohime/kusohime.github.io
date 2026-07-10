@@ -33,6 +33,11 @@ const formEnabled = commentsConfig.endpoint.length > 0;
 const allowImages = commentsConfig.allowImages;
 const domId = (id: string) =>
   "comment-" + id.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+const nameInputId = `comment-name-${slug}`;
+const emailInputId = `comment-email-${slug}`;
+const bodyInputId = `comment-body-${slug}`;
+const formattingLabelId = `comment-formatting-${slug}`;
+const messageId = `comment-message-${slug}`;
 
 // 双语提示文字注入 data-*，客户端脚本按当前语言选择。
 // Bilingual status strings injected as data-*; the client script picks by current language.
@@ -87,7 +92,7 @@ const disabled = t2("comments.disabled");
                   <span
                     class="visually-hidden"
                     data-i18n-en="Enlarge image"
-                    data-i18n-zh="放大图片"
+                    data-i18n-zh="放大圖片"
                   >
                     Enlarge image
                   </span>
@@ -121,7 +126,7 @@ const disabled = t2("comments.disabled");
                           <span
                             class="visually-hidden"
                             data-i18n-en="Enlarge image"
-                            data-i18n-zh="放大图片"
+                            data-i18n-zh="放大圖片"
                           >
                             Enlarge image
                           </span>
@@ -169,36 +174,92 @@ const disabled = t2("comments.disabled");
       />
 
       <div class="comment-form-row">
-        <label>
+        <label for={nameInputId}>
           <span class="comment-label" data-i18n-key="comments.name">
             {translate("en", "comments.name")}
           </span>
-          <input type="text" name="name" maxlength="80" required />
+          <input
+            id={nameInputId}
+            type="text"
+            name="name"
+            maxlength="80"
+            aria-describedby={messageId}
+            required
+          />
         </label>
-        <label>
+        <label for={emailInputId}>
           <span class="comment-label" data-i18n-key="comments.email">
             {translate("en", "comments.email")}
           </span>
-          <input type="email" name="email" maxlength="160" />
+          <input id={emailInputId} type="email" name="email" maxlength="160" />
         </label>
       </div>
 
       <div class="comment-field">
-        <span class="comment-label" data-i18n-key="comments.body">
+        <label
+          for={bodyInputId}
+          class="comment-label"
+          data-i18n-key="comments.body"
+        >
           {translate("en", "comments.body")}
-        </span>
-        <div class="comment-toolbar" role="group" aria-label="Formatting">
-          <button type="button" data-md="bold" title="Bold">B</button>
-          <button type="button" data-md="italic" title="Italic" style="font-style:italic">I</button>
-          <button type="button" data-md="quote" title="Quote">&#10077;</button>
-          <button type="button" data-md="code" title="Code">&lt;&gt;</button>
-          <button type="button" data-md="list" title="List">&bull;</button>
-          <button type="button" data-md="link" title="Link">link</button>
+        </label>
+        <div class="comment-toolbar" role="group" aria-labelledby={formattingLabelId}>
+          <span
+            id={formattingLabelId}
+            class="visually-hidden"
+            data-i18n-key="comments.formatting"
+          >
+            {translate("en", "comments.formatting")}
+          </span>
+          <button type="button" data-md="bold" title="Bold">
+            <span aria-hidden="true">B</span>
+            <span class="visually-hidden" data-i18n-key="comments.bold">
+              {translate("en", "comments.bold")}
+            </span>
+          </button>
+          <button type="button" data-md="italic" title="Italic" style="font-style:italic">
+            <span aria-hidden="true">I</span>
+            <span class="visually-hidden" data-i18n-key="comments.italic">
+              {translate("en", "comments.italic")}
+            </span>
+          </button>
+          <button type="button" data-md="quote" title="Quote">
+            <span aria-hidden="true">&#10077;</span>
+            <span class="visually-hidden" data-i18n-key="comments.quote">
+              {translate("en", "comments.quote")}
+            </span>
+          </button>
+          <button type="button" data-md="code" title="Code">
+            <span aria-hidden="true">&lt;&gt;</span>
+            <span class="visually-hidden" data-i18n-key="comments.code">
+              {translate("en", "comments.code")}
+            </span>
+          </button>
+          <button type="button" data-md="list" title="List">
+            <span aria-hidden="true">&bull;</span>
+            <span class="visually-hidden" data-i18n-key="comments.list">
+              {translate("en", "comments.list")}
+            </span>
+          </button>
+          <button type="button" data-md="link" title="Link">
+            <span aria-hidden="true">link</span>
+            <span class="visually-hidden" data-i18n-key="comments.link">
+              {translate("en", "comments.link")}
+            </span>
+          </button>
           <span class="comment-toolbar-note" data-i18n-key="comments.markdown">
             {translate("en", "comments.markdown")}
           </span>
         </div>
-        <textarea name="body" maxlength="4000" rows="4" data-comment-input required></textarea>
+        <textarea
+          id={bodyInputId}
+          name="body"
+          maxlength="4000"
+          rows="4"
+          data-comment-input
+          aria-describedby={messageId}
+          required
+        ></textarea>
       </div>
 
       <div class="comment-preview" data-comment-preview hidden>
@@ -216,7 +277,7 @@ const disabled = t2("comments.disabled");
               name="image"
               accept="image/png,image/jpeg"
               data-comment-image
-              hidden
+              class="visually-hidden-input"
             />
             <span>
               + <span data-i18n-key="comments.attach">{translate("en", "comments.attach")}</span>
@@ -243,7 +304,12 @@ const disabled = t2("comments.disabled");
           </p>
         )
       }
-      <p class="comment-form-message" data-comment-message aria-live="polite"></p>
+      <p
+        id={messageId}
+        class="comment-form-message"
+        data-comment-message
+        aria-live="polite"
+      ></p>
     </form>
 
     <div class="comment-success" data-comment-success hidden>
@@ -297,7 +363,15 @@ const disabled = t2("comments.disabled");
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
     const body = String(data.get("body") ?? "").trim();
-    if (!name || !body) { setMessage(form.dataset["error" + langKey]); return; }
+    const nameInput = form.elements.namedItem("name") as HTMLInputElement | null;
+    const bodyInput = form.elements.namedItem("body") as HTMLTextAreaElement | null;
+    nameInput?.toggleAttribute("aria-invalid", !name);
+    bodyInput?.toggleAttribute("aria-invalid", !body);
+    if (!name || !body) {
+      setMessage(form.dataset["error" + langKey]);
+      (!name ? nameInput : bodyInput)?.focus();
+      return;
+    }
 
     const payload: Record<string, unknown> = {
       collection: data.get("collection"),
@@ -359,6 +433,12 @@ const disabled = t2("comments.disabled");
         if (value) previewBody.innerHTML = renderCommentMarkdown(input.value);
       };
       input.addEventListener("input", updatePreview);
+      input.addEventListener("input", () => input.removeAttribute("aria-invalid"));
+      form
+        .querySelector<HTMLInputElement>('input[name="name"]')
+        ?.addEventListener("input", (event) => {
+          (event.currentTarget as HTMLInputElement).removeAttribute("aria-invalid");
+        });
 
       form.querySelectorAll<HTMLButtonElement>("[data-md]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -395,7 +475,7 @@ const disabled = t2("comments.disabled");
       el.setAttribute("role", "dialog");
       el.setAttribute("aria-modal", "true");
       const zh = document.documentElement.dataset.locale === "zh";
-      el.setAttribute("aria-label", zh ? "放大的图片" : "Enlarged image");
+      el.setAttribute("aria-label", zh ? "放大的圖片" : "Enlarged image");
       el.innerHTML = '<img alt="" />';
       // 点任意处（含图片本身）即关闭。Click anywhere (including the image) to close.
       el.addEventListener("click", () => closeLightbox());

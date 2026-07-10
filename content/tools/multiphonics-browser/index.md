@@ -1,9 +1,11 @@
 ---
 title: "Multiphonics & Extended Techniques"
 subtitle: "Woodwind technique browser"
+subtitleZh: "木管演奏技法瀏覽器"
 number: 13
 group: "Composition"
 summary: "Filters technique entries by instrument and type. Every entry carries a source citation; unverified entries are flagged. The data set stays small until each entry is checked."
+summaryZh: "按樂器與技法類型篩選條目。每條均附來源出處；未經核驗的條目會特別標示。在逐條核對完成之前，資料集刻意保持精簡。"
 status: "data-pending"
 slug: "multiphonics-browser"
 hidden: true

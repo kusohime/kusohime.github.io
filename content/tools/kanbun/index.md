@@ -1,7 +1,7 @@
 ---
 title: "HTML Kanbun Kundoku"
-subtitle: ""
-subtitleZH: ""
+subtitle: "Vertical kanbun kundoku typesetting"
+subtitleZh: "漢文訓讀直排排版"
 number: 17
 group: "Linguistics"
 status: "stable"

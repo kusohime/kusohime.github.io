@@ -5,7 +5,8 @@
 // Caveat: Changes here affect every public page except the Studio.
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import { translate } from "../config/locales";
+import Preferences from "../components/Preferences.astro";
+import { translate, type TranslationKey } from "../config/locales";
 import siteDefaults from "../config/siteDefaults.json";
 import { site } from "../config/site";
 import "katex/dist/katex.min.css";
@@ -27,6 +28,59 @@ const {
 
 const pageTitle = title ? `${title} | ${site.name}` : site.name;
 const defaultLanguage = siteDefaults.defaultLanguage;
+
+interface HierarchyBackLink {
+  href: string;
+  labelKey: TranslationKey;
+}
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const pathParts = currentPath.split("/").filter(Boolean);
+
+const hierarchyBack = (() => {
+  if (currentPath === "/") return undefined;
+
+  if (currentPath === "/admin/guide") {
+    return {
+      href: "/admin/",
+      labelKey: "common.backStudio",
+    } satisfies HierarchyBackLink;
+  }
+
+  if (currentPath.startsWith("/admin/guide/")) {
+    return {
+      href: "/admin/guide/",
+      labelKey: "common.backGuide",
+    } satisfies HierarchyBackLink;
+  }
+
+  if (pathParts[0] === "writings" && pathParts.length >= 3) {
+    return {
+      href: `/writings/${pathParts[1]}/`,
+      labelKey: "common.backContents",
+    } satisfies HierarchyBackLink;
+  }
+
+  const collectionParents: Record<string, TranslationKey> = {
+    works: "common.backWorks",
+    events: "common.backEvents",
+    writings: "common.backWritings",
+    tools: "common.backTools",
+  };
+  const collectionLabel = collectionParents[pathParts[0] ?? ""];
+
+  if (collectionLabel && pathParts.length >= 2) {
+    return {
+      href: `/${pathParts[0]}/`,
+      labelKey: collectionLabel,
+    } satisfies HierarchyBackLink;
+  }
+
+  return {
+    href: "/",
+    labelKey: "common.backHome",
+  } satisfies HierarchyBackLink;
+})();
 ---
 
 <!doctype html>
@@ -102,7 +156,26 @@ const defaultLanguage = siteDefaults.defaultLanguage;
     </a>
     <div class="site-shell">
       <Header />
+      <div class="site-preferences-rail">
+        <Preferences />
+      </div>
       <main id="main-content">
+        {
+          hierarchyBack && (
+            <nav class="hierarchy-back-nav" aria-label="Hierarchy navigation">
+              <a class="hierarchy-back" href={hierarchyBack.href}>
+                <span
+                  class="glyph-arrow glyph-arrow--back"
+                  data-arrow-glyph
+                  aria-hidden="true"
+                ></span>
+                <span data-i18n-key={hierarchyBack.labelKey}>
+                  {translate("en", hierarchyBack.labelKey)}
+                </span>
+              </a>
+            </nav>
+          )
+        }
         <slot />
       </main>
       <Footer />

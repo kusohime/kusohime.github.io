@@ -3,8 +3,10 @@
 // English: Generates an individual event detail page from its Markdown file.
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LanguageAvailabilityNote from "../../components/LanguageAvailabilityNote.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import { formatDate, translate } from "../../config/locales";
+import { dominantContentLang } from "../../utils/cjkLanguage";
 
 export async function getStaticPaths() {
   const events = await getCollection(
@@ -25,6 +27,10 @@ const zhEntry = eventsZh.find((entry) => entry.id === event.id);
 const { Content: ContentZh } = zhEntry
   ? await render(zhEntry)
   : { Content: null as any };
+// 中文：没有中文正文文件时按正文主导语言提示另一语言不可用（无正文则不提示）。
+// English: Without a Chinese body, note the unavailable locale from the body's
+// dominant language (undefined when there is no prose — no note).
+const bodyLang = zhEntry ? undefined : dominantContentLang(event.body ?? "");
 const {
   title,
   date,
@@ -87,6 +93,7 @@ const facts = [
       }
     </header>
 
+    {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
     <div class="prose event-notes">
       {ContentZh ? (
         <>

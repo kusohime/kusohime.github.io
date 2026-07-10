@@ -199,6 +199,7 @@
   --color-background: #fff;
   --color-muted: #555;
   --color-rule: #aaa;
+  --color-control-border: #888;
   /*
    * 全站主题色：链接下划线、三角形、引用线等都引用这个变量。
    * Global accent: link underlines, arrow glyphs, quote rules, and related details use it.
@@ -221,6 +222,11 @@
   --prose-line-height: 1.52;
   --heading-line-height: 1.18;
   --heading-size: 1rem;
+  /* Heading-scale trial: set both values back to var(--heading-size) to
+     restore the original equal-size hierarchy. */
+  --page-heading-size: clamp(1.5rem, 1.38rem + 0.45vw, 1.7rem);
+  --section-heading-size: 1.18rem;
+  --floating-control-size: 2rem;
   --header-padding: 0.7rem;
   --footer-min-height: 5rem;
   --paragraph-indent: 2em;
@@ -348,6 +354,8 @@ html {
   --color-background: #111;
   --color-muted: #bbb;
   --color-rule: #666;
+  --color-control-border: #777;
+  --theme-color: #e85d5d;
 }
 
 :root,
@@ -493,6 +501,26 @@ h6 {
   margin-block: 0 var(--space-sm);
 }
 
+h1 {
+  font-size: var(--page-heading-size);
+}
+
+h2 {
+  font-size: var(--section-heading-size);
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--heading-size);
+}
+
+:where(a, button, summary, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 3px;
+}
+
 button,
 summary {
   color: inherit;
@@ -500,6 +528,7 @@ summary {
 }
 
 .site-shell {
+  position: relative;
   width: min(100% - (2 * var(--page-gutter)), var(--page-width));
   margin: 0 auto;
   padding: var(--space-md) 0;
@@ -531,7 +560,8 @@ summary {
   color: var(--color-text);
 }
 
-.visually-hidden {
+.visually-hidden,
+.visually-hidden-input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -581,8 +611,9 @@ summary {
 .header-row {
   display: flex;
   flex-wrap: nowrap;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-sm);
+  min-block-size: var(--floating-control-size);
   white-space: nowrap;
 }
 
@@ -679,14 +710,23 @@ summary {
 }
 
 .header-tools {
-  position: relative;
-  z-index: 5;
+  position: sticky;
+  top: var(--space-md);
+  z-index: 20;
   display: flex;
   flex: none;
   flex-wrap: nowrap;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin: 0 0 0 auto;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  width: max-content;
+  transform: translateX(-100%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: max(0.875rem, 14px);
+  pointer-events: auto;
 }
 
 .site-header a,
@@ -723,6 +763,11 @@ summary {
 
 .preference-menu summary {
   display: inline-flex;
+  inline-size: auto;
+  block-size: var(--floating-control-size);
+  min-inline-size: 2rem;
+  min-block-size: var(--floating-control-size);
+  justify-content: center;
   align-items: center;
   gap: 0.18em;
   cursor: pointer;
@@ -774,8 +819,10 @@ summary {
 
 .theme-toggle {
   display: inline-grid;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 2rem;
+  height: var(--floating-control-size);
+  min-width: 2rem;
+  min-height: var(--floating-control-size);
   place-items: center;
   border: 0;
   padding: 0;
@@ -828,6 +875,7 @@ summary {
 .font-size-options button {
   display: block;
   width: 100%;
+  min-block-size: var(--floating-control-size);
   padding-block: 0.2rem;
   text-align: center;
   line-height: 1;
@@ -864,7 +912,8 @@ summary {
   display: block;
   width: 100%;
   border: 0;
-  padding: 0.25rem 0.35rem;
+  min-block-size: var(--floating-control-size);
+  padding: 0.25rem 0.5rem;
   background: transparent;
   text-align: left;
   cursor: pointer;
@@ -1455,7 +1504,7 @@ main {
 
 .writing-tag {
   color: var(--color-muted);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   line-height: 1.35;
   text-decoration: none;
 }
@@ -1529,7 +1578,7 @@ main {
 .detail-kicker {
   margin: 0 0 var(--space-xs);
   color: var(--theme-color);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -2107,6 +2156,71 @@ main {
   color: var(--color-muted);
 }
 
+/* 《脆熊篇》的左側目录與右側閱讀區。 Cui Xiong split reader. */
+.cui-reader {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 10rem) minmax(0, var(--reading-width));
+  gap: clamp(var(--space-md), 5vw, var(--space-xl));
+  align-items: start;
+  width: 100%;
+}
+
+.cui-reader-rail {
+  position: sticky;
+  top: var(--space-md);
+  max-height: calc(100vh - (2 * var(--space-md)));
+  overflow-y: auto;
+  padding-right: var(--space-sm);
+  scrollbar-width: thin;
+}
+
+.cui-reader-title {
+  display: inline-block;
+  margin-bottom: var(--space-sm);
+  font-weight: bold;
+}
+
+.cui-reader-rail ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cui-reader-rail li {
+  margin: 0 0 0.22rem;
+}
+
+.cui-reader-rail a {
+  display: block;
+  width: fit-content;
+  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.14em;
+}
+
+.cui-reader-rail a:hover,
+.cui-reader-rail a:focus-visible {
+  text-decoration: underline;
+}
+
+.cui-reader-rail a[aria-current="page"] {
+  color: var(--theme-color);
+  font-weight: bold;
+}
+
+.cui-reader-main {
+  min-width: 0;
+  max-width: var(--reading-width);
+}
+
+.cui-reader-header h1 {
+  margin-bottom: 0;
+}
+
+.cui-reader-main .prose {
+  width: 100%;
+}
+
 .admin-guide-contents li a {
   display: grid;
   gap: 0.2rem;
@@ -2361,17 +2475,13 @@ main {
 }
 
 .back-link {
+  display: none;
   max-width: var(--reading-width);
   margin-top: var(--space-lg);
   padding-top: var(--space-sm);
   border-top: 1px solid var(--color-rule);
   color: var(--color-muted);
   font-size: 0.88rem;
-}
-
-.back-link-top {
-  margin-top: 0;
-  margin-bottom: var(--space-md);
 }
 
 .back-link a {
@@ -2394,6 +2504,42 @@ main {
 .back-link .glyph-arrow {
   width: 0.68em;
   height: 0.68em;
+}
+
+.hierarchy-back-nav {
+  margin-bottom: var(--space-md);
+  color: var(--color-muted);
+  font-size: max(0.875rem, 14px);
+}
+
+.hierarchy-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: inherit;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.hierarchy-back:hover,
+.hierarchy-back:focus-visible {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+.hierarchy-back .glyph-arrow {
+  width: 0.72em;
+  height: 0.72em;
+}
+
+.site-preferences-rail {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  pointer-events: none;
 }
 
 .guide-chapter-navigation {
@@ -2637,8 +2783,7 @@ main {
 }
 
 .prose :not(pre) > code {
-  padding: 0.05em 0.25em;
-  background: color-mix(in srgb, var(--theme-color) 8%, transparent);
+  color: var(--theme-color);
 }
 
 .prose pre {
@@ -2742,8 +2887,44 @@ main {
 
 @media (max-width: 40rem) {
   :root {
-    --space-lg: 3rem;
+    --page-gutter: 1rem;
+    --floating-control-size: 2.75rem;
+    --space-lg: 2.4rem;
     --space-xl: 4rem;
+    --line-height: 1.5;
+    --prose-line-height: 1.62;
+  }
+
+  /* 中文古籍的雙行小字脚注：两行脚注小字的高度仍落在一行正文以内。
+     Classical Chinese-style double-line small notes: two lines of note text fit
+     within the height of one line of body text. */
+  .prose.has-sidenotes .sidenote {
+    font-size: 0.5em;
+    line-height: 1.25;
+    vertical-align: baseline;
+  }
+
+  .cui-reader {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .cui-reader-rail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0 0 var(--space-sm);
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .cui-reader-rail ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--space-sm);
+  }
+
+  .cui-reader-rail li {
+    margin: 0;
   }
 
   .dated-list li {
@@ -2774,19 +2955,71 @@ main {
   }
 
   .header-row,
-  .header-row .nav-list,
-  .header-tools {
+  .header-row .nav-list {
     gap: 0.35rem;
   }
 
   .header-row {
     flex-wrap: wrap;
-    font-size: 0.8rem;
+    font-size: max(0.875rem, 14px);
     white-space: normal;
   }
 
+  .header-row nav {
+    flex-basis: 100%;
+  }
+
   .header-tools {
-    margin-left: 0;
+    position: fixed;
+    top: calc(var(--space-md) + env(safe-area-inset-top));
+    right: max(
+      var(--page-gutter),
+      env(safe-area-inset-right),
+      calc((100vw - var(--page-width)) / 2)
+    );
+    z-index: 50;
+    width: auto;
+    transform: none;
+    gap: 0;
+    margin: 0;
+    padding: 0.1rem;
+    border: 1px solid var(--color-control-border);
+    background: color-mix(in srgb, var(--color-background) 94%, transparent);
+    box-shadow: 0 0.35rem 1.1rem color-mix(in srgb, var(--color-text) 10%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .preference-menu summary {
+    inline-size: var(--floating-control-size);
+    min-inline-size: var(--floating-control-size);
+  }
+
+  .theme-toggle {
+    width: var(--floating-control-size);
+    min-width: var(--floating-control-size);
+  }
+
+  .hierarchy-back {
+    min-height: var(--floating-control-size);
+  }
+
+  .site-name a,
+  .nav-dropdown summary,
+  .nav-dropdown-list a {
+    display: inline-flex;
+    min-block-size: var(--floating-control-size);
+    align-items: center;
+  }
+
+  .nav-dropdown-list a {
+    width: 100%;
+    padding-inline: 0.35rem;
+  }
+
+  h1,
+  h2 {
+    overflow-wrap: anywhere;
+    text-wrap: balance;
   }
 
   .cv-entry-head,
@@ -2812,6 +3045,21 @@ main {
   .preference-options {
     right: 0;
     left: auto;
+  }
+}
+
+@media (max-width: 30rem) {
+  .writings-index .dated-list,
+  .writings-index .dated-list li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .writings-index .dated-list li {
+    grid-column: 1;
+  }
+
+  .writings-index .dated-list time {
+    font-size: 0.85rem;
   }
 }
 
@@ -2891,7 +3139,7 @@ main {
   border: 1px solid var(--theme-color);
   padding: 0.02rem 0.4rem;
   color: var(--theme-color);
-  font-size: 0.62rem;
+  font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -2921,8 +3169,7 @@ main {
 }
 
 .comment-body code {
-  padding: 0.05em 0.25em;
-  background: color-mix(in srgb, var(--theme-color) 8%, transparent);
+  color: var(--theme-color);
   font-family: Consolas, "Courier New", monospace;
 }
 
@@ -3023,7 +3270,7 @@ main {
   display: block;
   margin-bottom: 0.25rem;
   color: var(--color-muted);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -3033,7 +3280,7 @@ main {
 .comment-form textarea {
   width: 100%;
   padding: 0.45rem 0.55rem;
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-control-border);
   border-radius: 0;
   background: var(--color-background);
   color: var(--color-text);
@@ -3043,9 +3290,18 @@ main {
 
 .comment-form input:focus,
 .comment-form textarea:focus {
-  outline: 2px solid var(--theme-color);
-  outline-offset: -1px;
   border-color: var(--theme-color);
+}
+
+.comment-form input:focus-visible,
+.comment-form textarea:focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 2px;
+}
+
+.comment-form [aria-invalid="true"] {
+  border-color: var(--theme-color);
+  box-shadow: inset 0 0 0 1px var(--theme-color);
 }
 
 .comment-form textarea {
@@ -3057,13 +3313,14 @@ main {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-control-border);
   border-bottom: 0;
 }
 
 .comment-toolbar button {
   border: 0;
-  border-right: 1px solid var(--color-rule);
+  min-height: 2.5rem;
+  border-right: 1px solid var(--color-control-border);
   padding: 0.35rem 0.6rem;
   background: transparent;
   font-size: 0.85rem;
@@ -3079,7 +3336,7 @@ main {
   margin-left: auto;
   padding-right: 0.5rem;
   color: var(--color-muted);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
 }
 
 .comment-preview {
@@ -3091,7 +3348,7 @@ main {
   padding: 0.3rem 0.55rem;
   border-bottom: 1px solid var(--color-rule);
   color: var(--color-muted);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -3106,10 +3363,16 @@ main {
   gap: 0.5rem;
   margin-top: var(--space-sm);
   padding: 0.45rem 0.6rem;
-  border: 1px dashed var(--color-rule);
+  min-height: 2.5rem;
+  border: 1px dashed var(--color-control-border);
   color: var(--color-muted);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   cursor: pointer;
+}
+
+.comment-attach:has(.visually-hidden-input:focus-visible) {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 2px;
 }
 
 .comment-attach-name {
@@ -3132,11 +3395,12 @@ main {
 }
 
 .comment-submit {
+  min-height: 2.5rem;
   padding: 0.5rem 1rem;
   border: 1px solid var(--theme-color);
   border-radius: 0;
   background: var(--theme-color);
-  color: #fff;
+  color: var(--color-background);
   font: inherit;
   font-size: 0.9rem;
   font-weight: bold;
@@ -3153,7 +3417,7 @@ main {
   align-items: center;
   gap: 0.4rem;
   color: var(--color-muted);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
 }
 
 .comment-form-message {
@@ -3174,5 +3438,18 @@ main {
 @media (max-width: 40rem) {
   .comment-form-row {
     grid-template-columns: 1fr;
+  }
+
+  .comment-label,
+  .comment-attach,
+  .comment-notify {
+    font-size: max(0.875rem, 14px);
+  }
+
+  .comment-form input[type="text"],
+  .comment-form input[type="email"],
+  .comment-form textarea {
+    min-height: 2.75rem;
+    font-size: max(1rem, 16px);
   }
 }

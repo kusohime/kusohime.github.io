@@ -1,11 +1,11 @@
 ---
 title: "Spectral Roughness"
 subtitle: "Sensory dissonance curves and chord comparison"
-subtitleZh: "感官不協和曲線與和弦比較"
+subtitleZh: "感官不協和曲線與和絃比較"
 number: 5
 group: "Composition"
 summary: "Computes Plomp–Levelt/Sethares roughness for swept dyads and chords, and compares two voicings under the same spectrum model."
-summaryZh: "為掃描的雙音與和弦計算 Plomp–Levelt／Sethares 粗糙度，並在同一頻譜模型下比較兩種聲部配置。"
+summaryZh: "為掃描的雙音與和絃計算 Plomp–Levelt／Sethares 粗糙度，並在同一頻譜模型下比較兩種聲部配置。"
 status: "stable"
 slug: "spectral-roughness"
 references:

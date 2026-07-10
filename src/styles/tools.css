@@ -21,14 +21,14 @@
 
 .tool-number {
   color: var(--theme-color);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .tool-header h1 {
   margin: 0.25rem 0 0.35rem;
-  font-size: 1.35rem;
+  font-size: var(--page-heading-size);
   line-height: var(--heading-line-height);
 }
 
@@ -43,7 +43,7 @@
   border: 1px solid var(--theme-color);
   padding: 0.05rem 0.45rem;
   color: var(--theme-color);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -64,7 +64,7 @@
   margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-md)) var(--space-md);
   border-bottom: 1px solid var(--color-rule);
   padding: 0.35rem var(--space-md);
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -85,7 +85,7 @@
 }
 
 .tool-field > span {
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -95,7 +95,7 @@
 .tool-page input[type="number"],
 .tool-page select,
 .tool-page textarea {
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-control-border);
   border-radius: 0;
   background: var(--color-background);
   color: var(--color-text);
@@ -114,7 +114,7 @@
 .tool-page button:focus-visible,
 .tool-page textarea:focus-visible {
   outline: 2px solid var(--theme-color);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 .tool-page button {
@@ -123,7 +123,7 @@
   background: var(--color-background);
   color: var(--color-text);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   letter-spacing: 0.06em;
   padding: 0.32rem 0.85rem;
   cursor: pointer;
@@ -168,7 +168,7 @@
 
 .tool-note {
   color: var(--color-muted);
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
 .tool-error {
@@ -301,7 +301,7 @@
 .tool-card .unverified {
   border: 1px solid var(--theme-color);
   color: var(--theme-color);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0.05rem 0.4rem;
@@ -324,7 +324,7 @@
 .pk summary {
   cursor: pointer;
   color: var(--color-muted);
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -367,7 +367,7 @@
 .tool-page .pk-white {
   width: 1.7rem;
   height: 5.2rem;
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-control-border);
   background: var(--color-background);
   color: var(--color-muted);
   z-index: 1;
@@ -401,7 +401,7 @@
 }
 
 .pk-controls button {
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   padding: 0.2rem 0.5rem;
 }
 
@@ -414,7 +414,7 @@
 .tool-docs h2 {
   border-bottom: 1px solid var(--color-rule);
   padding-bottom: 0.3rem;
-  font-size: 1.02rem;
+  font-size: var(--section-heading-size);
 }
 
 .tool-docs h3 {
@@ -722,7 +722,7 @@
 /* ---- view switcher ---- */
 
 .kin-viewfield > span {
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -733,7 +733,7 @@
 }
 
 .kin-viewtabs button {
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-control-border);
   border-radius: 0;
   background: var(--color-background);
   color: var(--color-muted);
@@ -829,7 +829,7 @@
 }
 
 .kin-zoom button {
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-control-border);
   background: var(--color-background);
   color: var(--color-muted);
   font: inherit;
@@ -859,7 +859,7 @@
   position: absolute;
   left: 0.5rem;
   bottom: 0.35rem;
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   color: var(--color-muted);
   opacity: 0.65;
   pointer-events: none;
@@ -889,6 +889,12 @@
 
 .kin-ol-row:hover {
   background: color-mix(in srgb, var(--color-rule) 22%, transparent);
+}
+
+.kin-ol-row:focus-visible,
+.kin-cell[data-lang]:focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 2px;
 }
 
 .kin-ol-row--sel {
@@ -1048,7 +1054,7 @@
 .kin-cell {
   display: grid;
   gap: 0.15rem;
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-control-border);
   padding: 0.4rem 0.55rem;
 }
 
@@ -1057,7 +1063,7 @@
 }
 
 .kin-cell-lang {
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -1149,7 +1155,7 @@
 .tool-status--inline {
   margin: 0 0 0 0.4rem;
   padding: 0 0.3rem;
-  font-size: 0.62rem;
+  font-size: 0.78rem;
 }
 
 /* ---- Composition topic page: stacked tools ---- */
@@ -1167,7 +1173,7 @@
 
 .tools-group-page .group-tool-head h2 {
   margin: 0.15rem 0 0.3rem;
-  font-size: 1.2rem;
+  font-size: var(--section-heading-size);
   line-height: var(--heading-line-height);
 }
 
@@ -1183,7 +1189,7 @@
 
 .group-tool-notes > summary {
   cursor: pointer;
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-muted);
@@ -1334,5 +1340,56 @@
     align-self: start;
     max-height: calc(100vh - 2 * var(--space-md));
     overflow-y: auto;
+  }
+}
+
+/* Phone accessibility pass lives at EOF so it wins over the specialized
+   instrument rules above without changing desktop geometry. */
+@media (max-width: 40rem) {
+  .tool-controls > [style*="min-width"] {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .tool-page input[type="text"],
+  .tool-page input[type="number"],
+  .tool-page select,
+  .tool-page textarea {
+    min-height: 2.75rem;
+    font-size: max(1rem, 16px);
+  }
+
+  .tool-page button {
+    min-height: 2.5rem;
+  }
+
+  .pk summary,
+  .ipa-kb > summary,
+  .group-tool-notes > summary {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    font-size: max(0.875rem, 14px);
+  }
+
+  .tool-page button.igt-mini,
+  .tool-page button.ipa-tab,
+  .tool-page button.igt-extab,
+  .kin-viewtabs button,
+  .kin-addbar button,
+  .kin-zoom button,
+  .pk-controls button {
+    min-height: 2.5rem;
+    font-size: max(0.875rem, 14px);
+  }
+
+  .kin-zoom button {
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .kin-tree--pan {
+    touch-action: pan-y pinch-zoom;
   }
 }
