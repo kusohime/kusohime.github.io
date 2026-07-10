@@ -31,8 +31,13 @@ function inlineNoteContent(item: HTMLElement): Node[] {
   return nodes;
 }
 
-function enhanceProse(prose: HTMLElement): void {
-  const section = prose.querySelector<HTMLElement>(
+// 中文：双语正文（.lang-block）时每个语言块各有一份脚注列表，须按块处理，
+// 否则第二个块的标记在第一个块的列表里查不到内容。
+// English: A bilingual body (.lang-block) carries one footnote list per language
+// block, so each block is enhanced in its own scope — otherwise the second
+// block's refs never match ids collected from the first block's list.
+function enhanceScope(scope: HTMLElement, prose: HTMLElement): void {
+  const section = scope.querySelector<HTMLElement>(
     "section.footnotes, [data-footnotes]",
   );
   if (!section) return;
@@ -42,7 +47,7 @@ function enhanceProse(prose: HTMLElement): void {
     contentById.set(item.id, inlineNoteContent(item));
   });
 
-  const refs = prose.querySelectorAll<HTMLAnchorElement>("a[data-footnote-ref]");
+  const refs = scope.querySelectorAll<HTMLAnchorElement>("a[data-footnote-ref]");
   const disableJumpLinks = prose.closest(".writing-title-page") !== null;
   let placed = 0;
 
@@ -77,6 +82,15 @@ function enhanceProse(prose: HTMLElement): void {
   });
 
   if (placed > 0) prose.classList.add("has-sidenotes");
+}
+
+function enhanceProse(prose: HTMLElement): void {
+  const blocks = prose.querySelectorAll<HTMLElement>(":scope > .lang-block");
+  if (blocks.length > 0) {
+    blocks.forEach((block) => enhanceScope(block, prose));
+  } else {
+    enhanceScope(prose, prose);
+  }
 }
 
 export function initializeFootnoteSidenotes(): void {

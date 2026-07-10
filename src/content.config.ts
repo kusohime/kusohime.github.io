@@ -105,11 +105,10 @@ const writings = defineCollection({
     subtitle: z.string().optional(),
     date: z.union([z.string(), z.number()]),
     displayDate: z.string().optional(),
-    type: z.enum(writingTypes),
-    tags: z.array(z.enum(writingTypes)).optional(),
-    // 中文：语言可选——未标注时页面不显示语言一栏，正文按默认排版。
-    // English: Optional — when absent, the page omits the language line and uses default typography.
-    language: z.string().optional(),
+    // 中文：标签取代旧的 type / language 字段，可多选；正文语言改由文字自动判断。
+    // English: Tags replace the old type/language fields and allow several values;
+    // the body language is now inferred from the text itself.
+    tags: z.array(z.enum(writingTypes)).default([]),
     excerpt: z.string(),
     slug: z.string(),
     order: z.number().int().default(999),
@@ -244,11 +243,26 @@ const eventsZh = defineCollection({
   schema: z.object({ title: z.string().optional() }),
 });
 
+// 中文：文章的中文正文——同目录 index.zh.md（仅正文，frontmatter 可省）；
+// 存在时文章页按站点语言在英文主文与中文正文之间切换。
+// English: Chinese bodies for writings — the sibling index.zh.md (body only,
+// frontmatter optional); when present, the writing page swaps the English main
+// body and the Chinese body by site locale.
+const writingsZh = defineCollection({
+  loader: glob({
+    base: "./content/writings",
+    pattern: "*/index.zh.md",
+    generateId: folderIdZh,
+  }),
+  schema: z.object({ title: z.string().optional() }),
+});
+
 export const collections = {
   works,
   events,
   writings,
   writingChapters,
+  writingsZh,
   tools,
   comments,
   toolsZh,

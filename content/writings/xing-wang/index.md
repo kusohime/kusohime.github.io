@@ -2,9 +2,7 @@
 title: "星王"
 subtitle: "Звездоликий — К. Д. Бальмонт"
 date: "2023-10-29"
-type: "Translation"
 tags: ["Translation", "Poetry", "Russian"]
-language: "Chinese / Russian"
 excerpt: "他的面容像在天空最顶点时的太阳。"
 slug: "xing-wang"
 order: 3

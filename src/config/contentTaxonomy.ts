@@ -1,6 +1,6 @@
 /**
- * 中文：定义作品类别、文章类型及其固定显示顺序。
- * English: Defines work categories, writing types, and their display order.
+ * 中文：定义作品类别、文章标签及其固定显示顺序。
+ * English: Defines work categories, writing tags, and their display order.
  * Caveat / 注意：新增值时也要确保 content.config.ts 的 schema 能接受它。
  * Caveat: New values must also remain accepted by the content.config.ts schema.
  */
@@ -30,6 +30,9 @@ export const writingTypes = [
   "Program Note",
   "Review",
   "Other",
+  "Linguistics",
+  "Theology",
+  "Apologetics",
 ] as const;
 
 export const toolGroups = [

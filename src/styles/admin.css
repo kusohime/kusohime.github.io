@@ -658,6 +658,34 @@ button:disabled {
   color: var(--admin-text);
 }
 
+/* 文章标签多选框。Writing-tag checkbox picker. */
+.tag-picker {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.tag-picker-label {
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.tag-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.3rem 0.6rem;
+}
+
+.tag-options .tag-option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.35rem;
+  align-items: center;
+  color: var(--admin-text);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
 .design-group p,
 .panel-hint {
   margin: 0.15rem 0 0;

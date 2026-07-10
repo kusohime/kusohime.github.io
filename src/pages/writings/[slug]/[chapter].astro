@@ -6,7 +6,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { contentFolder } from "../../../utils/contentPaths";
-import { cjkLangFromContentLanguage } from "../../../utils/cjkLanguage";
+import { cjkLangFromText } from "../../../utils/cjkLanguage";
 import { translate } from "../../../config/locales";
 
 export async function getStaticPaths() {
@@ -52,8 +52,7 @@ const nextChapter =
     : undefined;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isBenQun = isCuiXiong && chapter.data.slug.startsWith("ben-qun");
-const contentLang = cjkLangFromContentLanguage(
-  writing.data.language,
+const contentLang = cjkLangFromText(
   [
     writing.data.title,
     writing.data.subtitle,

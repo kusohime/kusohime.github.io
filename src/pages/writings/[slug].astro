@@ -8,12 +8,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Comments from "../../components/Comments.astro";
 import { toAnchor } from "../../config/contentTaxonomy";
 import { contentFolder } from "../../utils/contentPaths";
-import { cjkLangFromContentLanguage } from "../../utils/cjkLanguage";
+import { cjkLangFromText } from "../../utils/cjkLanguage";
 import {
   formatDate,
   translate,
   writingTypeLabel,
 } from "../../config/locales";
+import "../../styles/igt.css";
 
 export async function getStaticPaths() {
   const writings = await getCollection(
@@ -33,25 +34,35 @@ interface Props {
 
 const { writing } = Astro.props;
 const { Content } = await render(writing);
+// 中文：若同目录存在 index.zh.md，则正文按站点语言在英文主文与中文正文间切换。
+// English: When a sibling index.zh.md exists, the body swaps between the English
+// main body and the Chinese body by site locale (.lang-block).
+const writingsZh = await getCollection("writingsZh");
+const zhEntry = writingsZh.find((entry) => entry.id === writing.id);
+const { Content: ContentZh } = zhEntry
+  ? await render(zhEntry)
+  : { Content: null as any };
 const allChapters = await getCollection("writingChapters");
 const writingFolder = contentFolder(writing.id);
 const chapters = allChapters
   .filter((chapter) => contentFolder(chapter.id) === writingFolder)
   .sort((a, b) => a.data.order - b.data.order);
 
-const { title, subtitle, date, displayDate, type, language, excerpt } = writing.data;
+const { title, subtitle, date, displayDate, excerpt } = writing.data;
 const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
-const writingTags = writing.data.tags && writing.data.tags.length > 0
-  ? writing.data.tags
-  : [type];
+const writingTags = writing.data.tags;
 const isTranslation = writingTags.includes("Translation");
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isClairieres = writing.data.slug === "tian-jian-qing-che";
-const contentLang = cjkLangFromContentLanguage(
-  language,
+const contentLang = cjkLangFromText(
   [title, subtitle, excerpt].filter(Boolean).join(" "),
 );
+// 中文正文块的 lang 按其正文文字推断（简繁/日文）。
+// The Chinese block's lang is inferred from its own body text (Hans/Hant/ja).
+const zhBodyLang = zhEntry
+  ? (cjkLangFromText(zhEntry.body ?? "") ?? "zh")
+  : undefined;
 ---
 
 <BaseLayout title={title} description={excerpt} noindex={writing.data.draft}>
@@ -96,7 +107,20 @@ const contentLang = cjkLangFromContentLanguage(
           },
         ]}
       >
-        <Content />
+        {
+          ContentZh ? (
+            <>
+              <div class="lang-block" data-lang="en" lang="en">
+                <Content />
+              </div>
+              <div class="lang-block" data-lang="zh" lang={zhBodyLang}>
+                <ContentZh />
+              </div>
+            </>
+          ) : (
+            <Content />
+          )
+        }
       </div>
     </section>
 

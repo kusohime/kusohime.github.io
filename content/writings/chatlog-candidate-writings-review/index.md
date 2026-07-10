@@ -2,8 +2,7 @@
 title: "Candidate Writings from Chat Logs"
 date: "2026-06-19"
 displayDate: "Draft review"
-type: "Other"
-language: "Chinese / English / Russian"
+tags: ["Other"]
 excerpt: "Recovered candidate diary entries, notes, reviews, and formal-ish writings for review."
 slug: "chatlog-candidate-writings-review"
 order: 99

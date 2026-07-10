@@ -2,8 +2,7 @@
 title: "Food Notes and Recipes"
 date: "undated"
 displayDate: "Recovered from chat export"
-type: "Other"
-language: "Chinese"
+tags: ["Other"]
 excerpt: "牛排骨，海鲜炒饭，咖喱补记。"
 slug: "food-notes-and-recipes"
 order: 5

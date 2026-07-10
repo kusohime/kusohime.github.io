@@ -2,9 +2,7 @@
 title: "与卡夫卡一起笑"
 subtitle: "Laughing with Kafka — David Foster Wallace"
 date: "2020-07-06"
-type: "Translation"
 tags: ["Translation", "Essay"]
-language: "Chinese"
 excerpt: "极好的短篇故事本来就和绝妙的笑话有很多共同之处。"
 slug: "yu-kafuka-yiqi-xiao"
 order: 5

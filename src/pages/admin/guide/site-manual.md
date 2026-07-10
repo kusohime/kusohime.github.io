@@ -157,19 +157,21 @@ Path: `content/writings/<folder>/index.md`.
 
 路徑：`content/writings/<folder>/index.md`。
 
-Required: `title`, `date`, `type`, `language`, `excerpt`, `slug`.
+Required: `title`, `date`, `excerpt`, `slug`.
 
-必填：`title`、`date`、`type`、`language`、`excerpt`、`slug`。
+必填：`title`、`date`、`excerpt`、`slug`。
 
-Optional: `subtitle`, `tags`, `order`, `draft`, `comments`.
+Optional: `subtitle`, `tags` (choose any number), `order`, `draft`, `comments`.
+The old `type` and `language` fields are gone — tags replace them.
 
-可選：`subtitle`、`tags`、`order`、`draft`、`comments`。
+可選：`subtitle`、`tags`（可多選）、`order`、`draft`、`comments`。
+舊的 `type` 與 `language` 欄位已移除，改用標籤。
 
-Types and tags: `Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`,
+Tags: `Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`,
 `French`, `Russian`, `Philosophy`, `Moral Philosophy`, `Program Note`, `Review`,
 `Other`.
 
-類型與標籤：`Translation`、`Essay`、`Drama`、`Fiction`、`Blog`、`Poetry`、
+標籤：`Translation`、`Essay`、`Drama`、`Fiction`、`Blog`、`Poetry`、
 `French`、`Russian`、`Philosophy`、`Moral Philosophy`、`Program Note`、
 `Review`、`Other`。
 

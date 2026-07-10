@@ -4,7 +4,17 @@
  * Caveat / 注意：優先修改 :root 變數；大範圍選擇器會影響所有頁面。
  * Caveat: Prefer :root variables; broad selectors affect every public page.
  */
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=Hina+Mincho&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cousine:ital,wght@0,400;0,700;1,400&family=EB+Garamond:wght@400;600;700&family=Gentium+Plus:ital,wght@0,400;0,700;1,400&family=Hina+Mincho&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+Hebrew:wght@400;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+
+@font-face {
+  font-family: "Kawkab Mono";
+  src: url("/fonts/kawkab-mono/KawkabMono-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF,
+    U+FE70-FEFF;
+}
 
 :root {
   color-scheme: light;
@@ -63,14 +73,79 @@
                           "Microsoft YaHei",
                           sans-serif;
 
+  /*
+   * 古典语文字型：希伯来文（带尼库德）、阿拉伯文（带哈拉卡）、多调号希腊文、
+   * 语言学转写附加符。前列 webfont 保证 Mac/iOS/Windows/Android 渲染一致，
+   * 后备为各平台系统字型（Arial Hebrew=Mac/iOS、David=Windows、
+   * Geeza Pro=Mac/iOS、Arabic Typesetting=Windows、Noto=Android）。
+   * Classical-philology faces: pointed Hebrew, vocalised Arabic, polytonic
+   * Greek, and transliteration diacritics. Webfonts lead each stack so the four
+   * platforms render identically; per-OS system fonts follow as offline
+   * fallbacks (Arial Hebrew = Mac/iOS, David = Windows, Geeza Pro = Mac/iOS,
+   * Arabic Typesetting = Windows, Noto = Android).
+   */
+  --font-hebrew: "Noto Serif Hebrew",
+                 "SBL Hebrew",
+                 "Ezra SIL",
+                 "Arial Hebrew",
+                 David,
+                 "Times New Roman",
+                 "Noto Sans Hebrew",
+                 serif;
+  --font-arabic: Amiri,
+                 "Scheherazade New",
+                 "Arabic Typesetting",
+                 "Traditional Arabic",
+                 "Geeza Pro",
+                 "Noto Naskh Arabic",
+                 serif;
+  --font-greek: "Gentium Plus",
+                "STIX Two Text",
+                "Palatino Linotype",
+                "Book Antiqua",
+                Palatino,
+                "Times New Roman",
+                serif;
+  /*
+   * 插进各正文字堆的“文种补丁”：正文主字型缺的希腊/希伯来/阿拉伯字符
+   * 一律落到这三个 webfont，而不是随平台乱跳。
+   * The per-script patch spliced into every body stack: Greek/Hebrew/Arabic
+   * characters missing from the primary face fall to these three webfonts
+   * instead of platform-dependent system picks.
+   */
+  --font-scripts: "Gentium Plus",
+                  "Noto Serif Hebrew",
+                  Amiri;
+  /*
+   * 等宽正文的打字机版文种补丁：Cousine 与 Courier New 同度量，且带
+   * greek/greek-ext/hebrew 子集；自托管的 Kawkab Mono 则让阿拉伯文也能
+   * 在各平台保持等宽字型，不再依赖 Windows 独有的 Simplified Arabic Fixed。
+   * The typewriter cut of the script patch, for monospace bodies: Cousine is
+   * Courier-New-compatible and ships Greek/Greek Extended/Hebrew subsets;
+   * self-hosted Kawkab Mono gives Arabic the same cross-platform fixed-pitch
+   * texture without relying on Windows-only Simplified Arabic Fixed.
+   */
+  --font-scripts-mono: Cousine,
+                       "Kawkab Mono",
+                       var(--font-scripts);
+  --font-hebrew-mono: Cousine,
+                      var(--font-hebrew);
+  --font-arabic-mono: "Kawkab Mono",
+                      "Simplified Arabic Fixed",
+                      var(--font-arabic);
+  --font-greek-mono: Cousine,
+                     var(--font-greek);
+
   /* OPTION 1: classic typewriter / 經典打字機 */
   --font-typewriter: "Lucida Console",
                      "Courier New",
                      Courier,
+                     var(--font-scripts-mono),
                      var(--font-cjk-mono);
 
   /* OPTION 2: modern mono / 現代等寬 */
   --font-modern-mono: "IBM Plex Mono",
+                      var(--font-scripts-mono),
                       Consolas,
                       var(--font-cjk-mono);
 
@@ -78,21 +153,25 @@
   --font-system-sans: "Helvetica Neue",
                       Helvetica,
                       Arial,
+                      var(--font-scripts),
                       var(--font-cjk-sans);
 
   /* OPTION 4: humanist sans / 人文無襯線 */
   --font-humanist-sans: "Source Sans 3",
+                        var(--font-scripts),
                         var(--font-cjk-sans);
 
   /* OPTION 5: traditional serif / 傳統襯線 */
   --font-system-serif: "Times New Roman",
                        Times,
+                       var(--font-scripts),
                        var(--font-cjk-serif);
 
   /* OPTION 6: Garamond / Garamond 襯線 */
   --font-garamond: "EB Garamond",
                    Garamond,
                    Georgia,
+                   var(--font-scripts),
                    var(--font-cjk-serif);
 
   /*
@@ -103,6 +182,7 @@
    * i.e. the per-language Source Han Serif (Noto Serif) family.
    */
   --font-stix-serif: "STIX Two Text",
+                     var(--font-scripts),
                      var(--font-cjk-serif);
 
   /*
@@ -895,6 +975,62 @@ main {
 :root:lang(en) .lang-block[data-lang="en"],
 :root:lang(zh) .lang-block[data-lang="zh"] {
   display: block;
+}
+
+/* 中文：标注了语言的古典语文字段——整段用对应字型，跨平台一致。正文里的
+   希腊文与希伯来文用打字机版（Cousine），贴合等宽正文；希伯来文略放大配合
+   尼库德；Amiri 视觉字高偏小，阿拉伯文放大补偿。 */
+/* English: Language-tagged classical-script runs get the matching face whole-run,
+   identically across platforms. In running text Greek and Hebrew use the
+   typewriter cut (Cousine) to sit with the monospace body; Hebrew is bumped
+   slightly for niqqud legibility; Amiri's small optical size earns Arabic a
+   larger bump. */
+.prose :lang(he),
+.prose :lang(hbo) {
+  font-family: var(--font-hebrew-mono);
+  font-size: 1.1em;
+}
+
+.prose :lang(ar) {
+  font-family: var(--font-arabic);
+  font-size: 1.25em;
+}
+
+.prose :lang(grc),
+.prose :lang(el) {
+  font-family: var(--font-greek-mono);
+}
+
+/* 注解块保持衬线（与层间注解工具一致）；此组规则须排在 .prose 组之后，
+   同特异度靠源序取胜。 */
+/* Gloss blocks stay serif, matching the glosser tool; this group must follow
+   the .prose group — equal specificity, source order decides. */
+.igt-block :lang(he),
+.igt-block :lang(hbo) {
+  font-family: var(--font-hebrew);
+  font-size: 1.1em;
+}
+
+.igt-block :lang(ar) {
+  font-family: var(--font-arabic);
+  font-size: 1.25em;
+}
+
+.igt-block :lang(grc),
+.igt-block :lang(el) {
+  font-family: var(--font-greek);
+}
+
+/* 注音（转写）是拉丁字母，退回正文字型，不随基字的文种字型走。 */
+/* Ruby annotations (romanisations) are Latin; they revert to the body font
+   rather than inheriting the base text's script face. */
+.prose :lang(he) rt,
+.prose :lang(hbo) rt,
+.prose :lang(ar) rt,
+.prose :lang(grc) rt,
+.prose :lang(el) rt {
+  font-family: var(--font-body);
+  font-size: 0.45em;
 }
 
 /* 首段与姓名同行，其余段落正常成块。 First paragraph runs inline with the name. */
@@ -1879,7 +2015,8 @@ main {
   margin-block: var(--space-xs) 0;
 }
 
-.chicago-prose > p {
+.chicago-prose > p,
+.chicago-prose > .lang-block > p {
   margin-block: 0 var(--paragraph-spacing);
   text-indent: var(--paragraph-indent);
 }
@@ -1887,7 +2024,11 @@ main {
 .chicago-prose > h2 + p,
 .chicago-prose > h3 + p,
 .chicago-prose > figure + p,
-.chicago-prose > blockquote + p {
+.chicago-prose > blockquote + p,
+.chicago-prose > .lang-block > h2 + p,
+.chicago-prose > .lang-block > h3 + p,
+.chicago-prose > .lang-block > figure + p,
+.chicago-prose > .lang-block > blockquote + p {
   text-indent: var(--paragraph-indent);
 }
 
@@ -2292,6 +2433,26 @@ main {
 
 .writing-body rt {
   font-size: 0.6em;
+}
+
+.writing-body .translation-chain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28em;
+  margin: var(--space-md) auto;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.writing-body .translation-chain-step {
+  max-width: 100%;
+}
+
+.writing-body .translation-chain-arrow {
+  color: var(--color-muted);
+  font-size: 1.15em;
+  line-height: 1;
 }
 
 .clairieres-pronoun-toggle {

@@ -1,0 +1,190 @@
+/*
+ * 中文：层间注解（interlinear gloss）块的共享样式。工具页的实时预览
+ * 与文章正文中静态嵌入的注解块（works/writings 的 Markdown 里手写的
+ * .igt-block HTML）都使用这一套；结构见 src/lib/igt-render.js 的 renderHtml()。
+ * English: Shared styles for interlinear gloss blocks. Used both by the live
+ * preview on the tool page and by static gloss blocks hand-written as
+ * .igt-block HTML inside works/writings Markdown; the markup shape is the one
+ * produced by renderHtml() in src/lib/igt-render.js.
+ * Caveat / 注意：tools.css 通过 @import 引入本文件；文章页面需自行 import。
+ * Caveat: tools.css pulls this in via @import; content pages import it directly.
+ */
+
+.igt-block {
+  /* CJK 尾巴照顾中文的出处行；文种单元格另由 global.css 的 :lang 规则接管。 */
+  /* The CJK tail covers Chinese citation lines; script cells are taken over by
+     the :lang rules in global.css. */
+  --igt-font: "Gentium Plus", "Charis SIL", var(--font-cjk-serif, serif);
+  font-family: var(--igt-font);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.6rem;
+  align-items: start;
+}
+
+/* 例号在左边距，与右侧首行对齐。 Example label in the left margin, top-aligned with the first line. */
+.igt-label {
+  color: var(--color-muted);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* 中文：global.css 里 :where(:lang(zh-…)) 会给中文语境下的每个元素直接盖上
+   正文字型；这里显式继承，把注解块内部拉回 --igt-font。 */
+/* English: The :where(:lang(zh-…)) rules in global.css stamp the body font onto
+   every element in a Chinese-language context; explicit inheritance pulls the
+   block's internals back to --igt-font. */
+.igt-main,
+.igt-lang,
+.igt-body,
+.igt-col,
+.igt-cell,
+.igt-sc,
+.igt-translation {
+  font-family: inherit;
+}
+
+.igt-main {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+/* language / citation：可选的首行；留空时整行消失。 Optional first line; vanishes when blank. */
+.igt-lang {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.igt-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1.1rem;
+  align-items: start;
+}
+
+.igt-col {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.igt-cell {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.igt-cell.igt-italic {
+  font-style: italic;
+}
+
+.igt-sc {
+  font-variant: small-caps;
+  text-transform: lowercase;
+}
+
+.igt-translation {
+  font-family: var(--igt-font);
+  font-size: 1.05rem;
+  margin-top: 0.2rem;
+}
+
+/* On Alma: one monospaced rhythm, with script-specific faces and optical sizing. */
+.writing-title-page[data-writing-slug="on-alma"] .igt-block {
+  --igt-font: var(--font-modern-mono);
+  grid-template-columns: 2rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  padding-block: 0.3rem 0.45rem;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-label {
+  color: var(--theme-color);
+  font-family: var(--font-modern-mono);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  padding-top: 0.08rem;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-main {
+  gap: 0.45rem;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-lang {
+  color: var(--color-muted);
+  font-family: var(--font-modern-mono);
+  font-size: 0.78rem;
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-body {
+  gap: 0.55rem 1.15rem;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-col {
+  gap: 0.08rem;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-cell {
+  font-family: var(--font-modern-mono);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-col > .igt-cell:first-child {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-translation {
+  border-top: 1px dotted var(--color-rule);
+  color: var(--color-muted);
+  font-family: var(--font-modern-mono);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin-top: 0.05rem;
+  padding-top: 0.35rem;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(he),
+.writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(hbo) {
+  font-family: var(--font-hebrew-mono);
+  font-size: 1.08rem;
+  font-style: normal;
+  line-height: 1.55;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(grc),
+.writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(el) {
+  font-family: var(--font-greek-mono);
+  font-style: normal;
+}
+
+.writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(ar) {
+  direction: rtl;
+  font-family: var(--font-arabic-mono);
+  font-size: 1.08rem;
+  font-style: normal;
+  line-height: 1.55;
+  unicode-bidi: isolate;
+}
+
+@media (max-width: 640px) {
+  .writing-title-page[data-writing-slug="on-alma"] .igt-block {
+    grid-template-columns: 1.6rem minmax(0, 1fr);
+    column-gap: 0.45rem;
+  }
+
+  .writing-title-page[data-writing-slug="on-alma"] .igt-body {
+    gap: 0.65rem 0.9rem;
+  }
+}
+
+/* 中文：正文（.prose）里静态嵌入的注解块需要自己的上下节奏。 */
+/* English: Static gloss blocks inside .prose bodies carry their own vertical rhythm. */
+.prose .igt-block {
+  margin: var(--space-md) 0;
+}

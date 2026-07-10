@@ -378,8 +378,8 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLButtonElement>("[data-library-trash]");
   const libraryCategorySelect =
     studio.querySelector<HTMLSelectElement>("[data-library-category]");
-  const libraryTypeSelect =
-    studio.querySelector<HTMLSelectElement>("[data-library-type]");
+  const libraryTagsContainer =
+    studio.querySelector<HTMLElement>("[data-library-tags]");
   const markdownToolbar =
     studio.querySelector<HTMLElement>("[data-md-toolbar]");
   const taxonomyKindSelect =
@@ -467,7 +467,7 @@ export async function initializeAdminStudio() {
     !libraryPreviewButton ||
     !libraryTrashButton ||
     !libraryCategorySelect ||
-    !libraryTypeSelect ||
+    !libraryTagsContainer ||
     !markdownToolbar ||
     !taxonomyKindSelect ||
     !taxonomyListSelect ||
@@ -1347,9 +1347,45 @@ export async function initializeAdminStudio() {
     studio.querySelector<T>(selector);
 
   const newCategorySelect = newField<HTMLSelectElement>("[data-new-category]");
-  const newTypeSelect = newField<HTMLSelectElement>("[data-new-type]");
+  const newTagsContainer = newField<HTMLElement>("[data-new-tags]");
   let editableWorkCategories: string[] = [...workCategories];
   let editableWritingTypes: string[] = [...writingTypes];
+
+  // 中文：文章标签用多选框；重画选项时保留已勾选的值。
+  // English: Writing tags use checkboxes; re-rendering keeps checked values.
+  const selectedTags = (container: HTMLElement | null) =>
+    container
+      ? [...container.querySelectorAll<HTMLInputElement>("input:checked")].map(
+          (input) => input.value,
+        )
+      : [];
+
+  const setSelectedTags = (container: HTMLElement | null, tags: string[]) => {
+    container
+      ?.querySelectorAll<HTMLInputElement>("input")
+      .forEach((input) => {
+        input.checked = tags.includes(input.value);
+      });
+  };
+
+  const renderTagOptions = (
+    container: HTMLElement | null,
+    values: readonly string[],
+  ) => {
+    if (!container) return;
+    const previous = new Set(selectedTags(container));
+    container.replaceChildren();
+    for (const value of values) {
+      const label = document.createElement("label");
+      label.className = "tag-option";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = value;
+      input.checked = previous.has(value);
+      label.append(input, value);
+      container.append(label);
+    }
+  };
 
   const setOptions = (
     select: HTMLSelectElement | null,
@@ -1391,8 +1427,8 @@ export async function initializeAdminStudio() {
   const syncTaxonomyControls = () => {
     setOptions(newCategorySelect, editableWorkCategories);
     setOptions(libraryCategorySelect, editableWorkCategories);
-    setOptions(newTypeSelect, editableWritingTypes);
-    setOptions(libraryTypeSelect, editableWritingTypes);
+    renderTagOptions(newTagsContainer, editableWritingTypes);
+    renderTagOptions(libraryTagsContainer, editableWritingTypes);
     renderTaxonomyList();
   };
 
@@ -1502,7 +1538,6 @@ export async function initializeAdminStudio() {
   ) => {
     const targetKind: LibraryKind =
       taxonomyName === "workCategories" ? "works" : "writings";
-    const key = taxonomyName === "workCategories" ? "category" : "type";
     const paths = [...fileHandles.keys()].filter((path) =>
       path.match(new RegExp(`^content/${targetKind}/[^/]+/index\\.md$`)),
     );
@@ -1516,8 +1551,17 @@ export async function initializeAdminStudio() {
       const parts = frontmatterParts(source);
       if (!parts) continue;
       const lines = parts.frontmatter.split(/\r?\n/);
-      if (readTopScalar(lines, key) !== oldValue) continue;
-      setTopScalar(lines, key, nextValue);
+      if (taxonomyName === "workCategories") {
+        if (readTopScalar(lines, "category") !== oldValue) continue;
+        setTopScalar(lines, "category", nextValue);
+      } else {
+        const tags = readWritingTags(lines);
+        if (!tags.includes(oldValue)) continue;
+        const nextTags = [
+          ...new Set(tags.map((tag) => (tag === oldValue ? nextValue : tag))),
+        ];
+        setWritingTags(lines, nextTags);
+      }
       const updated = `---${parts.lineBreak}${lines.join(parts.lineBreak)}${parts.lineBreak}---${parts.lineBreak}${parts.body}`;
       await writeSourceWithoutPreview(path, updated, `Updated ${path}.`);
     }
@@ -1749,19 +1793,19 @@ More information will be posted when details are confirmed.
     const date =
       newField<HTMLInputElement>("[data-new-date]")?.value.trim() ||
       new Date().toISOString().slice(0, 10);
-    const type = newTypeSelect?.value ?? "Other";
-    // 语言可选：未选时省略 frontmatter 行。Language is optional — omit the line when blank.
-    const language =
-      newField<HTMLSelectElement>("[data-new-language]")?.value.trim() ?? "";
-    const languageLine = language ? `language: ${yamlQuote(language)}\n` : "";
+    // 标签可多选；未勾选时省略 frontmatter 行。Tags allow several picks — omit the line when none.
+    const tags = selectedTags(newTagsContainer);
+    const tagsLine =
+      tags.length > 0
+        ? `tags: [${tags.map((tag) => yamlQuote(tag)).join(", ")}]\n`
+        : "";
     return {
       path: `content/writings/${slug}/index.md`,
       previewPath: `/writings/${slug}/`,
       source: `---
 title: ${yamlQuote(title)}
 date: ${yamlQuote(date)}
-type: ${yamlQuote(type)}
-${languageLine}excerpt: ${yamlQuote(summary || title)}
+${tagsLine}excerpt: ${yamlQuote(summary || title)}
 slug: ${yamlQuote(slug)}
 order: 999${draft ? "\ndraft: true" : ""}
 ---
@@ -1923,8 +1967,7 @@ Write the text here.
     location: string;
     role: string;
     category: string;
-    type: string;
-    language: string;
+    tags: string[];
     instrumentation: string;
     duration: string;
     videoEmbedUrl: string;
@@ -2014,6 +2057,58 @@ Write the text here.
     } else {
       lines.push(line);
     }
+  };
+
+  // 中文：读取／写入顶层字符串数组（行内 [a, b] 或缩进 "- 项" 两种写法都认）。
+  // English: Read/write a top-level string list (inline [a, b] or indented "- item").
+  const readTopList = (lines: string[], key: string) => {
+    const index = topKeyIndex(lines, key);
+    if (index < 0) return [];
+    const inline = lines[index].replace(new RegExp(`^${key}:\\s*`), "").trim();
+    if (inline.startsWith("[")) {
+      const inner = inline.replace(/^\[/, "").replace(/\]$/, "").trim();
+      if (!inner) return [];
+      return inner
+        .split(",")
+        .map((item) => unquoteYaml(item))
+        .filter(Boolean);
+    }
+    const values: string[] = [];
+    for (let line = index + 1; line < topBlockEnd(lines, index); line += 1) {
+      const match = lines[line].match(/^\s*-\s*(.*)$/);
+      if (match) values.push(unquoteYaml(match[1]));
+    }
+    return values;
+  };
+
+  const setTopList = (lines: string[], key: string, values: string[]) => {
+    if (values.length === 0) {
+      removeTopKey(lines, key);
+      return;
+    }
+    const line = `${key}: [${values.map((value) => yamlQuote(value)).join(", ")}]`;
+    const index = topKeyIndex(lines, key);
+    if (index >= 0) {
+      lines.splice(index, topBlockEnd(lines, index) - index, line);
+    } else {
+      lines.push(line);
+    }
+  };
+
+  // 中文：旧文件可能仍写单一 type；读取时并入标签，保存时移除旧字段。
+  // English: Legacy files may still carry a single type; reads fold it into
+  // the tags, and saves drop the old fields.
+  const readWritingTags = (lines: string[]) => {
+    const tags = readTopList(lines, "tags");
+    if (tags.length > 0) return tags;
+    const legacyType = readTopScalar(lines, "type");
+    return legacyType ? [legacyType] : [];
+  };
+
+  const setWritingTags = (lines: string[], tags: string[]) => {
+    setTopList(lines, "tags", [...new Set(tags)]);
+    removeTopKey(lines, "type");
+    removeTopKey(lines, "language");
   };
 
   const readNestedScalar = (lines: string[], parent: string, child: string) => {
@@ -2226,9 +2321,10 @@ Write the text here.
         "date",
         text("date") || new Date().toISOString().slice(0, 10),
       );
-      setTopScalar(lines, "type", text("type") || "Other");
-      // 语言可选：留空则移除该字段。Language is optional — clear it to drop the field.
-      setTopScalar(lines, "language", text("language"), { omitEmpty: true });
+      setWritingTags(
+        lines,
+        text("tags").split(",").map((tag) => tag.trim()).filter(Boolean),
+      );
       setTopScalar(lines, "excerpt", text("summary") || text("title"));
     } else {
       removeTopKey(lines, "subtitle");
@@ -2294,8 +2390,7 @@ Write the text here.
       location: readTopScalar(lines, "location"),
       role: readTopScalar(lines, "role"),
       category: readTopScalar(lines, "category") || "Other",
-      type: readTopScalar(lines, "type") || "Other",
-      language: readTopScalar(lines, "language"),
+      tags: readWritingTags(lines),
       instrumentation: readNestedScalar(lines, "instrumentation", "en"),
       duration: readNestedScalar(lines, "duration", "minutes"),
       videoEmbedUrl: readNestedScalar(lines, "video", "embedUrl"),
@@ -2390,6 +2485,9 @@ Write the text here.
           data.set(name, field.value);
         }
       });
+    // 标签多选框没有 data-library-field，另行汇总。
+    // The tag checkboxes carry no data-library-field; gather them separately.
+    data.set("tags", selectedTags(libraryTagsContainer).join(", "));
     return data;
   };
 
@@ -2425,8 +2523,7 @@ Write the text here.
     setLibraryField("venue", entry.venue);
     setLibraryField("location", entry.location);
     setLibraryField("role", entry.role);
-    setLibraryField("type", entry.type);
-    setLibraryField("language", entry.language);
+    setSelectedTags(libraryTagsContainer, entry.tags);
     setLibraryField("summary", entry.summary);
     setLibraryField("links", entry.links);
     setLibraryField("order", entry.order);
@@ -2447,7 +2544,7 @@ Write the text here.
           entry.slug,
           entry.folderSlug,
           entry.category,
-          entry.type,
+          entry.tags.join(" "),
           entry.date,
           entry.time,
           entry.venue,
@@ -2484,7 +2581,7 @@ Write the text here.
         entry.kind === "works"
           ? [entry.year, entry.category]
           : entry.kind === "writings"
-            ? [entry.date, entry.type]
+            ? [entry.date, entry.tags.join(", ")]
             : [entry.date, entry.time, entry.venue || entry.location, entry.role];
       meta.textContent = [...metaParts, entry.draft ? "draft" : "public"]
         .filter(Boolean)

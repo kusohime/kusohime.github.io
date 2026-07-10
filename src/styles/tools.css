@@ -5,6 +5,10 @@
  * the aesthetic is a paper worksheet next to a piece of lab equipment.
  */
 
+/* 层间注解块样式已抽出为共享文件，供文章正文复用。
+   Interlinear gloss block styles live in a shared file so prose bodies can reuse them. */
+@import "./igt.css";
+
 .tool-page {
   display: grid;
   gap: var(--space-lg);
@@ -523,69 +527,6 @@
 .igt-preview {
   margin-top: var(--space-md);
   overflow-x: auto;
-}
-
-.igt-block {
-  --igt-font: "Gentium Plus", "Charis SIL", serif;
-  font-family: var(--igt-font);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 0.6rem;
-  align-items: start;
-}
-
-/* 例号在左边距，与右侧首行对齐。 Example label in the left margin, top-aligned with the first line. */
-.igt-label {
-  color: var(--color-muted);
-  font-size: 1.1rem;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.igt-main {
-  display: grid;
-  gap: 0.3rem;
-  min-width: 0;
-}
-
-/* language / citation：可选的首行；留空时整行消失。 Optional first line; vanishes when blank. */
-.igt-lang {
-  color: var(--color-muted);
-  font-size: 0.95rem;
-  font-style: italic;
-}
-
-.igt-body {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem 1.1rem;
-  align-items: start;
-}
-
-.igt-col {
-  display: grid;
-  gap: 0.1rem;
-}
-
-.igt-cell {
-  font-size: 1.1rem;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.igt-cell.igt-italic {
-  font-style: italic;
-}
-
-.igt-sc {
-  font-variant: small-caps;
-  text-transform: lowercase;
-}
-
-.igt-translation {
-  font-family: var(--igt-font);
-  font-size: 1.05rem;
-  margin-top: 0.2rem;
 }
 
 /* IPA keyboard */

@@ -15,14 +15,10 @@ export function inferCjkLang(text: string, fallback: CjkLang = "zh"): CjkLang {
   return fallback;
 }
 
-export function cjkLangFromContentLanguage(
-  language: string | undefined,
-  sampleText = "",
-): CjkLang | undefined {
-  const normalized = (language ?? "").toLowerCase();
-  if (normalized.includes("japanese")) return "ja";
-  if (normalized.includes("traditional")) return "zh-Hant-TW";
-  if (normalized.includes("simplified")) return "zh-Hans-CN";
-  if (normalized.includes("chinese")) return inferCjkLang(sampleText, "zh");
+const hanPattern = /\p{Script=Han}/u;
+
+export function cjkLangFromText(sampleText: string): CjkLang | undefined {
+  if (kanaPattern.test(sampleText)) return "ja";
+  if (hanPattern.test(sampleText)) return inferCjkLang(sampleText);
   return undefined;
 }

@@ -15,7 +15,7 @@ import {
   translate,
   writingTypeLabel,
 } from "../../config/locales";
-import { cjkLangFromContentLanguage } from "../../utils/cjkLanguage";
+import { cjkLangFromText } from "../../utils/cjkLanguage";
 
 type WritingEntry = CollectionEntry<"writings">;
 
@@ -73,10 +73,7 @@ const sortByDateDescending = (a: WritingEntry, b: WritingEntry) =>
   a.data.order - b.data.order ||
   a.data.title.localeCompare(b.data.title);
 
-const tagsForWriting = (writing: WritingEntry) =>
-  writing.data.tags && writing.data.tags.length > 0
-    ? writing.data.tags
-    : [writing.data.type];
+const tagsForWriting = (writing: WritingEntry) => writing.data.tags;
 
 const makeDateGroups = (entries: WritingEntry[]): WritingYearGroup[] => {
   const years = new Map<string, WritingYearGroup>();
@@ -146,8 +143,7 @@ const makeDateGroups = (entries: WritingEntry[]): WritingYearGroup[] => {
 const writingView = (writing: WritingEntry) => {
   const dateLabel = writing.data.displayDate ?? String(writing.data.date);
   const parsedDate = parseWritingDate(writing.data.date);
-  const titleLang = cjkLangFromContentLanguage(
-    writing.data.language,
+  const titleLang = cjkLangFromText(
     [
       writing.data.title,
       writing.data.subtitle,

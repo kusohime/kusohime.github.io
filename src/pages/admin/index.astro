@@ -445,7 +445,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
               Set
               <select data-taxonomy-kind>
                 <option value="workCategories">Work categories</option>
-                <option value="writingTypes">Writing types</option>
+                <option value="writingTypes">Writing tags</option>
               </select>
             </label>
             <label>
@@ -560,14 +560,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 Date
                 <input type="text" data-library-field="date" />
               </label>
-              <label data-library-writing-only hidden>
-                Type
-                <select data-library-field="type" data-library-type></select>
-              </label>
-              <label data-library-writing-only hidden>
-                Language
-                <input type="text" data-library-field="language" />
-              </label>
+              <div class="tag-picker" data-library-writing-only hidden>
+                <span class="tag-picker-label">Tags (choose any)</span>
+                <div class="tag-options" data-library-tags></div>
+              </div>
               <label data-library-event-only hidden>
                 Time
                 <input type="text" data-library-field="time" placeholder="7:30 PM" />
@@ -722,20 +718,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                   Date (YYYY or YYYY-MM-DD)
                   <input type="text" data-new-date placeholder="2026-06" />
                 </label>
-                <label>
-                  Type
-                  <select data-new-type></select>
-                </label>
-                <label>
-                  Language
-                  <select data-new-language>
-                    <option value="">(none)</option>
-                    <option>English</option>
-                    <option>Chinese</option>
-                    <option>Chinese / English</option>
-                    <option>Japanese</option>
-                  </select>
-                </label>
+                <div class="tag-picker">
+                  <span class="tag-picker-label">Tags (choose any)</span>
+                  <div class="tag-options" data-new-tags></div>
+                </div>
               </div>
 
               <div data-new-event-fields hidden>

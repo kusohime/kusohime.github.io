@@ -223,6 +223,18 @@ const writingTypeTranslations: Record<
     singular: { en: "Other", zh: "其他" },
     plural: { en: "Other", zh: "其他" },
   },
+  Linguistics: {
+    singular: { en: "Linguistics", zh: "語言學" },
+    plural: { en: "Linguistics", zh: "語言學" },
+  },
+  Theology: {
+    singular: { en: "Theology", zh: "神學" },
+    plural: { en: "Theology", zh: "神學" },
+  },
+  Apologetics: {
+    singular: { en: "Apologetics", zh: "護教學" },
+    plural: { en: "Apologetics", zh: "護教學" },
+  },
 };
 
 const toolGroupTranslations: Record<ToolGroup, Record<Locale, string>> = {
