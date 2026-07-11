@@ -1,6 +1,6 @@
 ---
 title: "Notes on Les Rois thaumaturges"
-date: "2026-07-11"
+date: "2024-07-13"
 tags: ["Essay", "Anthropology", "Theology"]
 excerpt: "Le roi te touche, Dieu te guérit——七百年間沒有治好任何人，也沒有任何人需要為此負責。"
 slug: "les-rois-thaumaturges"
