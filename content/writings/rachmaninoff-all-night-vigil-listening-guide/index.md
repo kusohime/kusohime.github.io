@@ -1,6 +1,6 @@
 ---
 title: "How to Sing-along All-Night Vigil"
-date: "2024-10-09"
+date: "2022-10-13"
 tags: ["Program Note", "Russian", "Musicology"]
 excerpt: "A movement-by-movement guide to Rachmaninoff’s All-Night Vigil, with scriptural sources and recording timestamps."
 slug: "rachmaninoff-all-night-vigil-listening-guide"
