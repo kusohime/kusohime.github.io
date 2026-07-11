@@ -3637,3 +3637,52 @@ main {
     display: none;
   }
 }
+
+/* 希臘時間介詞圖（《言葉與阿房宮》圖版）：行內 SVG 重繪，隨主題換色。 */
+/* Greek temporal-preposition chart (inline SVG redrawing): theme-aware via
+   currentColor; glosses take the accent color, Greek takes --font-greek. */
+.time-chart {
+  margin-block: var(--space-lg);
+}
+
+.time-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 42rem;
+  margin: 0 auto var(--space-md);
+}
+
+.time-chart-title {
+  margin: 0 0 var(--space-md);
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.9;
+}
+
+.time-chart text {
+  fill: currentColor;
+  font-family: inherit;
+  font-size: 17px;
+}
+
+.time-chart .tc-greek {
+  font-family: var(--font-greek, serif);
+}
+
+.time-chart .tc-gloss {
+  fill: var(--theme-color);
+  font-size: 15px;
+}
+
+.time-chart .tc-label {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.time-chart figcaption {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}

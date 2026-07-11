@@ -1,8 +1,8 @@
 ---
 title: "On \"Of\""
 date: "2024-10-22"
-excerpt: "On \"Of\""
 tags: ["Essay", "Linguistics"]
+excerpt: "現代英語的領屬結構像是兩重歷史疊在一起。"
 slug: "on-of"
 order: 999
 draft: false
