@@ -9,9 +9,7 @@ order: 5
 comments: true
 ---
 
-David Foster Wallace. 裡姆·譯。
-
-原文摘自大衛·福斯特·華萊士於 1998 年 3 月「變形記：新卡夫卡」座談會上的演講，後收錄於短文集 *Consider the Lobster*。
+*David Foster Wallace. 裡姆·譯。原文摘自大衛·福斯特·華萊士於 1998 年 3 月「變形記：新卡夫卡」座談會上的演講，後收錄於短文集* Consider the Lobster。
 
 ***
 

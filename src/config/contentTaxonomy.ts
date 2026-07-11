@@ -39,6 +39,7 @@ export const writingTypes = [
   "Ethnomusicology",
   "Anthropology",
   "Disability",
+  "Dialogue",
 ] as const;
 
 export const toolGroups = [

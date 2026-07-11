@@ -62,20 +62,25 @@ const navGroups = [
                   ></span>
                   <span data-i18n-key={group.key}>{translate("en", group.key)}</span>
                 </summary>
-                <ul class="nav-dropdown-list">
-                  {group.items.map((item) => (
-                    <li>
-                      <a
-                        href={item.href}
-                        aria-current={isActivePath(item.href) ? "page" : undefined}
-                      >
-                        <span data-i18n-key={item.key}>
-                          {translate("en", item.key)}
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+                {/* 中文：外层容器负责展开／收拢动画（grid-template-rows），列表在其内被裁切。 */}
+                {/* English: The panel animates the unfold (grid-template-rows);
+                    the list inside is what gets clipped. */}
+                <div class="nav-dropdown-panel">
+                  <ul class="nav-dropdown-list">
+                    {group.items.map((item) => (
+                      <li>
+                        <a
+                          href={item.href}
+                          aria-current={isActivePath(item.href) ? "page" : undefined}
+                        >
+                          <span data-i18n-key={item.key}>
+                            {translate("en", item.key)}
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </details>
             </li>
           ))

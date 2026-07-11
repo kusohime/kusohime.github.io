@@ -108,20 +108,29 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
               <ul class="event-archive event-archive-upcoming">
                 {upcomingYearGroups.map(({ year, months }) => (
                   <li>
-                    <details open>
-                      <summary>{year}</summary>
-                      <ul>
-                        {months.map(({ month, label, events: monthEvents }) => (
-                          <li>
-                            <a
-                              href={`#${monthAnchor("future", year, month)}`}
-                              data-event-nav
-                            >
-                              {label} ({monthEvents.length})
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
+                    <details class="rail-disclosure" data-unfold open>
+                      <summary>
+                        <span
+                          class="glyph-arrow glyph-arrow--disclosure"
+                          data-arrow-glyph
+                          aria-hidden="true"
+                        ></span>
+                        <span>{year}</span>
+                      </summary>
+                      <div class="rail-unfold">
+                        <ul>
+                          {months.map(({ month, label, events: monthEvents }) => (
+                            <li>
+                              <a
+                                href={`#${monthAnchor("future", year, month)}`}
+                                data-event-nav
+                              >
+                                {label} ({monthEvents.length})
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </details>
                   </li>
                 ))}
@@ -135,20 +144,29 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
               <ul class="event-archive event-archive-past">
                 {pastYearGroups.map(({ year, months }) => (
                   <li>
-                    <details>
-                      <summary>{year}</summary>
-                      <ul>
-                        {months.map(({ month, label, events: monthEvents }) => (
-                          <li>
-                            <a
-                              href={`#${monthAnchor("past", year, month)}`}
-                              data-event-nav
-                            >
-                              {label} ({monthEvents.length})
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
+                    <details class="rail-disclosure" data-unfold>
+                      <summary>
+                        <span
+                          class="glyph-arrow glyph-arrow--disclosure"
+                          data-arrow-glyph
+                          aria-hidden="true"
+                        ></span>
+                        <span>{year}</span>
+                      </summary>
+                      <div class="rail-unfold">
+                        <ul>
+                          {months.map(({ month, label, events: monthEvents }) => (
+                            <li>
+                              <a
+                                href={`#${monthAnchor("past", year, month)}`}
+                                data-event-nav
+                              >
+                                {label} ({monthEvents.length})
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </details>
                   </li>
                 ))}

@@ -26,32 +26,11 @@ interface ParsedWritingDate {
   sortTime: number;
 }
 
-interface WritingDateBucket {
-  key: string;
-  anchor: string;
-  label: string;
-  dateValue?: string;
-  sortTime: number;
-  writings: WritingEntry[];
-}
-
-interface WritingYearGroup {
-  key: string;
-  anchor: string;
-  label: string;
-  dateValue?: string;
-  sortTime: number;
-  writings: WritingEntry[];
-  months: WritingDateBucket[];
-}
-
 const defaultPanelId = "writings-by-date";
 
 const tagAnchor = (type: WritingType) => `writings-tag-${toAnchor(type)}`;
-const yearAnchor = (year: string) =>
-  year === "undated" ? "writings-date-undated" : `writings-date-${year}`;
-const monthAnchor = (year: string, month: string) =>
-  `writings-date-${year}-${month}`;
+const writingAnchor = (writing: WritingEntry) =>
+  `writing-entry-${toAnchor(writing.data.slug)}`;
 
 const parseWritingDate = (value: string | number): ParsedWritingDate | null => {
   const raw = String(value);
@@ -75,71 +54,6 @@ const sortByDateDescending = (a: WritingEntry, b: WritingEntry) =>
 
 const tagsForWriting = (writing: WritingEntry) => writing.data.tags;
 
-const makeDateGroups = (entries: WritingEntry[]): WritingYearGroup[] => {
-  const years = new Map<string, WritingYearGroup>();
-
-  entries.forEach((writing) => {
-    const parsed = parseWritingDate(writing.data.date);
-    const key = parsed?.year ?? "undated";
-    const label = parsed ? formatDate(parsed.year, "en") : translate("en", "common.undated");
-    const sortTime = parsed?.sortTime ?? Number.NEGATIVE_INFINITY;
-    const monthKey = parsed?.month ?? "undated";
-    const monthDateValue = parsed?.month
-      ? `${parsed.year}-${parsed.month}`
-      : undefined;
-    const bucketAnchor = parsed?.month
-      ? monthAnchor(parsed.year, parsed.month)
-      : yearAnchor(key);
-    const bucketLabel = monthDateValue
-      ? formatDate(monthDateValue, "en", "month")
-      : label;
-
-    let yearGroup = years.get(key);
-    if (!yearGroup) {
-      yearGroup = {
-        key,
-        anchor: yearAnchor(key),
-        label,
-        dateValue: parsed?.year,
-        sortTime,
-        writings: [],
-        months: [],
-      };
-      years.set(key, yearGroup);
-    }
-
-    yearGroup.sortTime = Math.max(yearGroup.sortTime, sortTime);
-    yearGroup.writings.push(writing);
-
-    let month = yearGroup.months.find((candidate) => candidate.key === monthKey);
-    if (!month) {
-      month = {
-        key: monthKey,
-        anchor: bucketAnchor,
-        label: bucketLabel,
-        dateValue: monthDateValue,
-        sortTime,
-        writings: [],
-      };
-      yearGroup.months.push(month);
-    }
-
-    month.sortTime = Math.max(month.sortTime, sortTime);
-    month.writings.push(writing);
-  });
-
-  return Array.from(years.values())
-    .map((yearGroup) => ({
-      ...yearGroup,
-      months: yearGroup.months.sort((a, b) => b.sortTime - a.sortTime),
-    }))
-    .sort((a, b) => {
-      if (a.key === "undated") return -1;
-      if (b.key === "undated") return 1;
-      return b.sortTime - a.sortTime;
-    });
-};
-
 const writingView = (writing: WritingEntry) => {
   const dateLabel = writing.data.displayDate ?? String(writing.data.date);
   const parsedDate = parseWritingDate(writing.data.date);
@@ -152,6 +66,7 @@ const writingView = (writing: WritingEntry) => {
   );
 
   return {
+    anchor: writingAnchor(writing),
     dateLabel,
     dateTime: parsedDate ? String(writing.data.date) : undefined,
     titleLang,
@@ -170,7 +85,24 @@ const writings = (
   await getCollection("writings", ({ data }) => !data.draft)
 ).sort(sortByDateDescending);
 
-const dateGroups = makeDateGroups(writings);
+const dateSidebarYears = Array.from(
+  new Set(writings.map((writing) => parseWritingDate(writing.data.date)?.year ?? "undated")),
+).map((year) => {
+  const yearWritings = writings.filter(
+    (writing) => (parseWritingDate(writing.data.date)?.year ?? "undated") === year,
+  );
+  const firstWriting = writings.find(
+    (writing) => (parseWritingDate(writing.data.date)?.year ?? "undated") === year,
+  );
+  return {
+    year,
+    anchor: firstWriting ? writingAnchor(firstWriting) : defaultPanelId,
+    dateValue: year === "undated" ? undefined : year,
+    label: year === "undated" ? translate("en", "common.undated") : formatDate(year, "en"),
+    count: yearWritings.length,
+  };
+});
+
 const tagGroups = writingTypes.map((type) => ({
   type,
   anchor: tagAnchor(type),
@@ -196,46 +128,53 @@ const tagGroups = writingTypes.map((type) => ({
 
     <nav class="catalog-rail writing-rail" aria-label="Browse writings by date and tag">
       <div class="writing-rail-section">
+        <p class="writing-rail-label" data-i18n-key="common.date">
+          {translate("en", "common.date")}
+        </p>
         <ul class="writing-date-archive">
-          {
-            dateGroups.map((group) => (
+          {dateSidebarYears.map((group) => {
+            return (
               <li>
-                <a
-                  class="writing-date-year"
-                  href={`#${group.anchor}`}
-                  data-writing-link
-                >
+                <a href={`#${group.anchor}`}>
                   {group.dateValue ? (
                     <span data-i18n-date={group.dateValue}>{group.label}</span>
                   ) : (
                     <span data-i18n-key="common.undated">{group.label}</span>
-                  )}{" "}
-                  ({group.writings.length})
+                  )} ({group.count})
                 </a>
               </li>
-            ))
-          }
+            );
+          })}
         </ul>
       </div>
 
-      <details class="writing-rail-section writing-tag-disclosure">
-        <summary data-i18n-key="common.tags">
-          {translate("en", "common.tags")}
+      <details class="writing-rail-section writing-tag-disclosure rail-disclosure" data-unfold>
+        <summary>
+          <span
+            class="glyph-arrow glyph-arrow--disclosure"
+            data-arrow-glyph
+            aria-hidden="true"
+          ></span>
+          <span data-i18n-key="common.tags">{translate("en", "common.tags")}</span>
         </summary>
-        <ul class="writing-tag-archive">
-          {
-            tagGroups.map(({ type, anchor, heading, writings: groupedWritings }) => (
-              <li>
-                <a href={`#${anchor}`} data-writing-link>
-                  <span data-i18n-writing-type={type}>
-                    {heading}
-                  </span>{" "}
-                  ({groupedWritings.length})
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+        {/* 中文：rail-unfold 是展开动画容器；内层列表被其裁切。 */}
+        {/* English: rail-unfold animates the unfold; the list is clipped inside. */}
+        <div class="rail-unfold">
+          <ul class="writing-tag-archive">
+            {
+              tagGroups.map(({ type, anchor, heading, writings: groupedWritings }) => (
+                <li>
+                  <a href={`#${anchor}`} data-writing-link>
+                    <span data-i18n-writing-type={type}>
+                      {heading}
+                    </span>{" "}
+                    ({groupedWritings.length})
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
       </details>
     </nav>
 
@@ -255,141 +194,54 @@ const tagGroups = writingTypes.map((type) => ({
         >
           {translate("en", "common.date")}
         </h2>
-        {
-          dateGroups.map((group) => (
-            <section
-              class="writing-year-group"
-              id={group.anchor}
-              data-writing-date-anchor
-              aria-labelledby={`${group.anchor}-heading`}
-            >
-              <h3 id={`${group.anchor}-heading`}>
-                {group.dateValue ? (
-                  <span data-i18n-date={group.dateValue}>{group.label}</span>
-                ) : (
-                  <span data-i18n-key="common.undated">{group.label}</span>
-                )}
-              </h3>
-
-              {group.key === "undated" ? (
-                <ol class="catalog-list dated-list writing-list">
-                  {group.writings.map((writing) => {
-                    const entry = writingView(writing);
-                    return (
-                      <li>
-                        <time
-                          datetime={entry.dateTime}
-                          data-i18n-date={entry.dateLabel}
-                          data-i18n-date-format="short"
+        <ol class="catalog-list dated-list writing-list">
+          {writings.map((writing) => {
+            const entry = writingView(writing);
+            return (
+              <li id={entry.anchor}>
+                <time
+                  datetime={entry.dateTime}
+                  data-i18n-date={entry.dateLabel}
+                  data-i18n-date-format="short"
+                >
+                  {formatDate(entry.dateLabel, "en", "short")}
+                </time>
+                <article
+                  class="entry-summary writing-summary"
+                  data-source-file={entry.sourceFile}
+                >
+                  <div class="writing-title-line">
+                    <h3>
+                      <a href={entry.url} lang={entry.titleLang}>
+                        {writing.data.title}
+                      </a>
+                    </h3>
+                    <span class="writing-tags">
+                      {entry.tags.map(({ tag, anchor, isTranslation }) => (
+                        <a
+                          class:list={[
+                            "writing-tag",
+                            { "writing-tag--translation": isTranslation },
+                          ]}
+                          href={`#${anchor}`}
+                          data-writing-link
+                          data-i18n-writing-type={tag}
                         >
-                          {formatDate(entry.dateLabel, "en", "short")}
-                        </time>
-                        <article
-                          class="entry-summary writing-summary"
-                          data-source-file={entry.sourceFile}
-                        >
-                          <div class="writing-title-line">
-                            <h4>
-                              <a href={entry.url} lang={entry.titleLang}>
-                                {writing.data.title}
-                              </a>
-                            </h4>
-                            <span class="writing-tags">
-                              {entry.tags.map(({ tag, anchor, isTranslation }) => (
-                                <a
-                                  class:list={[
-                                    "writing-tag",
-                                    { "writing-tag--translation": isTranslation },
-                                  ]}
-                                  href={`#${anchor}`}
-                                  data-writing-link
-                                  data-i18n-writing-type={tag}
-                                >
-                                  {writingTypeLabel(tag, "en")}
-                                </a>
-                              ))}
-                            </span>
-                          </div>
-                          {writing.data.subtitle && (
-                            <p class="writing-list-subtitle" lang={entry.titleLang}>
-                              {writing.data.subtitle}
-                            </p>
-                          )}
-                        </article>
-                      </li>
-                    );
-                  })}
-                </ol>
-              ) : (
-                group.months.map((month) => (
-                  <section
-                    class="writing-month-group"
-                    id={month.anchor}
-                    data-writing-date-anchor
-                    aria-labelledby={`${month.anchor}-heading`}
-                  >
-                    <h4 id={`${month.anchor}-heading`}>
-                      <span
-                        data-i18n-date={month.dateValue}
-                        data-i18n-date-format="month"
-                      >
-                        {month.label}
-                      </span>
-                    </h4>
-                    <ol class="catalog-list dated-list writing-list">
-                      {month.writings.map((writing) => {
-                        const entry = writingView(writing);
-                        return (
-                          <li>
-                            <time
-                              datetime={entry.dateTime}
-                              data-i18n-date={entry.dateLabel}
-                              data-i18n-date-format="short"
-                            >
-                              {formatDate(entry.dateLabel, "en", "short")}
-                            </time>
-                            <article
-                              class="entry-summary writing-summary"
-                              data-source-file={entry.sourceFile}
-                            >
-                              <div class="writing-title-line">
-                                <h5>
-                                  <a href={entry.url} lang={entry.titleLang}>
-                                    {writing.data.title}
-                                  </a>
-                                </h5>
-                                <span class="writing-tags">
-                                  {entry.tags.map(({ tag, anchor, isTranslation }) => (
-                                    <a
-                                      class:list={[
-                                        "writing-tag",
-                                        { "writing-tag--translation": isTranslation },
-                                      ]}
-                                      href={`#${anchor}`}
-                                      data-writing-link
-                                      data-i18n-writing-type={tag}
-                                    >
-                                      {writingTypeLabel(tag, "en")}
-                                    </a>
-                                  ))}
-                                </span>
-                              </div>
-                              {writing.data.subtitle && (
-                                <p class="writing-list-subtitle" lang={entry.titleLang}>
-                                  {writing.data.subtitle}
-                                </p>
-                              )}
-                            </article>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  </section>
-                ))
-              )}
-            </section>
-          ))
-        }
+                          {writingTypeLabel(tag, "en")}
+                        </a>
+                      ))}
+                    </span>
+                  </div>
+                  {writing.data.subtitle && (
+                    <p class="writing-list-subtitle" lang={entry.titleLang}>
+                      {writing.data.subtitle}
+                    </p>
+                  )}
+                </article>
+              </li>
+            );
+          })}
+        </ol>
       </section>
 
       {

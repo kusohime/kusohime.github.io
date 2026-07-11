@@ -215,6 +215,10 @@ const writingTypeTranslations: Record<
     singular: { en: "Journal", zh: "日記" },
     plural: { en: "Journal", zh: "日記" },
   },
+  Dialogue: {
+    singular: { en: "Dialogue", zh: "對話" },
+    plural: { en: "Dialogues", zh: "對話" },
+  },
   Poetry: {
     singular: { en: "Poetry", zh: "詩" },
     plural: { en: "Poetry", zh: "詩" },

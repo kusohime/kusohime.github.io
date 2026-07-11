@@ -358,17 +358,16 @@ html {
   --theme-color: #e85d5d;
 }
 
+/* 中文：字号两档——L 为默认阅读字号（旧 M），S 为紧凑档；旧的放大档已移除。 */
+/* English: Two sizes — L is the default reading size (the old M); S is compact.
+   The former enlarged scale is gone. */
 :root,
-:root[data-font-size="m"] {
+:root[data-font-size="l"] {
   font-size: var(--base-font-size);
 }
 
 :root[data-font-size="s"] {
   font-size: calc(var(--base-font-size) - 2px);
-}
-
-:root[data-font-size="l"] {
-  font-size: calc(var(--base-font-size) + 3px);
 }
 
 * {
@@ -672,21 +671,29 @@ summary {
   display: none;
 }
 
-.nav-dropdown-list {
+/* 中文：无边框下拉——左侧一道主题色竖线，列表左缘与标题文字对齐；
+   展开／收拢动画见文件尾的 menu-unfold 区块。 */
+/* English: Frameless dropdown — a theme-colored left rule, list edge aligned
+   with the summary text. Unfold/fold animations live in the menu-unfold block
+   at the end of this file. */
+.nav-dropdown-panel {
   position: absolute;
-  top: calc(100% + 0.35rem);
-  left: 0;
+  top: calc(100% + 0.4rem);
+  left: 0.82em;
   z-index: 20;
-  display: none;
+  display: grid;
+  grid-template-rows: 1fr;
   min-width: 8.5rem;
-  padding: var(--space-xs);
-  border: 1px solid var(--theme-color);
-  background: var(--color-background);
 }
 
-.nav-dropdown[open] .nav-dropdown-list {
+.nav-dropdown-list {
+  min-height: 0;
+  overflow: hidden;
   display: grid;
   gap: 0.2rem;
+  padding: 0.15rem 0.6rem 0.2rem 0.7rem;
+  border-left: 2px solid var(--theme-color);
+  background: var(--color-background);
 }
 
 .nav-dropdown[data-active="true"] > summary {
@@ -795,16 +802,19 @@ summary {
   display: none;
 }
 
+/* 中文：全站方向符统一为实心三角（红），基准朝上；方向由旋转变量决定。 */
+/* English: One solid red triangle for every directional glyph; base points up,
+   direction comes from the rotation variable. */
 .glyph-arrow {
   --arrow-direction: 0deg;
-  --arrow-image: url("/icons/arrow-1.svg");
+  --arrow-image: url("/icons/triangle-1.svg");
   --arrow-scale: 1;
   --arrow-wobble: 0deg;
 
   display: inline-block;
   flex: none;
-  width: 0.76em;
-  height: 0.76em;
+  width: 0.62em;
+  height: 0.62em;
   background: var(--theme-color);
   -webkit-mask: var(--arrow-image) center / contain no-repeat;
   mask: var(--arrow-image) center / contain no-repeat;
@@ -825,9 +835,21 @@ summary {
   --arrow-direction: -90deg;
 }
 
-.preference-menu[open] .glyph-arrow--disclosure,
-.nav-dropdown[open] .glyph-arrow--disclosure {
+/* 收合状态朝右（▸），展开后转为朝下（▾）；收拢动画期间先转回。 */
+/* Closed points right (▸); open rotates to down (▾); it turns back while the
+   fold-up animation plays. */
+.glyph-arrow--disclosure {
+  --arrow-direction: 90deg;
+}
+
+.nav-dropdown[open] .glyph-arrow--disclosure,
+.rail-disclosure[open] > summary .glyph-arrow--disclosure {
   --arrow-direction: 180deg;
+}
+
+.nav-dropdown[data-closing] .glyph-arrow--disclosure,
+.rail-disclosure[data-closing] > summary .glyph-arrow--disclosure {
+  --arrow-direction: 90deg;
 }
 
 .theme-toggle {
@@ -1241,6 +1263,11 @@ main {
   text-underline-offset: 0.15em;
 }
 
+.writing-rail-label {
+  margin: 0;
+  font-weight: bold;
+}
+
 .event-rail-home,
 .event-rail-label {
   margin: 0;
@@ -1269,7 +1296,7 @@ main {
   list-style: none;
 }
 
-.writing-date-year {
+.writing-date-archive a {
   font-weight: bold;
 }
 
@@ -1318,9 +1345,7 @@ main {
 }
 
 .event-panel,
-.writing-panel,
-.writing-year-group,
-.writing-month-group {
+.writing-panel {
   scroll-margin-top: var(--space-md);
 }
 
@@ -1347,21 +1372,6 @@ main {
 
 .writing-panel[hidden] {
   display: none;
-}
-
-.writing-year-group,
-.writing-month-group {
-  margin-bottom: var(--space-md);
-}
-
-.writing-year-group > h3,
-.writing-month-group > h4 {
-  margin: 0 0 var(--space-sm);
-}
-
-.writing-month-group > h4 {
-  color: var(--color-muted);
-  font-size: 0.95rem;
 }
 
 .catalog-groups section > h2 {
@@ -3887,4 +3897,117 @@ main {
     -webkit-initial-letter: 2;
     initial-letter: 2;
   }
+}
+
+/*
+ * 展開／收攏動畫 + 偏好切換鈕 / Menu unfold animation + preference toggles
+ * —— 導覽下拉、文字頁標籤、活動年份共用同一組 keyframes；
+ *    [data-closing] 由 preferences.ts 在移除 open 前加上，播放收攏。
+ * — Nav dropdowns, the writings Tags rail, and event years share one set of
+ *   keyframes; preferences.ts sets [data-closing] before removing [open] so
+ *   the fold-up can play. All gated behind interface motion + reduced motion.
+ */
+@keyframes menu-unfold {
+  from { grid-template-rows: 0fr; }
+  to { grid-template-rows: 1fr; }
+}
+
+@keyframes menu-fold {
+  from { grid-template-rows: 1fr; }
+  to { grid-template-rows: 0fr; }
+}
+
+@keyframes menu-item-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+:root[data-motion-interface="true"] .nav-dropdown[open] > .nav-dropdown-panel,
+:root[data-motion-interface="true"] .rail-disclosure[open] > .rail-unfold {
+  animation: menu-unfold 200ms ease;
+}
+
+:root[data-motion-interface="true"] .nav-dropdown[open] .nav-dropdown-list > li,
+:root[data-motion-interface="true"] .rail-disclosure[open] > .rail-unfold li {
+  animation: menu-item-in 180ms ease backwards;
+}
+
+:root[data-motion-interface="true"] .nav-dropdown[open] .nav-dropdown-list > li:nth-child(2),
+:root[data-motion-interface="true"] .rail-disclosure[open] > .rail-unfold li:nth-child(2) {
+  animation-delay: 40ms;
+}
+
+:root[data-motion-interface="true"] .nav-dropdown[open] .nav-dropdown-list > li:nth-child(3),
+:root[data-motion-interface="true"] .rail-disclosure[open] > .rail-unfold li:nth-child(3) {
+  animation-delay: 80ms;
+}
+
+:root[data-motion-interface="true"] .nav-dropdown[open] .nav-dropdown-list > li:nth-child(n + 4),
+:root[data-motion-interface="true"] .rail-disclosure[open] > .rail-unfold li:nth-child(n + 4) {
+  animation-delay: 120ms;
+}
+
+:root[data-motion-interface="true"] .nav-dropdown[data-closing] > .nav-dropdown-panel,
+:root[data-motion-interface="true"] .rail-disclosure[data-closing] > .rail-unfold {
+  animation: menu-fold 150ms ease forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-dropdown > .nav-dropdown-panel,
+  .rail-disclosure > .rail-unfold,
+  .nav-dropdown .nav-dropdown-list > li,
+  .rail-disclosure .rail-unfold li {
+    animation: none !important;
+  }
+}
+
+/* 側欄折疊（文字頁標籤、活動年份）：原生游標三角改為紅三角，在文檔流中展開。 */
+/* Rail disclosures (writings Tags, event years): red triangle instead of the
+   browser marker, unfolding in flow. */
+.rail-disclosure > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.rail-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.rail-disclosure > summary::marker {
+  content: "";
+}
+
+.rail-unfold {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.rail-unfold > ul {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 偏好切換鈕：語言 EN⇄中、字號 S⇄L——標籤即狀態，點按即切換。 */
+/* Preference toggles: language EN⇄中 and size S⇄L — the label is the state. */
+.preference-toggle {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: var(--floating-control-size);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+.preference-toggle:hover .preference-value,
+.preference-toggle:focus-visible .preference-value {
+  color: var(--theme-color);
 }

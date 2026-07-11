@@ -31,7 +31,10 @@ import {
 import { toolTopicBlurb, toolTopicLabel } from "../config/toolTopics";
 
 type Theme = "light" | "dark";
-type FontSize = "s" | "m" | "l";
+// 中文：字号只有两档——S（紧凑）与 L（默认阅读字号，即旧的 M）。
+// English: Two text sizes only — S (compact) and L (the default reading size,
+// formerly M). Older stored values fall back to L via readStored.
+type FontSize = "s" | "l";
 
 const flapTimers = new WeakMap<HTMLElement, number>();
 
@@ -97,38 +100,21 @@ function updateLanguageAvailability(language: Locale) {
       .filter(Boolean) as Locale[],
   );
 
+  // 中文：切换钮的标题描述动作（切到另一语言），必要时附上「本页无该语言正文」提示。
+  // English: The toggle's label names the action (switch to the other language),
+  // with a page-availability hint appended when relevant.
   document
-    .querySelectorAll<HTMLDetailsElement>('[data-preference-type="language"]')
-    .forEach((menu) => {
-      const summary = menu.querySelector<HTMLElement>("summary");
-      const isUnavailable = unavailable.has(language);
-      const label = isUnavailable
-        ? unavailableLanguageLabel(language, language)
+    .querySelectorAll<HTMLButtonElement>("[data-language-toggle]")
+    .forEach((button) => {
+      const target: Locale = language === "en" ? "zh" : "en";
+      const action = language === "en" ? "切換至中文" : "Switch to English";
+      const hint = unavailable.has(target)
+        ? ` — ${unavailableLanguageLabel(target, language)}`
         : "";
-      menu.dataset.currentLanguageUnavailable = String(isUnavailable);
-      if (summary) {
-        summary.title = label;
-        if (label) summary.setAttribute("aria-label", label);
-        else summary.removeAttribute("aria-label");
-      }
+      button.dataset.currentLanguageUnavailable = String(unavailable.has(language));
+      button.title = `${action}${hint}`;
+      button.setAttribute("aria-label", `${action}${hint}`);
     });
-
-  document.querySelectorAll<HTMLButtonElement>("[data-language-option]").forEach((button) => {
-    const target = button.dataset.languageOption as Locale;
-    const label = unavailable.has(target)
-      ? unavailableLanguageLabel(target, language)
-      : "";
-    button.title = label;
-    if (label) button.setAttribute("aria-label", label);
-    else button.removeAttribute("aria-label");
-  });
-}
-
-function closeMenuAndRestoreFocus(control: HTMLElement) {
-  const menu = control.closest<HTMLDetailsElement>("details");
-  if (!menu) return;
-  menu.open = false;
-  menu.querySelector<HTMLElement>("summary")?.focus();
 }
 
 function setFlapText(element: HTMLElement, text: string) {
@@ -426,9 +412,9 @@ function applyTheme(theme: Theme, language: Locale, animate = false) {
 
 function applyFontSize(fontSize: FontSize, animate = false) {
   const currentSize =
-    (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "m";
+    (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "l";
   if (animate && motionSettings.fontSizeScale && currentSize !== fontSize) {
-    const sizes: FontSize[] = ["s", "m", "l"];
+    const sizes: FontSize[] = ["s", "l"];
     document.documentElement.dataset.fontSizeTransition =
       sizes.indexOf(fontSize) > sizes.indexOf(currentSize) ? "grow" : "shrink";
     window.setTimeout(() => {
@@ -471,16 +457,17 @@ export function initializePreferences() {
     : "en";
   const language = readStored<Locale>("yc-language", localeCodes, fallbackLanguage);
   const theme = readStored<Theme>("yc-theme", ["light", "dark"], "light");
-  const fontSize = readStored<FontSize>("yc-font-size", ["s", "m", "l"], "m");
+  // 旧值 "m"（以及被移除的旧 "l"）不在允许列表中，自动回落到新默认 L。
+  // Legacy "m" (and the removed old "l") fail the allow-list and fall back to L.
+  const fontSize = readStored<FontSize>("yc-font-size", ["s", "l"], "l");
 
   applyTheme(theme, language);
   applyFontSize(fontSize);
   applyLanguage(language);
 
-  document.querySelectorAll<HTMLButtonElement>("[data-language-option]").forEach((button) => {
+  document.querySelectorAll<HTMLButtonElement>("[data-language-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
-      applyLanguage(button.dataset.languageOption as Locale, true);
-      closeMenuAndRestoreFocus(button);
+      applyLanguage(activeLanguage() === "en" ? "zh" : "en", true);
     });
   });
 
@@ -496,28 +483,64 @@ export function initializePreferences() {
     });
   });
 
-  document.querySelectorAll<HTMLButtonElement>("[data-font-size-option]").forEach((button) => {
+  document.querySelectorAll<HTMLButtonElement>("[data-font-size-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
-      applyFontSize(button.dataset.fontSizeOption as FontSize, true);
-      closeMenuAndRestoreFocus(button);
+      const current =
+        (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "l";
+      applyFontSize(current === "s" ? "l" : "s", true);
     });
   });
+
+  // 中文：合上 <details> 前先播放收拢动画（[data-closing] 触发 CSS keyframes），
+  // 动画结束再移除 open；关闭动作被禁用或用户偏好减少动效时立即合上。
+  // English: Play the fold-up animation before removing [open] ([data-closing]
+  // drives the CSS keyframes); close instantly when interface motion is off or
+  // the user prefers reduced motion.
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const closeAnimated = (menu: HTMLDetailsElement) => {
+    if (!menu.open || menu.dataset.closing) return;
+    if (!motionSettings.interfaceMotion || reducedMotion.matches) {
+      menu.open = false;
+      return;
+    }
+    menu.dataset.closing = "true";
+    window.setTimeout(() => {
+      delete menu.dataset.closing;
+      menu.open = false;
+    }, 150);
+  };
 
   const menus = document.querySelectorAll<HTMLDetailsElement>("[data-nav-menu]");
   menus.forEach((menu) => {
     menu.addEventListener("toggle", () => {
       if (!menu.open) return;
       menus.forEach((otherMenu) => {
-        if (otherMenu !== menu) otherMenu.open = false;
+        if (otherMenu !== menu) closeAnimated(otherMenu);
       });
     });
   });
+
+  // 点开着的 summary 再点一次 → 播放收拢动画后再合上（导航菜单与侧栏折叠共用）。
+  // Clicking an open summary folds it up before closing (nav menus and rail
+  // disclosures alike).
+  document
+    .querySelectorAll<HTMLDetailsElement>("[data-nav-menu], details[data-unfold]")
+    .forEach((menu) => {
+      menu.querySelector<HTMLElement>(":scope > summary")?.addEventListener(
+        "click",
+        (event) => {
+          if (!menu.open) return;
+          event.preventDefault();
+          closeAnimated(menu);
+        },
+      );
+    });
 
   document.addEventListener("click", (event) => {
     const target = event.target;
     if (target instanceof Node && !document.querySelector(".site-header")?.contains(target)) {
       menus.forEach((menu) => {
-        menu.open = false;
+        closeAnimated(menu);
       });
     }
   });
@@ -529,7 +552,7 @@ export function initializePreferences() {
           ? document.activeElement.closest<HTMLDetailsElement>("details[open]")
           : null;
       menus.forEach((menu) => {
-        menu.open = false;
+        closeAnimated(menu);
       });
       focusedMenu?.querySelector<HTMLElement>("summary")?.focus();
     }

@@ -3,10 +3,6 @@ import motionSettings from "../config/motion.json";
 type Theme = "light" | "dark";
 
 const glyphUrls = {
-  arrows: Array.from(
-    { length: 7 },
-    (_, index) => `/icons/arrow-${index + 1}.svg`,
-  ),
   suns: Array.from(
     { length: 6 },
     (_, index) => `/icons/sun-${index + 1}.svg`,
@@ -17,35 +13,16 @@ const glyphUrls = {
   ),
 };
 
-function shuffledGlyphs(urls: string[]) {
-  const glyphs = [...urls];
-
-  for (let index = glyphs.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [glyphs[index], glyphs[swapIndex]] = [glyphs[swapIndex], glyphs[index]];
-  }
-
-  return glyphs;
-}
-
 function randomGlyph(urls: string[]) {
   return urls[Math.floor(Math.random() * urls.length)] ?? urls[0];
 }
 
+// 中文：方向符不再随机手绘箭头——统一为 CSS 里的红三角（triangle-1.svg）；
+// 这里只保留主题日／月图标的随机化。
+// English: Directional glyphs are no longer randomized hand-drawn arrows — they
+// are the uniform red triangle set in CSS (triangle-1.svg). Only the sun/moon
+// theme glyphs keep their per-visit variety.
 export function initializeDecorativeGlyphs() {
-  const elements = document.querySelectorAll<HTMLElement>("[data-arrow-glyph]");
-  let glyphPool = shuffledGlyphs(glyphUrls.arrows);
-
-  elements.forEach((element) => {
-    if (glyphPool.length === 0) glyphPool = shuffledGlyphs(glyphUrls.arrows);
-
-    const glyphUrl = glyphPool.pop() ?? glyphUrls.arrows[0];
-    const wobble = Math.random() * 8 - 4;
-
-    element.style.setProperty("--arrow-image", `url("${glyphUrl}")`);
-    element.style.setProperty("--arrow-wobble", `${wobble.toFixed(2)}deg`);
-  });
-
   const themeGlyphs = document.querySelectorAll<HTMLElement>("[data-theme-glyph]");
   const themeVariants = {
     light: randomGlyph(glyphUrls.suns),
