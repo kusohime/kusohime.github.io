@@ -1,5 +1,5 @@
 ---
-title: "Rachmaninoff: All-Night Vigil"
+title: "How to Sing-along All-Night Vigil"
 date: "2024-10-09"
 tags: ["Program Note", "Russian", "Musicology"]
 excerpt: "A movement-by-movement guide to Rachmaninoff’s All-Night Vigil, with scriptural sources and recording timestamps."
@@ -9,7 +9,7 @@ comments: true
 numberedContents: false
 ---
 
-This is a quick note slash listening guide to the All-Night Vigil. I was not able to find which recording the timestamps are for, but I will add that back once it comes to me.
+This is a quick note slash listening guide to the All-Night Vigil by Rachmaninoff. I was not able to find which recording the timestamps are for, but I will add that back once it comes to me.
 
 The Church Slavonic titles reproduce the opening words of each movement in the old orthography. To modernize them, replace **і** with **и** and **ѣ** with **е**, and remove final **ъ**.
 
