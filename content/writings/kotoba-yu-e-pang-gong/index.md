@@ -1,6 +1,6 @@
 ---
 title: "Kotoba, Heidegger, and Epang"
-date: "2026-10-24"
+date: "2024-10-24"
 tags: ["Philosophy", "Linguistics", "Musicology"]
 slug: "kotoba-yu-e-pang-gong"
 order: 999
