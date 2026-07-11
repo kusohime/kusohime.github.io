@@ -22,6 +22,7 @@ export const writingTypes = [
   "Poetry",
   "French",
   "Russian",
+  "Japanese",
   "Philosophy",
   "Moral Philosophy",
   "Affect Theory",
@@ -33,6 +34,10 @@ export const writingTypes = [
   "Linguistics",
   "Theology",
   "Apologetics",
+  "Musicology",
+  "Ethnomusicology",
+  "Anthropology",
+  "Disability",
 ] as const;
 
 export const toolGroups = [

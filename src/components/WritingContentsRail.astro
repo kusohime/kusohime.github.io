@@ -1,0 +1,120 @@
+---
+// 中文：文章页的「目錄」冻结左栏。当正文里有一个「目录／目錄／Contents」小节时，
+//       客户端从正文实际标题（h1–h3）建立可跳转目录，随卷动高亮当前小节，
+//       宽屏时钉在左侧（sticky），窄屏隐藏——此时正文内原有的目录照常显示。
+//       没有目录小节的文章完全不受影响。
+// English: Frozen left "Contents" rail for writing pages. When the body contains
+// a 目录 / 目錄 / Contents section, a client script builds a jump list from the
+// body's actual headings (h1–h3), highlights the current one on scroll, and
+// pins the rail on the left on wide screens. On narrow screens the rail hides
+// and the original in-body contents list shows instead. Writings without a
+// contents section are untouched.
+import { translate } from "../config/locales";
+---
+
+<nav class="writing-contents-rail" aria-label="Contents" data-writing-contents-rail>
+  <p class="writing-contents-rail-title" data-i18n-key="common.contents">
+    {translate("en", "common.contents")}
+  </p>
+  <ul class="writing-contents-rail-list"></ul>
+</nav>
+
+<script>
+  const layout = document.querySelector<HTMLElement>(".writing-layout");
+  const list = document.querySelector<HTMLUListElement>(".writing-contents-rail-list");
+  const prose = layout?.querySelector<HTMLElement>(".writing-opening .prose");
+
+  const CONTENTS_TITLES = new Set(["目录", "目錄", "contents"]);
+  const isContentsHeading = (el: Element) =>
+    CONTENTS_TITLES.has((el.textContent ?? "").trim().toLowerCase());
+
+  interface Entry { id: string; title: string; level: number; }
+
+  let uid = 0;
+  function ensureId(el: HTMLElement) {
+    if (!el.id) el.id = `section-${uid++}`;
+    return el.id;
+  }
+
+  function collect(scope: HTMLElement, tocHeading: HTMLElement): Entry[] {
+    const entries: Entry[] = [];
+    scope
+      .querySelectorAll<HTMLElement>(
+        ":scope > h1, :scope > h2, :scope > h3, :scope > .lang-block > h1, :scope > .lang-block > h2, :scope > .lang-block > h3",
+      )
+      .forEach((heading) => {
+        if (heading === tocHeading) return;
+        const title = heading.textContent?.trim();
+        if (!title) return;
+        entries.push({
+          id: ensureId(heading),
+          title,
+          level: Number(heading.tagName[1]),
+        });
+      });
+    return entries;
+  }
+
+  let entries: Entry[] = [];
+
+  function syncActive() {
+    if (!list || !entries.length) return;
+    const offset = 140;
+    let activeId = entries[0].id;
+    for (const e of entries) {
+      const el = document.getElementById(e.id);
+      if (!el) continue;
+      if (el.getBoundingClientRect().top <= offset) activeId = e.id;
+      else break;
+    }
+    list
+      .querySelectorAll<HTMLAnchorElement>("a")
+      .forEach((a) =>
+        a.classList.toggle("active", a.dataset.railTarget === activeId),
+      );
+  }
+
+  if (layout && list && prose) {
+    const tocHeading = [...prose.querySelectorAll<HTMLElement>("h2")].find(
+      isContentsHeading,
+    );
+    if (tocHeading) {
+      // 宽屏用左栏取代正文内目录；标记出来由 CSS 隐藏（窄屏仍显示）。
+      // The rail replaces the in-body list on wide screens; CSS hides the
+      // marked nodes there (narrow screens keep them).
+      tocHeading.classList.add("in-body-contents");
+      const tocList = tocHeading.nextElementSibling;
+      if (tocList && (tocList.tagName === "UL" || tocList.tagName === "OL")) {
+        tocList.classList.add("in-body-contents");
+      }
+
+      entries = collect(prose, tocHeading);
+      const minLevel = Math.min(...entries.map((e) => e.level));
+      for (const e of entries) {
+        const li = document.createElement("li");
+        li.className = `writing-contents-rail-item level-${e.level - minLevel + 1}`;
+        const a = document.createElement("a");
+        a.href = `#${e.id}`;
+        a.textContent = e.title;
+        a.dataset.railTarget = e.id;
+        li.append(a);
+        list.append(li);
+      }
+      if (entries.length > 1) {
+        layout.classList.add("has-rail");
+        syncActive();
+        let ticking = false;
+        const onScroll = () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(() => {
+            syncActive();
+            ticking = false;
+          });
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll, { passive: true });
+      }
+    }
+  }
+</script>

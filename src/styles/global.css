@@ -207,7 +207,7 @@
   --theme-color: #c81e1e;
 
   --page-width: 76rem;
-  --content-width: 39rem;
+  --content-width: 46rem;
   --reading-width: 40rem;
   --page-gutter: 1.5rem;
   --home-image-fade-width: 5%;
@@ -1213,6 +1213,19 @@ main {
 .writing-rail-section {
   display: grid;
   gap: var(--space-xs);
+}
+
+.writing-tag-disclosure summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.writing-tag-disclosure summary:hover,
+.writing-tag-disclosure summary:focus-visible {
+  color: var(--theme-color);
+  text-decoration: underline;
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.15em;
 }
 
 .event-rail-home,
@@ -2685,6 +2698,10 @@ main {
   text-indent: 0;
 }
 
+.prose.has-sidenotes .jiazhu {
+  display: none;
+}
+
 /*
  * 边注前导编号：红色 "(n)"，放在基线上（不是上标）。
  * 元素本身是 <sup>，所以要覆盖它默认的 super 对齐与缩小字号。
@@ -2895,13 +2912,42 @@ main {
     --prose-line-height: 1.62;
   }
 
-  /* 中文古籍的雙行小字脚注：两行脚注小字的高度仍落在一行正文以内。
-     Classical Chinese-style double-line small notes: two lines of note text fit
-     within the height of one line of body text. */
+  /* 中文古籍的雙行夾注：脚注分成两行小字，两个小字行合成一行正文高度。 */
   .prose.has-sidenotes .sidenote {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .prose.has-sidenotes .jiazhu {
+    display: inline;
+    margin-left: 0.2em;
+    text-indent: 0;
+  }
+
+  .prose.has-sidenotes .jiazhu-cell {
+    display: inline-grid;
+    grid-template-rows: repeat(2, auto);
+    align-items: start;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--color-text);
     font-size: 0.5em;
-    line-height: 1.25;
-    vertical-align: baseline;
+    line-height: var(--prose-line-height);
+    text-align: left;
+    vertical-align: text-top;
+  }
+
+  .prose.has-sidenotes .jiazhu-row {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .cui-reader {
@@ -3451,5 +3497,143 @@ main {
   .comment-form textarea {
     min-height: 2.75rem;
     font-size: max(1rem, 16px);
+  }
+}
+
+/*
+ * 学术文章版式 / Scholarly writing page furniture
+ * —— 作者—年份引注、参考文献悬挂缩进、诗歌不缩进、冻结左侧目录栏。
+ * — Author–year citation links, hanging-indent references, unindented poetry,
+ *   and the frozen left contents rail (built by WritingContentsRail.astro).
+ */
+
+/* 引注：整个方括号（含页码）变灰、略小，并在行内垂直居中；
+   链接不加下划线，悬停时才提示可点。 */
+/* Citations: the whole bracket (page numbers included) turns gray, slightly
+   smaller, vertically centered in the line; links underline only on hover. */
+.prose .citation {
+  color: var(--color-muted);
+  font-size: 0.85em;
+  vertical-align: middle;
+}
+
+.prose .citation a.citation-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.prose .citation a.citation-link:hover,
+.prose .citation a.citation-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+/* 参考文献条目：取消段首缩进，改书目式悬挂缩进；被引注跳转到时轻微高亮。 */
+/* Reference entries: hanging indent instead of the first-line indent; a brief
+   highlight when jumped to from a citation. */
+.chicago-prose p.reference-entry,
+.prose p.reference-entry {
+  padding-left: 1.6em;
+  text-indent: -1.6em;
+  margin-block: 0 var(--space-xs);
+}
+
+.prose p.reference-entry:target {
+  background: color-mix(in srgb, var(--theme-color) 12%, transparent);
+}
+
+/* 诗歌正文：段（节）首不缩进；跨语言块同样适用。 */
+/* Poetry bodies: no first-line indent, in and out of .lang-block wrappers. */
+.chicago-prose.poetry-body > p,
+.chicago-prose.poetry-body > .lang-block > p {
+  text-indent: 0;
+}
+
+/* 文章目录栏：窄屏隐藏（正文内目录照常显示）；宽屏变成钉住的左栏，
+   并隐藏正文内目录。结构对照工具页的 .tool-layout / .tool-rail。 */
+/* Writing contents rail: hidden on narrow screens (the in-body list shows);
+   on wide screens a sticky left column replaces the in-body list. Mirrors the
+   tool pages' .tool-layout / .tool-rail. */
+.writing-contents-rail {
+  display: none;
+}
+
+.writing-contents-rail-title {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.writing-contents-rail-list {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.writing-contents-rail-item a {
+  display: block;
+  text-decoration: none;
+  color: var(--color-muted);
+  line-height: 1.4;
+  padding: 0.08rem 0;
+}
+
+.writing-contents-rail-item.level-1 a {
+  position: relative;
+  padding-left: 1rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.writing-contents-rail-item.level-2 a {
+  padding-left: 1.6rem;
+  font-size: 0.92em;
+}
+
+.writing-contents-rail-item.level-3 a {
+  padding-left: 2.2rem;
+  font-size: 0.88em;
+}
+
+.writing-contents-rail-item a:hover,
+.writing-contents-rail-item a:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+.writing-contents-rail-item a.active {
+  color: var(--theme-color);
+}
+
+.writing-contents-rail-item.level-1 a.active::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+}
+
+@media (min-width: 60rem) {
+  .writing-layout.has-rail {
+    display: grid;
+    grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-lg);
+    max-width: var(--page-width);
+  }
+
+  .writing-layout.has-rail .writing-contents-rail {
+    display: block;
+    position: sticky;
+    top: var(--space-md);
+    align-self: start;
+    max-height: calc(100vh - 2 * var(--space-md));
+    overflow-y: auto;
+  }
+
+  .writing-layout.has-rail .in-body-contents {
+    display: none;
   }
 }

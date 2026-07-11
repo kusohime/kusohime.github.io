@@ -218,7 +218,10 @@ const tagGroups = writingTypes.map((type) => ({
         </ul>
       </div>
 
-      <div class="writing-rail-section">
+      <details class="writing-rail-section writing-tag-disclosure">
+        <summary data-i18n-key="common.tags">
+          {translate("en", "common.tags")}
+        </summary>
         <ul class="writing-tag-archive">
           {
             tagGroups.map(({ type, anchor, heading, writings: groupedWritings }) => (
@@ -233,7 +236,7 @@ const tagGroups = writingTypes.map((type) => ({
             ))
           }
         </ul>
-      </div>
+      </details>
     </nav>
 
     <div class="catalog-groups writing-groups">

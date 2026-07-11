@@ -9,6 +9,7 @@ import Comments from "../../components/Comments.astro";
 import CuiXiongReader from "../../components/CuiXiongReader.astro";
 import { toAnchor } from "../../config/contentTaxonomy";
 import LanguageAvailabilityNote from "../../components/LanguageAvailabilityNote.astro";
+import WritingContentsRail from "../../components/WritingContentsRail.astro";
 import { contentFolder } from "../../utils/contentPaths";
 import { cjkLangFromText, dominantContentLang } from "../../utils/cjkLanguage";
 import {
@@ -55,6 +56,9 @@ const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
 const writingTags = writing.data.tags;
 const isTranslation = writingTags.includes("Translation");
+// 诗歌正文不作段首缩进（样式见 global.css 的 .poetry-body）。
+// Poetry bodies take no first-line indent (see .poetry-body in global.css).
+const isPoetry = writingTags.includes("Poetry");
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isClairieres = writing.data.slug === "tian-jian-qing-che";
 const contentLang = cjkLangFromText(
@@ -94,58 +98,61 @@ const bodyLang = zhEntry ? undefined : dominantContentLang(writing.body ?? "");
           </div>
         </CuiXiongReader>
       ) : (
-        <>
-          <header class="detail-header">
-            {writing.data.draft && (
-              <p class="draft-flag">Draft — not listed publicly</p>
-            )}
-            <div class="writing-title-line writing-title-line--detail">
-              <h1 lang={contentLang}>{title}</h1>
-              {isTranslation && (
-                <a
-                  class="writing-tag writing-tag--translation"
-                  href={`/writings/#writings-tag-${toAnchor("Translation")}`}
-                  data-i18n-writing-type="Translation"
-                >
-                  {writingTypeLabel("Translation", "en")}
-                </a>
+        <div class="writing-layout">
+          <WritingContentsRail />
+          <div class="writing-main">
+            <header class="detail-header">
+              {writing.data.draft && (
+                <p class="draft-flag">Draft — not listed publicly</p>
               )}
-            </div>
-            {subtitle && <p lang={contentLang}>{subtitle}</p>}
-            <p class="writing-metadata">
-              <time datetime={String(date)} data-i18n-date={dateLabel}>
-                {formatDate(dateLabel, "en")}
-              </time>
-            </p>
-          </header>
+              <div class="writing-title-line writing-title-line--detail">
+                <h1 lang={contentLang}>{title}</h1>
+                {isTranslation && (
+                  <a
+                    class="writing-tag writing-tag--translation"
+                    href={`/writings/#writings-tag-${toAnchor("Translation")}`}
+                    data-i18n-writing-type="Translation"
+                  >
+                    {writingTypeLabel("Translation", "en")}
+                  </a>
+                )}
+              </div>
+              {subtitle && <p lang={contentLang}>{subtitle}</p>}
+              <p class="writing-metadata">
+                <time datetime={String(date)} data-i18n-date={dateLabel}>
+                  {formatDate(dateLabel, "en")}
+                </time>
+              </p>
+            </header>
 
-          <section class="writing-opening">
-            {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
-            <div
-              lang={contentLang}
-              class:list={[
-                "prose",
-                "chicago-prose",
-                { "writing-body": !hasChapters },
-              ]}
-            >
-              {
-                ContentZh ? (
-                  <>
-                    <div class="lang-block" data-lang="en" lang="en">
-                      <Content />
-                    </div>
-                    <div class="lang-block" data-lang="zh" lang={zhBodyLang}>
-                      <ContentZh />
-                    </div>
-                  </>
-                ) : (
-                  <Content />
-                )
-              }
-            </div>
-          </section>
-        </>
+            <section class="writing-opening">
+              {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
+              <div
+                lang={contentLang}
+                class:list={[
+                  "prose",
+                  "chicago-prose",
+                  { "writing-body": !hasChapters, "poetry-body": isPoetry },
+                ]}
+              >
+                {
+                  ContentZh ? (
+                    <>
+                      <div class="lang-block" data-lang="en" lang="en">
+                        <Content />
+                      </div>
+                      <div class="lang-block" data-lang="zh" lang={zhBodyLang}>
+                        <ContentZh />
+                      </div>
+                    </>
+                  ) : (
+                    <Content />
+                  )
+                }
+              </div>
+            </section>
+          </div>
+        </div>
       )
     }
 

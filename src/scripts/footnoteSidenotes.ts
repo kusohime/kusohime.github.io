@@ -31,6 +31,123 @@ function inlineNoteContent(item: HTMLElement): Node[] {
   return nodes;
 }
 
+function noteText(nodes: Node[]): string {
+  return nodes
+    .map((node) => node.textContent ?? "")
+    .join("")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function canvasTextMeasurer(element: HTMLElement): (text: string) => number {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) return (text) => text.length * 8;
+
+  const style = window.getComputedStyle(element);
+  context.font = [
+    style.fontStyle,
+    style.fontVariant,
+    style.fontWeight,
+    style.fontSize,
+    style.fontFamily,
+  ].join(" ");
+
+  return (text) => context.measureText(text).width;
+}
+
+function takeMeasuredLine(
+  text: string,
+  maxWidth: number,
+  measure: (text: string) => number,
+): [line: string, rest: string] {
+  const trimmed = text.replace(/^\s+/, "");
+  if (!trimmed) return ["", ""];
+
+  let line = "";
+  let lastBreakIndex = -1;
+  const chars = Array.from(trimmed);
+
+  for (let index = 0; index < chars.length; index += 1) {
+    const next = line + chars[index];
+    if (/\s/.test(chars[index])) lastBreakIndex = next.length;
+
+    if (measure(next) > maxWidth && line) {
+      if (lastBreakIndex > 0) {
+        return [
+          line.slice(0, lastBreakIndex).trimEnd(),
+          trimmed.slice(lastBreakIndex),
+        ];
+      }
+      return [line.trimEnd(), trimmed.slice(line.length)];
+    }
+
+    line = next;
+  }
+
+  return [line.trimEnd(), ""];
+}
+
+function renderJiazhuContainer(container: HTMLElement): void {
+  const text = container.dataset.note ?? "";
+  container.replaceChildren();
+  if (!text) return;
+
+  const parent = container.parentElement;
+  if (!parent) return;
+
+  const parentRect = parent.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const fullWidth = parent.clientWidth;
+  const firstWidth = Math.max(48, parentRect.right - containerRect.left);
+  const measure = canvasTextMeasurer(container);
+  let rest = text;
+  let isFirstCell = true;
+
+  while (rest) {
+    const cell = document.createElement("span");
+    cell.className = "jiazhu-cell";
+    const cellWidth = Math.max(48, Math.min(isFirstCell ? firstWidth : fullWidth, fullWidth));
+    cell.style.width = `${cellWidth}px`;
+
+    for (let rowIndex = 0; rowIndex < 2; rowIndex += 1) {
+      const row = document.createElement("span");
+      row.className = "jiazhu-row";
+      const [line, nextRest] = takeMeasuredLine(rest, cellWidth, measure);
+      row.textContent = line;
+      cell.append(row);
+      rest = nextRest;
+    }
+
+    container.append(cell);
+    isFirstCell = false;
+  }
+}
+
+function renderPhoneJiazhu(): void {
+  document
+    .querySelectorAll<HTMLElement>(".jiazhu")
+    .forEach((container) => renderJiazhuContainer(container));
+}
+
+function schedulePhoneJiazhuRender(): void {
+  window.requestAnimationFrame(() => {
+    renderPhoneJiazhu();
+  });
+}
+
+function setupPhoneJiazhuRendering(): void {
+  const phoneQuery = window.matchMedia("(max-width: 40rem)");
+  const renderIfPhone = (): void => {
+    if (phoneQuery.matches) schedulePhoneJiazhuRender();
+  };
+
+  renderIfPhone();
+  phoneQuery.addEventListener("change", renderIfPhone);
+  window.addEventListener("resize", renderIfPhone, { passive: true });
+  document.fonts?.ready.then(renderIfPhone).catch(() => undefined);
+}
+
 // 中文：双语正文（.lang-block）时每个语言块各有一份脚注列表，须按块处理，
 // 否则第二个块的标记在第一个块的列表里查不到内容。
 // English: A bilingual body (.lang-block) carries one footnote list per language
@@ -77,7 +194,12 @@ function enhanceScope(scope: HTMLElement, prose: HTMLElement): void {
     sidenote.append(number);
     content.forEach((node) => sidenote.append(node.cloneNode(true)));
 
-    marker.after(sidenote);
+    const jiazhu = document.createElement("span");
+    jiazhu.className = "jiazhu";
+    jiazhu.setAttribute("aria-hidden", "true");
+    jiazhu.dataset.note = noteText(content);
+
+    marker.after(jiazhu, sidenote);
     placed += 1;
   });
 
@@ -97,4 +219,5 @@ export function initializeFootnoteSidenotes(): void {
   document
     .querySelectorAll<HTMLElement>(".prose")
     .forEach((prose) => enhanceProse(prose));
+  setupPhoneJiazhuRendering();
 }

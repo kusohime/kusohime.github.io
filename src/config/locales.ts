@@ -223,6 +223,10 @@ const writingTypeTranslations: Record<
     singular: { en: "Russian", zh: "俄文" },
     plural: { en: "Russian", zh: "俄文" },
   },
+  Japanese: {
+    singular: { en: "Japanese", zh: "日文" },
+    plural: { en: "Japanese", zh: "日文" },
+  },
   Philosophy: {
     singular: { en: "Philosophy", zh: "哲學" },
     plural: { en: "Philosophy", zh: "哲學" },
@@ -266,6 +270,22 @@ const writingTypeTranslations: Record<
   Apologetics: {
     singular: { en: "Apologetics", zh: "護教學" },
     plural: { en: "Apologetics", zh: "護教學" },
+  },
+  Musicology: {
+    singular: { en: "Musicology", zh: "音樂學" },
+    plural: { en: "Musicology", zh: "音樂學" },
+  },
+  Ethnomusicology: {
+    singular: { en: "Ethnomusicology", zh: "民族音樂學" },
+    plural: { en: "Ethnomusicology", zh: "民族音樂學" },
+  },
+  Anthropology: {
+    singular: { en: "Anthropology", zh: "人類學" },
+    plural: { en: "Anthropology", zh: "人類學" },
+  },
+  Disability: {
+    singular: { en: "Disability", zh: "身心障礙" },
+    plural: { en: "Disability", zh: "身心障礙" },
   },
 };
 
