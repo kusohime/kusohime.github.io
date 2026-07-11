@@ -1,0 +1,22 @@
+﻿---
+title: "脆熊篇 17"
+date: "2023-12-06"
+tags: ["Poetry", "Review", "Psychoanalysis"]
+slug: "cui-xiong-pian-17"
+excerpt: "想說伯恩哈德和赫拉巴爾一個貨色. . ."
+order: 17
+comments: true
+series: "脆熊篇"
+seriesNumber: 17
+source:
+  platform: "Telegram"
+  chat: "米脆共"
+  exportFile: "messages3.html"
+  messageIds: ["message3301"]
+  timestamp: "2023-12-06T11:11:08-05:00"
+---
+> 想說伯恩哈德和赫拉巴爾一個貨色這輩子不會再看了中歐作家怎麼都一個叼樣跟看字母日記心情同頻友鄰全部打五星什麼心態感覺對所有物質理式（隨附性視角的世界觀）只能用自以為去神話學沒有任何史化或邪惡力量痕跡的 view from nowhere 去理解就會變成字母所以字母學物理單純為了拼個物理哲學男形象所以精神分析是精神病學的中醫 counterpart 哲批和西醫輸在把理式直接字面化 by 以為心理推演可以述行療愈（一種國師心態 到了藥劑師是直接藥理化）而不願意承認這不是一種情商低而是本真性犯賤
+> 我才意識到我乳頭敏感
+> 之前摸的時候沒意識到嗎。
+> 沒有想過是敏感的問題 underevocative of sex 只是不想被摸但現在意識到不想被摸=敏感
+> 笨蛋

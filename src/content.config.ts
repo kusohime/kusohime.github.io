@@ -114,6 +114,23 @@ const writings = defineCollection({
     order: z.number().int().default(999),
     draft: z.boolean().default(false),
     comments: z.boolean().default(false),
+    // 中文：开篇首字下沉（drop cap）。仅对以完整段落起首的连续散文有意义；
+    // 诗歌、以引文／题记／译者说明开头的文章请勿开启（首字会落在错误的块上）。
+    // English: Sink the opening character into a drop cap. Only meaningful for
+    // continuous prose that begins with a full paragraph; leave off for poetry
+    // or texts opening with an epigraph / source line (the cap would land wrong).
+    dropcap: z.boolean().default(false),
+    // Optional archival metadata for writings recovered from a numbered series
+    // or an external source such as a chat export.
+    series: z.string().optional(),
+    seriesNumber: z.union([z.string(), z.number()]).optional(),
+    source: z.object({
+      platform: z.string(),
+      chat: z.string().optional(),
+      exportFile: z.string().optional(),
+      messageIds: z.array(z.string()).default([]),
+      timestamp: z.string().optional(),
+    }).optional(),
     // 目录是否自动编号；章节标题本身就是序号时设为 false，避免重复。
     // Whether the contents list auto-numbers; set false when chapter titles are
     // themselves numbers, so the list does not repeat them.

@@ -5,7 +5,6 @@
 // Caveat: The public URL uses the frontmatter slug, not the folder name.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import LanguageAvailabilityNote from "../../components/LanguageAvailabilityNote.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import Comments from "../../components/Comments.astro";
 import PeerTubeEmbed from "../../components/PeerTubeEmbed.astro";
@@ -68,7 +67,12 @@ const {
 } = work.data;
 ---
 
-<BaseLayout title={title} description={description} noindex={work.data.draft}>
+<BaseLayout
+  title={title}
+  description={description}
+  noindex={work.data.draft}
+  unavailableLanguages={notesEnglishOnly ? ["zh"] : []}
+>
   <article
     class="detail-page work-detail"
     data-source-file={`content/works/${work.id}/index.md`}
@@ -144,7 +148,6 @@ const {
       )
     }
 
-    {notesEnglishOnly && <LanguageAvailabilityNote available="en" />}
     <div class="prose work-notes">
       <Content />
     </div>

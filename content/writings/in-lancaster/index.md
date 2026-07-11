@@ -1,10 +1,23 @@
 ---
 title: "In Lancaster, PA"
 date: "2025-07-30"
+tags: ["Journal"]
 slug: "in-lancaster"
 order: 999
 excerpt: "In Lancaster, PA"
 ---
+
+<figure class="cloudflare-stream-embed">
+  <div class="cloudflare-stream-embed-shell">
+    <iframe
+      src="https://customer-rsu4yvgm2df9e91f.cloudflarestream.com/944f7751461c250c814b817065d41311/iframe"
+      title="Two Amish scooters speeding past in Lancaster, Pennsylvania"
+      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  </div>
+  <figcaption>After eating, we came out and the sky was almost completely dark. Could already see the last batch of fireflies of the year. Two Amish scooters speeding past. It seems that this mode of transportation is intrinsically frolicsome.</figcaption>
+</figure>
 
 My Dad can never remember the word “Amish” and, by some permutation from who knows which universe, has memorized it as Hachimi[^1]. I now profoundly believe in acoustic reinforcement language acquisition (at Duncan’s request). A hundred miles east of Wright’s Fallingwater, because we were afraid we might have to ask the turnpike for help again, we went early to a service plaza for gas. Dad snatched up the mop from under the Mobil trash can and gave the windshield a bout of scrubbing like groundhogs fighting. I followed the scent of Auntie Anne’s to go to the bathroom. While researching Applegreen and finding out it originated in the United Kingdom, I suddenly remembered that on the way back we would pass Lancaster and ought to go look at the Hachimi people.
 
@@ -19,8 +32,5 @@ After the wardens with very bad attitudes, I could not be sure whether outsiders
 After getting into Miller’s queue, we walked over to the motel to see whether the walk-in price would be cheaper than Qunar (usually not…Qunar really is cheaper than any American platform), and at this point we found that up ahead was the center of this whole great road closure. Turned out it was a car accident. The motel we had been thinking and thinking about was directly opposite the scene, and the two Indian households next door, whole families and all, were standing on the lawn rubbernecking. A shop’s glass display window had been smashed to pieces, and a tow truck was lifting up a pockmarked sedan. Television reporters, police, and several dozen other people were gathered in a huge ring. One Hachimi warden even had a mini Hachimi sitting on his shoulders. The smell of horse poop was thick beyond all precedent ancient or modern. I secretly took a photo of the accident scene.
 
 We had booked the motel and our number had also been called, so we went back and chatted with another very young hostess who had a very mean-girl look. “Do you know there’s an accident outside?” I said I had actually just come back from the accident scene. “Oh my god! What’s it like at the scene?” I said I even took a photo. “AAAAAA holy crap quick show me!” A server lady beside her said with disgust, “There’s been an accident and you’re this excited!” then leaned over to look herself. I very proudly displayed my documentary photography. These people who could not get out of the restaurant studied it over there for a long time. The mean-girl hostess suddenly realized she used to work at the shop that got hit, and all at once grew worried: “Oh no, I should call them…are they okay…” In the end I airdropped the photo to her.
-
-Video: After eating, we came out and the sky was almost completely dark. Could already see the last batch of fireflies of the year. Two Amish scooters speeding past. It seems that this mode of transportation is intrinsically frolicsome.
-
 
 [^1]: **Hachimi** represents the Chinese internet expression **哈基米** (*hājīmǐ*), itself a phonetic approximation of Japanese **はちみー** (*hachimī*, with a lengthened final vowel). Its immediate source is *Hachimī no Uta* (はちみーのうた, “The Hachimi Song”), sung in character by Tōkai Teiō, voiced by Machico, in the second season of the anime *Umamusume: Pretty Derby*. The song appears in episode 12 and was subsequently issued as track 10 of the second disc of *TV Anime “Umamusume: Pretty Derby Season 2” ANIMATION DERBY Season 2, vol. 3: Original Sound Track*, released by Lantis on March 31, 2021. The official credits assign its words, composition, and arrangement to Machico. Within the fictional world of the anime, *hachimi* denotes a honey-based drink favoured by Tōkai Teiō. The name is generally understood as a deliberately childish clipping of Japanese **蜂蜜** (*hachimitsu*, “honey”): the final mora *tsu* is dropped and the preceding *i* is prolonged, producing *hachimī*. It is therefore neither an ordinary Japanese word nor a translation of “cat.” Its later feline meaning arose through the circulation of the song where its repeated syllables were detached from their original narrative setting and used as accompaniment for short videos of cats and other small animals. A frequently cited stage in this transmission is a 2022 Bilibili audio remix associated with the creator 京桥刹那, after which versions of the sound circulated more broadly through short-video platforms during 2023. Exact claims about the “first” remix should be treated cautiously because reposting, deletion, unattributed audio reuse, and platform migration make meme genealogies unusually difficult to establish. What can be observed more securely is the semantic sequence: a fictional honey drink became the refrain of a song, the refrain became reusable audio, the audio became strongly associated with cat videos, and **哈基米** consequently came to mean something like “kitty,” “little creature,” or “cute foolish animal” among users who often had no knowledge of *Umamusume*. See Lantis, *ANIMATION DERBY Season 2, vol. 3: Original Sound Track*, disc 2, track 10; *Umamusume: Pretty Derby*, season 2, episode 12, “Futari.”

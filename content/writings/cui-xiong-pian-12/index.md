@@ -1,0 +1,35 @@
+﻿---
+title: "脆熊篇 12"
+date: "2023-10-28"
+tags: ["Poetry", "Affect Theory", "Psychoanalysis"]
+slug: "cui-xiong-pian-12"
+excerpt: "回歸萬物皆可萌相"
+order: 12
+comments: true
+series: "脆熊篇"
+seriesNumber: 12
+source:
+  platform: "Telegram"
+  chat: "米脆共"
+  exportFile: "messages3.html"
+  messageIds: ["message2959"]
+  timestamp: "2023-10-28T01:01:27-05:00"
+---
+* 回歸萬物皆可萌相
+* 那個誰也回一下
+* 什麼意思。#destructiveplasticity
+* 他現在莫名 cynicism 狀
+* 感覺到。誰能治療
+* 本質一種 ego
+* egodeath
+* . . .
+* 討厭。自我厭惡是最自戀沒救的行為
+* 還好已痊癒
+* 沒法讓他人進入來積極參與的那種厭惡ネガ篇的那個第三者第一視角化雖然結局已挽回
+* 原來邊緣控制叫 intense orgasm
+* 談戀愛到底是什麼樣
+* 我怎麼知道我長這樣誰跟我談
+* 我們有沒有談過
+* 感覺婚了一下. . .
+* 邊緣閃婚
+* . . .

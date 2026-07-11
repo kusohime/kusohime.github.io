@@ -6,7 +6,7 @@
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import Preferences from "../components/Preferences.astro";
-import { translate, type TranslationKey } from "../config/locales";
+import { translate, type Locale, type TranslationKey } from "../config/locales";
 import siteDefaults from "../config/siteDefaults.json";
 import { site } from "../config/site";
 import "katex/dist/katex.min.css";
@@ -17,6 +17,7 @@ interface Props {
   description?: string;
   noindex?: boolean;
   adminOnly?: boolean;
+  unavailableLanguages?: Locale[];
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   description = site.description,
   noindex = false,
   adminOnly = false,
+  unavailableLanguages = [],
 } = Astro.props;
 
 const pageTitle = title ? `${title} | ${site.name}` : site.name;
@@ -84,7 +86,12 @@ const hierarchyBack = (() => {
 ---
 
 <!doctype html>
-<html lang="en">
+<html
+  lang="en"
+  data-unavailable-languages={unavailableLanguages.length > 0
+    ? unavailableLanguages.join(" ")
+    : undefined}
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -157,7 +164,7 @@ const hierarchyBack = (() => {
     <div class="site-shell">
       <Header />
       <div class="site-preferences-rail">
-        <Preferences />
+        <Preferences unavailableLanguages={unavailableLanguages} />
       </div>
       <main id="main-content">
         {

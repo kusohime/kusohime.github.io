@@ -4,6 +4,7 @@ date: "2024-09-26"
 tags: ["Essay", "Philosophy", "Affect Theory", "Psychoanalysis", "Philology"]
 excerpt: "One of the many moments in which one has no choice but to agree with Zizek is when he says that he is most depressed when seeing stupid people happy."
 slug: "negation"
+dropcap: true
 comments: true
 order: 999
 ---

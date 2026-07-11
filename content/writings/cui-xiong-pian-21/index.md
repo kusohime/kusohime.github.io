@@ -1,0 +1,65 @@
+﻿---
+title: "脆熊篇 21"
+date: "2025-09-12"
+tags: ["Poetry", "Philosophy", "Affect Theory"]
+slug: "cui-xiong-pian-21"
+excerpt: "刷到一個 hinge profile 寫 I go crazy for objectivity. . ."
+order: 21
+comments: true
+series: "脆熊篇"
+seriesNumber: 21
+source:
+  platform: "Telegram"
+  chat: "米脆共"
+  exportFile: "messages6.html"
+  messageIds: ["message6722"]
+  timestamp: "2025-09-12T01:39:40-05:00"
+---
+*刷到一個 hinge profile 寫 I go crazy for objectivity by lorraine daston or gay people*
+
+* 讀了二十頁祛魅了
+* 什麼意思 什麼水平
+* 拉圖爾
+* 我感覺這本書在三千個場合看到過三次誰知道什麼意思
+* 我要開始了 不許打斷
+
+> 想看所有標題只有一個詞的書 - 2024/1/31
+> 我要看 - 7/1
+> - 你猜我說什麼 一個單詞
+> - 摁 - 2024/2/1
+
+我的腦非線性到所有事發生然後可以通過某種管道傳輸到本群某時刻奶子狂噴互搏
+
+anamnesic therapy
+
+今天在看發明 psychedelic therapy 那個人的野史 好像是真情實感讀弗洛伊德申請 neuro 項目被全拒 然後支持他的一個策展性質 para 學界白女 espouse by 拍紀錄片
+
+* 你的腦非線性到世界為了你讓這個瞬間散落在一年之內的三個碎片 然後在某個 antidopamainergetic 之力下像公路片一樣收集 resolve 所以焦慮和 cognitive illness 本質是疊了一千層的在未來將要開始的張力被世界放在作為過去的現在的嗓子眼裡 靠精神病達到的反德里達之所有到過去（正常化懸置 的 兩個斷句） 這個顛倒的反社會在於別人是先獲得理性再閱讀現象，你是要閱讀現象再獲得理性 非線性到每個 sense making 跟塞爾達傳說收集龍鱗似的 所以非功能和聲是先構造出聽覺體驗再獲得審美 因為非功能和聲裡作為終點的主的解決已經在過去結束了，下屬和屬的張力作為焦慮並發展，在結構裡收集 這個過程=芙莉蓮=柏拉圖全集 怎麼順便把 #脆熊篇 001 收集了 所以你腦損傷=長壽種
+* 那個塞洛西 fmri
+* 其實是 #非線性倒錯 為什麼感覺哲學系真的是文盲 lobotomized 之美
+* 分哲文盲感覺和數學系一個性質不是嗎
+* 而且寫作能力感覺那種人文通識論文拿不了 A 一問三不知 然後 self-instantiate
+* 問何了
+* 不太記得了 比較 random 的常識性自反話語實踐 就是聊到家庭 精神意義上 schizo
+* 他聽你說話跟古神低語似的你想他說什麼。
+* 是不是比較平衡的視點是家族內在調節後的那個自我產物其實也是家的一部分所以兩者作為自己的永恆 synthesis 一定會非共時性走向社會 然後他的舉例是經常會思考自己小時候的 eureka moment 導致現在的一些 quirk trait 還有自己為什麼 trans 就覺得很好玩
+* 這不就 duncan 嗎。那不就 spectrum 嗎。
+* . . .所以 lobotomized. 所以就挺萌的吧
+* 不過我學校哲學系感覺社會化程度比數學系低 但其實是高功能 NPD
+* 但數學系不是本來就很高嗎 感覺 higher than avg 還是這裡都是金融數學女 然後因為 listing 分級性太 meritocratic 工院的人都跑去上最簡單的 sequence
+* . . .
+* . . .
+* . . .
+* 還是 malingering 到本我嵌合了。
+* 見 instrumentalized body 手稿. . .
+* 而且自己品味那樣怎麼整天喜歡辣評別人品味
+* 我們噴過的人裡面有哪幾個真的活得很爽的
+* 怎麼回事 被我們四維工程了
+* 本群已經把他們都結束了
+
+. . . *時間來到第二天*
+
+* . . . 然後我跟 Rowan Dorin 說了你 dating app 刷到 objectivity 結果他超熱情怒贊因為他覺得是精神病語體裡唯一幾本真的現象級的
+* 阿
+* . . .
+* 請問我在這個對話的發生學是什麼。

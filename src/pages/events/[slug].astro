@@ -3,7 +3,6 @@
 // English: Generates an individual event detail page from its Markdown file.
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import LanguageAvailabilityNote from "../../components/LanguageAvailabilityNote.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import { formatDate, translate } from "../../config/locales";
 import { dominantContentLang } from "../../utils/cjkLanguage";
@@ -31,6 +30,13 @@ const { Content: ContentZh } = zhEntry
 // English: Without a Chinese body, note the unavailable locale from the body's
 // dominant language (undefined when there is no prose — no note).
 const bodyLang = zhEntry ? undefined : dominantContentLang(event.body ?? "");
+const unavailableLanguages: ("en" | "zh")[] = bodyLang
+  ? bodyLang === "en"
+    ? ["zh"]
+    : bodyLang === "zh"
+      ? ["en"]
+      : ["en", "zh"]
+  : [];
 const {
   title,
   date,
@@ -53,7 +59,12 @@ const facts = [
 ].filter((fact) => fact.en);
 ---
 
-<BaseLayout title={title} description={brief} noindex={event.data.draft}>
+<BaseLayout
+  title={title}
+  description={brief}
+  noindex={event.data.draft}
+  unavailableLanguages={unavailableLanguages}
+>
   <article
     class="detail-page event-detail"
     data-source-file={`content/events/${event.id}/index.md`}
@@ -93,7 +104,6 @@ const facts = [
       }
     </header>
 
-    {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
     <div class="prose event-notes">
       {ContentZh ? (
         <>

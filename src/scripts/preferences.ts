@@ -83,6 +83,47 @@ function translationFor(element: HTMLElement, language: Locale) {
   return element.dataset.i18nEn;
 }
 
+function unavailableLanguageLabel(target: Locale, interfaceLanguage: Locale) {
+  if (interfaceLanguage === "zh") {
+    return target === "en" ? "英文不可用" : "中文不可用";
+  }
+  return target === "en" ? "English unavailable" : "Chinese unavailable";
+}
+
+function updateLanguageAvailability(language: Locale) {
+  const unavailable = new Set(
+    (document.documentElement.dataset.unavailableLanguages ?? "")
+      .split(/\s+/)
+      .filter(Boolean) as Locale[],
+  );
+
+  document
+    .querySelectorAll<HTMLDetailsElement>('[data-preference-type="language"]')
+    .forEach((menu) => {
+      const summary = menu.querySelector<HTMLElement>("summary");
+      const isUnavailable = unavailable.has(language);
+      const label = isUnavailable
+        ? unavailableLanguageLabel(language, language)
+        : "";
+      menu.dataset.currentLanguageUnavailable = String(isUnavailable);
+      if (summary) {
+        summary.title = label;
+        if (label) summary.setAttribute("aria-label", label);
+        else summary.removeAttribute("aria-label");
+      }
+    });
+
+  document.querySelectorAll<HTMLButtonElement>("[data-language-option]").forEach((button) => {
+    const target = button.dataset.languageOption as Locale;
+    const label = unavailable.has(target)
+      ? unavailableLanguageLabel(target, language)
+      : "";
+    button.title = label;
+    if (label) button.setAttribute("aria-label", label);
+    else button.removeAttribute("aria-label");
+  });
+}
+
 function closeMenuAndRestoreFocus(control: HTMLElement) {
   const menu = control.closest<HTMLDetailsElement>("details");
   if (!menu) return;
@@ -331,6 +372,8 @@ function applyLanguage(language: Locale, animate = false) {
   document.querySelectorAll<HTMLElement>("[data-current-language]").forEach((element) => {
     setLocalizedText(element, localeInfo[language].short, shouldAnimate);
   });
+
+  updateLanguageAvailability(language);
 
   const currentTheme = (document.documentElement.dataset.theme ?? "light") as Theme;
   updateThemeToggleLabel(currentTheme, language);

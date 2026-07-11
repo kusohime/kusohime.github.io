@@ -248,7 +248,11 @@ const tagGroups = writingTypes.map((type) => ({
         tabindex="-1"
         aria-labelledby="writings-by-date-heading"
       >
-        <h2 id="writings-by-date-heading" data-i18n-key="common.date">
+        <h2
+          id="writings-by-date-heading"
+          class="visually-hidden"
+          data-i18n-key="common.date"
+        >
           {translate("en", "common.date")}
         </h2>
         {

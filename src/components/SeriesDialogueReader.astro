@@ -1,0 +1,85 @@
+---
+// Standalone reader for writings recovered from a numbered dialogue series.
+// Keeps the old compact series rail while allowing each entry to remain an
+// independent item in the Writings index.
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "../config/locales";
+
+interface Props {
+  writing: CollectionEntry<"writings">;
+  entries: CollectionEntry<"writings">[];
+  contentLang?: string;
+  imageLed?: boolean;
+}
+
+const { writing, entries, contentLang, imageLed = false } = Astro.props;
+const seriesTitle = writing.data.series ?? writing.data.title;
+const dateLabel = writing.data.displayDate ?? String(writing.data.date);
+const currentIndex = entries.findIndex((entry) => entry.id === writing.id);
+const previousEntry = currentIndex > 0 ? entries[currentIndex - 1] : undefined;
+const nextEntry =
+  currentIndex >= 0 && currentIndex < entries.length - 1
+    ? entries[currentIndex + 1]
+    : undefined;
+---
+
+<div class:list={["cui-reader", "series-reader", { "series-reader--visual": imageLed }]}>
+  <aside class="cui-reader-rail series-reader-rail">
+    <p class="cui-reader-title" lang={contentLang}>{seriesTitle}</p>
+    <nav aria-label={`${seriesTitle}目錄`}>
+      <ol>
+        {
+          entries.map((entry) => (
+            <li>
+              <a
+                href={`/writings/${entry.data.slug}/`}
+                lang={contentLang}
+                aria-current={entry.id === writing.id ? "page" : undefined}
+                title={entry.data.title}
+              >
+                {entry.data.seriesNumber ?? entry.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+  </aside>
+
+  <section class="cui-reader-main series-reader-main">
+    <header class="detail-header cui-reader-header series-reader-header">
+      {writing.data.draft && (
+        <p class="draft-flag">Draft — not listed publicly</p>
+      )}
+      <h1 lang={contentLang}>{writing.data.title}</h1>
+      <p class="writing-metadata">
+        <time datetime={String(writing.data.date)} data-i18n-date={dateLabel}>
+          {formatDate(dateLabel, "en")}
+        </time>
+      </p>
+    </header>
+
+    <slot />
+
+    <nav class="guide-chapter-navigation series-navigation" aria-label="Adjacent series entries">
+      {
+        previousEntry ? (
+          <a href={`/writings/${previousEntry.data.slug}/`}>
+            <span class="glyph-arrow glyph-arrow--back" data-arrow-glyph aria-hidden="true"></span>
+            <span lang={contentLang}>{previousEntry.data.title}</span>
+          </a>
+        ) : (
+          <span></span>
+        )
+      }
+      {
+        nextEntry && (
+          <a href={`/writings/${nextEntry.data.slug}/`}>
+            <span lang={contentLang}>{nextEntry.data.title}</span>
+            <span class="glyph-arrow glyph-arrow--forward" data-arrow-glyph aria-hidden="true"></span>
+          </a>
+        )
+      }
+    </nav>
+  </section>
+</div>

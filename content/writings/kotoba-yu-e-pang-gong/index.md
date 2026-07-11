@@ -25,7 +25,6 @@ excerpt: "Kotoba, Heidegger, and Epang"
 
 <figure class="time-chart">
   <p class="time-chart-title">TIME IS AN EGO MOVING ALONG A PATH<br />TIME IS AN OBJECT MOVING ALONG A PATH<br />TIMES ARE LOCATIONS</p>
-
   <svg viewBox="0 0 760 280" role="img" aria-label="兩個構形：自我沿路走向時間；時間沿路走向自我" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <marker id="tcA1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -45,70 +44,79 @@ excerpt: "Kotoba, Heidegger, and Epang"
     <text x="100" y="267" text-anchor="middle" class="tc-label">Subject</text>
     <text x="495" y="267" text-anchor="middle" class="tc-label">Time</text>
   </svg>
-
-  <svg viewBox="0 0 760 360" role="img" aria-label="希臘語時間介詞：Time I 與 Time II" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 760 430" role="img" aria-label="希臘語時間介詞：Time I 與 Time II" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <marker id="tcA2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0 0L10 5L0 10z" fill="currentColor" />
       </marker>
     </defs>
-    <circle cx="175" cy="185" r="135" fill="none" stroke="currentColor" stroke-width="2.5" />
-    <circle cx="610" cy="185" r="115" fill="none" stroke="currentColor" stroke-width="2.5" />
-    <text x="610" y="192" text-anchor="middle" class="tc-label">Time II</text>
-    <text x="175" y="100" text-anchor="middle" class="tc-term tc-greek">ἐν + dat.</text>
-    <text x="262" y="106" class="tc-gloss">‘on’ or ‘at’</text>
-    <text x="175" y="126" text-anchor="middle" class="tc-term tc-greek">ἐπί + dat.</text>
-    <ellipse cx="130" cy="163" rx="52" ry="24" fill="none" stroke="currentColor" stroke-width="2" />
-    <text x="130" y="169" text-anchor="middle" class="tc-term tc-greek">ἐπί + gen.</text>
-    <text x="4" y="150" class="tc-gloss">‘in the time of’,</text>
-    <text x="4" y="170" class="tc-gloss">‘within’ or ‘during’</text>
-    <text x="222" y="200" text-anchor="middle" class="tc-label">Time I</text>
-    <line x1="64" y1="250" x2="288" y2="250" stroke="currentColor" stroke-width="2.5" marker-start="url(#tcA2)" marker-end="url(#tcA2)" />
-    <text x="176" y="238" text-anchor="middle" class="tc-term tc-greek">ἐπί + acc.</text>
-    <text x="176" y="272" text-anchor="middle" class="tc-gloss">‘for’</text>
-    <circle cx="240" cy="215" r="5" fill="currentColor" />
-    <line x1="240" y1="215" x2="352" y2="215" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA2)" />
-    <text x="360" y="210" class="tc-term tc-greek">ἐκ + gen.</text>
-    <text x="360" y="228" class="tc-gloss">‘since’ or ‘from’</text>
-    <circle cx="279" cy="270" r="5" fill="currentColor" />
-    <line x1="279" y1="270" x2="398" y2="270" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA2)" />
-    <text x="345" y="292" text-anchor="middle" class="tc-term tc-greek">ἀπό + gen.</text>
-    <text x="345" y="310" text-anchor="middle" class="tc-gloss">‘from’ or ‘after’</text>
-    <circle cx="276" cy="95" r="5" fill="currentColor" />
-    <line x1="276" y1="95" x2="532" y2="95" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA2)" />
-    <text x="400" y="58" text-anchor="middle" class="tc-term tc-greek">ἐπί + acc.</text>
-    <text x="468" y="54" class="tc-gloss">‘until’</text>
-    <text x="400" y="82" text-anchor="middle" class="tc-term tc-greek">ἐς/εἰς + acc.</text>
+    <circle cx="185" cy="210" r="140" fill="none" stroke="currentColor" stroke-width="2.5" />
+    <circle cx="632" cy="210" r="86" fill="none" stroke="currentColor" stroke-width="2.5" />
+    <text x="632" y="216" text-anchor="middle" class="tc-label">Time II</text>
+    <text x="185" y="320" text-anchor="middle" class="tc-label">Time I</text>
+    <!-- 'on' or 'at' — a point on Time I -->
+    <text x="180" y="118" text-anchor="middle" class="tc-term tc-greek">ἐν + dat.</text>
+    <text x="180" y="140" text-anchor="middle" class="tc-term tc-greek">ἐπί + dat.</text>
+    <text x="180" y="160" text-anchor="middle" class="tc-gloss">‘on’ or ‘at’</text>
+    <!-- 'within' / 'during' — interior of Time I -->
+    <ellipse cx="178" cy="215" rx="64" ry="24" fill="none" stroke="currentColor" stroke-width="2" />
+    <text x="178" y="221" text-anchor="middle" class="tc-term tc-greek">ἐπί + gen.</text>
+    <text x="178" y="262" text-anchor="middle" class="tc-gloss">‘in the time of’,</text>
+    <text x="178" y="280" text-anchor="middle" class="tc-gloss">‘within’ or ‘during’</text>
+    <!-- 'for' — duration across Time I -->
+    <line x1="72" y1="372" x2="298" y2="372" stroke="currentColor" stroke-width="2.5" marker-start="url(#tcA2)" marker-end="url(#tcA2)" />
+    <text x="185" y="396" text-anchor="middle" class="tc-term tc-greek">ἐπί + acc.</text>
+    <text x="185" y="414" text-anchor="middle" class="tc-gloss">‘for’</text>
+    <!-- 'since' / 'from' — out of Time I -->
+    <circle cx="322" cy="196" r="5" fill="currentColor" />
+    <line x1="322" y1="196" x2="410" y2="196" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA2)" />
+    <text x="462" y="192" text-anchor="middle" class="tc-term tc-greek">ἐκ + gen.</text>
+    <text x="462" y="210" text-anchor="middle" class="tc-gloss">‘since’ or ‘from’</text>
+    <!-- 'from' / 'after' — leaving Time I -->
+    <circle cx="300" cy="258" r="5" fill="currentColor" />
+    <line x1="300" y1="258" x2="420" y2="268" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA2)" />
+    <text x="462" y="290" text-anchor="middle" class="tc-term tc-greek">ἀπό + gen.</text>
+    <text x="462" y="308" text-anchor="middle" class="tc-gloss">‘from’ or ‘after’</text>
+    <!-- 'until' — Time I to Time II -->
+    <text x="420" y="32" text-anchor="middle" class="tc-gloss">‘until’</text>
+    <text x="420" y="54" text-anchor="middle" class="tc-term tc-greek">ἐπί + acc.</text>
+    <text x="420" y="76" text-anchor="middle" class="tc-term tc-greek">ἐς/εἰς + acc.</text>
+    <circle cx="255" cy="92" r="5" fill="currentColor" />
+    <line x1="255" y1="92" x2="558" y2="156" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA2)" />
   </svg>
-
-  <svg viewBox="0 0 760 330" role="img" aria-label="希臘語空間介詞：Location I 與 Location II" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 760 380" role="img" aria-label="希臘語空間介詞：Location I 與 Location II" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <marker id="tcA3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0 0L10 5L0 10z" fill="currentColor" />
       </marker>
     </defs>
-    <circle cx="175" cy="170" r="125" fill="none" stroke="currentColor" stroke-width="2.5" />
-    <circle cx="610" cy="170" r="112" fill="none" stroke="currentColor" stroke-width="2.5" />
-    <text x="610" y="177" text-anchor="middle" class="tc-label">Location II</text>
-    <text x="160" y="110" text-anchor="middle" class="tc-term tc-greek">ἐν + dat.</text>
-    <text x="232" y="104" class="tc-gloss">‘in’</text>
-    <text x="168" y="136" text-anchor="middle" class="tc-term tc-greek">ἐπί + dat.; gen.</text>
-    <text x="252" y="142" class="tc-gloss">‘on’; ‘on the top of’</text>
-    <text x="175" y="188" text-anchor="middle" class="tc-label">Location I</text>
-    <circle cx="269" cy="88" r="5" fill="currentColor" />
-    <line x1="269" y1="88" x2="528" y2="88" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA3)" />
-    <text x="390" y="50" text-anchor="middle" class="tc-term tc-greek">ἐπί + acc.</text>
-    <text x="462" y="46" class="tc-gloss">‘upon’ or ‘against’</text>
-    <text x="390" y="74" text-anchor="middle" class="tc-term tc-greek">ἐς/εἰς + acc.</text>
-    <text x="472" y="74" class="tc-gloss">‘towards’</text>
-    <circle cx="240" cy="205" r="5" fill="currentColor" />
-    <line x1="240" y1="205" x2="350" y2="205" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA3)" />
-    <text x="358" y="200" class="tc-term tc-greek">ἐκ + gen.</text>
-    <text x="358" y="218" class="tc-gloss">‘out of’</text>
-    <circle cx="267" cy="255" r="5" fill="currentColor" />
-    <line x1="267" y1="255" x2="390" y2="255" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA3)" />
-    <text x="330" y="277" text-anchor="middle" class="tc-term tc-greek">ἀπό + gen.</text>
-    <text x="330" y="295" text-anchor="middle" class="tc-gloss">‘from’</text>
+    <circle cx="185" cy="185" r="125" fill="none" stroke="currentColor" stroke-width="2.5" />
+    <circle cx="632" cy="190" r="86" fill="none" stroke="currentColor" stroke-width="2.5" />
+    <text x="632" y="196" text-anchor="middle" class="tc-label">Location II</text>
+    <text x="185" y="250" text-anchor="middle" class="tc-label">Location I</text>
+    <!-- 'in' — interior of Location I -->
+    <text x="178" y="120" text-anchor="middle" class="tc-term tc-greek">ἐν + dat.</text>
+    <text x="178" y="140" text-anchor="middle" class="tc-gloss">‘in’</text>
+    <!-- 'on' / 'on the top of' -->
+    <text x="178" y="172" text-anchor="middle" class="tc-term tc-greek">ἐπί + dat.; gen.</text>
+    <text x="178" y="192" text-anchor="middle" class="tc-gloss">‘on’; ‘on the top of’</text>
+    <!-- 'out of' — out of Location I -->
+    <circle cx="310" cy="178" r="5" fill="currentColor" />
+    <line x1="310" y1="178" x2="408" y2="178" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA3)" />
+    <text x="460" y="174" text-anchor="middle" class="tc-term tc-greek">ἐκ + gen.</text>
+    <text x="460" y="192" text-anchor="middle" class="tc-gloss">‘out of’</text>
+    <!-- 'from' — leaving Location I -->
+    <circle cx="295" cy="238" r="5" fill="currentColor" />
+    <line x1="295" y1="238" x2="415" y2="250" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA3)" />
+    <text x="460" y="272" text-anchor="middle" class="tc-term tc-greek">ἀπό + gen.</text>
+    <text x="460" y="290" text-anchor="middle" class="tc-gloss">‘from’</text>
+    <!-- 'upon' / 'against' and 'towards' — Location I to Location II -->
+    <text x="360" y="34" text-anchor="middle" class="tc-term tc-greek">ἐπί + acc.</text>
+    <text x="500" y="34" text-anchor="middle" class="tc-gloss">‘upon’ or ‘against’</text>
+    <text x="360" y="58" text-anchor="middle" class="tc-term tc-greek">ἐς/εἰς + acc.</text>
+    <text x="470" y="58" text-anchor="middle" class="tc-gloss">‘towards’</text>
+    <circle cx="268" cy="92" r="5" fill="currentColor" />
+    <line x1="268" y1="92" x2="556" y2="150" stroke="currentColor" stroke-width="2.5" marker-end="url(#tcA3)" />
   </svg>
 </figure>
 

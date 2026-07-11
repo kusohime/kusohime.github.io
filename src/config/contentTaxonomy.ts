@@ -19,6 +19,7 @@ export const writingTypes = [
   "Drama",
   "Fiction",
   "Blog",
+  "Journal",
   "Poetry",
   "French",
   "Russian",

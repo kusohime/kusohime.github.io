@@ -1,0 +1,31 @@
+﻿---
+title: "脆熊篇 18"
+date: "2023-12-16"
+tags: ["Poetry", "Affect Theory", "Psychoanalysis"]
+slug: "cui-xiong-pian-18"
+excerpt: "今天我說為什麼你要說我們只是 friend. . ."
+order: 18
+comments: true
+series: "脆熊篇"
+seriesNumber: 18
+source:
+  platform: "Telegram"
+  chat: "米脆共"
+  exportFile: "messages3.html"
+  messageIds: ["message3427"]
+  timestamp: "2023-12-16T14:45:14-05:00"
+---
+* 今天我說為什麼你要說我們只是 friend 他說 o so you wanna go beyond friend? like my secret lover? 然後馬上 lmao just kidding
+* . . .他是正常人嗎
+* e 到極點之人 所有人都愛他 所以最近黏他有種私生感
+* 感覺對這種人一般保持沉默態度 玄顯之學 感覺除非自己很自大到一個 limit experience 的程度 但可能 i 人更可怕 因為感覺沒有一定的 sublative 自反結構沒法極致維持 e 的狀態所以 e 人其實是一個很成功的模型
+* 但是現在很多抖音反轉零次網劇劇情自發性寫成 i 人被 e 人迫害的科幻
+* *直男曖昧* 這什麼意思 解讀一下
+* 不懂
+* 感覺偏敏感的順直 因為男的敏感也敏感不到哪裡去 男的敏感到極限就是得諾貝爾的水平 再敏感點就喜歡男的了
+* . . . 你去投代餐牆吧
+* . . .
+* 但為什麼 i 人都喜歡 e 人 因為廢物喜歡更完善版本的自己
+* 完全不同意
+* 為啥
+* i 人又不都覺得自己廢. . .

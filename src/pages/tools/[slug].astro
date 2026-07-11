@@ -9,7 +9,6 @@
 // in it and render in full as before.
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import LanguageAvailabilityNote from "../../components/LanguageAvailabilityNote.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import ToolContentsRail from "../../components/ToolContentsRail.astro";
 import { toolGroupLabel, translate } from "../../config/locales";
@@ -65,7 +64,11 @@ const statusKey =
       <script is:inline set:html={`location.replace(${JSON.stringify(redirectTo)});`} />
     </BaseLayout>
   ) : (
-    <BaseLayout title={tool.data.title} description={tool.data.summary ?? tool.data.subtitle}>
+    <BaseLayout
+      title={tool.data.title}
+      description={tool.data.summary ?? tool.data.subtitle}
+      unavailableLanguages={ContentZh ? [] : ["zh"]}
+    >
       <div class="tool-layout">
         <ToolContentsRail />
         <article
@@ -115,10 +118,7 @@ const statusKey =
                 </div>
               </>
             ) : (
-              <>
-                <LanguageAvailabilityNote available="en" />
-                <Content />
-              </>
+              <Content />
             )}
             {tool.data.references.length > 0 && (
               <>

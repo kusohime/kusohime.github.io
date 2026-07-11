@@ -1,0 +1,60 @@
+﻿---
+title: "脆熊篇 13"
+date: "2023-11-05"
+tags: ["Poetry", "Philosophy", "Psychoanalysis"]
+slug: "cui-xiong-pian-13"
+excerpt: "裝灑脫太難受了，我選擇安安分分地做一個凡事都很在意的小女子"
+order: 13
+comments: true
+series: "脆熊篇"
+seriesNumber: 13
+source:
+  platform: "Telegram"
+  chat: "米脆共"
+  exportFile: "messages3.html"
+  messageIds: ["message3025"]
+  timestamp: "2023-11-05T11:38:24-05:00"
+---
+> 裝灑脫太難受了，我選擇安安分分地做一個凡事都很在意的小女子
+
+* 啥時候回家
+* 過半個小時。看了一下午阿多諾
+* 什麼感想
+* 腹黑傲嬌轉校生。其實文本分析能力秒殺法國人，有種厭世媽寶萌
+* 感覺被勳斯討厭原因
+* . . . 所以品味很差（平行本雅明）。false cognate 甲亢 BPD
+* 我們有 BPD 麼
+* 我們只有 *HetERogynephilic Meta Attractive Parapractic HylomoRphic ODIous TelEiopoiesis*
+* . . .
+* 理解以上要素需要同時讀過德里達布蘭查德和希臘神話學 lexicon
+* 我都不懂但好像也沒差啊。
+* . . .
+
+> Marikoian thanatology: 叔本華、布洛赫、愛爾維修. . .
+
+* 秒海德格爾了. . . 回家。感覺再讀要壞掉了。![Domino's Carryout]
+* 你好
+* 在幹嘛。再也不去圖書館了
+* 在做曲式分析作業
+* 哦哦很美。再也不看哲學了
+* 幹嘛了
+* 文科死了。背腦解剖去了。
+* 受什麼刺激了
+* 感覺二階以上的理解活動都很醜
+* 這是反轉一次還是兩次
+* ToM 二層往上。感覺被網文秒了
+
+> 《綻出》與“實存哲學”
+
+* 感覺讀了一下午這種東西回家路上把自己罵哭了。好沒用
+* 字面意思？
+* 蒽. . . 感覺退休後可以在小區門口通往閩江的小河飯後散歩聽書學完的東西現在花時間 hamartially 學習並有自信 commit 只會愧疚死
+* 我們童年。河邊的漫步學派之可以從你家走十五分鐘到我家走到省體走到米羅街（存在於明德補充文書中的自然學術想像）
+* coeternal antinomy
+* . . .感覺跟 the love hypothesis 一個性質的爆款 professionalized 愛情虛構標題
+* 感覺一個羅伯特伯頓一個奧古斯汀-康德。感覺到去年才徹底弄懂 `<ruby>` 福州地理 `(主觀座標體系)</ruby>`
+* 戀知直男的頭等大事
+* 有點像每天上班路上經過的某個古老地標標牌突然人文地理學式顯現從而進入一種死亡命名的自我感動結構. . .
+* 我們 reciprocal quoting 式聊天完全 false cognate momo 聊天。
+* 但我跟 momo 聊天完全 illeism 主導的 イメージ。感覺剩下都不重要了
+* . . . 呵呵。

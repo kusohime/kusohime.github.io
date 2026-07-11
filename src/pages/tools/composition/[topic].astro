@@ -10,7 +10,6 @@
 // Caveat: A new tool needs a component in src/components/tools registered below.
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import LanguageAvailabilityNote from "../../../components/LanguageAvailabilityNote.astro";
 import LocalizedText from "../../../components/LocalizedText.astro";
 import ToolContentsRail from "../../../components/ToolContentsRail.astro";
 import { toolGroupLabel, translate } from "../../../config/locales";
@@ -97,9 +96,18 @@ for (const tool of tools) {
 }
 
 const pageTitle = toolTopicLabel(topicId, "en");
+const unavailableLanguages: ("en" | "zh")[] = modules.some(
+  ({ ContentZh }) => !ContentZh,
+)
+  ? ["zh"]
+  : [];
 ---
 
-<BaseLayout title={pageTitle} description={topic.blurb?.en ?? pageTitle}>
+<BaseLayout
+  title={pageTitle}
+  description={topic.blurb?.en ?? pageTitle}
+  unavailableLanguages={unavailableLanguages}
+>
   <div class="tool-layout">
     <ToolContentsRail />
     <article class="detail-page tool-page tools-group-page">
@@ -164,10 +172,7 @@ const pageTitle = toolTopicLabel(topicId, "en");
                   </div>
                 </>
               ) : (
-                <>
-                  <LanguageAvailabilityNote available="en" />
-                  <Content />
-                </>
+                <Content />
               )}
               {tool.data.references.length > 0 && (
                 <>

@@ -6,7 +6,6 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CuiXiongReader from "../../../components/CuiXiongReader.astro";
-import LanguageAvailabilityNote from "../../../components/LanguageAvailabilityNote.astro";
 import { contentFolder } from "../../../utils/contentPaths";
 import { cjkLangFromText, dominantContentLang } from "../../../utils/cjkLanguage";
 import { translate } from "../../../config/locales";
@@ -69,12 +68,20 @@ const contentLang = cjkLangFromText(
 // single-language; note the unavailable locale from its dominant language
 // (image-only chapters yield undefined and get no note).
 const bodyLang = dominantContentLang(chapter.body ?? "");
+const unavailableLanguages: ("en" | "zh")[] = bodyLang
+  ? bodyLang === "en"
+    ? ["zh"]
+    : bodyLang === "zh"
+      ? ["en"]
+      : ["en", "zh"]
+  : [];
 ---
 
 <BaseLayout
   title={`${chapter.data.title} | ${writing.data.title}`}
   description={chapter.data.excerpt ?? writing.data.excerpt}
   noindex={writing.data.draft}
+  unavailableLanguages={unavailableLanguages}
 >
   <article
     class="detail-page writing-chapter-page"
@@ -89,7 +96,6 @@ const bodyLang = dominantContentLang(chapter.body ?? "");
           currentChapter={chapter}
           contentLang={contentLang}
         >
-          {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
           <div
             lang={contentLang}
             class:list={[
@@ -112,7 +118,6 @@ const bodyLang = dominantContentLang(chapter.body ?? "");
             <h1 lang={contentLang}>{chapter.data.title}</h1>
           </header>
 
-          {bodyLang && <LanguageAvailabilityNote available={bodyLang} />}
           <div
             lang={contentLang}
             class="prose writing-body chicago-prose"

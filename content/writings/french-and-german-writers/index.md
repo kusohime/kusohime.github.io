@@ -4,6 +4,7 @@ date: "2024-10-26"
 tags: ["Essay"]
 excerpt: "French and German Writers"
 slug: "french-and-german-writers"
+dropcap: true
 order: 999
 draft: false
 ---

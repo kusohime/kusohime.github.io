@@ -211,6 +211,10 @@ const writingTypeTranslations: Record<
     singular: { en: "Blog", zh: "網誌" },
     plural: { en: "Blog", zh: "網誌" },
   },
+  Journal: {
+    singular: { en: "Journal", zh: "日記" },
+    plural: { en: "Journal", zh: "日記" },
+  },
   Poetry: {
     singular: { en: "Poetry", zh: "詩" },
     plural: { en: "Poetry", zh: "詩" },

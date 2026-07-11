@@ -5,7 +5,14 @@ import {
   localeCodes,
   localeInfo,
   translate,
+  type Locale,
 } from "../config/locales";
+
+interface Props {
+  unavailableLanguages?: Locale[];
+}
+
+const { unavailableLanguages = [] } = Astro.props;
 ---
 
 <div
@@ -40,7 +47,14 @@ import {
     <div class="preference-options" role="group" aria-label="Language">
       {
         localeCodes.map((locale) => (
-          <button type="button" data-language-option={locale}>
+          <button
+            type="button"
+            data-language-option={locale}
+            data-language-unavailable={unavailableLanguages.includes(locale) ? "true" : undefined}
+            title={unavailableLanguages.includes(locale)
+              ? `${localeInfo[locale].name === "中文" ? "Chinese" : localeInfo[locale].name} unavailable`
+              : undefined}
+          >
             {localeInfo[locale].name}
           </button>
         ))

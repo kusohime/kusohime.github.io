@@ -778,6 +778,19 @@ summary {
   text-decoration: none;
 }
 
+:root:lang(en)[data-unavailable-languages~="en"] [data-current-language],
+:root:lang(zh)[data-unavailable-languages~="zh"] [data-current-language] {
+  text-decoration-line: line-through;
+  text-decoration-color: var(--theme-color);
+  text-decoration-thickness: 0.13em;
+}
+
+.preference-options button[data-language-unavailable="true"] {
+  text-decoration-line: line-through;
+  text-decoration-color: var(--theme-color);
+  text-decoration-thickness: 0.11em;
+}
+
 .preference-menu summary::-webkit-details-marker {
   display: none;
 }
@@ -1974,6 +1987,43 @@ main {
   color: inherit;
 }
 
+/* Cloudflare Stream embeds used in prose. Portrait videos stay comfortably
+   sized while the player remains responsive on narrow screens. */
+.writing-body figure.cloudflare-stream-embed {
+  float: left;
+  width: min(42%, 17rem);
+  margin: 0 clamp(1.15rem, 2.4vw, 1.4rem) 1rem 0;
+}
+
+.cloudflare-stream-embed-shell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 720 / 1288;
+  overflow: hidden;
+  background: var(--color-text);
+}
+
+.cloudflare-stream-embed iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.cloudflare-stream-embed figcaption {
+  margin: 0.45rem 0.15rem 0.15rem;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+
+@media (max-width: 42rem) {
+  .writing-body figure.cloudflare-stream-embed {
+    float: none;
+    width: min(100%, 17rem);
+    margin: 0 0 var(--space-md);
+  }
+}
+
 /* PDF embed (e.g. recital programs) — mirrors .peertube-embed. */
 .pdf-embed {
   max-width: var(--content-width);
@@ -2327,6 +2377,79 @@ main {
 
 .poly-dialogue blockquote {
   margin-block: var(--space-sm);
+}
+
+/* Standalone dialogue-series pages retain the old rail and conversational
+   rhythm after each numbered entry became an independent writing. */
+.series-reader-header {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.series-reader-header .writing-metadata {
+  margin-top: 0.25rem;
+}
+
+.series-reader-rail .cui-reader-title {
+  margin-top: 0;
+}
+
+.series-reader-rail ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(1.6rem, max-content));
+  gap: 0.12rem 0.55rem;
+}
+
+.series-navigation {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+/* A final series entry has only its back link. The shared chapter rule treats
+   any last link as the forward control, so explicitly return that lone link
+   to the first grid column. */
+.series-navigation > a:first-child:last-child {
+  justify-self: start;
+  text-align: left;
+}
+
+.series-reader--visual {
+  grid-template-columns: minmax(7.5rem, 10rem) minmax(0, 56rem);
+}
+
+.series-reader--visual .series-reader-main {
+  max-width: 56rem;
+}
+
+/* Image posts become a gallery while every non-image block continues to span
+   the full reading width. This also works for mixed image-and-dialogue entries. */
+.series-visual {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+  max-width: 56rem;
+}
+
+.series-visual > * {
+  grid-column: 1 / -1;
+}
+
+.series-visual > p:has(> img:only-child) {
+  grid-column: auto;
+  margin: 0;
+  text-align: center;
+  text-indent: 0;
+}
+
+.series-visual > p:has(> img:only-child) > img {
+  width: 100%;
+  height: auto;
+  max-height: 42rem;
+  object-fit: contain;
+  border: 1px solid var(--color-rule);
+  background: var(--color-background);
 }
 
 .cv-page {
@@ -2967,6 +3090,14 @@ main {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem var(--space-sm);
+  }
+
+  .series-reader-rail ol {
+    display: flex;
+  }
+
+  .series-visual {
+    grid-template-columns: 1fr;
   }
 
   .cui-reader-rail li {
@@ -3685,4 +3816,75 @@ main {
   text-align: center;
   color: var(--color-muted);
   font-size: 0.85rem;
+}
+
+/*
+ * 开篇排版 / Opening-paragraph typography
+ * 1. 首段齐头（不缩进）——书籍惯例：缩进用于标示「新段」，而开篇无前段可分。
+ * 2. 首字下沉（drop cap）：文章 frontmatter 设 dropcap: true → 正文容器加 .leadcap。
+ * 1. The opening paragraph sits flush left (the indent marks a *new* paragraph;
+ *    the first one has nothing before it). 2. Opt-in drop cap via .leadcap.
+ */
+.chicago-prose > p:first-child,
+.chicago-prose > .lang-block > p:first-child {
+  text-indent: 0;
+}
+
+/* 首字下沉：拉丁文三行、衬线、主题红；落款／题记开头的文章不应开启。 */
+/* Drop cap: 3 sunk lines, serif against the mono body, theme red. */
+.chicago-prose.leadcap > p:first-child,
+.chicago-prose.leadcap > .lang-block > p:first-child {
+  text-indent: 0;
+}
+
+.chicago-prose.leadcap > p:first-child::first-letter,
+.chicago-prose.leadcap > .lang-block > p:first-child::first-letter {
+  float: left;
+  font-family: var(--font-garamond);
+  font-weight: 600;
+  font-size: 3.4em;
+  line-height: 0.8;
+  padding: 0.06em 0.08em 0 0;
+  color: var(--theme-color);
+}
+
+/* 中日文：全角方块字改两行、衬线体（块的 lang 已由模板标注）。 */
+/* CJK: two-line square cap in a serif Han face, keyed to the block's lang. */
+.chicago-prose.leadcap > p:first-child:lang(zh)::first-letter,
+.chicago-prose.leadcap > p:first-child:lang(ja)::first-letter,
+.chicago-prose.leadcap > .lang-block > p:first-child:lang(zh)::first-letter,
+.chicago-prose.leadcap > .lang-block > p:first-child:lang(ja)::first-letter {
+  font-family: var(--font-cjk-serif);
+  font-weight: 700;
+  font-size: 2.15em;
+  line-height: 1;
+  padding-right: 0.06em;
+}
+
+/*
+ * 渐进增强：支持 initial-letter 的浏览器（Safari／Chrome）用真正的下沉字，
+ * 自动对齐大写字高；Firefox 退回上面的 float 方案。
+ * Progressive enhancement: real cap-height-aligned sunk cap where supported;
+ * Firefox keeps the float fallback above.
+ */
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  .chicago-prose.leadcap > p:first-child::first-letter,
+  .chicago-prose.leadcap > .lang-block > p:first-child::first-letter {
+    float: none;
+    font-size: inherit;
+    line-height: normal;
+    padding: 0;
+    margin-right: 0.06em;
+    -webkit-initial-letter: 3;
+    initial-letter: 3;
+  }
+
+  .chicago-prose.leadcap > p:first-child:lang(zh)::first-letter,
+  .chicago-prose.leadcap > p:first-child:lang(ja)::first-letter,
+  .chicago-prose.leadcap > .lang-block > p:first-child:lang(zh)::first-letter,
+  .chicago-prose.leadcap > .lang-block > p:first-child:lang(ja)::first-letter {
+    margin-right: 0.08em;
+    -webkit-initial-letter: 2;
+    initial-letter: 2;
+  }
 }
