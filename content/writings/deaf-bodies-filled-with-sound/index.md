@@ -1,6 +1,6 @@
 ---
-title: "Deaf Bodies Filled with Sound: Musical Participation, Solitude, and Self-sufficiency in Bengkala, the “Deaf Village” in Bali"
-subtitle: "響きあい満ちる聾の身体――バリ島「聾の村」ブンカラにおける音楽参与・孤独・自己充足 — 西浦まどか"
+title: "Deaf Bodies Filled with Sound"
+subtitle: "響きあい満ちる聾の身体 — 西浦まどか"
 date: "2026-07-10"
 tags: ["Translation","Japanese","Musicology","Anthropology","Disability","Ethnomusicology"]
 excerpt: "Deaf Bodies Filled with Sound"
@@ -9,7 +9,9 @@ order: 999
 draft: false
 ---
 
-<p class="no-indent"><strong>Madoka Nishiura（西浦まどか）</strong><br />
+## Musical Participation, Solitude, and Self-sufficiency in Bengkala, the “Deaf Village” in Bali バリ島「聾の村」ブンカラにおける音楽参与・孤独・自己充足
+
+<p class="no-indent"><strong>Madoka Nishiura 西浦まどか</strong><br />
 The University of Tokyo<br />
 <code>tcd.madoka@gmail.com</code></p>
 
