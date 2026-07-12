@@ -59,6 +59,7 @@ const isTranslation = writingTags.includes("Translation");
 // 诗歌正文不作段首缩进（样式见 global.css 的 .poetry-body）。
 // Poetry bodies take no first-line indent (see .poetry-body in global.css).
 const isPoetry = writingTags.includes("Poetry");
+const isDrama = writingTags.includes("Drama");
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const dialogueSeries = new Set(["脆熊篇", "本羣篇", "布鞋篇"]);
 const seriesTitle = writing.data.series;
@@ -73,20 +74,26 @@ const seriesEntries = isSeriesDialogue
     )).sort((a, b) => a.data.order - b.data.order)
   : [];
 const isClairieres = writing.data.slug === "tian-jian-qing-che";
-const contentLang = cjkLangFromText(
-  [title, subtitle, excerpt].filter(Boolean).join(" "),
-);
+// The prose body is a more reliable language signal than a bilingual title or
+// subtitle (which may contain a quoted Japanese or Chinese title).
+const bodyLang = dominantContentLang(writing.body ?? "");
+const contentLang = bodyLang ?? cjkLangFromText(title) ?? "en";
+const titleLang = cjkLangFromText(title) ?? contentLang;
+const subtitleLang = subtitle
+  ? (cjkLangFromText(subtitle) ?? contentLang)
+  : contentLang;
 // 中文正文块的 lang 按其正文文字推断（简繁/日文）。
 // The Chinese block's lang is inferred from its own body text (Hans/Hant/ja).
 const zhBodyLang = zhEntry
-  ? (cjkLangFromText(zhEntry.body ?? "") ?? "zh")
+  ? (dominantContentLang(zhEntry.body ?? "") ??
+    cjkLangFromText(zhEntry.body ?? "") ??
+    "zh")
   : undefined;
 // 中文：没有中文正文文件时，本页只有单语正文；按正文主导语言给出
 // 「某语言不可用」的提示（随语言切换显示）。
 // English: Without a Chinese body file the page is single-language; note which
 // locale is unavailable, keyed to the body's dominant language.
-const bodyLang = zhEntry ? undefined : dominantContentLang(writing.body ?? "");
-const unavailableLanguages: ("en" | "zh")[] = bodyLang
+const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
   ? bodyLang === "en"
     ? ["zh"]
     : bodyLang === "zh"
@@ -152,7 +159,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
                 <p class="draft-flag">Draft — not listed publicly</p>
               )}
               <div class="writing-title-line writing-title-line--detail">
-                <h1 lang={contentLang}>{title}</h1>
+                <h1 lang={titleLang}>{title}</h1>
                 {isTranslation && (
                   <a
                     class="writing-tag writing-tag--translation"
@@ -163,7 +170,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
                   </a>
                 )}
               </div>
-              {subtitle && <p lang={contentLang}>{subtitle}</p>}
+              {subtitle && <p lang={subtitleLang}>{subtitle}</p>}
               <p class="writing-metadata">
                 <time datetime={String(date)} data-i18n-date={dateLabel}>
                   {formatDate(dateLabel, "en")}
@@ -180,7 +187,10 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
                   {
                     "writing-body": !hasChapters,
                     "poetry-body": isPoetry,
+                    "drama-body": isDrama,
                     leadcap: writing.data.dropcap,
+                    "leadcap--marked":
+                      writing.data.dropcap && writing.data.dropcapTarget === "marked",
                   },
                 ]}
               >

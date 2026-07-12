@@ -120,6 +120,9 @@ const writings = defineCollection({
     // continuous prose that begins with a full paragraph; leave off for poetry
     // or texts opening with an epigraph / source line (the cap would land wrong).
     dropcap: z.boolean().default(false),
+    // Use a content-marked opening character when prose begins after a display
+    // block, a source line, or other non-prose material.
+    dropcapTarget: z.enum(["opening", "marked"]).default("opening"),
     // Optional archival metadata for writings recovered from a numbered series
     // or an external source such as a chat export.
     series: z.string().optional(),

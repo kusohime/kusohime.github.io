@@ -5,6 +5,8 @@ tags: ["Journal"]
 slug: "in-lancaster"
 order: 999
 excerpt: "In Lancaster, PA"
+dropcap: true
+dropcapTarget: "marked"
 ---
 
 <figure class="cloudflare-stream-embed">
@@ -19,7 +21,7 @@ excerpt: "In Lancaster, PA"
   <figcaption>After eating, we came out and the sky was almost completely dark. Could already see the last batch of fireflies of the year. Two Amish scooters speeding past. It seems that this mode of transportation is intrinsically frolicsome.</figcaption>
 </figure>
 
-My Dad can never remember the word “Amish” and, by some permutation from who knows which universe, has memorized it as Hachimi[^1]. I now profoundly believe in acoustic reinforcement language acquisition (at Duncan’s request). A hundred miles east of Wright’s Fallingwater, because we were afraid we might have to ask the turnpike for help again, we went early to a service plaza for gas. Dad snatched up the mop from under the Mobil trash can and gave the windshield a bout of scrubbing like groundhogs fighting. I followed the scent of Auntie Anne’s to go to the bathroom. While researching Applegreen and finding out it originated in the United Kingdom, I suddenly remembered that on the way back we would pass Lancaster and ought to go look at the Hachimi people.
+<span class="lead">M</span>y Dad can never remember the word “Amish” and, by some permutation from who knows which universe, has memorized it as Hachimi[^1]. I now profoundly believe in acoustic reinforcement language acquisition (at Duncan’s request). A hundred miles east of Wright’s Fallingwater, because we were afraid we might have to ask the turnpike for help again, we went early to a service plaza for gas. Dad snatched up the mop from under the Mobil trash can and gave the windshield a bout of scrubbing like groundhogs fighting. I followed the scent of Auntie Anne’s to go to the bathroom. While researching Applegreen and finding out it originated in the United Kingdom, I suddenly remembered that on the way back we would pass Lancaster and ought to go look at the Hachimi people.
 
 Dad kept refusing to believe the Hachimi people really would “give up” electricity, saying that on the way here we had already grazed past countless settlements but there was no horse poop on the ground, so it was all staged. Then fifteen minutes later, the moment we came near Ronks, three carriages appeared by the roadside. The great clear sky to the south inexplicably produced a rainbow. The Hachimi people’s houses and ordinary residents’ houses were aggregated together. The cornfields here were much denser than the Hachimi farms beside Lake Ontario. I said, doesn’t this mean you could crawl inside and do bad things, and Dad said that when they were children they all had to dig traps inside, stretching long long fishing lines to trip homemade muskets and shoot rabbits. But I have no good impression of cornfields. In an ancient memory where dream and reality cannot be told apart, I was once cut by corn leaves. Most frightening was that there was no feeling at all, so by the time I found out, the blood had already flowed into a river.
 

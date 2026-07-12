@@ -5,11 +5,13 @@ tags: ["Essay", "Philology", "Linguistics", "Theology", "Apologetics"]
 excerpt: "On \"Alma\""
 slug: "on-alma"
 order: 999
+dropcap: true
+dropcapTarget: "marked"
 ---
 
 > There are good reasons to accept that the Christian topic of immaculate conception is grounded in the mistranslation of the Hebrew alma (which simply means ‘young woman’) as ‘virgin’: ‘It would appear that Western civilization has endured two millennia of consecrated sexual neurosis simply because the authors of Matthew and Luke could not read Hebrew.’ There are also good reasons to accept that the seventy ‘virgins’ awaiting martyrs in the Muslim paradise resulted from a mistranslation: in using the word hur, transliterated as ‘houris,’ Koran relied here on the early Christian texts which used the Aramaic hur, meaning ‘white raisins,’ a delicacy. Let us take a young martyr on a suicide mission because he took literally his leader’s promise: ‘The gates of Paradise have opened for you. There are beautiful black-eyed virgins waiting for you on the banks of rivers of honey.’ Imagine the look on his face ‘when, finding himself in a paradise teeming with his fellow thugs, his seventy houris arrive as a fistful of raisins.’[^1]
 
-Žižek opens this seemingly electrifying controversy with a notoriously compressed verdict, one that all but re-paraphrases a point made in Sam Harris’s *The End of Faith*.[^2] Before we come to the etymology, though, the passage carries two errors that ought to be cleared away first.
+<span class="lead">Ž</span>ižek opens this seemingly electrifying controversy with a notoriously compressed verdict, one that all but re-paraphrases a point made in Sam Harris’s *The End of Faith*.[^2] Before we come to the etymology, though, the passage carries two errors that ought to be cleared away first.
 
 The first is a matter of terminology. Žižek, following Harris, uses *Immaculate Conception* for Mary’s conceiving Jesus without human agency. In Catholic teaching, however, the Immaculate Conception says otherwise: that Mary, from the first moment of her own conception in her mother’s womb, was preserved from original sin, a doctrine Pius IX defined as binding dogma in *Ineffabilis Deus* (1854). The doctrine that Mary conceived Jesus by the Holy Spirit and without intercourse goes by its own name, the *virginal conception*.[^3] The note in the Chinese edition of this book,
 

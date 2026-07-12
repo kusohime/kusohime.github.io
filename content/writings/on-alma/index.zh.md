@@ -1,7 +1,7 @@
 
 > There are good reasons to accept that the Christian topic of immaculate conception is grounded in the mistranslation of the Hebrew alma (which simply means ‘young woman’) as ‘virgin’: ‘It would appear that Western civilization has endured two millennia of consecrated sexual neurosis simply because the authors of Matthew and Luke could not read Hebrew.’ There are also good reasons to accept that the seventy ‘virgins’ awaiting martyrs in the Muslim paradise resulted from a mistranslation: in using the word hur, transliterated as ‘houris,’ Koran relied here on the early Christian texts which used the Aramaic hur, meaning ‘white raisins,’ a delicacy. Let us take a young martyr on a suicide mission because he took literally his leader’s promise: ‘The gates of Paradise have opened for you. There are beautiful black-eyed virgins waiting for you on the banks of rivers of honey.’ Imagine the look on his face ‘when, finding himself in a paradise teeming with his fellow thugs, his seventy houris arrive as a fistful of raisins.’[^1]
 
-Žižek 以一句 notoriously 高度壓縮的判斷引入此看似激動人心的 controversy，which is almost a reparaphrase of Sam Harris 在 *The End of Faith*中提到的觀點。[^2] 但在進入詞源問題之前，這段話自帶兩處應當先行清理的錯誤——
+<span class="lead">齐</span>泽克 以一句 notoriously 高度壓縮的判斷引入此看似激動人心的 controversy，which is almost a reparaphrase of Sam Harris 在 *The End of Faith*中提到的觀點。[^2] 但在進入詞源問題之前，這段話自帶兩處應當先行清理的錯誤——
 
 其一是術語。Žižek（沿 Harris）用 *Immaculate Conception* 指瑪利亞不經人道而懷耶穌一事。但天主教教義中的 Immaculate Conception（聖母無染原罪，更完整作“聖母始胎無染原罪”）說的是瑪利亞在其母胎中成孕之初即蒙保守、不染原罪，1854 年由 Pius IX 的 *Ineffabilis Deus* 定為當信教義；描述瑪利亞由聖靈感孕、不經人道而生子的教義另有其名，即 *virginal conception*（聖靈感孕）。[^3] 中譯本的註釋則把混淆又推進一層，徑稱天主教認為“聖母瑪麗亞並非交媾所生，而是其母聖安妮感上帝之靈而孕生”——這等於把童貞生子的模板上移一代、安到了安妮身上；教義傳統從未主張安妮無性受孕，若阿敬（Joachim）與安妮以完全通常的方式生育了瑪利亞，教義只關乎這個胚胎是否染有原罪。
 
