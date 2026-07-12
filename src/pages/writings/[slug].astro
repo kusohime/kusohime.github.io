@@ -64,7 +64,7 @@ const dialogueSeries = new Set(["脆熊篇", "本羣篇", "布鞋篇"]);
 const seriesTitle = writing.data.series;
 const isSeriesDialogue = Boolean(seriesTitle && dialogueSeries.has(seriesTitle));
 const isBenQun = seriesTitle === "本羣篇";
-const isImageLedSeries = isBenQun && writing.body.includes("/images/");
+const isImageLedSeries = isBenQun && (writing.body ?? "").includes("/images/");
 const seriesEntries = isSeriesDialogue
   ? (await getCollection(
       "writings",
