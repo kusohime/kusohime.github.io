@@ -1189,3 +1189,45 @@ button:disabled {
     align-content: center;
   }
 }
+
+/* On phones, stack the panes so every editing surface remains reachable. */
+@media (max-width: 48rem) {
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  .studio-toolbar {
+    max-height: 38vh;
+    overflow: auto;
+  }
+
+  .studio-workspace {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .pane-resizer {
+    display: none;
+  }
+
+  .studio-sidebar,
+  .studio-editor-pane,
+  .studio-preview-pane {
+    flex: 0 0 min(36rem, 68vh);
+    min-height: 18rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .studio-sidebar {
+    flex-basis: min(42rem, 72vh);
+  }
+
+  .studio-editor-pane,
+  .studio-preview-pane {
+    flex-basis: min(36rem, 68vh);
+  }
+}

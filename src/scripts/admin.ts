@@ -113,11 +113,19 @@ const defaultMotionSettings: MotionSettings = {
 
 const ignoredDirectories = new Set([
   ".astro",
+  ".claude",
+  ".github",
+  ".desktop-build",
   ".git",
   ".npm-cache",
+  "desktop-dist",
   "dist",
+  "graphify-out",
   "node_modules",
 ]);
+
+const isIgnoredEntry = (name: string) =>
+  name.startsWith(".tmp-") || name.startsWith(".publish-source.");
 
 const editableExtensions = new Set([
   ".astro",
@@ -530,7 +538,26 @@ export async function initializeAdminStudio() {
 
   let paneLayout = readPaneLayout();
 
+  const clampPaneLayout = () => {
+    const availableWidth = studioWorkspace.getBoundingClientRect().width;
+    if (!availableWidth) return;
+    const sidebarMax = Math.max(150, availableWidth - 520);
+    paneLayout.sidebarWidth = Math.min(
+      Math.max(paneLayout.sidebarWidth, 150),
+      sidebarMax,
+    );
+    const editorMax = Math.max(
+      260,
+      availableWidth - paneLayout.sidebarWidth - 270,
+    );
+    paneLayout.editorWidth = Math.min(
+      Math.max(paneLayout.editorWidth, 260),
+      editorMax,
+    );
+  };
+
   const applyPaneLayout = () => {
+    clampPaneLayout();
     // 行内变量会覆盖样式表里的折叠宽度，所以折叠状态必须在这里直接落实。
     // Inline variables override the stylesheet's collapsed widths, so the
     // collapsed size must be written here, not only in CSS.
@@ -605,12 +632,16 @@ export async function initializeAdminStudio() {
   let currentPath = "";
   let dirty = false;
   let loadingDocument = false;
+  let documentRevision = 0;
+  let loadGeneration = 0;
+  let saveQueue: Promise<void> = Promise.resolve();
   let saveTimer: number | undefined;
   let previewTimer: number | undefined;
   let activePreviewPath = storedPreviewPath;
   let apiConnected = false;
   let latestGitSnapshot: GitSnapshot | null = null;
   let publishing = false;
+  let refreshPublishState: (() => void) | undefined;
 
   const setStatus = (message: string, kind: "normal" | "error" = "normal") => {
     status.textContent = message;
@@ -618,9 +649,10 @@ export async function initializeAdminStudio() {
   };
 
   const setDirty = (nextDirty: boolean) => {
-    dirty = nextDirty;
+    dirty = Boolean(currentPath && nextDirty);
     dirtyLabel.textContent = dirty ? "Unsaved changes" : "";
     saveButton.disabled = !currentPath || !dirty;
+    refreshPublishState?.();
   };
 
   const rememberCurrentFile = (path: string) => {
@@ -717,28 +749,33 @@ export async function initializeAdminStudio() {
     }, 800);
   };
 
-  const saveCurrentFile = async () => {
+  const saveCurrentFileNow = async () => {
     if (!currentPath || !dirty) return;
-    const handle = fileHandles.get(currentPath);
+    const path = currentPath;
+    const revision = documentRevision;
+    const source = editor.state.doc.toString();
+    const handle = fileHandles.get(path);
     if (!handle) return;
 
     try {
-      setStatus(`Saving ${currentPath}…`);
+      setStatus(`Saving ${path}…`);
       const writable = await handle.createWritable();
-      await writable.write(editor.state.doc.toString());
+      await writable.write(source);
       await writable.close();
-      if (currentPath === MOTION_SETTINGS_PATH) {
-        syncMotionControls(parseMotionSettings(editor.state.doc.toString()));
+      if (path === MOTION_SETTINGS_PATH) {
+        syncMotionControls(parseMotionSettings(source));
       }
-      if (currentPath === TYPOGRAPHY_SETTINGS_PATH) {
-        syncTypographyControls(
-          parseTypographySettings(editor.state.doc.toString()),
-        );
+      if (path === TYPOGRAPHY_SETTINGS_PATH) {
+        syncTypographyControls(parseTypographySettings(source));
       }
-      setDirty(false);
-      rememberCurrentFile(currentPath);
-      setStatus(`Saved ${currentPath}.`);
-      schedulePreviewRefresh();
+      if (currentPath === path && documentRevision === revision) {
+        setDirty(false);
+        rememberCurrentFile(path);
+        setStatus(`Saved ${path}.`);
+        schedulePreviewRefresh();
+      } else {
+        setStatus(`Saved ${path}; newer edits remain unsaved.`);
+      }
     } catch (error) {
       setStatus(
         error instanceof Error ? error.message : "Unable to save the file.",
@@ -747,9 +784,16 @@ export async function initializeAdminStudio() {
     }
   };
 
+  const saveCurrentFile = () => {
+    const task = saveQueue.then(saveCurrentFileNow);
+    saveQueue = task.catch(() => undefined);
+    return task;
+  };
+
   // Compartment 允许在不重建编辑器、不丢失光标的情况下切换自动换行。
   // A Compartment toggles line wrapping without rebuilding the editor or losing its cursor.
   const lineWrapCompartment = new Compartment();
+  const editorEditableCompartment = new Compartment();
   const storedLineWrap = localStorage.getItem(LINE_WRAP_STORAGE_KEY) === "true";
   lineWrapInput.checked = storedLineWrap;
 
@@ -768,6 +812,7 @@ export async function initializeAdminStudio() {
       extensions: [
         basicSetup,
         languageCompartment.of([]),
+        editorEditableCompartment.of(EditorView.editable.of(false)),
         syntaxHighlighting(studioHighlightStyle),
         lineWrapCompartment.of(storedLineWrap ? EditorView.lineWrapping : []),
         imeFriendlyPunctuation,
@@ -785,6 +830,7 @@ export async function initializeAdminStudio() {
         ),
         EditorView.updateListener.of((update) => {
           if (!update.docChanged || loadingDocument) return;
+          documentRevision += 1;
           setDirty(true);
           if (autoSaveInput.checked) {
             window.clearTimeout(saveTimer);
@@ -821,6 +867,27 @@ export async function initializeAdminStudio() {
     markdownToolbar.hidden = extensionOf(currentPath) !== ".md";
   };
 
+  const clearCurrentDocument = (message = "No file selected.") => {
+    window.clearTimeout(saveTimer);
+    loadGeneration += 1;
+    documentRevision += 1;
+    currentPath = "";
+    forgetCurrentFile();
+    currentFileLabel.textContent = "No file selected";
+    loadingDocument = true;
+    editor.dispatch({
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: message,
+      },
+      effects: editorEditableCompartment.reconfigure(EditorView.editable.of(false)),
+    });
+    loadingDocument = false;
+    setDirty(false);
+    syncMarkdownToolbar();
+  };
+
   const selectedEditorText = (fallback = "text") => {
     const selection = editor.state.selection.main;
     return selection.empty
@@ -829,6 +896,7 @@ export async function initializeAdminStudio() {
   };
 
   const insertEditorText = (text: string, selectStart?: number, selectEnd?: number) => {
+    if (!currentPath) return;
     const selection = editor.state.selection.main;
     const from = selection.from;
     editor.dispatch({
@@ -1890,9 +1958,12 @@ Write the text here.
     const handle = fileHandles.get(path);
     if (!handle) return;
 
+    const generation = ++loadGeneration;
+    documentRevision += 1;
     try {
       const file = await handle.getFile();
       const text = await file.text();
+      if (generation !== loadGeneration) return;
       loadingDocument = true;
       editor.dispatch({
         changes: {
@@ -1900,7 +1971,10 @@ Write the text here.
           to: editor.state.doc.length,
           insert: text,
         },
-        effects: languageCompartment.reconfigure(languageFor(path)),
+        effects: [
+          languageCompartment.reconfigure(languageFor(path)),
+          editorEditableCompartment.reconfigure(EditorView.editable.of(true)),
+        ],
       });
       currentPath = path;
       rememberCurrentFile(path);
@@ -2491,6 +2565,15 @@ Write the text here.
     return data;
   };
 
+  let libraryFormSnapshot = "";
+  const libraryFormState = () =>
+    JSON.stringify(Array.from(libraryFormData().entries()));
+  const libraryHasUnsavedChanges = () =>
+    !libraryForm.hidden && libraryFormSnapshot !== libraryFormState();
+  const confirmLibraryDiscard = () =>
+    !libraryHasUnsavedChanges() ||
+    window.confirm("Discard unsaved Library fields?");
+
   const activeLibraryEntry = () =>
     libraryEntries.find((entry) => entry.path === selectedLibraryPath);
 
@@ -2530,6 +2613,7 @@ Write the text here.
     setLibraryField("draft", entry.draft);
     setLibraryField("comments", entry.comments);
     libraryMessage.textContent = "";
+    libraryFormSnapshot = libraryFormState();
     renderLibraryList();
   };
 
@@ -2587,7 +2671,9 @@ Write the text here.
         .filter(Boolean)
         .join(" | ");
       button.append(title, meta);
-      button.addEventListener("click", () => showLibraryEntry(entry));
+      button.addEventListener("click", () => {
+        if (confirmLibraryDiscard()) showLibraryEntry(entry);
+      });
       item.append(button);
       libraryList.append(item);
     }
@@ -2621,8 +2707,10 @@ Write the text here.
   };
 
   libraryKindSelect.addEventListener("change", () => {
+    if (!confirmLibraryDiscard()) return;
     selectedLibraryPath = "";
     libraryForm.hidden = true;
+    libraryFormSnapshot = "";
     setLibraryMode();
     renderLibraryList();
   });
@@ -2658,7 +2746,13 @@ Write the text here.
       if (!entry) return;
       try {
         const form = libraryFormData();
-        const updated = updateLibraryFrontmatter(entry.source, entry, form);
+        const handle = fileHandles.get(entry.path);
+        if (!handle) throw new Error("The page file is unavailable.");
+        const source =
+          currentPath === entry.path
+            ? editor.state.doc.toString()
+            : await (await handle.getFile()).text();
+        const updated = updateLibraryFrontmatter(source, entry, form);
         const newPath = libraryPathFor(entry.kind, updated.slug);
         const oldFolder = entry.folder;
         const newFolder = libraryFolderFor(entry.kind, updated.slug);
@@ -2669,8 +2763,6 @@ Write the text here.
           throw new Error("Slug changes need the local development server connection.");
         }
 
-        const handle = fileHandles.get(entry.path);
-        if (!handle) throw new Error("The page file is unavailable.");
         const writable = await handle.createWritable();
         await writable.write(updated.source);
         await writable.close();
@@ -2700,6 +2792,7 @@ Write the text here.
         selectedLibraryPath = newPath;
         const nextEntry = libraryEntries.find((item) => item.path === newPath);
         if (nextEntry) showLibraryEntry(nextEntry);
+        libraryFormSnapshot = libraryFormState();
         setStatus(`Saved catalog fields for ${newPath}.`);
         libraryMessage.textContent = "Saved.";
       } catch (error) {
@@ -2713,6 +2806,16 @@ Write the text here.
     void (async () => {
       const entry = activeLibraryEntry();
       if (!entry) return;
+      if (!confirmLibraryDiscard()) return;
+      if (
+        dirty &&
+        currentPath.startsWith(`${entry.folder}/`) &&
+        !window.confirm(
+          `The open file ${currentPath} has unsaved changes. Move this page to trash anyway?`,
+        )
+      ) {
+        return;
+      }
       const ok = window.confirm(
         `Move “${entry.title}” to content/_trash? The public page will disappear after rebuild.`,
       );
@@ -2725,23 +2828,11 @@ Write the text here.
         const destination = `content/_trash/${entry.kind}/${entry.folderSlug}-${stamp}`;
         await moveProjectPath(entry.folder, destination);
         if (currentPath.startsWith(`${entry.folder}/`)) {
-          currentPath = "";
-          forgetCurrentFile();
-          currentFileLabel.textContent = "No file selected";
-          loadingDocument = true;
-          editor.dispatch({
-            changes: {
-              from: 0,
-              to: editor.state.doc.length,
-              insert: "Moved to trash. Select another file.",
-            },
-          });
-          loadingDocument = false;
-          setDirty(false);
-          syncMarkdownToolbar();
+          clearCurrentDocument("Moved to trash. Select another file.");
         }
         selectedLibraryPath = "";
         libraryForm.hidden = true;
+        libraryFormSnapshot = "";
         await connectDevProject();
         setStatus(`Moved ${entry.folder} to ${destination}.`);
         libraryMessage.textContent = "Moved to trash.";
@@ -4681,6 +4772,7 @@ Write the text here.
       selectedCount === 0 ||
       !publishCommitMessage.value.trim();
   };
+  refreshPublishState = updatePublishSubmitState;
 
   const setPublishUnavailable = (message: string) => {
     latestGitSnapshot = null;
@@ -4888,6 +4980,8 @@ Write the text here.
     for await (const [name, handle] of directory.entries()) {
       const path = parentPath ? `${parentPath}/${name}` : name;
 
+      if (isIgnoredEntry(name)) continue;
+
       if (handle.kind === "directory") {
         if (!ignoredDirectories.has(name)) {
           await scanDirectory(handle, path);
@@ -4902,6 +4996,20 @@ Write the text here.
   };
 
   const openProjectFolder = async () => {
+    if (dirty) {
+      const proceed = window.confirm(
+        `Discard unsaved changes to ${currentPath || "the open document"}?`,
+      );
+      if (!proceed) return;
+      clearCurrentDocument("Project reloaded. Select a file.");
+    }
+    if (libraryHasUnsavedChanges()) {
+      if (!confirmLibraryDiscard()) return;
+      selectedLibraryPath = "";
+      libraryForm.hidden = true;
+      libraryFormSnapshot = "";
+    }
+
     if (await connectDevProject()) {
       await restoreCurrentFile();
       return;
@@ -4917,6 +5025,10 @@ Write the text here.
 
     try {
       const directory = await window.showDirectoryPicker({ mode: "readwrite" });
+      clearCurrentDocument(`Opened ${directory.name}. Select a file.`);
+      selectedLibraryPath = "";
+      libraryForm.hidden = true;
+      libraryFormSnapshot = "";
       fileHandles.clear();
       imageHandles.clear();
       apiConnected = false;
@@ -5194,18 +5306,23 @@ Write the text here.
         const bounds = studioWorkspace.getBoundingClientRect();
         const pane = resizer.dataset.paneResizer;
         if (pane === "sidebar") {
+          const maxSidebar = Math.max(150, bounds.width - 520);
           paneLayout.sidebarWidth = Math.round(
-            Math.min(Math.max(clientX - bounds.left, 150), bounds.width - 520),
+            Math.min(Math.max(clientX - bounds.left, 150), maxSidebar),
           );
         }
         if (pane === "editor") {
           const sidebarWidth = paneLayout.collapsed.includes("sidebar")
             ? 42
             : paneLayout.sidebarWidth;
+          const maxEditor = Math.max(
+            260,
+            bounds.width - sidebarWidth - 270,
+          );
           paneLayout.editorWidth = Math.round(
             Math.min(
               Math.max(clientX - bounds.left - sidebarWidth - 6, 260),
-              bounds.width - sidebarWidth - 270,
+              maxEditor,
             ),
           );
         }
@@ -5236,14 +5353,25 @@ Write the text here.
         event.preventDefault();
         const direction = event.key === "ArrowRight" ? 1 : -1;
         if (resizer.dataset.paneResizer === "sidebar") {
+          const maxSidebar = Math.max(
+            150,
+            studioWorkspace.getBoundingClientRect().width - 520,
+          );
           paneLayout.sidebarWidth = Math.max(
             150,
-            paneLayout.sidebarWidth + direction * 16,
+            Math.min(maxSidebar, paneLayout.sidebarWidth + direction * 16),
           );
         } else {
+          const sidebarWidth = paneLayout.collapsed.includes("sidebar")
+            ? 42
+            : paneLayout.sidebarWidth;
+          const maxEditor = Math.max(
+            260,
+            studioWorkspace.getBoundingClientRect().width - sidebarWidth - 270,
+          );
           paneLayout.editorWidth = Math.max(
             260,
-            paneLayout.editorWidth + direction * 16,
+            Math.min(maxEditor, paneLayout.editorWidth + direction * 16),
           );
         }
         applyPaneLayout();
@@ -5251,14 +5379,21 @@ Write the text here.
       });
     });
 
+  window.addEventListener("resize", () => {
+    applyPaneLayout();
+    storePaneLayout();
+  });
+
   const selectSidebarTab = (selected: string) => {
     studio
       .querySelectorAll<HTMLButtonElement>("[data-sidebar-tab]")
       .forEach((tabButton) => {
+        const isSelected = tabButton.dataset.sidebarTab === selected;
         tabButton.setAttribute(
           "aria-selected",
-          String(tabButton.dataset.sidebarTab === selected),
+          String(isSelected),
         );
+        tabButton.tabIndex = isSelected ? 0 : -1;
       });
     studio
       .querySelectorAll<HTMLElement>("[data-sidebar-panel]")
@@ -5269,6 +5404,42 @@ Write the text here.
       void refreshGitStatus();
     }
   };
+
+  const sidebarTabs = [
+    ...studio.querySelectorAll<HTMLButtonElement>("[data-sidebar-tab]"),
+  ];
+  sidebarTabs.forEach((tabButton, index) => {
+    const name = tabButton.dataset.sidebarTab ?? `tab-${index}`;
+    const panel = studio.querySelector<HTMLElement>(
+      `[data-sidebar-panel="${CSS.escape(name)}"]`,
+    );
+    tabButton.id = `studio-tab-${name}`;
+    tabButton.setAttribute("aria-controls", `studio-panel-${name}`);
+    tabButton.tabIndex = tabButton.getAttribute("aria-selected") === "true" ? 0 : -1;
+    if (panel) {
+      panel.id = `studio-panel-${name}`;
+      panel.setAttribute("role", "tabpanel");
+      panel.setAttribute("aria-labelledby", tabButton.id);
+    }
+    tabButton.addEventListener("keydown", (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const nextIndex =
+        event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? sidebarTabs.length - 1
+            : (index + (event.key === "ArrowRight" ? 1 : -1) + sidebarTabs.length) %
+              sidebarTabs.length;
+      const nextTab = sidebarTabs[nextIndex];
+      nextTab.focus();
+      selectSidebarTab(nextTab.dataset.sidebarTab ?? "files");
+    });
+  });
+  selectSidebarTab(
+    sidebarTabs.find((tab) => tab.getAttribute("aria-selected") === "true")
+      ?.dataset.sidebarTab ?? "files",
+  );
 
   studio
     .querySelectorAll<HTMLButtonElement>("[data-sidebar-tab]")

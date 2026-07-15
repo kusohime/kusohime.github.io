@@ -19,6 +19,7 @@ function inlineNoteContent(item: HTMLElement): Node[] {
   clone
     .querySelectorAll("a[data-footnote-backref]")
     .forEach((backref) => backref.remove());
+  clone.querySelectorAll(".footnote-label").forEach((label) => label.remove());
 
   const nodes: Node[] = [];
   clone.childNodes.forEach((child) => {
@@ -127,7 +128,16 @@ function renderJiazhuContainer(container: HTMLElement): void {
 function renderPhoneJiazhu(): void {
   document
     .querySelectorAll<HTMLElement>(".jiazhu")
-    .forEach((container) => renderJiazhuContainer(container));
+    .forEach((container) => {
+      const inactivePanel = container.closest(
+        '[data-edition-panel][data-edition-active="false"]',
+      );
+      if (inactivePanel) {
+        container.replaceChildren();
+        return;
+      }
+      renderJiazhuContainer(container);
+    });
 }
 
 function schedulePhoneJiazhuRender(): void {
@@ -143,6 +153,7 @@ function setupPhoneJiazhuRendering(): void {
   };
 
   renderIfPhone();
+  window.addEventListener("editionchange", renderIfPhone);
   phoneQuery.addEventListener("change", renderIfPhone);
   window.addEventListener("resize", renderIfPhone, { passive: true });
   document.fonts?.ready.then(renderIfPhone).catch(() => undefined);

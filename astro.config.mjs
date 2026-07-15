@@ -15,6 +15,9 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import remarkInlineFootnotes from "./src/lib/remarkInlineFootnotes.mjs";
 import rehypeCitationLinks from "./src/lib/rehypeCitationLinks.mjs";
+import rehypeEditionVariants from "./src/lib/rehypeEditionVariants.mjs";
+import rehypeChineseEmphasis from "./src/lib/rehypeChineseEmphasis.mjs";
+import rehypeEditionFootnotes from "./src/lib/rehypeEditionFootnotes.mjs";
 
 // 管理页面只在本地开发服务器中工作；文件读写接口仍只接受本地请求。
 // The Studio runs only in local development; its file API still accepts local requests only.
@@ -24,11 +27,19 @@ const execFileAsync = promisify(execFile);
 
 const ignoredDirectories = new Set([
   ".astro",
+  ".claude",
+  ".github",
+  ".desktop-build",
   ".git",
   ".npm-cache",
+  "desktop-dist",
   "dist",
+  "graphify-out",
   "node_modules",
 ]);
+
+const isIgnoredEntry = (name) =>
+  name.startsWith(".tmp-") || name.startsWith(".publish-source.");
 
 const editableExtensions = new Set([
   ".astro",
@@ -87,12 +98,34 @@ function localStudioPlugin() {
     return absolutePath;
   };
 
+  const validateWritableProjectPath = (requestedPath) => {
+    const normalizedPath = String(requestedPath ?? "")
+      .replaceAll("\\", "/")
+      .replace(/^\/+/, "")
+      .trim();
+    const rootSegment = normalizedPath.split("/")[0] ?? "";
+    if (
+      !normalizedPath ||
+      ignoredDirectories.has(rootSegment) ||
+      isIgnoredEntry(rootSegment) ||
+      rootSegment === ".git"
+    ) {
+      throw new Error("This project path is not writable by the Studio.");
+    }
+    return normalizedPath;
+  };
+
+  const validateMovePath = (requestedPath) =>
+    validateWritableProjectPath(requestedPath);
+
   const scanProject = async (directory = projectRoot, parentPath = "") => {
     const files = [];
     const images = [];
 
     for (const entry of await readdir(directory, { withFileTypes: true })) {
       const path = parentPath ? `${parentPath}/${entry.name}` : entry.name;
+
+      if (isIgnoredEntry(entry.name)) continue;
 
       if (entry.isDirectory()) {
         if (!ignoredDirectories.has(entry.name)) {
@@ -284,8 +317,6 @@ function localStudioPlugin() {
       const notifyProjectChange = (filePath) => {
         server.watcher.add(filePath);
         server.watcher.emit("change", filePath);
-        server.moduleGraph.invalidateAll();
-        server.ws.send({ type: "full-reload", path: "*" });
       };
 
       server.middlewares.use(async (request, response, next) => {
@@ -343,14 +374,33 @@ function localStudioPlugin() {
             }
 
             const changedPaths = new Set(snapshot.entries.map((entry) => entry.path));
-            const unknown = files.find((file) => !changedPaths.has(file));
+            const selectedEntries = snapshot.entries.filter(
+              (entry) =>
+                files.includes(entry.path) ||
+                (entry.oldPath && files.includes(entry.oldPath)),
+            );
+            const unknown = files.find(
+              (file) =>
+                !changedPaths.has(file) &&
+                !snapshot.entries.some((entry) => entry.oldPath === file),
+            );
             if (unknown) {
               sendJson(response, 400, { error: `${unknown} is not currently changed.` });
               return;
             }
 
-            await runGit(["add", "--", ...files]);
-            await runGit(["commit", "-m", message, "--only", "--", ...files]);
+            const publishPaths = [
+              ...new Set(
+                selectedEntries.flatMap((entry) =>
+                  [entry.oldPath, entry.path]
+                    .filter(Boolean)
+                    .map(validateGitPath),
+                ),
+              ),
+            ];
+
+            await runGit(["add", "--", ...publishPaths]);
+            await runGit(["commit", "-m", message, "--only", "--", ...publishPaths]);
             await runGit(["pull", "--rebase", "--autostash", "origin", snapshot.branch]);
             await runGit(["push", "origin", snapshot.branch]);
             const { stdout: commit } = await runGit(["rev-parse", "--short", "HEAD"]);
@@ -390,8 +440,10 @@ function localStudioPlugin() {
               return;
             }
 
-            const fromPath = resolveProjectFile(from);
-            const toPath = resolveProjectFile(to);
+            const safeFrom = validateMovePath(from);
+            const safeTo = validateMovePath(to);
+            const fromPath = resolveProjectFile(safeFrom);
+            const toPath = resolveProjectFile(safeTo);
             await stat(fromPath);
             try {
               await stat(toPath);
@@ -411,7 +463,7 @@ function localStudioPlugin() {
             await rename(fromPath, toPath);
             notifyProjectChange(fromPath);
             notifyProjectChange(toPath);
-            sendJson(response, 200, { moved: from, to });
+            sendJson(response, 200, { moved: safeFrom, to: safeTo });
             return;
           }
 
@@ -421,7 +473,8 @@ function localStudioPlugin() {
             return;
           }
 
-          const filePath = resolveProjectFile(requestedPath);
+          const safeRequestedPath = validateWritableProjectPath(requestedPath);
+          const filePath = resolveProjectFile(safeRequestedPath);
 
           // PUT 可以创建尚不存在的文件（用于 Studio 的 Add page）。
           // PUT may create files that do not exist yet (Studio's Add page).
@@ -436,7 +489,7 @@ function localStudioPlugin() {
             await mkdir(dirname(filePath), { recursive: true });
             await writeFile(filePath, await readBody(request), "utf8");
             notifyProjectChange(filePath);
-            sendJson(response, 200, { saved: requestedPath });
+            sendJson(response, 200, { saved: safeRequestedPath });
             return;
           }
 
@@ -446,10 +499,13 @@ function localStudioPlugin() {
             url.pathname === "/__admin/api/image" &&
             request.method === "PUT"
           ) {
-            const normalized = requestedPath.replaceAll("\\", "/");
+            const imageRoot = resolve(projectRoot, "public/images");
+            const imageRelative = relative(imageRoot, filePath);
             if (
-              normalized !== "public/images" &&
-              !normalized.startsWith("public/images/")
+              !imageRelative ||
+              imageRelative === ".." ||
+              imageRelative.startsWith(`..${sep}`) ||
+              isAbsolute(imageRelative)
             ) {
               sendJson(response, 400, {
                 error: "Images must be saved under public/images/.",
@@ -463,7 +519,7 @@ function localStudioPlugin() {
             await mkdir(dirname(filePath), { recursive: true });
             await writeFile(filePath, await readBodyBuffer(request));
             notifyProjectChange(filePath);
-            sendJson(response, 200, { saved: requestedPath });
+            sendJson(response, 200, { saved: safeRequestedPath });
             return;
           }
 
@@ -510,9 +566,14 @@ function localStudioPlugin() {
 
           sendJson(response, 405, { error: "Unsupported Studio request." });
         } catch (error) {
-          sendJson(response, 500, {
-            error: error instanceof Error ? error.message : "Studio request failed.",
-          });
+          const message =
+            error instanceof Error ? error.message : "Studio request failed.";
+          const statusCode =
+            message === "Invalid project path." ||
+            message === "This project path is not writable by the Studio."
+              ? 400
+              : 500;
+          sendJson(response, statusCode, { error: message });
         }
       });
     },
@@ -546,7 +607,13 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [remarkMath, remarkInlineFootnotes],
-      rehypePlugins: [rehypeKatex, rehypeCitationLinks],
+      rehypePlugins: [
+      rehypeKatex,
+      rehypeCitationLinks,
+      rehypeChineseEmphasis,
+      rehypeEditionVariants,
+        rehypeEditionFootnotes,
+      ],
     }),
   },
 });

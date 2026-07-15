@@ -2723,11 +2723,26 @@ main {
 }
 
 .writing-body ruby {
+  ruby-position: over;
   ruby-align: center;
 }
 
 .writing-body rt {
-  font-size: 0.6em;
+  font-size: 0.52em;
+  line-height: 1;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+/* 中文：含术语注音的连续散文需要额外的注音净空；不改变没有 ruby 的段落。 */
+/* English: Ruby-rich prose gets extra annotation headroom without changing
+   paragraphs that contain no ruby. */
+.writing-body :is(p, li, blockquote):has(ruby) {
+  line-height: 1.74;
+}
+
+.writing-body .term-ruby rt {
+  font-style: normal;
 }
 
 .writing-body .translation-chain {
@@ -2762,6 +2777,141 @@ main {
   text-decoration-style: solid;
 }
 
+/* 中文：版本面板不是引文；标签占左侧校勘栏，正文保持普通散文宽度。 */
+/* English: Edition panels are not quotations; the siglum occupies a left
+   editorial gutter while the prose keeps the ordinary reading measure. */
+.edition-panel,
+.edition-group {
+  --edition-label-offset: 1rem;
+}
+
+.edition-panel {
+  position: relative;
+  display: block;
+  margin-block: var(--paragraph-spacing);
+}
+
+.edition-source-label {
+  position: absolute;
+  top: 0;
+  right: calc(100% + var(--edition-label-offset));
+  color: var(--theme-color);
+  font-weight: 700;
+  line-height: var(--prose-line-height);
+  white-space: nowrap;
+}
+
+.edition-panel-content {
+  display: block;
+  min-width: 0;
+}
+
+.edition-panel-content > :first-child {
+  margin-top: 0;
+}
+
+.edition-panel-content > :last-child {
+  margin-bottom: 0;
+}
+
+.chicago-prose .edition-panel-content > p {
+  margin-block: 0 var(--paragraph-spacing);
+  text-indent: var(--paragraph-indent);
+}
+
+.edition-group {
+  position: relative;
+  display: block;
+  margin-block: var(--paragraph-spacing);
+}
+
+.edition-group > .edition-switch {
+  position: absolute;
+  top: 0;
+  right: calc(100% + var(--edition-label-offset));
+}
+
+.edition-group > .edition-panel {
+  margin-block: 0;
+}
+
+.edition-group .edition-source-label {
+  display: none;
+}
+
+.edition-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  margin: 0;
+  padding-top: 0.08em;
+}
+
+.edition-choice {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--theme-color);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: pointer;
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 0.1em;
+}
+
+.edition-choice[aria-pressed="true"] {
+  text-decoration: underline;
+}
+
+.edition-choice:hover {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+.edition-choice:focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 3px;
+}
+
+[data-edition-panel][data-edition-active="false"] {
+  display: none;
+}
+
+.edition-single {
+  border: 0;
+}
+
+@media (max-width: 63.99rem) {
+  .edition-source-label {
+    position: static;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .edition-panel-content {
+    display: block;
+  }
+
+  .edition-group > .edition-switch {
+    position: static;
+    margin-bottom: 0.35rem;
+  }
+
+  .edition-group .edition-source-label {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edition-choice {
+    transition: none;
+  }
+}
+
 .writing-body .katex-display {
   max-width: 100%;
   overflow-x: auto;
@@ -2778,6 +2928,20 @@ main {
 .writing-body .footnotes p {
   margin: 0;
   text-indent: 0;
+}
+
+.writing-body .footnotes li.edition-footnote {
+  list-style: none;
+}
+
+.writing-body .footnotes li.editorial-footnote {
+  list-style: none;
+}
+
+.writing-body .footnotes .footnote-label {
+  margin-right: 0.35em;
+  color: var(--theme-color);
+  font-weight: bold;
 }
 
 .writing-body sup {
@@ -2825,6 +2989,20 @@ main {
 
 .prose.has-sidenotes .fn-ref a::after {
   content: ")";
+}
+
+/* Shared prose may cite both editions. Keep the two semantic links, but make
+   their adjacent markers read as one compact cluster: (3a · 4b). */
+.prose.has-sidenotes .fn-ref + .fn-ref {
+  margin-left: 0.12em;
+}
+
+.prose.has-sidenotes .fn-ref + .fn-ref a::before {
+  content: "· ";
+}
+
+.prose.has-sidenotes .fn-ref:has(+ .fn-ref) a::after {
+  content: "";
 }
 
 /* The note: normal text color, no wrapping parentheses. Narrow default is inline. */
@@ -2878,8 +3056,6 @@ main {
     float: right;
     clear: right;
     width: var(--sidenote-width);
-    /* 负的 margin-right 把边注推到正文栏右侧的空白里。 */
-    /* Negative margin-right pushes the note out past the column into the margin. */
     margin: 0.15rem calc(-1 * (var(--sidenote-width) + var(--sidenote-gap)))
       var(--space-sm) 0;
     line-height: 1.4;
@@ -2894,13 +3070,25 @@ main {
 }
 
 @media print {
+  .edition-switch {
+    display: none;
+  }
+
+  [data-edition-panel] {
+    display: grid !important;
+  }
+
+  .edition-group .edition-source-label {
+    display: block;
+  }
+
   .prose.has-sidenotes .sidenote {
     display: none;
   }
 }
 
-/* 中文着重号：用不撑行高的背景点模拟字下加点。 */
-/* Chinese emphasis marks: background dots avoid the line-height growth of text-emphasis. */
+/* 中文着重号：背景点不参与行框计算，因此不改变正文行距。 */
+/* Chinese emphasis: background dots do not alter the line box. */
 .zh-em {
   background-image: radial-gradient(
     circle at center,
@@ -2912,12 +3100,16 @@ main {
   background-size: 1em 0.27em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
-  padding-bottom: 0.06em;
+  padding-bottom: 0.1em;
   font-style: normal;
   font-weight: inherit;
   line-height: inherit;
   text-emphasis: none;
   -webkit-text-emphasis: none;
+}
+
+.writing-body ruby > .zh-em {
+  display: inline-block;
 }
 
 .prose hr {

@@ -22,12 +22,12 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         </label>
       </div>
 
-      <p class="studio-status" data-status>
+      <p class="studio-status" data-status role="status" aria-live="polite">
         Connecting to the local project…
       </p>
 
       <div class="studio-links">
-        <a href="/admin/guide/" target="studio-preview">
+        <a href="/admin/guide/" target="_blank" rel="noreferrer">
           Admin guide / 管理指南
         </a>
       </div>
@@ -122,7 +122,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             <button type="submit">Find</button>
           </form>
           <div class="search-block" data-search-block hidden>
-            <p class="search-summary" data-search-summary></p>
+            <p class="search-summary" data-search-summary role="status" aria-live="polite"></p>
             <ol class="search-results" data-search-results></ol>
             <button type="button" class="search-clear" data-search-clear>
               Clear results
@@ -826,7 +826,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         <header class="pane-heading editor-heading">
           <div class="editor-file-state">
             <strong data-current-file>No file selected</strong>
-            <span data-dirty-state></span>
+            <span data-dirty-state role="status" aria-live="polite"></span>
           </div>
           <div class="pane-actions">
             <label class="editor-option">
