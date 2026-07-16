@@ -1,0 +1,138 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
+import { formatDate, translate } from "../../config/locales";
+
+const projects = (await getCollection("projects", ({ data }) => !data.draft)).sort(
+  (a, b) =>
+    Number(b.data.featured) - Number(a.data.featured) ||
+    a.data.order - b.data.order ||
+    b.data.startDate.localeCompare(a.data.startDate),
+);
+
+const statusLabels = {
+  planning: { en: "Planning", zh: "規劃中" },
+  "in-progress": { en: "In progress", zh: "進行中" },
+  complete: { en: "Complete", zh: "已完成" },
+  archived: { en: "Archived", zh: "已封存" },
+} as const;
+---
+
+<BaseLayout
+  title="Projects"
+  description="Research, software, editorial, and artistic projects by Yixin Cui."
+>
+  <div class="index-page projects-index" data-source-file="src/pages/projects/index.astro">
+    <header class="projects-introduction">
+      <h1 data-i18n-key="nav.projects">{translate("en", "nav.projects")}</h1>
+      <p>
+        Longer-running research, software, editorial, and artistic work—documented as
+        it develops.
+      </p>
+    </header>
+
+    {projects.length === 0 && <p data-i18n-key="common.noEntries">{translate("en", "common.noEntries")}</p>}
+
+    <ol class="project-list">
+      {projects.map((project) => (
+        <li>
+          <article class="project-summary" data-source-file={`content/projects/${project.id}/index.md`}>
+            <div class="project-meta">
+              <time datetime={project.data.startDate} data-i18n-date={project.data.startDate}>
+                {formatDate(project.data.startDate, "en")}
+              </time>
+              <span aria-hidden="true"> · </span>
+              <LocalizedText value={statusLabels[project.data.status]} />
+            </div>
+            <h2>
+              <a href={`/projects/${project.data.slug}/`}>
+                <LocalizedText value={{ en: project.data.title, zh: project.data.titleZh }} />
+              </a>
+            </h2>
+            {project.data.subtitle && (
+              <p class="project-subtitle">
+                <LocalizedText value={{ en: project.data.subtitle, zh: project.data.subtitleZh }} />
+              </p>
+            )}
+            <p class="project-description">
+              <LocalizedText value={{ en: project.data.summary, zh: project.data.summaryZh }} />
+            </p>
+            {project.data.topics.length > 0 && (
+              <ul class="project-topics" aria-label="Project topics">
+                {project.data.topics.map((topic) => <li>{topic}</li>)}
+              </ul>
+            )}
+          </article>
+        </li>
+      ))}
+    </ol>
+  </div>
+</BaseLayout>
+
+<style>
+  .projects-index {
+    max-width: min(100%, 64rem);
+  }
+
+  .projects-introduction {
+    max-width: var(--reading-width);
+    margin-bottom: var(--space-xl);
+  }
+
+  .project-list,
+  .project-topics {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-list {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .project-summary {
+    max-width: var(--reading-width);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .project-summary h2,
+  .project-summary p {
+    margin: 0;
+  }
+
+  .project-summary h2 {
+    margin-top: var(--space-xs);
+  }
+
+  .project-meta,
+  .project-subtitle,
+  .project-topics {
+    color: var(--color-muted);
+  }
+
+  .project-meta {
+    font-size: 0.84rem;
+  }
+
+  .project-subtitle,
+  .project-description {
+    margin-top: var(--space-xs) !important;
+  }
+
+  .project-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.8rem;
+    margin-top: var(--space-sm);
+    font-size: 0.82rem;
+  }
+
+  .project-topics li::before {
+    color: var(--theme-color);
+    content: "#";
+  }
+</style>
+

@@ -1,0 +1,590 @@
+---
+import {
+  chartReference,
+  essentialOrnamentSources,
+  ornamentFamilies,
+} from "../../data/essentialOrnaments";
+import { ornamentNotationExamples } from "../../data/ornamentNotation";
+import { ornamentChartCoverage } from "../../data/ornamentFacsimiles";
+import {
+  getOrnamentVariantsByCell,
+  ornamentVariantCoverage,
+} from "../../data/ornamentVariants";
+import OrnamentChartCell from "./OrnamentChartCell.astro";
+import OrnamentNotationPair from "./OrnamentNotationPair.astro";
+import OrnamentVariantCatalog from "./OrnamentVariantCatalog.astro";
+
+const notationByCell = new Map<
+  string,
+  (typeof ornamentNotationExamples)[number][]
+>();
+const notationIds = new Set<string>();
+const sourceById = new Map(essentialOrnamentSources.map((source) => [source.id, source]));
+
+ornamentNotationExamples.forEach((example) => {
+  if (notationIds.has(example.id)) {
+    throw new Error(`Duplicate ornament notation ID: ${example.id}`);
+  }
+  notationIds.add(example.id);
+
+  const source = sourceById.get(example.sourceId);
+  if (!source?.terms[example.familyId]?.length) {
+    throw new Error(
+      `Notation ${example.id} does not match an indexed source-family cell: ${example.sourceId}:${example.familyId}`,
+    );
+  }
+
+  const key = `${example.sourceId}:${example.familyId}`;
+  const examples = notationByCell.get(key) ?? [];
+  examples.push(example);
+  notationByCell.set(key, examples);
+});
+
+const cells = essentialOrnamentSources.flatMap((source) =>
+  ornamentFamilies.flatMap((family) => {
+    const terms = source.terms[family.id];
+    const notation = notationByCell.get(`${source.id}:${family.id}`) ?? [];
+    const variants = getOrnamentVariantsByCell(source.id, family.id);
+    return terms?.length ? [{ source, family, terms, notation, variants }] : [];
+  }),
+);
+
+if (cells.length !== ornamentChartCoverage.populatedCells) {
+  throw new Error(
+    `Ornament chart coverage drift: expected ${ornamentChartCoverage.populatedCells} populated cells, found ${cells.length}`,
+  );
+}
+
+const indexedVariantCount = cells.reduce(
+  (total, { variants }) => total + variants.length,
+  0,
+);
+if (
+  indexedVariantCount !== ornamentChartCoverage.auditedVariantSlots ||
+  indexedVariantCount !== ornamentVariantCoverage.total ||
+  cells.some(({ variants }) => variants.length === 0)
+) {
+  throw new Error(
+    `Ornament variant coverage drift: expected ${ornamentChartCoverage.auditedVariantSlots}, found ${indexedVariantCount}`,
+  );
+}
+
+const representedSources = new Set(cells.map(({ source }) => source.id)).size;
+const linkedSources = essentialOrnamentSources.filter(({ sourceUrl }) => sourceUrl).length;
+---
+
+<section
+  class="ornament-index"
+  aria-labelledby="ornament-index-heading"
+  data-ornament-index
+>
+  <header class="index-introduction">
+    <p class="index-kicker">Complete PDF facsimile coverage · independent transcription in progress</p>
+    <h2 id="ornament-index-heading">Search the historical ornament vocabulary</h2>
+    <p>
+      This edition indexes all {cells.length} populated source–family cells from all
+      {representedSources} source rows in the chart. Every record includes a full-cell
+      facsimile from the supplied PDF, preserving multiple alternatives printed within
+      a cell. The audit accounts for {ornamentChartCoverage.auditedVariantSlots}
+      visible signs, realizations, alternative glyphs, and contextual placements.
+      All {ornamentChartCoverage.auditedVariantSlots} now have stable IDs and searchable
+      diplomatic descriptions beneath their {cells.length} source–family cells.
+      Search names such as
+      <i>pincé</i>, <i>shake</i>, <i>Groppo</i>, or <i>Schneller</i>, then narrow by
+      ornament family and century.
+    </p>
+    <p class="verification-note">
+      Chart names remain a provisional diplomatic reading. PDF chart-cell facsimile
+      coverage is complete; independently encoded, source-verified MEI currently
+      covers {ornamentNotationExamples.length} examples and is identified separately
+      beneath the corresponding untranscribed visual witness.
+    </p>
+  </header>
+
+  <form class="index-filters" data-index-filters>
+    <label>
+      <span>Search / 搜尋</span>
+      <input
+        type="search"
+        name="query"
+        placeholder="author, treatise, term…"
+        autocomplete="off"
+        data-index-query
+      />
+    </label>
+
+    <label>
+      <span>Family / 類別</span>
+      <select name="family" data-index-family>
+        <option value="">All families</option>
+        {ornamentFamilies.map((family) => (
+          <option value={family.id}>
+            {family.chartLabel} · {family.label}
+          </option>
+        ))}
+      </select>
+    </label>
+
+    <label>
+      <span>Century / 世紀</span>
+      <select name="century" data-index-century>
+        <option value="">All centuries</option>
+        <option value="16">16th century</option>
+        <option value="17">17th century</option>
+        <option value="18">18th century</option>
+        <option value="19">19th century</option>
+      </select>
+    </label>
+
+    <label class="notation-filter">
+      <span>Transcription / 轉錄</span>
+      <span class="checkbox-control">
+        <input type="checkbox" name="transcription" data-index-transcription />
+        Independent MEI only
+      </span>
+    </label>
+
+    <button type="reset" data-index-reset>Reset</button>
+  </form>
+
+  <p class="result-summary" aria-live="polite">
+    <span data-result-count>{cells.length}</span> indexed cells ·
+    <span data-variant-result-count>{indexedVariantCount}</span> catalogued examples shown
+  </p>
+
+  <p class="no-results" data-no-results hidden>
+    No records match those filters.
+  </p>
+
+  <ol class="ornament-results" data-index-results>
+    {cells.map(({ source, family, terms, notation, variants }) => {
+      const century = Math.floor((source.year - 1) / 100) + 1;
+      const baseSearchText = [
+        source.author,
+        source.lifeDates,
+        source.work,
+        source.publication,
+        source.sourceNote ?? "",
+        family.chartLabel,
+        family.label,
+        family.labelZh,
+        ...terms,
+      ].join(" ");
+      const searchText = [
+        baseSearchText,
+        ...variants.flatMap((variant) => [
+          variant.inventoryId,
+          variant.name,
+          variant.printedTerm ?? "",
+          variant.signSummary ?? "",
+          variant.contourSummary ?? "",
+          variant.rhythmSummary ?? "",
+          variant.confidence,
+          variant.confidenceNote,
+          variant.uncertainty ?? "",
+        ]),
+        ...notation.flatMap((example) => [
+          example.term,
+          example.termZh,
+          example.realizationSummary,
+          example.realizationAccessibleDescription,
+          example.editorialNote,
+          example.sourceLocator,
+        ]),
+      ].join(" ");
+
+      return (
+        <li
+          id={`${source.id}-${family.id}`}
+          data-index-record
+          data-family={family.id}
+          data-century={String(century)}
+          data-has-transcription={notation.length > 0 ? "true" : "false"}
+          data-base-search-text={baseSearchText}
+          data-search-text={searchText}
+        >
+          <article class="ornament-record">
+            <header>
+              <p class="record-family">
+                <span lang="de">{family.chartLabel}</span>
+                <span aria-hidden="true"> · </span>
+                <span>{family.label}</span>
+              </p>
+              <h3>{terms.join(" · ")}</h3>
+            </header>
+
+            <OrnamentChartCell
+              source={source}
+              familyId={family.id}
+              familyLabel={family.label}
+            />
+
+            <OrnamentVariantCatalog variants={variants} />
+
+            {notation.length > 0 && (
+              <div class="notation-examples">
+                {notation.map((example) => <OrnamentNotationPair example={example} />)}
+              </div>
+            )}
+
+            <div class="record-source">
+              <p>
+                <strong>{source.author}</strong>
+                <span class="life-dates"> ({source.lifeDates})</span>
+              </p>
+              <p>
+                <cite>{source.work}</cite>, {source.publication}
+              </p>
+              {source.sourceNote && <p class="source-note">{source.sourceNote}</p>}
+              {source.sourceUrl && (
+                <p class="source-link">
+                  <a href={source.sourceUrl} rel="external">
+                    Consult source
+                    {source.sourceInstitution ? ` — ${source.sourceInstitution}` : ""}
+                  </a>
+                </p>
+              )}
+            </div>
+
+            <p class="record-status">
+              {notation.length > 0
+                ? `${variants.length} variants catalogued · source-verified MEI available`
+                : `${variants.length} variants catalogued · complete facsimile witness · MEI pending`}
+            </p>
+          </article>
+        </li>
+      );
+    })}
+  </ol>
+
+  <details class="source-register">
+    <summary>
+      Source register ({essentialOrnamentSources.length} works; {linkedSources} digital links)
+    </summary>
+    <ol>
+      {essentialOrnamentSources.map((source) => (
+        <li>
+          <span>
+            <strong>{source.author}</strong>, <cite>{source.work}</cite>
+            {` (${source.publication})`}
+          </span>
+          {source.sourceNote && <span class="source-note">{source.sourceNote}</span>}
+          {source.sourceUrl && (
+            <a href={source.sourceUrl} rel="external">
+              {source.sourceInstitution ?? "Digital source"}
+            </a>
+          )}
+        </li>
+      ))}
+    </ol>
+    <p class="chart-citation">
+      Starting concordance: {chartReference.arranger}, <cite>{chartReference.title}</cite>,
+      {` ${chartReference.place}: ${chartReference.publisher}, ${chartReference.firstPublished}`}
+      {` (consulted printing ${chartReference.consultedPrinting}; ISBN ${chartReference.isbn}). `}
+      <a href={chartReference.catalogUrl} rel="external">
+        {chartReference.catalogLabel}
+      </a>
+    </p>
+  </details>
+</section>
+
+<script>
+  const normalizeSearchText = (value: string) =>
+    value
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .toLocaleLowerCase();
+
+  document.querySelectorAll<HTMLElement>("[data-ornament-index]").forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>("[data-index-filters]");
+    const query = root.querySelector<HTMLInputElement>("[data-index-query]");
+    const family = root.querySelector<HTMLSelectElement>("[data-index-family]");
+    const century = root.querySelector<HTMLSelectElement>("[data-index-century]");
+    const transcriptionOnly = root.querySelector<HTMLInputElement>("[data-index-transcription]");
+    const resultCount = root.querySelector<HTMLElement>("[data-result-count]");
+    const variantResultCount = root.querySelector<HTMLElement>("[data-variant-result-count]");
+    const noResults = root.querySelector<HTMLElement>("[data-no-results]");
+    const records = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-index-record]"),
+    );
+
+    if (!form || !query || !family || !century || !transcriptionOnly || !resultCount || !variantResultCount || !noResults) return;
+
+    const applyFilters = () => {
+      const needle = normalizeSearchText(query.value.trim());
+      let visible = 0;
+      let visibleVariants = 0;
+
+      records.forEach((record) => {
+        const haystack = normalizeSearchText(record.dataset.searchText ?? "");
+        const baseHaystack = normalizeSearchText(record.dataset.baseSearchText ?? "");
+        const variants = Array.from(
+          record.querySelectorAll<HTMLElement>("[data-ornament-variant]"),
+        );
+        const variantCatalog = record.querySelector<HTMLDetailsElement>("[data-variant-catalog]");
+        const baseTextMatches = !needle || baseHaystack.includes(needle);
+        let matchingVariants = 0;
+
+        variants.forEach((variant) => {
+          const variantMatches =
+            baseTextMatches ||
+            normalizeSearchText(variant.dataset.variantSearchText ?? "").includes(needle);
+          variant.hidden = !variantMatches;
+          if (variantMatches) matchingVariants += 1;
+        });
+
+        if (variantCatalog) {
+          const shouldOpenForQuery = Boolean(needle && !baseTextMatches && matchingVariants > 0);
+          if (shouldOpenForQuery) {
+            variantCatalog.open = true;
+            variantCatalog.dataset.queryOpened = "true";
+          } else if (variantCatalog.dataset.queryOpened === "true") {
+            variantCatalog.open = false;
+            delete variantCatalog.dataset.queryOpened;
+          }
+        }
+
+        const matches =
+          (!needle || haystack.includes(needle) || matchingVariants > 0) &&
+          (!family.value || record.dataset.family === family.value) &&
+          (!century.value || record.dataset.century === century.value) &&
+          (!transcriptionOnly.checked || record.dataset.hasTranscription === "true");
+
+        record.hidden = !matches;
+        if (matches) {
+          visible += 1;
+          visibleVariants += matchingVariants;
+        }
+      });
+
+      resultCount.textContent = String(visible);
+      variantResultCount.textContent = String(visibleVariants);
+      noResults.hidden = visible !== 0;
+    };
+
+    form.addEventListener("input", applyFilters);
+    form.addEventListener("submit", (event) => event.preventDefault());
+    form.addEventListener("reset", () => {
+      requestAnimationFrame(() => {
+        applyFilters();
+        query.focus();
+      });
+    });
+
+    const revealHashTarget = () => {
+      const hash = decodeURIComponent(window.location.hash.slice(1));
+      if (!hash) return;
+      const target = document.getElementById(hash);
+      target?.closest<HTMLDetailsElement>("details[data-variant-catalog]")?.setAttribute("open", "");
+    };
+
+    revealHashTarget();
+    window.addEventListener("hashchange", revealHashTarget);
+  });
+</script>
+
+<style>
+  .ornament-index {
+    max-width: var(--page-width);
+    margin-top: var(--space-xl);
+  }
+
+  .index-introduction {
+    max-width: var(--reading-width);
+  }
+
+  .index-kicker,
+  .record-family,
+  .record-status,
+  .result-summary {
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+  }
+
+  .index-kicker,
+  .record-family {
+    text-transform: uppercase;
+  }
+
+  .index-introduction h2 {
+    margin-top: var(--space-xs);
+  }
+
+  .verification-note {
+    padding-left: var(--space-sm);
+    border-left: 0.2rem solid var(--theme-color);
+  }
+
+  .index-filters {
+    display: grid;
+    grid-template-columns: minmax(14rem, 2fr) minmax(12rem, 1fr) minmax(10rem, 1fr) minmax(9rem, auto) auto;
+    gap: var(--space-sm);
+    align-items: end;
+    margin: var(--space-lg) 0 var(--space-sm);
+    padding: var(--space-md);
+    border: 1px solid var(--color-rule);
+  }
+
+  .index-filters label {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .index-filters label > span {
+    font-size: 0.82rem;
+    font-weight: bold;
+  }
+
+  .checkbox-control {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+    min-height: 2.6rem;
+    font-weight: normal !important;
+  }
+
+  .checkbox-control input {
+    min-height: auto;
+    margin: 0;
+  }
+
+  .index-filters input,
+  .index-filters select,
+  .index-filters button {
+    min-height: 2.6rem;
+    border: 1px solid var(--color-control-border);
+    border-radius: 0;
+    padding: 0.45rem 0.6rem;
+    color: var(--color-text);
+    background: var(--color-background);
+    font: inherit;
+  }
+
+  .index-filters button {
+    cursor: pointer;
+  }
+
+  .index-filters button:hover,
+  .index-filters button:focus-visible {
+    border-color: var(--theme-color);
+    color: var(--theme-color);
+  }
+
+  .result-summary {
+    margin: 0 0 var(--space-md);
+  }
+
+  .no-results {
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .ornament-results {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+    align-items: start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ornament-results > li[hidden] {
+    display: none;
+  }
+
+  .ornament-record {
+    display: grid;
+    align-content: start;
+    padding: var(--space-md);
+    border-top: 0.2rem solid var(--theme-color);
+    background: color-mix(in srgb, var(--color-text) 3%, var(--color-background));
+  }
+
+  .ornament-record p,
+  .ornament-record h3 {
+    margin: 0;
+  }
+
+  .ornament-record h3 {
+    margin-top: var(--space-xs);
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .record-source {
+    align-self: start;
+    margin-top: var(--space-md);
+  }
+
+  .notation-examples {
+    margin-top: var(--space-sm);
+  }
+
+  .record-source p + p {
+    margin-top: 0.25rem;
+  }
+
+  .life-dates,
+  .record-source cite {
+    color: var(--color-muted);
+  }
+
+  .source-link {
+    font-size: 0.86rem;
+  }
+
+  .source-note {
+    color: var(--color-muted);
+    font-size: 0.86rem;
+  }
+
+  .record-status {
+    margin-top: var(--space-md) !important;
+  }
+
+  .source-register {
+    max-width: var(--reading-width);
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--color-rule);
+    padding-top: var(--space-md);
+  }
+
+  .source-register summary {
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .source-register ol {
+    display: grid;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+  }
+
+  .source-register li {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .source-register li > a {
+    font-size: 0.86rem;
+  }
+
+  .chart-citation {
+    margin-top: var(--space-lg);
+    color: var(--color-muted);
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 58rem) {
+    .index-filters,
+    .ornament-results {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .index-filters button {
+      justify-self: start;
+    }
+  }
+</style>

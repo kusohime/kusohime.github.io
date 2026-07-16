@@ -1317,9 +1317,9 @@
   color: var(--theme-color);
 }
 
-/* Active tool gets a ▸ cue in the reserved left padding (no layout shift). */
+/* Active tool gets a right-arrow cue in the reserved left padding (no layout shift). */
 .tool-rail-item.level-1 a.active::before {
-  content: "▸";
+  content: "→";
   position: absolute;
   left: 0;
 }

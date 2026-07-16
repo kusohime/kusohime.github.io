@@ -5,6 +5,7 @@
 // Caveat: The date view is the default; tag panels are selected by URL hash.
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
 import {
   toAnchor,
   writingTypes,
@@ -12,10 +13,10 @@ import {
 } from "../../config/contentTaxonomy";
 import {
   formatDate,
+  formatTranslationRoute,
   translate,
   writingTypeLabel,
 } from "../../config/locales";
-import { cjkLangFromText } from "../../utils/cjkLanguage";
 
 type WritingEntry = CollectionEntry<"writings">;
 
@@ -57,25 +58,32 @@ const tagsForWriting = (writing: WritingEntry) => writing.data.tags;
 const writingView = (writing: WritingEntry) => {
   const dateLabel = writing.data.displayDate ?? String(writing.data.date);
   const parsedDate = parseWritingDate(writing.data.date);
-  const titleLang = cjkLangFromText(
-    [
-      writing.data.title,
-      writing.data.subtitle,
-      writing.data.excerpt,
-    ].filter(Boolean).join(" "),
-  );
 
   return {
     anchor: writingAnchor(writing),
     dateLabel,
     dateTime: parsedDate ? String(writing.data.date) : undefined,
-    titleLang,
     tags: tagsForWriting(writing).map((tag) => ({
       tag,
       anchor: tagAnchor(tag),
       isTranslation: tag === "Translation",
     })),
     isTranslation: tagsForWriting(writing).includes("Translation"),
+    translationRoute:
+      writing.data.translationFrom && writing.data.translationTo.length > 0
+        ? {
+            en: formatTranslationRoute(
+              writing.data.translationFrom,
+              writing.data.translationTo,
+              "en",
+            ),
+            zh: formatTranslationRoute(
+              writing.data.translationFrom,
+              writing.data.translationTo,
+              "zh",
+            ),
+          }
+        : undefined,
     sourceFile: `content/writings/${writing.id}/index.md`,
     url: `/writings/${writing.data.slug}/`,
   };
@@ -113,7 +121,9 @@ const tagGroups = writingTypes.map((type) => ({
 
 <BaseLayout
   title="Writings"
+  titleZh="文章"
   description="Translations, essays, fiction, blog entries, program notes, and other texts by Yixin Cui."
+  descriptionZh="崔浥新的翻譯、隨筆、小說、網誌、節目冊文字及其他文章。"
 >
   <div
     class="index-page writings-index"
@@ -212,8 +222,8 @@ const tagGroups = writingTypes.map((type) => ({
                 >
                   <div class="writing-title-line">
                     <h3>
-                      <a href={entry.url} lang={entry.titleLang}>
-                        {writing.data.title}
+                      <a href={entry.url}>
+                        <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
                       </a>
                     </h3>
                     <span class="writing-tags">
@@ -232,9 +242,17 @@ const tagGroups = writingTypes.map((type) => ({
                       ))}
                     </span>
                   </div>
-                  {writing.data.subtitle && (
-                    <p class="writing-list-subtitle" lang={entry.titleLang}>
-                      {writing.data.subtitle}
+                  {(writing.data.subtitle || entry.translationRoute) && (
+                    <p class="writing-list-subtitle">
+                      {writing.data.subtitle && (
+                        <LocalizedText value={{ en: writing.data.subtitle, zh: writing.data.subtitleZh }} />
+                      )}
+                      {entry.translationRoute && (
+                        <span class="writing-translation-route">
+                          <span aria-hidden="true"> · </span>
+                          <LocalizedText value={entry.translationRoute} />
+                        </span>
+                      )}
                     </p>
                   )}
                 </article>
@@ -276,8 +294,8 @@ const tagGroups = writingTypes.map((type) => ({
                     >
                       <div class="writing-title-line">
                         <h3>
-                          <a href={entry.url} lang={entry.titleLang}>
-                            {writing.data.title}
+                          <a href={entry.url}>
+                            <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
                           </a>
                         </h3>
                         <span class="writing-tags">
@@ -296,9 +314,17 @@ const tagGroups = writingTypes.map((type) => ({
                           ))}
                         </span>
                       </div>
-                      {writing.data.subtitle && (
-                        <p class="writing-list-subtitle" lang={entry.titleLang}>
-                          {writing.data.subtitle}
+                      {(writing.data.subtitle || entry.translationRoute) && (
+                        <p class="writing-list-subtitle">
+                          {writing.data.subtitle && (
+                            <LocalizedText value={{ en: writing.data.subtitle, zh: writing.data.subtitleZh }} />
+                          )}
+                          {entry.translationRoute && (
+                            <span class="writing-translation-route">
+                              <span aria-hidden="true"> · </span>
+                              <LocalizedText value={entry.translationRoute} />
+                            </span>
+                          )}
                         </p>
                       )}
                     </article>

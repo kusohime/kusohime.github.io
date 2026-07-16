@@ -1,6 +1,6 @@
 ---
-// 中文：浮動偏好控制：語言、字號與深淺主題。
-// English: Floating preference controls for language, text size, and theme.
+// 中文：浮動偏好控制：語言、字號、字體與深淺主題。
+// English: Floating preference controls for language, text size, typeface, and theme.
 import { translate, type Locale } from "../config/locales";
 
 interface Props {
@@ -22,8 +22,8 @@ const { unavailableLanguages = [] } = Astro.props;
   >
     {translate("en", "preferences.group")}
   </span>
-  {/* 中文：语言与字号都是「点按即切换」的双态开关——标签本身显示当前状态。 */}
-  {/* English: Language and text size are two-state click-to-switch toggles —
+  {/* 中文：语言、字号與字體都是「点按即切换」的双态开关。 */}
+  {/* English: Language, text size, and typeface are two-state click-to-switch toggles —
       the label itself shows the current state, one click flips it. */}
   <button
     type="button"
@@ -46,7 +46,24 @@ const { unavailableLanguages = [] } = Astro.props;
     <span class="visually-hidden" data-i18n-key="preferences.textSize">
       {translate("en", "preferences.textSize")}
     </span>
-    <span class="preference-value" data-current-font-size>L</span>
+    <span class="preference-value" data-current-font-size>S</span>
+  </button>
+
+  <button
+    type="button"
+    class="preference-toggle font-family-toggle"
+    data-font-family-toggle
+    aria-label="Switch to Garamond"
+    title="Switch to Garamond"
+  >
+    <span class="visually-hidden" data-i18n-key="preferences.typeface">
+      {translate("en", "preferences.typeface")}
+    </span>
+    <span
+      class="preference-value font-family-glyph"
+      data-font-family-glyph
+      aria-hidden="true"
+    ><span>A</span><span>a</span></span>
   </button>
 
   <button

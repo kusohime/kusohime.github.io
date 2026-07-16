@@ -1,0 +1,182 @@
+---
+import {
+  ornamentVariantAnchorId,
+  type OrnamentVariant,
+} from "../../data/ornamentVariants";
+
+interface Props {
+  variants: readonly OrnamentVariant[];
+}
+
+const { variants } = Astro.props;
+
+const roleLabels: Record<OrnamentVariant["role"], string> = {
+  sign: "source sign",
+  realization: "written realization",
+  context: "contextual occurrence",
+};
+---
+
+<details class="variant-catalog" data-variant-catalog>
+  <summary>
+    <span>{variants.length} individually catalogued {variants.length === 1 ? "example" : "examples"}</span>
+    <span class="summary-action">show descriptions</span>
+  </summary>
+
+  <p class="catalog-note">
+    These diplomatic descriptions make every audited item addressable and searchable.
+    The chart-cell image above remains the notation witness; only entries explicitly
+    labelled MEI are independent digital engravings.
+  </p>
+
+  <ol>
+    {variants.map((variant) => {
+      const anchorId = ornamentVariantAnchorId(variant);
+      const searchText = [
+        variant.inventoryId,
+        variant.name,
+        variant.printedTerm ?? "",
+        roleLabels[variant.role],
+        variant.signSummary ?? "",
+        variant.contourSummary ?? "",
+        variant.rhythmSummary ?? "",
+        variant.confidence,
+        variant.confidenceNote,
+        variant.uncertainty ?? "",
+      ].join(" ");
+      const showPrintedTerm =
+        variant.printedTerm && variant.printedTerm !== variant.name;
+      const showUncertainty =
+        variant.uncertainty && variant.uncertainty !== variant.confidenceNote;
+
+      return (
+        <li
+          id={anchorId}
+          data-ornament-variant
+          data-variant-search-text={searchText}
+        >
+          <header>
+            <h4>{variant.name}</h4>
+            <a href={`#${anchorId}`} aria-label={`Permanent link to ${variant.name}`}>
+              {variant.inventoryId}
+            </a>
+          </header>
+
+          <p class="variant-meta">
+            {roleLabels[variant.role]}
+            <span aria-hidden="true"> · </span>
+            confidence: {variant.confidence}
+          </p>
+
+          {showPrintedTerm && (
+            <p><strong>Printed term:</strong> {variant.printedTerm}</p>
+          )}
+          {variant.signSummary && (
+            <p><strong>Source sign:</strong> {variant.signSummary}</p>
+          )}
+          {variant.contourSummary && (
+            <p><strong>Contour:</strong> {variant.contourSummary}</p>
+          )}
+          {variant.rhythmSummary && (
+            <p><strong>Rhythm:</strong> {variant.rhythmSummary}</p>
+          )}
+          <p><strong>Reading note:</strong> {variant.confidenceNote}</p>
+          {showUncertainty && (
+            <p><strong>Unresolved:</strong> {variant.uncertainty}</p>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</details>
+
+<style>
+  .variant-catalog {
+    margin-top: var(--space-sm);
+    border: 1px solid var(--color-rule);
+    background: var(--color-background);
+  }
+
+  .variant-catalog summary {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: bold;
+  }
+
+  .summary-action,
+  .catalog-note,
+  .variant-meta {
+    color: var(--color-muted);
+  }
+
+  .summary-action {
+    font-weight: normal;
+  }
+
+  .variant-catalog[open] .summary-action {
+    visibility: hidden;
+  }
+
+  .catalog-note {
+    margin: 0;
+    padding: var(--space-xs) var(--space-sm) var(--space-sm);
+    border-top: 1px solid var(--color-rule);
+    font-size: 0.76rem;
+  }
+
+  .variant-catalog ol {
+    display: grid;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0 var(--space-sm) var(--space-sm);
+    list-style: none;
+  }
+
+  .variant-catalog li {
+    scroll-margin-top: var(--space-xl);
+    padding: var(--space-xs);
+    border-left: 0.15rem solid var(--theme-color);
+    background: color-mix(in srgb, var(--color-text) 3%, var(--color-background));
+  }
+
+  .variant-catalog li[hidden] {
+    display: none;
+  }
+
+  .variant-catalog li:target {
+    outline: 0.15rem solid var(--theme-color);
+    outline-offset: 0.1rem;
+  }
+
+  .variant-catalog header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    align-items: baseline;
+  }
+
+  .variant-catalog h4,
+  .variant-catalog p {
+    margin: 0;
+  }
+
+  .variant-catalog h4 {
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .variant-catalog header a,
+  .variant-meta {
+    font-size: 0.72rem;
+  }
+
+  .variant-catalog li > p:not(.variant-meta) {
+    margin-top: 0.25rem;
+    font-size: 0.76rem;
+    line-height: 1.4;
+  }
+</style>

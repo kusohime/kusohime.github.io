@@ -4,7 +4,7 @@
  * Caveat / 注意：優先修改 :root 變數；大範圍選擇器會影響所有頁面。
  * Caveat: Prefer :root variables; broad selectors affect every public page.
  */
-@import url("https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cousine:ital,wght@0,400;0,700;1,400&family=EB+Garamond:wght@400;600;700&family=Gentium+Plus:ital,wght@0,400;0,700;1,400&family=Hina+Mincho&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+Hebrew:wght@400;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cousine:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Gentium+Plus:ital,wght@0,400;0,700;1,400&family=Hina+Mincho&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+Hebrew:wght@400;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
 
 @font-face {
   font-family: "Kawkab Mono";
@@ -185,6 +185,13 @@
                      var(--font-scripts),
                      var(--font-cjk-serif);
 
+  /* The active body-script faces switch with the public typeface toggle. */
+  --font-cjk-body: var(--font-cjk-mono);
+  --font-cjk-punctuation-body: var(--font-cjk-punctuation);
+  --font-hebrew-body: var(--font-hebrew-mono);
+  --font-greek-body: var(--font-greek-mono);
+  --font-arabic-body: var(--font-arabic-mono);
+
   /*
    * DESIGN DASHBOARD / 设计面板
    * The local Studio edits only the variables in this documented block.
@@ -201,7 +208,7 @@
   --color-rule: #aaa;
   --color-control-border: #888;
   /*
-   * 全站主题色：链接下划线、三角形、引用线等都引用这个变量。
+   * 全站主题色：链接下划线、箭头、引用线等都引用这个变量。
    * Global accent: link underlines, arrow glyphs, quote rules, and related details use it.
    */
   --theme-color: #c81e1e;
@@ -210,7 +217,7 @@
   --content-width: 46rem;
   --reading-width: 40rem;
   --page-gutter: 1.5rem;
-  --home-image-fade-width: 5%;
+  --home-image-fade-width: 11px;
 
   --space-xs: 0.35rem;
   --space-sm: 0.7rem;
@@ -233,6 +240,13 @@
   --paragraph-spacing: 1.05rem;
   --cjk-letter-spacing: 0em;
   --cjk-autospace-width: 0.12em;
+  --dropcap-size: 3.85em;
+  --dropcap-line-height: 0.66;
+  --dropcap-inline-gap: 0.11em;
+  --dropcap-block-gap: 0.07em;
+  --dropcap-padding-start: 0.045em;
+  --dropcap-cjk-size: 2.5em;
+  --dropcap-cjk-line-height: 0.98;
   /* END DESIGN DASHBOARD / 设计面板结束 */
 }
 
@@ -344,6 +358,34 @@
   font-family: var(--font-body);
 }
 
+/* Public typeface modes. All script-specific faces change with the Latin body. */
+:root,
+:root[data-font-family="modern-mono"] {
+  --font-body: var(--font-modern-mono);
+  --font-heading: var(--font-body);
+  --font-cjk-body: var(--font-cjk-mono);
+  --font-cjk-punctuation-body: var(--font-cjk-punctuation);
+  --font-hebrew-body: var(--font-hebrew-mono);
+  --font-greek-body: var(--font-greek-mono);
+  --font-arabic-body: var(--font-arabic-mono);
+}
+
+:root[data-font-family="garamond"] {
+  --font-body: var(--font-garamond);
+  --font-heading: var(--font-garamond);
+  --font-cjk-body: var(--font-cjk-serif);
+  --font-cjk-punctuation-body: var(--font-cjk-serif);
+  --font-hebrew-body: var(--font-hebrew);
+  --font-greek-body: var(--font-greek);
+  --font-arabic-body: var(--font-arabic);
+  --dropcap-size: 3.7em;
+  --dropcap-line-height: 0.7;
+  --dropcap-inline-gap: 0.1em;
+  --dropcap-block-gap: 0.04em;
+  --dropcap-padding-start: 0.035em;
+  --dropcap-cjk-size: 2.42em;
+}
+
 html {
   font-family: var(--font-body);
 }
@@ -358,16 +400,15 @@ html {
   --theme-color: #e85d5d;
 }
 
-/* 中文：字号两档——L 为默认阅读字号（旧 M），S 为紧凑档；旧的放大档已移除。 */
-/* English: Two sizes — L is the default reading size (the old M); S is compact.
-   The former enlarged scale is gone. */
+/* 中文：字号两档——S 為預設緊湊檔，L 為較大閱讀字號。 */
+/* English: Two sizes — S is the compact default and L is the larger reading size. */
 :root,
-:root[data-font-size="l"] {
-  font-size: var(--base-font-size);
-}
-
 :root[data-font-size="s"] {
   font-size: calc(var(--base-font-size) - 2px);
+}
+
+:root[data-font-size="l"] {
+  font-size: var(--base-font-size);
 }
 
 * {
@@ -401,6 +442,17 @@ body {
   line-height: var(--line-height);
 }
 
+:root[data-font-family="modern-mono"] body {
+  font-variant-ligatures: none;
+}
+
+:root[data-font-family="garamond"] body {
+  font-synthesis: none;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  text-rendering: optimizeLegibility;
+}
+
 :where(:lang(zh), :lang(zh-Hant), :lang(zh-Hans), :lang(zh-CN), :lang(zh-TW), :lang(ja)) {
   /* 不使用 palt：比例寬度會破壞全形標點的置中與佔位。 */
   /* No palt: proportional widths break fullwidth punctuation centering. */
@@ -424,6 +476,13 @@ body {
 .cjk-punctuation {
   font-family: var(--font-cjk-punctuation);
   font-feature-settings: "kern" 1;
+}
+
+/* CJK italics are kept upright; Garamond mode supplies a real Ming/Song face. */
+:root[data-font-family="garamond"] :where(.cjk-run, .cjk-punctuation) {
+  font-family: var(--font-cjk-serif);
+  font-style: normal;
+  font-synthesis: none;
 }
 
 .cjk-autospace {
@@ -662,7 +721,7 @@ summary {
 .nav-dropdown summary {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.18em;
+  gap: 0;
   cursor: pointer;
   list-style: none;
 }
@@ -679,7 +738,7 @@ summary {
 .nav-dropdown-panel {
   position: absolute;
   top: calc(100% + 0.4rem);
-  left: 0.82em;
+  left: 0;
   z-index: 20;
   display: grid;
   grid-template-rows: 1fr;
@@ -802,25 +861,28 @@ summary {
   display: none;
 }
 
-/* 中文：全站方向符统一为实心三角（红），基准朝上；方向由旋转变量决定。 */
-/* English: One solid red triangle for every directional glyph; base points up,
-   direction comes from the rotation variable. */
+/* 中文：全站方向符统一为红色箭头；展开符号用右箭头／下箭头。 */
+/* English: Directional glyphs use red arrows throughout; disclosure controls
+   switch between right and down arrows. */
 .glyph-arrow {
-  --arrow-direction: 0deg;
-  --arrow-image: url("/icons/triangle-1.svg");
+  --arrow-symbol: "→";
   --arrow-scale: 1;
-  --arrow-wobble: 0deg;
 
-  display: inline-block;
+  display: inline-flex;
   flex: none;
-  width: 0.62em;
-  height: 0.62em;
-  background: var(--theme-color);
-  -webkit-mask: var(--arrow-image) center / contain no-repeat;
-  mask: var(--arrow-image) center / contain no-repeat;
-  transform: rotate(calc(var(--arrow-direction) + var(--arrow-wobble)))
-    scale(var(--arrow-scale));
+  width: 0.8em;
+  height: 1em;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-color);
+  font: inherit;
+  line-height: 1;
+  transform: scale(var(--arrow-scale));
   transform-origin: center;
+}
+
+.glyph-arrow::before {
+  content: var(--arrow-symbol);
 }
 
 :root[data-motion-glyphs="true"] .glyph-arrow {
@@ -828,28 +890,57 @@ summary {
 }
 
 .glyph-arrow--forward {
-  --arrow-direction: 90deg;
+  --arrow-symbol: "→";
 }
 
 .glyph-arrow--back {
-  --arrow-direction: -90deg;
+  --arrow-symbol: "←";
 }
 
-/* 收合状态朝右（▸），展开后转为朝下（▾）；收拢动画期间先转回。 */
-/* Closed points right (▸); open rotates to down (▾); it turns back while the
+/* 收合状态朝右（→），展开后转为朝下（↓）；收拢动画期间先转回。 */
+/* Closed points right (→); open turns down (↓); it turns back while the
    fold-up animation plays. */
 .glyph-arrow--disclosure {
-  --arrow-direction: 90deg;
+  --arrow-symbol: "→";
 }
 
 .nav-dropdown[open] .glyph-arrow--disclosure,
 .rail-disclosure[open] > summary .glyph-arrow--disclosure {
-  --arrow-direction: 180deg;
+  --arrow-symbol: "↓";
 }
 
 .nav-dropdown[data-closing] .glyph-arrow--disclosure,
 .rail-disclosure[data-closing] > summary .glyph-arrow--disclosure {
-  --arrow-direction: 90deg;
+  --arrow-symbol: "→";
+}
+
+/* Replace native disclosure triangles with directional arrows on expandable
+   sections that do not already have a custom summary control. */
+details:not(.nav-dropdown):not(.rail-disclosure):not(.cv-fold) > summary {
+  list-style: none;
+}
+
+details:not(.nav-dropdown):not(.rail-disclosure):not(.cv-fold)
+  > summary::-webkit-details-marker {
+  display: none;
+}
+
+details:not(.nav-dropdown):not(.rail-disclosure):not(.cv-fold)
+  > summary::marker {
+  content: "";
+}
+
+details:not(.nav-dropdown):not(.rail-disclosure):not(.cv-fold)
+  > summary::before {
+  content: "→";
+  display: inline-block;
+  margin-inline-end: 0.35em;
+  color: var(--theme-color);
+}
+
+details:not(.nav-dropdown):not(.rail-disclosure):not(.cv-fold)[open]
+  > summary::before {
+  content: "↓";
 }
 
 .theme-toggle {
@@ -990,8 +1081,9 @@ main {
 .home-image-frame img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
   -webkit-mask-image:
     linear-gradient(
       to right,
@@ -1071,18 +1163,22 @@ main {
    larger bump. */
 .prose :lang(he),
 .prose :lang(hbo) {
-  font-family: var(--font-hebrew-mono);
+  direction: rtl;
+  font-family: var(--font-hebrew-body);
   font-size: 1.1em;
+  unicode-bidi: isolate;
 }
 
 .prose :lang(ar) {
-  font-family: var(--font-arabic);
+  direction: rtl;
+  font-family: var(--font-arabic-body);
   font-size: 1.25em;
+  unicode-bidi: isolate;
 }
 
 .prose :lang(grc),
 .prose :lang(el) {
-  font-family: var(--font-greek-mono);
+  font-family: var(--font-greek-body);
 }
 
 /* 注解块保持衬线（与层间注解工具一致）；此组规则须排在 .prose 组之后，
@@ -1491,6 +1587,14 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+/* Garamond dates use the face's oldstyle proportional figures. */
+:root[data-font-family="garamond"] :where(time, [data-i18n-date]),
+:root[data-font-family="garamond"] .writings-index .dated-list time {
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  font-feature-settings: "kern" 1, "liga" 1, "onum" 1, "pnum" 1;
+  letter-spacing: 0.01em;
+}
+
 .writing-summary {
   min-width: 0;
 }
@@ -1536,6 +1640,17 @@ main {
   margin: 0.15rem 0 0;
   color: var(--color-muted);
   font-size: 0.95em;
+}
+
+.writing-translation-route {
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  .writing-translation-route {
+    white-space: normal;
+  }
 }
 
 .writing-tag {
@@ -2156,6 +2271,13 @@ main {
   text-indent: 0;
 }
 
+.writing-title-page .chicago-prose.first-paragraph-indented
+  > :is(h1, h2, h3, h4, h5, h6, figure, blockquote, ul, ol, dl, pre, table, hr, details, aside, .igt-block, .translation-chain) + p,
+.writing-title-page .chicago-prose.first-paragraph-indented
+  > .lang-block > :is(h1, h2, h3, h4, h5, h6, figure, blockquote, ul, ol, dl, pre, table, hr, details, aside, .igt-block, .translation-chain) + p {
+  text-indent: var(--paragraph-indent);
+}
+
 /* Dialogue and dramatic script lines retain their own visual turn-taking. */
 .chicago-prose.cui-dialogue p,
 .chicago-prose.drama-body > p,
@@ -2734,8 +2856,12 @@ main {
   letter-spacing: 0;
 }
 
+.writing-body ruby rp {
+  display: none;
+}
+
 /* 中文：含术语注音的连续散文需要额外的注音净空；不改变没有 ruby 的段落。 */
-/* English: Ruby-rich prose gets extra annotation headroom without changing
+/* English: Ruby-rich prose gets annotation headroom without changing
    paragraphs that contain no ruby. */
 .writing-body :is(p, li, blockquote):has(ruby) {
   line-height: 1.74;
@@ -3108,6 +3234,7 @@ main {
   -webkit-text-emphasis: none;
 }
 
+/* Only explicitly marked Chinese emphasis uses dots; ordinary <em> stays italic. */
 .writing-body ruby > .zh-em {
   display: inline-block;
 }
@@ -3376,6 +3503,7 @@ main {
     min-inline-size: var(--floating-control-size);
   }
 
+  .header-tools .preference-toggle,
   .theme-toggle {
     width: var(--floating-control-size);
     min-width: var(--floating-control-size);
@@ -3428,6 +3556,34 @@ main {
     right: 0;
     left: auto;
   }
+}
+
+.preference-toggle.font-family-toggle {
+  min-width: 2.45rem;
+}
+
+.font-family-glyph {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  letter-spacing: -0.08em;
+  line-height: 1;
+}
+
+.font-family-glyph > span:last-child {
+  margin-inline-start: -0.02em;
+  font-size: 0.72em;
+}
+
+:root:not([data-font-family="garamond"]) .font-family-glyph {
+  font-family: var(--font-garamond);
+  font-synthesis: none;
+  font-variant-ligatures: common-ligatures;
+}
+
+:root[data-font-family="garamond"] .font-family-glyph {
+  font-family: var(--font-modern-mono);
+  font-variant-ligatures: none;
 }
 
 @media (max-width: 30rem) {
@@ -3946,7 +4102,7 @@ main {
 }
 
 .writing-contents-rail-item.level-1 a.active::before {
-  content: "▸";
+  content: "→";
   position: absolute;
   left: 0;
 }
@@ -4037,8 +4193,9 @@ main {
   text-indent: 0;
 }
 
-/* 首字下沉：拉丁文三行、衬线、主题红；落款／题记开头的文章不应开启。 */
-/* Drop cap: 3 sunk lines, serif against the mono body, theme red. */
+/* 首字下沉：拉丁文两行、衬线、主题红；右侧与下方留相等的呼吸空间。 */
+/* Drop cap: two-line serif cap in theme red, with equal breathing room
+   on its inline end and beneath it. */
 .chicago-prose.leadcap:not(.leadcap--marked) > p:first-child,
 .chicago-prose.leadcap:not(.leadcap--marked) > .lang-block > p:first-child,
 .chicago-prose.leadcap--marked > p:has(> .lead:first-child),
@@ -4053,10 +4210,11 @@ main {
   float: inline-start;
   font-family: var(--font-garamond);
   font-weight: 600;
-  font-size: 3.4em;
-  line-height: 0.8;
-  padding-block-start: 0.06em;
-  padding-inline-end: 0.08em;
+  font-size: var(--dropcap-size);
+  line-height: var(--dropcap-line-height);
+  margin-inline-end: var(--dropcap-inline-gap);
+  margin-block-end: var(--dropcap-block-gap);
+  padding-block-start: var(--dropcap-padding-start);
   color: var(--theme-color);
 }
 
@@ -4072,44 +4230,8 @@ main {
 .chicago-prose.leadcap--marked > .lang-block > p:has(> .lead:first-child):lang(ja)::first-letter {
   font-family: var(--font-cjk-serif);
   font-weight: 700;
-  font-size: 2.15em;
-  line-height: 1;
-  padding-inline-end: 0.06em;
-}
-
-/*
- * 渐进增强：支持 initial-letter 的浏览器（Safari／Chrome）用真正的下沉字，
- * 自动对齐大写字高；Firefox 退回上面的 float 方案。
- * Progressive enhancement: real cap-height-aligned sunk cap where supported;
- * Firefox keeps the float fallback above.
- */
-@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
-  .chicago-prose.leadcap:not(.leadcap--marked) > p:first-child::first-letter,
-  .chicago-prose.leadcap:not(.leadcap--marked) > .lang-block > p:first-child::first-letter,
-  .chicago-prose.leadcap--marked > p:has(> .lead:first-child)::first-letter,
-  .chicago-prose.leadcap--marked > .lang-block > p:has(> .lead:first-child)::first-letter {
-    float: none;
-    font-size: inherit;
-    line-height: normal;
-    padding: 0;
-    margin-inline-end: 0.06em;
-    -webkit-initial-letter: 3;
-    initial-letter: 3;
-  }
-
-  .chicago-prose.leadcap:not(.leadcap--marked) > p:first-child:lang(zh)::first-letter,
-  .chicago-prose.leadcap:not(.leadcap--marked) > p:first-child:lang(ja)::first-letter,
-  .chicago-prose.leadcap:not(.leadcap--marked) > .lang-block > p:first-child:lang(zh)::first-letter,
-  .chicago-prose.leadcap:not(.leadcap--marked) > .lang-block > p:first-child:lang(ja)::first-letter,
-  .chicago-prose.leadcap--marked > p:has(> .lead:first-child):lang(zh)::first-letter,
-  .chicago-prose.leadcap--marked > p:has(> .lead:first-child):lang(ja)::first-letter,
-  .chicago-prose.leadcap--marked > .lang-block > p:has(> .lead:first-child):lang(zh)::first-letter,
-  .chicago-prose.leadcap--marked > .lang-block > p:has(> .lead:first-child):lang(ja)::first-letter {
-    padding: 0;
-    margin-inline-end: 0.08em;
-    -webkit-initial-letter: 2;
-    initial-letter: 2;
-  }
+  font-size: var(--dropcap-cjk-size);
+  line-height: var(--dropcap-cjk-line-height);
 }
 
 /*
@@ -4174,9 +4296,9 @@ main {
   }
 }
 
-/* 側欄折疊（文字頁標籤、活動年份）：原生游標三角改為紅三角，在文檔流中展開。 */
-/* Rail disclosures (writings Tags, event years): red triangle instead of the
-   browser marker, unfolding in flow. */
+/* 側欄折疊（文字頁標籤、活動年份）：原生游標改為紅色箭頭，在文檔流中展開。 */
+/* Rail disclosures (writings Tags, event years): red arrows replace the browser
+   marker while the content unfolds in flow. */
 .rail-disclosure > summary {
   display: inline-flex;
   align-items: center;
@@ -4203,8 +4325,8 @@ main {
   overflow: hidden;
 }
 
-/* 偏好切換鈕：語言 EN⇄中、字號 S⇄L——標籤即狀態，點按即切換。 */
-/* Preference toggles: language EN⇄中 and size S⇄L — the label is the state. */
+/* 偏好切換鈕：語言、字號與字體均為單擊雙態切換。 */
+/* Preference toggles: language, size, and typeface are one-click binary controls. */
 .preference-toggle {
   display: inline-grid;
   place-items: center;

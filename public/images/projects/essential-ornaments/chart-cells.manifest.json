@@ -1,0 +1,2924 @@
+{
+  "schemaVersion": 1,
+  "sourceRaster": {
+    "sha256": "97a77f06f4d12bca221e393a5334db0429fed863f89a83f4f886ed9c18941ff8",
+    "width": 6614,
+    "height": 4676,
+    "page": 1,
+    "dpi": 400,
+    "colorMode": "grayscale"
+  },
+  "output": {
+    "format": "webp",
+    "lossless": true,
+    "width": 780,
+    "height": 240
+  },
+  "summary": {
+    "sourceRows": 18,
+    "families": 7,
+    "gridCells": 126,
+    "populatedCells": 106,
+    "auditedVariantSlots": 306
+  },
+  "cells": [
+    {
+      "sourceId": "santa-maria-1565",
+      "sourceOrder": 1,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "santa-maria-1565-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 499,
+        "right": 2297,
+        "bottom": 711,
+        "width": 744,
+        "height": 212
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 19676,
+      "sha256": "b6c00750e6988a9867717c60a6d6ca29e44421f4bd738cf1b933ebfc4622590f"
+    },
+    {
+      "sourceId": "santa-maria-1565",
+      "sourceOrder": 1,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "santa-maria-1565-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 499,
+        "right": 3055,
+        "bottom": 711,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 6,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 58648,
+      "sha256": "3e717c4c1a6f130c26d7014b7c3991074ee8eb1511faa594b3bb64c0718d148d"
+    },
+    {
+      "sourceId": "santa-maria-1565",
+      "sourceOrder": 1,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "santa-maria-1565-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 499,
+        "right": 3808,
+        "bottom": 711,
+        "width": 739,
+        "height": 212
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 21784,
+      "sha256": "a5c3533d74218282682cc0550d7f8d18781c95fd705e0bd9a44614c76e736314"
+    },
+    {
+      "sourceId": "santa-maria-1565",
+      "sourceOrder": 1,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "santa-maria-1565-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 499,
+        "right": 4470,
+        "bottom": 711,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 37596,
+      "sha256": "2c23571b8239511f39265deb8ee0568d885b3909795a32ab99726142c9560a1e"
+    },
+    {
+      "sourceId": "santa-maria-1565",
+      "sourceOrder": 1,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "santa-maria-1565-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 499,
+        "right": 5111,
+        "bottom": 711,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 23280,
+      "sha256": "2b9380a6b5c264099222618184c5c4a59fa3dc4a8155aa167f007c86e637bc3d"
+    },
+    {
+      "sourceId": "santa-maria-1565",
+      "sourceOrder": 1,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "santa-maria-1565-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 499,
+        "right": 5757,
+        "bottom": 711,
+        "width": 632,
+        "height": 212
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 18738,
+      "sha256": "c14ecb1251e7928f4517abd36e97004b40d7ed23bb40909aea6462005129483d"
+    },
+    {
+      "sourceId": "santa-maria-1565",
+      "sourceOrder": 1,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "santa-maria-1565-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 499,
+        "right": 6418,
+        "bottom": 711,
+        "width": 647,
+        "height": 212
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 16808,
+      "sha256": "22ecbbae5c546b0f45f5747407c8f6437820a70784959aee128367398eea6b7e"
+    },
+    {
+      "sourceId": "diruta-1593",
+      "sourceOrder": 2,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "diruta-1593-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 721,
+        "right": 2297,
+        "bottom": 932,
+        "width": 744,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 24786,
+      "sha256": "0777514e863cfc501e0409a7b514487e589f4294cf5868e25791db547d512821"
+    },
+    {
+      "sourceId": "diruta-1593",
+      "sourceOrder": 2,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "diruta-1593-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 721,
+        "right": 3055,
+        "bottom": 932,
+        "width": 744,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 48574,
+      "sha256": "0c627d2d9ced71d7fa4674b1e839d477c8f46676854ca04b6f849ad5bf53b89f"
+    },
+    {
+      "sourceId": "diruta-1593",
+      "sourceOrder": 2,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "diruta-1593-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 721,
+        "right": 3808,
+        "bottom": 932,
+        "width": 739,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 28588,
+      "sha256": "7c0ce261e10af43220d8942d673b8a7d5ac970a94fb5c3ef028c14d2716743da"
+    },
+    {
+      "sourceId": "diruta-1593",
+      "sourceOrder": 2,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "diruta-1593-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 721,
+        "right": 4470,
+        "bottom": 932,
+        "width": 648,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 22898,
+      "sha256": "857a3b8f77e91edffb3df992fd540b42814a68ea1e815cb731d75ce8fd6d62f3"
+    },
+    {
+      "sourceId": "diruta-1593",
+      "sourceOrder": 2,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "diruta-1593-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 721,
+        "right": 5111,
+        "bottom": 932,
+        "width": 627,
+        "height": 211
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 16540,
+      "sha256": "32498388d015abac422b64574cf8226d7416eb5d429bc05c52b7879fc246d93b"
+    },
+    {
+      "sourceId": "diruta-1593",
+      "sourceOrder": 2,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "diruta-1593-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 721,
+        "right": 5757,
+        "bottom": 932,
+        "width": 632,
+        "height": 211
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 17132,
+      "sha256": "e8cd871e6d3ee33afdcb34108bd5efebca5f2ab87b969fb89445eb69d10ecc45"
+    },
+    {
+      "sourceId": "diruta-1593",
+      "sourceOrder": 2,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "diruta-1593-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 721,
+        "right": 6418,
+        "bottom": 932,
+        "width": 647,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 35602,
+      "sha256": "af8dff6a135c7bf9883dee9c87a5bd5c147e0caa8282a6fd9237af1e1912fd18"
+    },
+    {
+      "sourceId": "praetorius-1619",
+      "sourceOrder": 3,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "praetorius-1619-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 942,
+        "right": 2297,
+        "bottom": 1156,
+        "width": 744,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 47894,
+      "sha256": "5669c2a7e2722c74857c64ce7672085ea9ff8b2e508c68180b983f8da6c692c6"
+    },
+    {
+      "sourceId": "praetorius-1619",
+      "sourceOrder": 3,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "praetorius-1619-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 942,
+        "right": 3055,
+        "bottom": 1156,
+        "width": 744,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 53878,
+      "sha256": "96c76988f4739c363ce03080ef4430dc295cb1afbe0d939bc3c4f96195a6c0f8"
+    },
+    {
+      "sourceId": "praetorius-1619",
+      "sourceOrder": 3,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "praetorius-1619-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 942,
+        "right": 3808,
+        "bottom": 1156,
+        "width": 739,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 49182,
+      "sha256": "b6bbf30b90413b1d796324a288748a032c2bbe68f6daf8a514537e32d6435a38"
+    },
+    {
+      "sourceId": "praetorius-1619",
+      "sourceOrder": 3,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "praetorius-1619-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 942,
+        "right": 4470,
+        "bottom": 1156,
+        "width": 648,
+        "height": 214
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 18036,
+      "sha256": "90dc82a381dc7aff48addd56dc40775ad1d84f6dff23ac87ac6c4c3d834f9ab8"
+    },
+    {
+      "sourceId": "praetorius-1619",
+      "sourceOrder": 3,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "praetorius-1619-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 942,
+        "right": 5111,
+        "bottom": 1156,
+        "width": 627,
+        "height": 214
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 16694,
+      "sha256": "78ef7b1aa474c30c207e72a7e704b357ed3af11b0650dd5174c7e7bb33569c7b"
+    },
+    {
+      "sourceId": "praetorius-1619",
+      "sourceOrder": 3,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "praetorius-1619-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 942,
+        "right": 5757,
+        "bottom": 1156,
+        "width": 632,
+        "height": 214
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 17432,
+      "sha256": "1d57abdb73f941c7bc355db001ab792b7ee43430156d74c7c020778974e7744f"
+    },
+    {
+      "sourceId": "praetorius-1619",
+      "sourceOrder": 3,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "praetorius-1619-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 942,
+        "right": 6418,
+        "bottom": 1156,
+        "width": 647,
+        "height": 214
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 17702,
+      "sha256": "2213e8d054850a7edd16435ac8668591a09380a27c7b68208b6aecd02717f2a1"
+    },
+    {
+      "sourceId": "playford-1654",
+      "sourceOrder": 4,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "playford-1654-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 1166,
+        "right": 2297,
+        "bottom": 1379,
+        "width": 744,
+        "height": 213
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 39684,
+      "sha256": "d95bd19197f1fbc8bc52733db250487103bfcb06ae8762ec33f6c303d56aca8d"
+    },
+    {
+      "sourceId": "playford-1654",
+      "sourceOrder": 4,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "playford-1654-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 1166,
+        "right": 3055,
+        "bottom": 1379,
+        "width": 744,
+        "height": 213
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 29708,
+      "sha256": "8bdea984605ca6290f79ac3e588565056eea8da6cf9782ac0e49639f70a984cf"
+    },
+    {
+      "sourceId": "playford-1654",
+      "sourceOrder": 4,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "playford-1654-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 1166,
+        "right": 3808,
+        "bottom": 1379,
+        "width": 739,
+        "height": 213
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 59842,
+      "sha256": "9a6de9343595b8e774a2de60c14a3061088061426f824426ec9b1c3ebcf15f7f"
+    },
+    {
+      "sourceId": "playford-1654",
+      "sourceOrder": 4,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "playford-1654-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 1166,
+        "right": 4470,
+        "bottom": 1379,
+        "width": 648,
+        "height": 213
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 42108,
+      "sha256": "0b6fad6b92e7078abc0e5c1b2186c683c0ca8024a3282977720fc24fc8420927"
+    },
+    {
+      "sourceId": "playford-1654",
+      "sourceOrder": 4,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "playford-1654-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 1166,
+        "right": 5111,
+        "bottom": 1379,
+        "width": 627,
+        "height": 213
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 16666,
+      "sha256": "41136a138eece1bf7eb8e2733dd85f21d34820dc2387109b3ad59a9b531e79db"
+    },
+    {
+      "sourceId": "playford-1654",
+      "sourceOrder": 4,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "playford-1654-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 1166,
+        "right": 5757,
+        "bottom": 1379,
+        "width": 632,
+        "height": 213
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 26932,
+      "sha256": "2f14026e13c437c7e7c30c6ea39395707c9da6809c5394a7e3c850b158d1c505"
+    },
+    {
+      "sourceId": "playford-1654",
+      "sourceOrder": 4,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "playford-1654-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 1166,
+        "right": 6418,
+        "bottom": 1379,
+        "width": 647,
+        "height": 213
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 41310,
+      "sha256": "0c8ce0c197a56ed5c462be0e6bc4cd833aace8fa0433b23597f4b13c34018aa7"
+    },
+    {
+      "sourceId": "chambonnieres-1670",
+      "sourceOrder": 5,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "chambonnieres-1670-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 1389,
+        "right": 2297,
+        "bottom": 1600,
+        "width": 744,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 24424,
+      "sha256": "e6b1d3137c2a1e6336e24f41921b920499d21160c95bf44d8db131c5f3321666"
+    },
+    {
+      "sourceId": "chambonnieres-1670",
+      "sourceOrder": 5,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "chambonnieres-1670-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 1389,
+        "right": 3055,
+        "bottom": 1600,
+        "width": 744,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 25980,
+      "sha256": "66255f0e5449f293708eb301d2a896e0debf0796fc627e4761fc8291f1386c3a"
+    },
+    {
+      "sourceId": "chambonnieres-1670",
+      "sourceOrder": 5,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "chambonnieres-1670-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 1389,
+        "right": 3808,
+        "bottom": 1600,
+        "width": 739,
+        "height": 211
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 23286,
+      "sha256": "69b679cc112e22ba63eecdec93eee33838f6133ff8fb7ca228afa1deefd34221"
+    },
+    {
+      "sourceId": "chambonnieres-1670",
+      "sourceOrder": 5,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "chambonnieres-1670-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 1389,
+        "right": 4470,
+        "bottom": 1600,
+        "width": 648,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 23800,
+      "sha256": "c8d87535907724f5f56d63ca0f97c25090f39ba4ee2f386732357d5a604d1616"
+    },
+    {
+      "sourceId": "chambonnieres-1670",
+      "sourceOrder": 5,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "chambonnieres-1670-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 1389,
+        "right": 5111,
+        "bottom": 1600,
+        "width": 627,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 23078,
+      "sha256": "24a5170466cdaf8dbfcd2578e71faa8f6cced9b3a61477b63c16cfe82ca84fdc"
+    },
+    {
+      "sourceId": "chambonnieres-1670",
+      "sourceOrder": 5,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "chambonnieres-1670-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 1389,
+        "right": 5757,
+        "bottom": 1600,
+        "width": 632,
+        "height": 211
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 18464,
+      "sha256": "b744e637eb391234e4379f3dbed90a9101254b12745dd9d657d13e94df1d983d"
+    },
+    {
+      "sourceId": "chambonnieres-1670",
+      "sourceOrder": 5,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "chambonnieres-1670-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 1389,
+        "right": 6418,
+        "bottom": 1600,
+        "width": 647,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 22968,
+      "sha256": "34ecec6bcb56064da682b9a839c72162fbf4bbea693653044b3259ce0bf23375"
+    },
+    {
+      "sourceId": "danglebert-1689",
+      "sourceOrder": 6,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "danglebert-1689-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 1610,
+        "right": 2297,
+        "bottom": 1827,
+        "width": 744,
+        "height": 217
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 46222,
+      "sha256": "01847cb136a6c15843b5f4c1dd9dddef8d82755ebc70457c65ae70bb81230263"
+    },
+    {
+      "sourceId": "danglebert-1689",
+      "sourceOrder": 6,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "danglebert-1689-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 1610,
+        "right": 3055,
+        "bottom": 1827,
+        "width": 744,
+        "height": 217
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 56628,
+      "sha256": "e9fadcad959f319122719c068afa2d7e535a286f606c10a6a5b4c5374b23d559"
+    },
+    {
+      "sourceId": "danglebert-1689",
+      "sourceOrder": 6,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "danglebert-1689-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 1610,
+        "right": 3808,
+        "bottom": 1827,
+        "width": 739,
+        "height": 217
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 60644,
+      "sha256": "4e6db3b7804f95a678bb36424049c525c27dc75e3c0b920951d48b35e90032cb"
+    },
+    {
+      "sourceId": "danglebert-1689",
+      "sourceOrder": 6,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "danglebert-1689-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 1610,
+        "right": 4470,
+        "bottom": 1827,
+        "width": 648,
+        "height": 217
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 25948,
+      "sha256": "8303b3b12ec79c93c0e8de2f1541046cce00cce900d1cbf868a38e5033caee79"
+    },
+    {
+      "sourceId": "danglebert-1689",
+      "sourceOrder": 6,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "danglebert-1689-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 1610,
+        "right": 5111,
+        "bottom": 1827,
+        "width": 627,
+        "height": 217
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 32778,
+      "sha256": "06095a550b14895ef394e6a47c4069fe70f14222f81ac2379109015c4be7f0bd"
+    },
+    {
+      "sourceId": "danglebert-1689",
+      "sourceOrder": 6,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "danglebert-1689-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 1610,
+        "right": 5757,
+        "bottom": 1827,
+        "width": 632,
+        "height": 217
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 24036,
+      "sha256": "6cc602f68aa2be8f1b23f0fc534f7bb6b54580899f5dad43f5f3e0cada43f8ed"
+    },
+    {
+      "sourceId": "danglebert-1689",
+      "sourceOrder": 6,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "danglebert-1689-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 1610,
+        "right": 6418,
+        "bottom": 1827,
+        "width": 647,
+        "height": 217
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 49064,
+      "sha256": "3d5ef0baa5e193d55b34c491ef37509d4ffdf189cc5fc70cc8cc55b00461e88d"
+    },
+    {
+      "sourceId": "purcell-1696",
+      "sourceOrder": 7,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "purcell-1696-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 1837,
+        "right": 2297,
+        "bottom": 2051,
+        "width": 744,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 37228,
+      "sha256": "0ce4dbfd393c4a8ac633efb91c89d41e42daa37986d4c3fb35316ba2d85f1e20"
+    },
+    {
+      "sourceId": "purcell-1696",
+      "sourceOrder": 7,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "purcell-1696-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 1837,
+        "right": 3055,
+        "bottom": 2051,
+        "width": 744,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 44834,
+      "sha256": "9e7d6779f15b9c7de79c27a0c8ced184cf0f1423ac85dedc4c32013bde7f3354"
+    },
+    {
+      "sourceId": "purcell-1696",
+      "sourceOrder": 7,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "purcell-1696-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 1837,
+        "right": 3808,
+        "bottom": 2051,
+        "width": 739,
+        "height": 214
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 22914,
+      "sha256": "24ca73ea0b0d129a80a68af52f58de8f7b3694632a161e2e92ee82055754014a"
+    },
+    {
+      "sourceId": "purcell-1696",
+      "sourceOrder": 7,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "purcell-1696-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 1837,
+        "right": 4470,
+        "bottom": 2051,
+        "width": 648,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 38894,
+      "sha256": "84af9b7cad39d16b040880d13f2c5f2809917f693ce16fb094cfccac89f1a3df"
+    },
+    {
+      "sourceId": "purcell-1696",
+      "sourceOrder": 7,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "purcell-1696-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 1837,
+        "right": 5111,
+        "bottom": 2051,
+        "width": 627,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 21136,
+      "sha256": "d7661d9aa18d2d110573f7ef5e0c94619435610f3004053a04fffdc08be68956"
+    },
+    {
+      "sourceId": "purcell-1696",
+      "sourceOrder": 7,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "purcell-1696-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 1837,
+        "right": 5757,
+        "bottom": 2051,
+        "width": 632,
+        "height": 214
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 16176,
+      "sha256": "001c4c9698fb26e2cfa27a4892ac77595a0f9c27795751ac022c209ae223b71e"
+    },
+    {
+      "sourceId": "purcell-1696",
+      "sourceOrder": 7,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "purcell-1696-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 1837,
+        "right": 6418,
+        "bottom": 2051,
+        "width": 647,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 20902,
+      "sha256": "1c200df14ec1261701d6a3bb17fd1bf054fa4f3cf252ecf1b51079c483a66ba1"
+    },
+    {
+      "sourceId": "hotteterre-1708",
+      "sourceOrder": 8,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "hotteterre-1708-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 2061,
+        "right": 2297,
+        "bottom": 2273,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 41834,
+      "sha256": "f2498a3afe75647abca2fb941ffab848145d0f6b3949f6d54068121b795d063d"
+    },
+    {
+      "sourceId": "hotteterre-1708",
+      "sourceOrder": 8,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "hotteterre-1708-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 2061,
+        "right": 3055,
+        "bottom": 2273,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 28108,
+      "sha256": "aa4a9291843a2b7493a7c1977183a8231c6b1e2a307a14c8393a4d08d577778d"
+    },
+    {
+      "sourceId": "hotteterre-1708",
+      "sourceOrder": 8,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "hotteterre-1708-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 2061,
+        "right": 3808,
+        "bottom": 2273,
+        "width": 739,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 52532,
+      "sha256": "b810967b3946987439a12b3d1d57e226f39b4f750a03547df337845ca636ef27"
+    },
+    {
+      "sourceId": "hotteterre-1708",
+      "sourceOrder": 8,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "hotteterre-1708-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 2061,
+        "right": 4470,
+        "bottom": 2273,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 22598,
+      "sha256": "913bc41534102456183d11d1f4677fbc31a9c2ac3c1b2e467584bf72f38b4334"
+    },
+    {
+      "sourceId": "hotteterre-1708",
+      "sourceOrder": 8,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "hotteterre-1708-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 2061,
+        "right": 5111,
+        "bottom": 2273,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 21832,
+      "sha256": "4e55e695056e1586f397e0619d89730b5b75a0f94491cc43ccb068d3f0aa2275"
+    },
+    {
+      "sourceId": "hotteterre-1708",
+      "sourceOrder": 8,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "hotteterre-1708-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 2061,
+        "right": 5757,
+        "bottom": 2273,
+        "width": 632,
+        "height": 212
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 17614,
+      "sha256": "2eecbcfdbcc1e6bf7ca99d3ba8eee4c340298e89b724f113bb162821f0eb063f"
+    },
+    {
+      "sourceId": "hotteterre-1708",
+      "sourceOrder": 8,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "hotteterre-1708-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 2061,
+        "right": 6418,
+        "bottom": 2273,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 23754,
+      "sha256": "af0b28880e20e8d7afb21fad4db52ecbb128cc85e5d6d0fbe768cafa9a138eba"
+    },
+    {
+      "sourceId": "couperin-1713",
+      "sourceOrder": 9,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "couperin-1713-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 2283,
+        "right": 2297,
+        "bottom": 2495,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 26930,
+      "sha256": "e4299d961730aabf37d3c13f32ffbb886ff852e4032a51dad45b4ec1557a50d1"
+    },
+    {
+      "sourceId": "couperin-1713",
+      "sourceOrder": 9,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "couperin-1713-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 2283,
+        "right": 3055,
+        "bottom": 2495,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 61320,
+      "sha256": "484f41c7058082f39d29b3299f0f659ff70856ea536432bdc538d331087b9039"
+    },
+    {
+      "sourceId": "couperin-1713",
+      "sourceOrder": 9,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "couperin-1713-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 2283,
+        "right": 3808,
+        "bottom": 2495,
+        "width": 739,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 43102,
+      "sha256": "1b615c56f866f5fb131acdb398df06c017185b417a58aa0be95eff0ed45af011"
+    },
+    {
+      "sourceId": "couperin-1713",
+      "sourceOrder": 9,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "couperin-1713-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 2283,
+        "right": 4470,
+        "bottom": 2495,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 21554,
+      "sha256": "3671661873a1932c0d8a9a59fc8e711964d13f338cbd6f41e9c573b4ea651006"
+    },
+    {
+      "sourceId": "couperin-1713",
+      "sourceOrder": 9,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "couperin-1713-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 2283,
+        "right": 5111,
+        "bottom": 2495,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 43556,
+      "sha256": "3f28f2843bd8330f629d67d41639c783b8d52e6f92840eae26733d0d4942d6b9"
+    },
+    {
+      "sourceId": "couperin-1713",
+      "sourceOrder": 9,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "couperin-1713-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 2283,
+        "right": 5757,
+        "bottom": 2495,
+        "width": 632,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 42918,
+      "sha256": "1835dce033dca3b1588b268e7c74be8842109604cfa3c63bf493b8c7efd18218"
+    },
+    {
+      "sourceId": "couperin-1713",
+      "sourceOrder": 9,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "couperin-1713-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 2283,
+        "right": 6418,
+        "bottom": 2495,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 32498,
+      "sha256": "d957b3c3f740a44d84a766026f90bc72100981fda5f8e3894fff49abd1e98b09"
+    },
+    {
+      "sourceId": "js-bach-1720",
+      "sourceOrder": 10,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "js-bach-1720-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 2505,
+        "right": 2297,
+        "bottom": 2717,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 40778,
+      "sha256": "feccb19fc31188f329b28be66d36478bbe26de7328952584428450099d18873d"
+    },
+    {
+      "sourceId": "js-bach-1720",
+      "sourceOrder": 10,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "js-bach-1720-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 2505,
+        "right": 3055,
+        "bottom": 2717,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 46594,
+      "sha256": "6044ee40d72671b9a8f16cc50cfae0fd06c1f209101eeedbd882bf396c85c633"
+    },
+    {
+      "sourceId": "js-bach-1720",
+      "sourceOrder": 10,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "js-bach-1720-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 2505,
+        "right": 3808,
+        "bottom": 2717,
+        "width": 739,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 58734,
+      "sha256": "4a9c62195526222db348bc08021af25632f4fbc17cb7f74bdfb4b6d4a27beff6"
+    },
+    {
+      "sourceId": "js-bach-1720",
+      "sourceOrder": 10,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "js-bach-1720-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 2505,
+        "right": 4470,
+        "bottom": 2717,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 20006,
+      "sha256": "4ea68e8d080a5f53a7d5636c616567d8e37f2ff722d0f4fc73c3f9bdb687fe85"
+    },
+    {
+      "sourceId": "js-bach-1720",
+      "sourceOrder": 10,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "js-bach-1720-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 2505,
+        "right": 5111,
+        "bottom": 2717,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 37802,
+      "sha256": "8b13319892a85d5840bc5bcd8cc9eb4fe11b1e8281f0e7eb0b02d59852965724"
+    },
+    {
+      "sourceId": "js-bach-1720",
+      "sourceOrder": 10,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "js-bach-1720-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 2505,
+        "right": 5757,
+        "bottom": 2717,
+        "width": 632,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 25110,
+      "sha256": "ba32f97a388417883238c5d65ec5a4458746d70c6f5645b0f13dc64478c3d1c2"
+    },
+    {
+      "sourceId": "js-bach-1720",
+      "sourceOrder": 10,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "js-bach-1720-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 2505,
+        "right": 6418,
+        "bottom": 2717,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 20800,
+      "sha256": "a106f92045ecf0b5ce16ed53615ab2edefcc3f529558bec75191b9fbb3541e1c"
+    },
+    {
+      "sourceId": "muffat-1727",
+      "sourceOrder": 11,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "muffat-1727-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 2727,
+        "right": 2297,
+        "bottom": 2939,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 6,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 46362,
+      "sha256": "d272f2c04b88bffa094af3d108bba93cdfc3f2c42b7be8f4e5e713fc83f07f55"
+    },
+    {
+      "sourceId": "muffat-1727",
+      "sourceOrder": 11,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "muffat-1727-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 2727,
+        "right": 3055,
+        "bottom": 2939,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 43484,
+      "sha256": "842cca05e0efa06e17dfdd900bc42761977ec31705480d4f770ed09c313788b1"
+    },
+    {
+      "sourceId": "muffat-1727",
+      "sourceOrder": 11,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "muffat-1727-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 2727,
+        "right": 3808,
+        "bottom": 2939,
+        "width": 739,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 50166,
+      "sha256": "de393beb9d71e0dde3b4a1737ff2610b40521363d9e8bf263af052262df503bf"
+    },
+    {
+      "sourceId": "muffat-1727",
+      "sourceOrder": 11,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "muffat-1727-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 2727,
+        "right": 4470,
+        "bottom": 2939,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 22710,
+      "sha256": "0f3f5a8edb612e12fc7b0edc10e6bc53decdf512c8dc1c19ed0fc56ef8e16e07"
+    },
+    {
+      "sourceId": "muffat-1727",
+      "sourceOrder": 11,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "muffat-1727-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 2727,
+        "right": 5111,
+        "bottom": 2939,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 20950,
+      "sha256": "8023898f08b642ff167046cfb110d543daccd8fbd8d36d5ebab382b0c58e4195"
+    },
+    {
+      "sourceId": "muffat-1727",
+      "sourceOrder": 11,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "muffat-1727-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 2727,
+        "right": 5757,
+        "bottom": 2939,
+        "width": 632,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 37620,
+      "sha256": "0383736131937086bcbe0f5bf756c0c55d0c968017ebbe76418ba7f510878cec"
+    },
+    {
+      "sourceId": "muffat-1727",
+      "sourceOrder": 11,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "muffat-1727-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 2727,
+        "right": 6418,
+        "bottom": 2939,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 21526,
+      "sha256": "ba12b187c22bb4b8055f0996756ac936e9088242e89d74188de2be66f3249b10"
+    },
+    {
+      "sourceId": "rameau-1731",
+      "sourceOrder": 12,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "rameau-1731-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 2949,
+        "right": 2297,
+        "bottom": 3160,
+        "width": 744,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 44538,
+      "sha256": "db3cf29429f4dbca7ef8bbd06825f686439018cd45384a6c86f3cfe8b5241781"
+    },
+    {
+      "sourceId": "rameau-1731",
+      "sourceOrder": 12,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "rameau-1731-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 2949,
+        "right": 3055,
+        "bottom": 3160,
+        "width": 744,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 41734,
+      "sha256": "dcad8d2d5d2485cb20db019eec8f65f02723e35385661ea47e69914b97e61015"
+    },
+    {
+      "sourceId": "rameau-1731",
+      "sourceOrder": 12,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "rameau-1731-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 2949,
+        "right": 3808,
+        "bottom": 3160,
+        "width": 739,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 27080,
+      "sha256": "1009a928e7fa98ee6cdd062e48cc69f840c8a255f307cd840e80cae70d893ec7"
+    },
+    {
+      "sourceId": "rameau-1731",
+      "sourceOrder": 12,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "rameau-1731-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 2949,
+        "right": 4470,
+        "bottom": 3160,
+        "width": 648,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 18108,
+      "sha256": "f9389ada71d344e3ca164b7bd3997a695a3a5e0f0056f133b7e631a23939d88d"
+    },
+    {
+      "sourceId": "rameau-1731",
+      "sourceOrder": 12,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "rameau-1731-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 2949,
+        "right": 5111,
+        "bottom": 3160,
+        "width": 627,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 18622,
+      "sha256": "d18c0c6c2255d4cc989ae7ec9508481e550df4a2ff3312bdd5192a32b3bafca8"
+    },
+    {
+      "sourceId": "rameau-1731",
+      "sourceOrder": 12,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "rameau-1731-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 2949,
+        "right": 5757,
+        "bottom": 3160,
+        "width": 632,
+        "height": 211
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 20984,
+      "sha256": "12d4bae4400fe8b7ffa694f93bf6ebce3459c2992fe819f7f2a04b5dfd6360be"
+    },
+    {
+      "sourceId": "rameau-1731",
+      "sourceOrder": 12,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "rameau-1731-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 2949,
+        "right": 6418,
+        "bottom": 3160,
+        "width": 647,
+        "height": 211
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 15374,
+      "sha256": "48ba06762fe04bec3e6cb4837562acf650275f63031e022663e63f957427becb"
+    },
+    {
+      "sourceId": "quantz-1752",
+      "sourceOrder": 13,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "quantz-1752-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 3170,
+        "right": 2297,
+        "bottom": 3384,
+        "width": 744,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 43122,
+      "sha256": "be741422f9fc9773d3a54e6ec3e3649a2b5adcee5e1f177cab7ecb9c7241433c"
+    },
+    {
+      "sourceId": "quantz-1752",
+      "sourceOrder": 13,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "quantz-1752-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 3170,
+        "right": 3055,
+        "bottom": 3384,
+        "width": 744,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 47750,
+      "sha256": "b59eeed367f89defb396e2b19df098e0107393534e097397015fbc5caba4afee"
+    },
+    {
+      "sourceId": "quantz-1752",
+      "sourceOrder": 13,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "quantz-1752-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 3170,
+        "right": 3808,
+        "bottom": 3384,
+        "width": 739,
+        "height": 214
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 17504,
+      "sha256": "191585abd1404831f39f0b1f19227715acf0c99320ded70b8de57ce3dc9f647f"
+    },
+    {
+      "sourceId": "quantz-1752",
+      "sourceOrder": 13,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "quantz-1752-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 3170,
+        "right": 4470,
+        "bottom": 3384,
+        "width": 648,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 20850,
+      "sha256": "5c3db02e1fa9be011026535ca3ec50a06f01c4e7c5e5813deefe886a2ae0bd78"
+    },
+    {
+      "sourceId": "quantz-1752",
+      "sourceOrder": 13,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "quantz-1752-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 3170,
+        "right": 5111,
+        "bottom": 3384,
+        "width": 627,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 30142,
+      "sha256": "73775334622a4aea32b2755075eb99f30e5dd017c1e25729b5d2cb360644b523"
+    },
+    {
+      "sourceId": "quantz-1752",
+      "sourceOrder": 13,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "quantz-1752-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 3170,
+        "right": 5757,
+        "bottom": 3384,
+        "width": 632,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 21704,
+      "sha256": "f15391f153041a0f07c24dde7aa8a915e7323cfce950d3e64bd9aeb9caa53a78"
+    },
+    {
+      "sourceId": "quantz-1752",
+      "sourceOrder": 13,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "quantz-1752-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 3170,
+        "right": 6418,
+        "bottom": 3384,
+        "width": 647,
+        "height": 214
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 38142,
+      "sha256": "ef5eb13a2b2c37cac9f61cc48185375e8f1f597fd398b9a3a5adafff843d29c0"
+    },
+    {
+      "sourceId": "cpe-bach-1753",
+      "sourceOrder": 14,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "cpe-bach-1753-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 3394,
+        "right": 2297,
+        "bottom": 3606,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 44084,
+      "sha256": "04ec4358025fcd3131fba9cc5af6ab380634466af7b7d88c2bbee27afcf6cd78"
+    },
+    {
+      "sourceId": "cpe-bach-1753",
+      "sourceOrder": 14,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "cpe-bach-1753-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 3394,
+        "right": 3055,
+        "bottom": 3606,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 56168,
+      "sha256": "a1afaf95f434a8ae692a104dcec3af906d04f009f3fb345f54b82bce70c9ef55"
+    },
+    {
+      "sourceId": "cpe-bach-1753",
+      "sourceOrder": 14,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "cpe-bach-1753-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 3394,
+        "right": 3808,
+        "bottom": 3606,
+        "width": 739,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 55610,
+      "sha256": "e5d56816930f13d09f03f71af70a0a68a6acd5a41aab6afad9934c8010fe5b9a"
+    },
+    {
+      "sourceId": "cpe-bach-1753",
+      "sourceOrder": 14,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "cpe-bach-1753-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 3394,
+        "right": 4470,
+        "bottom": 3606,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 51546,
+      "sha256": "be3830db321f3626597b5cf00c861a80ac0fdf157eec58cb877f50b31e4a0007"
+    },
+    {
+      "sourceId": "cpe-bach-1753",
+      "sourceOrder": 14,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "cpe-bach-1753-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 3394,
+        "right": 5111,
+        "bottom": 3606,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 37640,
+      "sha256": "2edb61a304ab3bda927fb154b1be37fb6b22c8f3097683becf6ad36d3ee86206"
+    },
+    {
+      "sourceId": "cpe-bach-1753",
+      "sourceOrder": 14,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "cpe-bach-1753-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 3394,
+        "right": 5757,
+        "bottom": 3606,
+        "width": 632,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 37976,
+      "sha256": "1052572771a08ce8f35b3b5e40590d6e175ae110c407d807b7ead6835def7f14"
+    },
+    {
+      "sourceId": "cpe-bach-1753",
+      "sourceOrder": 14,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "cpe-bach-1753-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 3394,
+        "right": 6418,
+        "bottom": 3606,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 36970,
+      "sha256": "38af5390096f20ee92d143402054b166e3aa75bafbfc5d99ac8bcae6927f9955"
+    },
+    {
+      "sourceId": "marpurg-1750",
+      "sourceOrder": 15,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "marpurg-1750-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 3616,
+        "right": 2297,
+        "bottom": 3832,
+        "width": 744,
+        "height": 216
+      },
+      "populated": true,
+      "auditedVariantCount": 8,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 47692,
+      "sha256": "9ae49b8252365e327a09cc32aa01c415c4d7c711d738214d6a7ae78b8f83ba4a"
+    },
+    {
+      "sourceId": "marpurg-1750",
+      "sourceOrder": 15,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "marpurg-1750-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 3616,
+        "right": 3055,
+        "bottom": 3832,
+        "width": 744,
+        "height": 216
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 59236,
+      "sha256": "b92be49498b0ea0313b2d1e1186592d2250653ec21ba9937b27e495657d79720"
+    },
+    {
+      "sourceId": "marpurg-1750",
+      "sourceOrder": 15,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "marpurg-1750-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 3616,
+        "right": 3808,
+        "bottom": 3832,
+        "width": 739,
+        "height": 216
+      },
+      "populated": true,
+      "auditedVariantCount": 7,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 60954,
+      "sha256": "33f4e83bd177ed40f40d1f57f9cee77701c4dba26df33681e8c112416c19e2c4"
+    },
+    {
+      "sourceId": "marpurg-1750",
+      "sourceOrder": 15,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "marpurg-1750-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 3616,
+        "right": 4470,
+        "bottom": 3832,
+        "width": 648,
+        "height": 216
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 46974,
+      "sha256": "b524286e0eab02cf89b38299d8fa6b7f5dbd12093c759b7b737865131ab9fdee"
+    },
+    {
+      "sourceId": "marpurg-1750",
+      "sourceOrder": 15,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "marpurg-1750-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 3616,
+        "right": 5111,
+        "bottom": 3832,
+        "width": 627,
+        "height": 216
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 27388,
+      "sha256": "ebeb06609bffc90ec013d82b6f7259bbb91111d9a8f979df919d45118b11fd1d"
+    },
+    {
+      "sourceId": "marpurg-1750",
+      "sourceOrder": 15,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "marpurg-1750-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 3616,
+        "right": 5757,
+        "bottom": 3832,
+        "width": 632,
+        "height": 216
+      },
+      "populated": true,
+      "auditedVariantCount": 1,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 23646,
+      "sha256": "0c41ad77cb23dcf3ef64d1946f8c5820a18a9cd42202c449140624da7e83b903"
+    },
+    {
+      "sourceId": "marpurg-1750",
+      "sourceOrder": 15,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "marpurg-1750-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 3616,
+        "right": 6418,
+        "bottom": 3832,
+        "width": 647,
+        "height": 216
+      },
+      "populated": true,
+      "auditedVariantCount": 6,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 43398,
+      "sha256": "1cbe1d3c3f8ea2d24b8a6a9fcfe08b7f3bcea70e361c06df93d184e47f6c378e"
+    },
+    {
+      "sourceId": "leopold-mozart-1756",
+      "sourceOrder": 16,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "leopold-mozart-1756-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 3842,
+        "right": 2297,
+        "bottom": 4054,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 55332,
+      "sha256": "687cdc5186d37174e302b86302ce53de65af7bd64979d1d1acbff06d32ae12f4"
+    },
+    {
+      "sourceId": "leopold-mozart-1756",
+      "sourceOrder": 16,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "leopold-mozart-1756-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 3842,
+        "right": 3055,
+        "bottom": 4054,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 55502,
+      "sha256": "9848430678a81c3609db1a4e647e5e41cdb1e106e1a148c703215f2ca85499e7"
+    },
+    {
+      "sourceId": "leopold-mozart-1756",
+      "sourceOrder": 16,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "leopold-mozart-1756-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 3842,
+        "right": 3808,
+        "bottom": 4054,
+        "width": 739,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 55766,
+      "sha256": "ce89348939b5f75591f3b10de5c3b6ebb8201d78b471d997916f1efb175b5143"
+    },
+    {
+      "sourceId": "leopold-mozart-1756",
+      "sourceOrder": 16,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "leopold-mozart-1756-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 3842,
+        "right": 4470,
+        "bottom": 4054,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 53280,
+      "sha256": "5499c17ecbe22157ffaa25388454bdfe9c272cf1f53830463c6073cee8541ef7"
+    },
+    {
+      "sourceId": "leopold-mozart-1756",
+      "sourceOrder": 16,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "leopold-mozart-1756-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 3842,
+        "right": 5111,
+        "bottom": 4054,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 38674,
+      "sha256": "1ba7e1d081eca1f9f2a72449e7e743165f1f0ad7e84b49da7ad0571f856ca2ba"
+    },
+    {
+      "sourceId": "leopold-mozart-1756",
+      "sourceOrder": 16,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "leopold-mozart-1756-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 3842,
+        "right": 5757,
+        "bottom": 4054,
+        "width": 632,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 21286,
+      "sha256": "4521e9ea7c22e009c7901a2bb2b813d2a730ae3a45e8263012c9b574990a593f"
+    },
+    {
+      "sourceId": "leopold-mozart-1756",
+      "sourceOrder": 16,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "leopold-mozart-1756-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 3842,
+        "right": 6418,
+        "bottom": 4054,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 6,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 38110,
+      "sha256": "fccc330e7318af3cd302ca5e38e48f527eaccf46837d3dc0810794c288b5fe6d"
+    },
+    {
+      "sourceId": "turk-1789",
+      "sourceOrder": 17,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "turk-1789-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 4064,
+        "right": 2297,
+        "bottom": 4276,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 8,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 49606,
+      "sha256": "da7e088c311ef1b4cc60e75eaa2193098c2e100570013be4af7c3c109590d6c2"
+    },
+    {
+      "sourceId": "turk-1789",
+      "sourceOrder": 17,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "turk-1789-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 4064,
+        "right": 3055,
+        "bottom": 4276,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 53638,
+      "sha256": "ada7dd53efc98da0ece129cc5e3d57f84a23c55de81edd373a29224320f113f9"
+    },
+    {
+      "sourceId": "turk-1789",
+      "sourceOrder": 17,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "turk-1789-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 4064,
+        "right": 3808,
+        "bottom": 4276,
+        "width": 739,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 64740,
+      "sha256": "3923fbb02463371312cd252f423f76215bbaa91b07a3ce14c84ab3304f923623"
+    },
+    {
+      "sourceId": "turk-1789",
+      "sourceOrder": 17,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "turk-1789-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 4064,
+        "right": 4470,
+        "bottom": 4276,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 58732,
+      "sha256": "d3f572b28ce3777dad7b22f45facd4aae61af20915763058d3538a74078c009f"
+    },
+    {
+      "sourceId": "turk-1789",
+      "sourceOrder": 17,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "turk-1789-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 4064,
+        "right": 5111,
+        "bottom": 4276,
+        "width": 627,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 2,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 26844,
+      "sha256": "3bb875dd99992ac729d3c1049a4906013c4a1e8d207c0c4da3865ad205bac3d3"
+    },
+    {
+      "sourceId": "turk-1789",
+      "sourceOrder": 17,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "turk-1789-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 4064,
+        "right": 5757,
+        "bottom": 4276,
+        "width": 632,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 35410,
+      "sha256": "dd4ec2779155abc27f3d9f80b248ae82008a22a6acdf296e26ce47649b2fb48a"
+    },
+    {
+      "sourceId": "turk-1789",
+      "sourceOrder": 17,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "turk-1789-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 4064,
+        "right": 6418,
+        "bottom": 4276,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 4,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 40616,
+      "sha256": "4019675045d3410f82123431d75c10b34908baeeb25145d5c0b535f569d6fb7b"
+    },
+    {
+      "sourceId": "hummel-1828",
+      "sourceOrder": 18,
+      "familyId": "vorschlag",
+      "familyOrder": 1,
+      "filename": "hummel-1828-vorschlag.webp",
+      "cropBounds": {
+        "left": 1553,
+        "top": 4286,
+        "right": 2297,
+        "bottom": 4498,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 8,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 58444,
+      "sha256": "aa441510a77c41abb34b01ce39b172a5842d69a7c7f54d41a7c1fc7ac83ef162"
+    },
+    {
+      "sourceId": "hummel-1828",
+      "sourceOrder": 18,
+      "familyId": "trill",
+      "familyOrder": 2,
+      "filename": "hummel-1828-trill.webp",
+      "cropBounds": {
+        "left": 2311,
+        "top": 4286,
+        "right": 3055,
+        "bottom": 4498,
+        "width": 744,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 54342,
+      "sha256": "abddd84fb4973c1529c86ef25a4e2761e4500777417e9775e9dd78278ecaabe3"
+    },
+    {
+      "sourceId": "hummel-1828",
+      "sourceOrder": 18,
+      "familyId": "trillVariants",
+      "familyOrder": 3,
+      "filename": "hummel-1828-trillVariants.webp",
+      "cropBounds": {
+        "left": 3069,
+        "top": 4286,
+        "right": 3808,
+        "bottom": 4498,
+        "width": 739,
+        "height": 212
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 18944,
+      "sha256": "563db1038010ab729404072fa80aa857786b247ccd39bf42202d673c9597f68c"
+    },
+    {
+      "sourceId": "hummel-1828",
+      "sourceOrder": 18,
+      "familyId": "turn",
+      "familyOrder": 4,
+      "filename": "hummel-1828-turn.webp",
+      "cropBounds": {
+        "left": 3822,
+        "top": 4286,
+        "right": 4470,
+        "bottom": 4498,
+        "width": 648,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 5,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 42610,
+      "sha256": "cfb247c7f378505846b2a0cacb37d47b05bac7cd9e7a87fcf5cee519e3b271f7"
+    },
+    {
+      "sourceId": "hummel-1828",
+      "sourceOrder": 18,
+      "familyId": "mordent",
+      "familyOrder": 5,
+      "filename": "hummel-1828-mordent.webp",
+      "cropBounds": {
+        "left": 4484,
+        "top": 4286,
+        "right": 5111,
+        "bottom": 4498,
+        "width": 627,
+        "height": 212
+      },
+      "populated": false,
+      "auditedVariantCount": 0,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 16060,
+      "sha256": "360f9d8ac51e650c605767912bd93183637d23e54fe4185870b71ff28400c676"
+    },
+    {
+      "sourceId": "hummel-1828",
+      "sourceOrder": 18,
+      "familyId": "compoundMordent",
+      "familyOrder": 6,
+      "filename": "hummel-1828-compoundMordent.webp",
+      "cropBounds": {
+        "left": 5125,
+        "top": 4286,
+        "right": 5757,
+        "bottom": 4498,
+        "width": 632,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 24844,
+      "sha256": "6d4b05e574a9fb4892279c1bcf90b0226535187e855a0b6ff23f8bbd54a5c8b8"
+    },
+    {
+      "sourceId": "hummel-1828",
+      "sourceOrder": 18,
+      "familyId": "slide",
+      "familyOrder": 7,
+      "filename": "hummel-1828-slide.webp",
+      "cropBounds": {
+        "left": 5771,
+        "top": 4286,
+        "right": 6418,
+        "bottom": 4498,
+        "width": 647,
+        "height": 212
+      },
+      "populated": true,
+      "auditedVariantCount": 3,
+      "outputDimensions": {
+        "width": 780,
+        "height": 240
+      },
+      "byteSize": 37416,
+      "sha256": "11206e75791b6775325573e69801c56cb9c77eeccd13b3a6a094449664dd3ef7"
+    }
+  ]
+}

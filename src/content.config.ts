@@ -28,6 +28,14 @@ const localizedText = z.object({
   zh: z.string().optional(),
 });
 
+const writingSource = z.object({
+  platform: z.string(),
+  chat: z.string().optional(),
+  exportFile: z.string().optional(),
+  messageIds: z.array(z.string()).default([]),
+  timestamp: z.string().optional(),
+});
+
 // 中文：定义内容文件的位置与 frontmatter 结构。
 // English: Defines content locations and validates their frontmatter.
 // Caveat / 注意：index.md 是主文件；chapters/*.md 才会被当作章节。
@@ -94,6 +102,36 @@ const works = defineCollection({
   }),
 });
 
+const projects = defineCollection({
+  loader: glob({
+    base: "./content/projects",
+    pattern: "*/index.md",
+    generateId: folderId,
+  }),
+  schema: z.object({
+    title: z.string(),
+    titleZh: z.string().optional(),
+    subtitle: z.string().optional(),
+    subtitleZh: z.string().optional(),
+    summary: z.string(),
+    summaryZh: z.string().optional(),
+    status: z.enum(["planning", "in-progress", "complete", "archived"]),
+    startDate: z.string(),
+    updated: z.string().optional(),
+    role: localizedText.optional(),
+    collaborators: z.array(localizedText).default([]),
+    topics: z.array(z.string()).default([]),
+    links: z.array(z.object({
+      label: z.string(),
+      url: z.url(),
+    })).default([]),
+    slug: z.string(),
+    order: z.number().int().default(999),
+    featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
+  }),
+});
+
 const writings = defineCollection({
   loader: glob({
     base: "./content/writings",
@@ -102,7 +140,15 @@ const writings = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
+    // Writing listings and title pages always have an explicit title in both
+    // interface languages. The canonical `title` field is English.
+    titleZh: z.string(),
     subtitle: z.string().optional(),
+    subtitleZh: z.string().optional(),
+    // Optional translation route metadata for the catalog and title page.
+    // Use language codes such as en, zh-modern, or zh-classical.
+    translationFrom: z.string().min(2).optional(),
+    translationTo: z.array(z.string().min(2)).default([]),
     date: z.union([z.string(), z.number()]),
     displayDate: z.string().optional(),
     // 中文：标签取代旧的 type / language 字段，可多选；正文语言改由文字自动判断。
@@ -110,6 +156,7 @@ const writings = defineCollection({
     // the body language is now inferred from the text itself.
     tags: z.array(z.enum(writingTypes)).default([]),
     excerpt: z.string(),
+    excerptZh: z.string(),
     slug: z.string(),
     order: z.number().int().default(999),
     draft: z.boolean().default(false),
@@ -120,6 +167,9 @@ const writings = defineCollection({
     // continuous prose that begins with a full paragraph; leave off for poetry
     // or texts opening with an epigraph / source line (the cap would land wrong).
     dropcap: z.boolean().default(false),
+    // Opt a title page into indenting the first prose paragraph after an
+    // epigraph, source note, or other opening block.
+    firstParagraphIndent: z.boolean().default(false),
     // Use a content-marked opening character when prose begins after a display
     // block, a source line, or other non-prose material.
     dropcapTarget: z.enum(["opening", "marked"]).default("opening"),
@@ -127,13 +177,7 @@ const writings = defineCollection({
     // or an external source such as a chat export.
     series: z.string().optional(),
     seriesNumber: z.union([z.string(), z.number()]).optional(),
-    source: z.object({
-      platform: z.string(),
-      chat: z.string().optional(),
-      exportFile: z.string().optional(),
-      messageIds: z.array(z.string()).default([]),
-      timestamp: z.string().optional(),
-    }).optional(),
+    source: writingSource.optional(),
     // 目录是否自动编号；章节标题本身就是序号时设为 false，避免重复。
     // Whether the contents list auto-numbers; set false when chapter titles are
     // themselves numbers, so the list does not repeat them.
@@ -185,6 +229,15 @@ const writingChapters = defineCollection({
     slug: z.string(),
     excerpt: z.string().optional(),
     order: z.number().int().default(999),
+    // Preserve the archival metadata carried by chapters recovered from
+    // dialogue series, even though the parent remains the sole index entry.
+    date: z.union([z.string(), z.number()]).optional(),
+    displayDate: z.string().optional(),
+    tags: z.array(z.enum(writingTypes)).default([]),
+    comments: z.boolean().default(false),
+    series: z.string().optional(),
+    seriesNumber: z.union([z.string(), z.number()]).optional(),
+    source: writingSource.optional(),
   }),
 });
 
@@ -279,6 +332,7 @@ const writingsZh = defineCollection({
 
 export const collections = {
   works,
+  projects,
   events,
   writings,
   writingChapters,

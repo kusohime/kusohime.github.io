@@ -1,10 +1,10 @@
 {
   "intro": {
-    "en": "is from [Hokkien](https://en.wikipedia.org/wiki/Fujian). They study composition and piano technology at the [Eastman School of Music](https://www.esm.rochester.edu).",
+    "en": "is from [Hokkien](https://en.wikipedia.org/wiki/Fujian) and lives in Rochester, New York. They study composition and piano technology at the [Eastman School of Music](https://www.esm.rochester.edu).",
     "zh": "來自福建，在[伊斯曼音樂學院](https://www.esm.rochester.edu)研習作曲與鋼琴維修技術。"
   },
-  "image": "/images/photo_2022-10-16_10-03-40.jpg",
-  "imageAlt": "Image description",
+  "image": "/images/homepage-concert.jpg",
+  "imageAlt": "Musicians performing on stage during a concert.",
   "caption": {
     "en": "",
     "zh": ""

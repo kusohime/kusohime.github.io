@@ -6,6 +6,7 @@
 // Caveat: Unlinked and noindexed; removing draft: true from the frontmatter publishes the entry.
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
 import { formatDate } from "../../config/locales";
 
 const isLocalDraftPreview = import.meta.env.DEV;
@@ -19,7 +20,12 @@ const draftWritings = isLocalDraftPreview
       await getCollection("writings", ({ data }) => data.draft)
     ).sort((a, b) => a.data.order - b.data.order)
   : [];
-const empty = draftWorks.length === 0 && draftWritings.length === 0;
+const draftProjects = isLocalDraftPreview
+  ? (
+      await getCollection("projects", ({ data }) => data.draft)
+    ).sort((a, b) => a.data.order - b.data.order)
+  : [];
+const empty = draftWorks.length === 0 && draftWritings.length === 0 && draftProjects.length === 0;
 ---
 
 <BaseLayout
@@ -59,6 +65,30 @@ const empty = draftWorks.length === 0 && draftWritings.length === 0;
     }
 
     {
+      draftProjects.length > 0 && (
+        <section>
+          <h2>Projects</h2>
+          <ol class="catalog-list entry-list dated-list">
+            {draftProjects.map((project) => (
+              <li>
+                <time datetime={project.data.startDate}>
+                  {formatDate(project.data.startDate, "en")}
+                </time>
+                <article class="entry-summary">
+                  <h3>
+                    <a href={`/projects/${project.data.slug}/`}>
+                      {project.data.title}
+                    </a>
+                  </h3>
+                </article>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    {
       draftWritings.length > 0 && (
         <section>
           <h2>Writings</h2>
@@ -71,7 +101,7 @@ const empty = draftWorks.length === 0 && draftWritings.length === 0;
                 <article class="entry-summary">
                   <h3>
                     <a href={`/writings/${writing.data.slug}/`}>
-                      {writing.data.title}
+                      <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
                     </a>
                   </h3>
                 </article>

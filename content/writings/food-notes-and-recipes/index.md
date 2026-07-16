@@ -1,9 +1,11 @@
 ﻿---
 title: "Food Notes and Recipes"
+titleZh: "飲食筆記與食譜"
 date: "undated"
 displayDate: "Recovered from chat export"
 tags: ["Other"]
-excerpt: "牛排骨，海鮮炒飯，咖喱補記。"
+excerpt: "Recovered notes on beef ribs, seafood fried rice, and curry."
+excerptZh: "牛排骨、海鮮炒飯與咖喱補記。"
 slug: "food-notes-and-recipes"
 order: 5
 draft: true

@@ -1,9 +1,14 @@
 ---
-title: "諾齊克的體驗機論點究竟證明了什麼"
-subtitle: "What Nozick's Experience Machine Argument Really Proves — Eduardo Rivera-López"
+title: "What Nozick's Experience Machine Argument Really Proves"
+titleZh: "諾齊克的體驗機論點究竟證明了什麼"
+subtitle: "Eduardo Rivera-López"
+subtitleZh: "Eduardo Rivera-López"
+translationFrom: "en"
+translationTo: ["zh-modern"]
 date: "2020-06-30"
 tags: ["Translation", "Philosophy", "Moral Philosophy"]
-excerpt: "諾齊克著名的體驗機論點可以說是一個非常典型且成功的論點——據我所知，沒什麼人討論過這個論點的可靠性。"
+excerpt: "Nozick’s famous experience-machine argument is often treated as a paradigmatically successful argument, yet, to my knowledge, few have discussed its soundness."
+excerptZh: "諾齊克著名的體驗機論點可以說是一個非常典型且成功的論點——據我所知，沒什麼人討論過這個論點的可靠性。"
 slug: "nuo-qike-tiyanji-lun-dian"
 order: 6
 comments: true

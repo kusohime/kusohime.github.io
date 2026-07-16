@@ -7,6 +7,7 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Comments from "../../components/Comments.astro";
 import CuiXiongReader from "../../components/CuiXiongReader.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
 import SeriesDialogueReader from "../../components/SeriesDialogueReader.astro";
 import { toAnchor } from "../../config/contentTaxonomy";
 import WritingContentsRail from "../../components/WritingContentsRail.astro";
@@ -14,6 +15,7 @@ import { contentFolder } from "../../utils/contentPaths";
 import { cjkLangFromText, dominantContentLang } from "../../utils/cjkLanguage";
 import {
   formatDate,
+  formatTranslationRoute,
   translate,
   writingTypeLabel,
 } from "../../config/locales";
@@ -51,17 +53,41 @@ const chapters = allChapters
   .filter((chapter) => contentFolder(chapter.id) === writingFolder)
   .sort((a, b) => a.data.order - b.data.order);
 
-const { title, subtitle, date, displayDate, excerpt } = writing.data;
+const {
+  title,
+  titleZh,
+  subtitle,
+  subtitleZh,
+  date,
+  displayDate,
+  excerpt,
+  excerptZh,
+} = writing.data;
 const dateLabel = displayDate ?? String(date);
 const hasChapters = chapters.length > 0;
 const writingTags = writing.data.tags;
 const isTranslation = writingTags.includes("Translation");
+const translationRoute =
+  writing.data.translationFrom && writing.data.translationTo.length > 0
+    ? {
+        en: formatTranslationRoute(
+          writing.data.translationFrom,
+          writing.data.translationTo,
+          "en",
+        ),
+        zh: formatTranslationRoute(
+          writing.data.translationFrom,
+          writing.data.translationTo,
+          "zh",
+        ),
+      }
+    : undefined;
 // 诗歌正文不作段首缩进（样式见 global.css 的 .poetry-body）。
 // Poetry bodies take no first-line indent (see .poetry-body in global.css).
 const isPoetry = writingTags.includes("Poetry");
 const isDrama = writingTags.includes("Drama");
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
-const dialogueSeries = new Set(["脆熊篇", "本羣篇", "布鞋篇"]);
+const dialogueSeries = new Set(["脆熊篇", "本羣篇"]);
 const seriesTitle = writing.data.series;
 const isSeriesDialogue = Boolean(seriesTitle && dialogueSeries.has(seriesTitle));
 const isBenQun = seriesTitle === "本羣篇";
@@ -77,11 +103,7 @@ const isClairieres = writing.data.slug === "tian-jian-qing-che";
 // The prose body is a more reliable language signal than a bilingual title or
 // subtitle (which may contain a quoted Japanese or Chinese title).
 const bodyLang = dominantContentLang(writing.body ?? "");
-const contentLang = bodyLang ?? cjkLangFromText(title) ?? "en";
-const titleLang = cjkLangFromText(title) ?? contentLang;
-const subtitleLang = subtitle
-  ? (cjkLangFromText(subtitle) ?? contentLang)
-  : contentLang;
+const contentLang = bodyLang ?? cjkLangFromText(writing.body ?? "") ?? "en";
 // 中文正文块的 lang 按其正文文字推断（简繁/日文）。
 // The Chinese block's lang is inferred from its own body text (Hans/Hant/ja).
 const zhBodyLang = zhEntry
@@ -104,7 +126,9 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
 
 <BaseLayout
   title={title}
+  titleZh={titleZh}
   description={excerpt}
+  descriptionZh={excerptZh}
   noindex={writing.data.draft}
   unavailableLanguages={unavailableLanguages}
 >
@@ -159,7 +183,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
                 <p class="draft-flag">Draft — not listed publicly</p>
               )}
               <div class="writing-title-line writing-title-line--detail">
-                <h1 lang={titleLang}>{title}</h1>
+                <h1><LocalizedText value={{ en: title, zh: titleZh }} /></h1>
                 {isTranslation && (
                   <a
                     class="writing-tag writing-tag--translation"
@@ -170,7 +194,19 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
                   </a>
                 )}
               </div>
-              {subtitle && <p lang={subtitleLang}>{subtitle}</p>}
+              {(subtitle || translationRoute) && (
+                <p>
+                  {subtitle && (
+                    <LocalizedText value={{ en: subtitle, zh: subtitleZh }} />
+                  )}
+                  {translationRoute && (
+                    <span class="writing-translation-route">
+                      <span aria-hidden="true"> · </span>
+                      <LocalizedText value={translationRoute} />
+                    </span>
+                  )}
+                </p>
+              )}
               <p class="writing-metadata">
                 <time datetime={String(date)} data-i18n-date={dateLabel}>
                   {formatDate(dateLabel, "en")}
@@ -188,6 +224,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
                     "writing-body": !hasChapters,
                     "poetry-body": isPoetry,
                     "drama-body": isDrama,
+                    "first-paragraph-indented": writing.data.firstParagraphIndent,
                     leadcap: writing.data.dropcap,
                     "leadcap--marked":
                       writing.data.dropcap && writing.data.dropcapTarget === "marked",

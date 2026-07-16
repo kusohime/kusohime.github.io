@@ -1,0 +1,135 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LocalizedText from "../../components/LocalizedText.astro";
+import EssentialOrnamentsIndex from "../../components/projects/EssentialOrnamentsIndex.astro";
+import { formatDate, translate } from "../../config/locales";
+
+export async function getStaticPaths() {
+  const projects = await getCollection(
+    "projects",
+    ({ data }) => import.meta.env.DEV || !data.draft,
+  );
+
+  return projects.map((project) => ({
+    params: { slug: project.data.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const isEssentialOrnamentsIndex = project.data.slug === "essential-ornaments-index";
+
+const statusLabels = {
+  planning: { en: "Planning", zh: "規劃中" },
+  "in-progress": { en: "In progress", zh: "進行中" },
+  complete: { en: "Complete", zh: "已完成" },
+  archived: { en: "Archived", zh: "已封存" },
+} as const;
+---
+
+<BaseLayout
+  title={project.data.title}
+  description={project.data.summary}
+  noindex={project.data.draft}
+>
+  <article
+    class="detail-page project-detail"
+    data-source-file={`content/projects/${project.id}/index.md`}
+  >
+    <header class="detail-header project-detail-header">
+      {project.data.draft && <p class="draft-flag">Draft — not listed publicly</p>}
+      <p class="project-status">
+        <LocalizedText value={statusLabels[project.data.status]} />
+      </p>
+      <h1>
+        <LocalizedText value={{ en: project.data.title, zh: project.data.titleZh }} />
+      </h1>
+      {project.data.subtitle && (
+        <p class="project-subtitle">
+          <LocalizedText value={{ en: project.data.subtitle, zh: project.data.subtitleZh }} />
+        </p>
+      )}
+      <p class="project-summary">
+        <LocalizedText value={{ en: project.data.summary, zh: project.data.summaryZh }} />
+      </p>
+      <p class="project-dates">
+        Started <time datetime={project.data.startDate}>{formatDate(project.data.startDate, "en")}</time>
+        {project.data.updated && (
+          <span>
+            {" · Updated "}
+            <time datetime={project.data.updated}>{formatDate(project.data.updated, "en")}</time>
+          </span>
+        )}
+      </p>
+      {project.data.role && (
+        <p>
+          <strong>Role: </strong><LocalizedText value={project.data.role} />
+        </p>
+      )}
+      {project.data.links.length > 0 && (
+        <nav class="resource-links" aria-label="Project resources">
+          <ul>
+            {project.data.links.map((link) => (
+              <li><a href={link.url} rel="external">{link.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </header>
+
+    <div class="prose project-notes">
+      <Content />
+    </div>
+
+    {isEssentialOrnamentsIndex && <EssentialOrnamentsIndex />}
+
+    <nav class="back-link" aria-label="Footer navigation">
+      <a href="/projects/">
+        <span class="glyph-arrow glyph-arrow--back" data-arrow-glyph aria-hidden="true"></span>
+        <span data-i18n-key="common.backProjects">
+          {translate("en", "common.backProjects")}
+        </span>
+      </a>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .project-detail {
+    max-width: var(--page-width);
+  }
+
+  .project-detail-header,
+  .project-notes {
+    max-width: var(--reading-width);
+  }
+
+  .project-status,
+  .project-dates {
+    color: var(--color-muted);
+    font-size: 0.86rem;
+  }
+
+  .project-status {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .project-subtitle {
+    color: var(--color-muted);
+  }
+
+  .project-summary {
+    font-size: 1.05rem;
+  }
+
+  .project-notes {
+    margin-bottom: var(--space-xl);
+  }
+
+  .back-link {
+    margin-top: var(--space-xl);
+  }
+</style>

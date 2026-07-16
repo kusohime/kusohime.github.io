@@ -29,6 +29,8 @@ export const writingTypes = [
   "Affect Theory",
   "Psychoanalysis",
   "Philology",
+  "Aesthetics",
+  "Calligraphy",
   "Program Note",
   "Review",
   "Other",

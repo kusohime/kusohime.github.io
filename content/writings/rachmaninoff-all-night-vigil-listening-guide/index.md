@@ -1,8 +1,10 @@
 ---
 title: "How to Sing-along All-Night Vigil"
+titleZh: "拉赫瑪尼諾夫《徹夜禱》跟唱指南"
 date: "2022-10-13"
 tags: ["Program Note", "Russian", "Musicology"]
 excerpt: "A movement-by-movement guide to Rachmaninoff’s All-Night Vigil, with scriptural sources and recording timestamps."
+excerptZh: "逐曲介紹拉赫瑪尼諾夫《徹夜禱》，附經文來源與錄音時間戳。"
 slug: "rachmaninoff-all-night-vigil-listening-guide"
 order: 999
 comments: true

@@ -1,8 +1,10 @@
 ---
 title: "On \"Of\""
+titleZh: "論「of」"
 date: "2024-10-22"
 tags: ["Essay", "Linguistics"]
-excerpt: "現代英語的領屬結構像是兩重歷史疊在一起。"
+excerpt: "Modern English possessive constructions are like two layers of history superimposed."
+excerptZh: "現代英語的領屬結構像是兩重歷史疊在一起。"
 slug: "on-of"
 dropcap: true
 order: 999

@@ -1,8 +1,10 @@
 ---
 title: "Quantum Mahler"
+titleZh: "量子馬勒"
 date: "2024-12-22"
 tags: ["Essay", "Philosophy", "Musicology"]
-excerpt: "Quantum Mahler"
+excerpt: "Mahler at the thresholds of identity, counterpoint, eros, and death."
+excerptZh: "處在身份、複調、情慾與死亡臨界狀態中的馬勒。"
 slug: "quantum-mahler"
 order: 999
 draft: false

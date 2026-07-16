@@ -1,0 +1,97 @@
+---
+import type {
+  HistoricalOrnamentSource,
+  OrnamentFamilyId,
+} from "../../data/essentialOrnaments";
+import {
+  ornamentFacsimileDimensions,
+  ornamentFacsimilePath,
+} from "../../data/ornamentFacsimiles";
+
+interface Props {
+  source: HistoricalOrnamentSource;
+  familyId: OrnamentFamilyId;
+  familyLabel: string;
+}
+
+const { source, familyId, familyLabel } = Astro.props;
+const src = ornamentFacsimilePath(source.id, familyId);
+const descriptionId = `chart-cell-description-${source.id}-${familyId}`;
+const alt = `Chart-cell facsimile for ${source.author}: ${familyLabel}`;
+---
+
+<figure class="chart-cell" data-chart-cell={`${source.id}:${familyId}`}>
+  <div class="chart-cell-heading">
+    <strong>PDF chart-cell facsimile</strong>
+    <span>untranscribed visual witness · all printed material in this cell</span>
+  </div>
+  <a
+    href={src}
+    target="_blank"
+    rel="external"
+    aria-label={`${alt}; open full-size image`}
+    aria-describedby={descriptionId}
+  >
+    <img
+      src={src}
+      alt={alt}
+      aria-describedby={descriptionId}
+      width={ornamentFacsimileDimensions.width}
+      height={ornamentFacsimileDimensions.height}
+      loading="lazy"
+      decoding="async"
+    />
+  </a>
+  <figcaption id={descriptionId}>
+    Untranscribed visual witness from Brändle’s chart, source row {source.chartOrder}.
+    The image preserves the printed marks in this cell but does not provide a text
+    or machine-readable transcription of its musical contents. Open it to inspect
+    the original-size facsimile.
+  </figcaption>
+</figure>
+
+<style>
+  .chart-cell {
+    margin: var(--space-sm) 0 0;
+    border: 1px solid var(--color-rule);
+    padding: var(--space-xs);
+    background: #fff;
+    color: #111;
+  }
+
+  .chart-cell-heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.7rem;
+    align-items: baseline;
+    margin-bottom: 0.25rem;
+    font-size: 0.76rem;
+  }
+
+  .chart-cell-heading span,
+  .chart-cell figcaption {
+    color: #555;
+  }
+
+  .chart-cell a {
+    display: block;
+    overflow: hidden;
+    border: 1px solid transparent;
+  }
+
+  .chart-cell a:hover,
+  .chart-cell a:focus-visible {
+    border-color: var(--theme-color);
+  }
+
+  .chart-cell img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .chart-cell figcaption {
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+  }
+</style>

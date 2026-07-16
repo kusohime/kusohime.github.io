@@ -1,0 +1,153 @@
+---
+import type { OrnamentNotationExample } from "../../data/ornamentNotation";
+import { renderMeiSnippet } from "../../lib/renderMei";
+
+interface Props {
+  example: OrnamentNotationExample;
+}
+
+const { example } = Astro.props;
+const [signSvg, realizationSvg] = await Promise.all([
+  renderMeiSnippet(example.signMei, "sign"),
+  renderMeiSnippet(example.realizationMei, "realization"),
+]);
+---
+
+<figure class="notation-example" data-notation-example={example.id}>
+  <div class="notation-heading">
+    <h4>{example.term}</h4>
+    <span>{example.termZh}</span>
+  </div>
+
+  <div class="notation-pair">
+    <section>
+      <h5>Encoded source sign</h5>
+      <div
+        class="notation-svg notation-svg--sign"
+        role="img"
+        aria-label={`${example.term}: normalized digital encoding of the historical ornament sign on the principal note`}
+        set:html={signSvg}
+      />
+    </section>
+    <span class="notation-arrow" aria-hidden="true">→</span>
+    <section>
+      <h5>Written-out realization</h5>
+      <div
+        class="notation-svg notation-svg--realization"
+        role="img"
+        aria-label={`${example.term}: ${example.realizationSummary} ${example.realizationAccessibleDescription}`}
+        set:html={realizationSvg}
+      />
+    </section>
+  </div>
+
+  <figcaption>
+    <p>{example.realizationSummary}</p>
+    <p class="notation-editorial-note">{example.editorialNote}</p>
+    <p class="notation-source">
+      Checked against {example.sourceLocator}. <a href={example.sourceImageUrl} rel="external">
+        View autograph
+      </a>
+      <span aria-hidden="true"> · </span>
+      <a href={example.sourcePageUrl} rel="external">Catalogue record</a>
+    </p>
+    <p class="notation-credit">{example.sourceCredit}</p>
+  </figcaption>
+</figure>
+
+<style>
+  .notation-example {
+    margin: var(--space-md) 0 0;
+    padding: var(--space-sm);
+    border: 1px solid var(--color-rule);
+    background: var(--color-background);
+  }
+
+  .notation-heading {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+  }
+
+  .notation-heading h4,
+  .notation-heading span,
+  .notation-pair h5,
+  .notation-example figcaption p {
+    margin: 0;
+  }
+
+  .notation-heading h4 {
+    font-size: 1rem;
+  }
+
+  .notation-heading span,
+  .notation-pair h5,
+  .notation-example figcaption {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+  }
+
+  .notation-pair {
+    display: grid;
+    grid-template-columns: minmax(7rem, 0.7fr) auto minmax(12rem, 1.3fr);
+    gap: var(--space-xs);
+    align-items: center;
+    margin-top: var(--space-xs);
+  }
+
+  .notation-pair section {
+    min-width: 0;
+  }
+
+  .notation-pair h5 {
+    margin-bottom: 0.2rem;
+    font-weight: normal;
+  }
+
+  .notation-svg {
+    overflow: hidden;
+    min-height: 4.7rem;
+    padding: 0.25rem;
+    color: #111;
+    background: #fff;
+  }
+
+  .notation-svg :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 7rem;
+  }
+
+  .notation-arrow {
+    color: var(--theme-color);
+    font-size: 1.4rem;
+  }
+
+  .notation-example figcaption {
+    margin-top: var(--space-xs);
+  }
+
+  .notation-example figcaption p + p {
+    margin-top: 0.2rem;
+  }
+
+  .notation-editorial-note {
+    font-style: italic;
+  }
+
+  .notation-source {
+    font-size: 0.74rem;
+  }
+
+  @media (max-width: 40rem) {
+    .notation-pair {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .notation-arrow {
+      justify-self: center;
+      transform: rotate(90deg);
+    }
+  }
+</style>

@@ -26,6 +26,7 @@ const navGroups = [
     key: "nav.blog" as TranslationKey,
     items: [
       { key: "nav.writings" as TranslationKey, href: "/writings" },
+      { key: "nav.projects" as TranslationKey, href: "/projects" },
       { key: "nav.tools" as TranslationKey, href: "/tools" },
     ],
   },
@@ -55,11 +56,6 @@ const navGroups = [
                 data-active={group.items.some((item) => isActivePath(item.href)) ? "true" : undefined}
               >
                 <summary>
-                  <span
-                    class="glyph-arrow glyph-arrow--disclosure"
-                    data-arrow-glyph
-                    aria-hidden="true"
-                  ></span>
                   <span data-i18n-key={group.key}>{translate("en", group.key)}</span>
                 </summary>
                 {/* 中文：外层容器负责展开／收拢动画（grid-template-rows），列表在其内被裁切。 */}

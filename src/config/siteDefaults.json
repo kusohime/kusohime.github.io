@@ -1,3 +1,6 @@
 {
-  "defaultLanguage": "en"
+  "defaultLanguage": "en",
+  "defaultTheme": "light",
+  "defaultFontSize": "s",
+  "defaultFontFamily": "modern-mono"
 }

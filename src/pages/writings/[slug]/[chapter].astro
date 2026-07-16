@@ -6,6 +6,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CuiXiongReader from "../../../components/CuiXiongReader.astro";
+import LocalizedText from "../../../components/LocalizedText.astro";
 import { contentFolder } from "../../../utils/contentPaths";
 import { cjkLangFromText, dominantContentLang } from "../../../utils/cjkLanguage";
 import { translate } from "../../../config/locales";
@@ -53,15 +54,18 @@ const nextChapter =
     : undefined;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isBenQun = isCuiXiong && chapter.data.slug.startsWith("ben-qun");
-const contentLang = cjkLangFromText(
-  [
-    writing.data.title,
-    writing.data.subtitle,
-    writing.data.excerpt,
-    chapter.data.title,
-    chapter.data.excerpt,
-  ].filter(Boolean).join(" "),
-);
+const isImageLed = isBenQun && (chapter.body ?? "").includes("/images/");
+// The chapter body is the most reliable signal for Simplified vs Traditional
+// Chinese. Metadata can be too short or deliberately mix script variants, as
+// in a Traditional series title wrapped around a Simplified archival excerpt.
+const contentLang =
+  cjkLangFromText(chapter.body ?? "") ??
+  cjkLangFromText(
+    [
+      chapter.data.title,
+      chapter.data.excerpt,
+    ].filter(Boolean).join(" "),
+  );
 // 中文：章节没有译本机制，正文必为单语；按主导语言提示另一语言不可用
 // （纯图片章节等无正文时不提示）。
 // English: Chapters have no translation mechanism, so the body is always
@@ -79,7 +83,9 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
 
 <BaseLayout
   title={`${chapter.data.title} | ${writing.data.title}`}
+  titleZh={`${chapter.data.title} | ${writing.data.titleZh}`}
   description={chapter.data.excerpt ?? writing.data.excerpt}
+  descriptionZh={chapter.data.excerpt ?? writing.data.excerptZh}
   noindex={writing.data.draft}
   unavailableLanguages={unavailableLanguages}
 >
@@ -95,6 +101,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
           chapters={chapters}
           currentChapter={chapter}
           contentLang={contentLang}
+          imageLed={isImageLed}
         >
           <div
             lang={contentLang}
@@ -105,6 +112,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
               {
                 "cui-dialogue": !isBenQun,
                 "poly-dialogue": isBenQun,
+                "series-visual": isImageLed,
               },
             ]}
           >
@@ -114,7 +122,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
       ) : (
         <>
           <header class="detail-header">
-            <p lang={contentLang}>{writing.data.title}</p>
+            <p><LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} /></p>
             <h1 lang={contentLang}>{chapter.data.title}</h1>
           </header>
 

@@ -150,10 +150,11 @@ Required fields / 必填欄位:
 
 ```yaml
 title: "Writing title"
+titleZh: "中文文章標題"
 date: 2026
-type: "Essay"
-language: "English"
-excerpt: "Short description shown on the writing title page."
+tags: ["Essay"]
+excerpt: "Short English description used in page metadata."
+excerptZh: "用於頁面 metadata 的中文短介。"
 slug: "writing-title"
 ```
 
@@ -161,9 +162,28 @@ Optional fields / 可選欄位:
 
 ```yaml
 subtitle: "Optional subtitle"
+subtitleZh: "可選的中文副標題"
+translationFrom: "en"
+translationTo: ["zh-modern"]
 order: 1
-tags: ["Translation", "Essay"]
 ```
+
+`title` and `excerpt` are the English metadata; `titleZh` and `excerptZh` are
+their Chinese counterparts. For a translation, use the translated title in
+each title field and put only the original author's name in `subtitle` /
+`subtitleZh`—do not repeat the source title there.
+
+Optional `translationFrom` and `translationTo` record the source language and
+one or more target languages. Use `zh-classical` for Classical Chinese and
+`zh-modern` for Modern Chinese; the catalog renders these as a quiet route
+after the author name.
+
+`title` 與 `excerpt` 是英文 metadata，`titleZh` 與 `excerptZh` 是對應的中文。
+譯作請在兩個標題欄分別填寫英、中文譯題；`subtitle`／`subtitleZh` 只填原作者
+姓名，不要再重複原文標題。
+
+可選的 `translationFrom`／`translationTo` 分別記錄來源語言與一個或多個目標語言。
+古漢語使用 `zh-classical`，現代漢語使用 `zh-modern`；目錄頁會把它安靜地顯示在作者姓名之後。
 
 Valid types / 可用型別:
 
@@ -241,7 +261,7 @@ Figure with caption / 帶說明的圖片:
 Ruby annotation / Ruby 標註:
 
 ```html
-<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>
+<ruby><span class="ruby-base">音楽</span><rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>
 ```
 
 Poetry without paragraph indentation / 無首行縮排的詩歌:

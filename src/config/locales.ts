@@ -4,10 +4,10 @@ import type {
   WritingType,
 } from "./contentTaxonomy";
 
-// 中文：本站使用两种语言——英文与中文。中文入口不拆繁简；正文可按内容
-// 标记为繁体或简体以取得正确字形。
-// English: The site uses two languages — English and Chinese. The Chinese UI is
-// one locale; content may still mark Traditional or Simplified text for shaping.
+// 中文：本站使用英文與繁體中文兩種介面語言；原文引文仍可依內容標記為
+// 繁體或簡體，以取得正確字形。
+// English: The interface uses English and Traditional Chinese. Source quotations
+// may still be marked as Traditional or Simplified Chinese for correct shaping.
 export const localeCodes = ["en", "zh"] as const;
 export type Locale = (typeof localeCodes)[number];
 
@@ -25,6 +25,7 @@ export const messages = {
     "nav.events": "Events",
     "nav.press": "Press",
     "nav.writings": "Writings",
+    "nav.projects": "Projects",
     "nav.tools": "Tools",
     "nav.cv": "C.V.",
     "nav.music": "Music",
@@ -32,6 +33,7 @@ export const messages = {
     "preferences.group": "Site preferences",
     "preferences.language": "Language",
     "preferences.textSize": "Text size",
+    "preferences.typeface": "Typeface",
     "preferences.small": "Small text",
     "preferences.medium": "Medium text",
     "preferences.large": "Large text",
@@ -39,6 +41,7 @@ export const messages = {
     "common.backGuide": "Guide",
     "common.backStudio": "Studio",
     "common.backTools": "Tools",
+    "common.backProjects": "Projects",
     "common.backEvents": "Events",
     "tools.numberPrefix": "Tool No.",
     "tools.onThisPage": "On this page",
@@ -67,6 +70,8 @@ export const messages = {
     "metadata.labelSeparator": ": ",
     "theme.toLight": "Switch to light theme",
     "theme.toDark": "Switch to dark theme",
+    "font.toGaramond": "Switch to Garamond",
+    "font.toModernMono": "Switch to Modern Mono",
     "comments.heading": "Responses",
     "comments.empty": "No responses yet.",
     "comments.leave": "Leave a response",
@@ -99,6 +104,7 @@ export const messages = {
     "nav.events": "活動",
     "nav.press": "媒體",
     "nav.writings": "文字",
+    "nav.projects": "項目",
     "nav.tools": "工具",
     "nav.cv": "履歷",
     "nav.music": "音樂",
@@ -106,6 +112,7 @@ export const messages = {
     "preferences.group": "網站偏好設定",
     "preferences.language": "語言",
     "preferences.textSize": "字號",
+    "preferences.typeface": "字體",
     "preferences.small": "小字",
     "preferences.medium": "中字",
     "preferences.large": "大字",
@@ -113,6 +120,7 @@ export const messages = {
     "common.backGuide": "指南",
     "common.backStudio": "管理器",
     "common.backTools": "工具",
+    "common.backProjects": "項目",
     "common.backEvents": "活動",
     "tools.numberPrefix": "工具編號",
     "tools.onThisPage": "本頁目錄",
@@ -141,6 +149,8 @@ export const messages = {
     "metadata.labelSeparator": "：",
     "theme.toLight": "切換至淺色主題",
     "theme.toDark": "切換至深色主題",
+    "font.toGaramond": "切換至 Garamond",
+    "font.toModernMono": "切換至 Modern Mono",
     "comments.heading": "回應",
     "comments.empty": "目前尚無回應。",
     "comments.leave": "留言",
@@ -255,6 +265,14 @@ const writingTypeTranslations: Record<
     singular: { en: "Philology", zh: "語文學" },
     plural: { en: "Philology", zh: "語文學" },
   },
+  Aesthetics: {
+    singular: { en: "Aesthetics", zh: "美學" },
+    plural: { en: "Aesthetics", zh: "美學" },
+  },
+  Calligraphy: {
+    singular: { en: "Calligraphy", zh: "書法" },
+    plural: { en: "Calligraphy", zh: "書法" },
+  },
   "Program Note": {
     singular: { en: "Program Note", zh: "節目說明" },
     plural: { en: "Program Notes", zh: "節目說明" },
@@ -327,6 +345,26 @@ const contentLanguageTranslations: Record<string, Record<Locale, string>> = {
 
 export function contentLanguageLabel(language: string, locale: Locale) {
   return contentLanguageTranslations[language]?.[locale] ?? language;
+}
+
+const translationLanguageLabels: Record<string, Record<Locale, string>> = {
+  en: { en: "English", zh: "英文" },
+  fr: { en: "French", zh: "法文" },
+  ja: { en: "Japanese", zh: "日文" },
+  ru: { en: "Russian", zh: "俄文" },
+  "zh-classical": { en: "Classical Chinese", zh: "古漢語" },
+  "zh-modern": { en: "Modern Chinese", zh: "現代漢語" },
+};
+
+export function formatTranslationRoute(
+  from: string | undefined,
+  to: string[],
+  locale: Locale,
+) {
+  if (!from || to.length === 0) return "";
+  const label = (code: string) =>
+    translationLanguageLabels[code]?.[locale] ?? code.toUpperCase();
+  return `${label(from)} → ${to.map(label).join(locale === "zh" ? "＋" : " + ")}`;
 }
 
 export interface LocalizedText {

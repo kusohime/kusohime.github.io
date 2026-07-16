@@ -1,9 +1,14 @@
 ---
 title: "Deaf Bodies Filled with Sound"
-subtitle: "響きあい満ちる聾の身体 — 西浦まどか"
+titleZh: "充滿共鳴的聾人身體"
+subtitle: "Madoka Nishiura"
+subtitleZh: "西浦まどか"
+translationFrom: "ja"
+translationTo: ["en", "zh-modern"]
 date: "2026-07-10"
 tags: ["Translation","Japanese","Musicology","Anthropology","Disability","Ethnomusicology"]
-excerpt: "Deaf Bodies Filled with Sound"
+excerpt: "An anthropology-of-music study of participation, solitude, and self-sufficiency in Bengkala, Bali’s ‘Deaf Village.’"
+excerptZh: "從音樂人類學角度探討峇里島「聾村」本卡拉的音樂參與、孤獨與自足。"
 slug: "deaf-bodies-filled-with-sound"
 order: 999
 draft: false
@@ -295,7 +300,7 @@ The research on which this study is based was made possible by Grants-in-Aid for
 
 井上淳生 2018「舞踊と音楽の不可分性――日本の社交ダンスにおける踊り手と演奏家に注目して」『コンタクト・ゾーン』10：41-71．
 
-梶丸岳 2013『山歌の民族誌――歌で<ruby>詞藻<rt>ことば</rt></ruby>を交わす』京都大学学術出版会．
+梶丸岳 2013『山歌の民族誌――歌で<ruby><span class="ruby-base">詞藻</span><rt>ことば</rt></ruby>を交わす』京都大学学術出版会．
 
 川田順造 1988『聲』筑摩書房．
 

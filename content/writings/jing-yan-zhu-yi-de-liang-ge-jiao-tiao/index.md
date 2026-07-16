@@ -1,9 +1,14 @@
 ---
-title: "經驗主義的兩個教條"
-subtitle: "Two Dogmas of Empiricism — Willard Van Orman Quine"
-date: "2026-07-15"
+title: "Two Dogmas of Empiricism"
+titleZh: "經驗主義的兩個教條"
+subtitle: "Willard Van Orman Quine"
+subtitleZh: "Willard Van Orman Quine"
+translationFrom: "en"
+translationTo: ["zh-modern"]
+date: "2021-07-15"
 tags: ["Translation", "Philosophy"]
-excerpt: "現代經驗主義很大程度上受兩個教條制約：其一，相信分析真理與綜合真理之間有某種根本分野；其二，則是還原主義。"
+excerpt: "Modern empiricism has been conditioned in large part by two dogmas: the analytic–synthetic distinction and reductionism."
+excerptZh: "現代經驗主義很大程度上受兩個教條制約：其一，相信分析真理與綜合真理之間有某種根本分野；其二，則是還原主義。"
 slug: "jing-yan-zhu-yi-de-liang-ge-jiao-tiao"
 order: 999
 draft: false
@@ -11,8 +16,6 @@ comments: true
 dropcap: true
 dropcapTarget: "marked"
 ---
-
-<p class="no-indent"><strong>威拉德·范·奧曼·奎因（Willard Van Orman Quine）</strong></p>
 
 > **原文書目信息**：Willard Van Orman Quine. “Two Dogmas of Empiricism.”[^1a] *The Philosophical Review* 60（1951）：20–43。後收入 W. V. O. Quine, *From a Logical Point of View*（Harvard University Press, 1953；第二版〔修訂版〕，1961）。本譯據 Andrew Chrucky 校於 2000 年 2 月 15 日。
 

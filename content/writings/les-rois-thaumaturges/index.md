@@ -1,8 +1,10 @@
 ---
 title: "Notes on Les Rois thaumaturges"
+titleZh: "《國王神蹟》讀書筆記"
 date: "2024-07-13"
 tags: ["Essay", "Anthropology", "Theology", "Review"]
-excerpt: "Le roi te touche, Dieu te guérit——七百年間沒有治好任何人，也沒有任何人需要為此負責。"
+excerpt: "‘The king touches you; God heals you’—seven centuries without curing anyone, and with no one held responsible."
+excerptZh: "「國王觸碰你，上帝治癒你」——七百年間沒有治好任何人，也沒有任何人需要為此負責。"
 slug: "les-rois-thaumaturges"
 order: 999
 draft: false

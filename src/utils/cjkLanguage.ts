@@ -3,10 +3,10 @@
 // Caveat: detector chars must be exclusive to one script — 清 (identical in both),
 // 于 / 云 (also valid in Classical/Traditional) would misclassify Traditional pages.
 const simplifiedVariantPattern =
-  /[这为们个汉语体与学习乐话说读书门时会发见过后页点线简声国风东图开关长电艺边选应顶阳钻绸纺华间烛颗烧绽浆滚愿饱荣丝论译历两册绿颜静厕杂爱厨笔来种唤满鲜过陈]/u;
+  /[这为们个汉语体与学习乐话说读书门时会发见过后页点线简声国风东图开关长电艺边选应顶阳钻绸纺华间烛颗烧绽浆滚愿饱荣丝论译历两册绿颜静厕杂爱厨笔来种唤满鲜过陈网斓残顿绝钟觉么懒驳稣弥赛亚吗邮写评动条弃鲁]/u;
 
 const traditionalVariantPattern =
-  /[這為們個漢語體與學習樂話說讀書門時會發見過後頁點線簡聲國風東圖開關長電藝邊選應頂陽鑽綢紡華雲間燭顆於燒綻漿滾願飽榮絲論譯歷兩冊綠顏靜廁雜愛廚筆來種喚滿鮮過陳]/u;
+  /[這為們個漢語體與學習樂話說讀書門時會發見過後頁點線簡聲國風東圖開關長電藝邊選應頂陽鑽綢紡華雲間燭顆於燒綻漿滾願飽榮絲論譯歷兩冊綠顏靜廁雜愛廚筆來種喚滿鮮過陳網斕殘頓絕鐘覺麼懶駁穌彌賽亞嗎郵寫評動條棄魯羣]/u;
 
 const kanaPattern = /[\p{Script=Hiragana}\p{Script=Katakana}]/u;
 

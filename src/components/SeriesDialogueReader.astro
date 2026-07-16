@@ -4,6 +4,7 @@
 // independent item in the Writings index.
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../config/locales";
+import LocalizedText from "./LocalizedText.astro";
 
 interface Props {
   writing: CollectionEntry<"writings">;
@@ -13,7 +14,12 @@ interface Props {
 }
 
 const { writing, entries, contentLang, imageLed = false } = Astro.props;
-const seriesTitle = writing.data.series ?? writing.data.title;
+const seriesTitle = writing.data.series === "脆熊篇"
+  ? "Cui Xiong Pian"
+  : writing.data.series === "本羣篇"
+    ? "Ben Qun Pian"
+    : writing.data.series ?? writing.data.title;
+const seriesTitleZh = writing.data.series ?? writing.data.titleZh;
 const dateLabel = writing.data.displayDate ?? String(writing.data.date);
 const currentIndex = entries.findIndex((entry) => entry.id === writing.id);
 const previousEntry = currentIndex > 0 ? entries[currentIndex - 1] : undefined;
@@ -25,7 +31,7 @@ const nextEntry =
 
 <div class:list={["cui-reader", "series-reader", { "series-reader--visual": imageLed }]}>
   <aside class="cui-reader-rail series-reader-rail">
-    <p class="cui-reader-title" lang={contentLang}>{seriesTitle}</p>
+    <p class="cui-reader-title"><LocalizedText value={{ en: seriesTitle, zh: seriesTitleZh }} /></p>
     <nav aria-label={`${seriesTitle}目錄`}>
       <ol>
         {
@@ -51,7 +57,7 @@ const nextEntry =
       {writing.data.draft && (
         <p class="draft-flag">Draft — not listed publicly</p>
       )}
-      <h1 lang={contentLang}>{writing.data.title}</h1>
+      <h1><LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} /></h1>
       <p class="writing-metadata">
         <time datetime={String(writing.data.date)} data-i18n-date={dateLabel}>
           {formatDate(dateLabel, "en")}
@@ -66,7 +72,7 @@ const nextEntry =
         previousEntry ? (
           <a href={`/writings/${previousEntry.data.slug}/`}>
             <span class="glyph-arrow glyph-arrow--back" data-arrow-glyph aria-hidden="true"></span>
-            <span lang={contentLang}>{previousEntry.data.title}</span>
+            <span><LocalizedText value={{ en: previousEntry.data.title, zh: previousEntry.data.titleZh }} /></span>
           </a>
         ) : (
           <span></span>
@@ -75,7 +81,7 @@ const nextEntry =
       {
         nextEntry && (
           <a href={`/writings/${nextEntry.data.slug}/`}>
-            <span lang={contentLang}>{nextEntry.data.title}</span>
+            <span><LocalizedText value={{ en: nextEntry.data.title, zh: nextEntry.data.titleZh }} /></span>
             <span class="glyph-arrow glyph-arrow--forward" data-arrow-glyph aria-hidden="true"></span>
           </a>
         )

@@ -1,6 +1,6 @@
 /**
- * 中文：管理公開網站的語言、明暗主題、字號和可選動畫。
- * English: Manages language, theme, font size, and optional public-site motion.
+ * 中文：管理公開網站的語言、明暗主題、字號、字體和可選動畫。
+ * English: Manages language, theme, font size, typeface, and optional public-site motion.
  */
 import motionSettings from "../config/motion.json";
 import siteDefaults from "../config/siteDefaults.json";
@@ -31,10 +31,10 @@ import {
 import { toolTopicBlurb, toolTopicLabel } from "../config/toolTopics";
 
 type Theme = "light" | "dark";
-// 中文：字号只有两档——S（紧凑）与 L（默认阅读字号，即旧的 M）。
-// English: Two text sizes only — S (compact) and L (the default reading size,
-// formerly M). Older stored values fall back to L via readStored.
+// 中文：字号只有两档——S（預設緊湊）與 L（較大閱讀字號）。
+// English: Two text sizes only — S (the compact default) and L (larger reading size).
 type FontSize = "s" | "l";
+type FontFamily = "modern-mono" | "garamond";
 
 const flapTimers = new WeakMap<HTMLElement, number>();
 
@@ -62,7 +62,8 @@ function updatePressedState(selector: string, activeValue: string) {
     const value =
       button.dataset.languageOption ??
       button.dataset.themeOption ??
-      button.dataset.fontSizeOption;
+      button.dataset.fontSizeOption ??
+      button.dataset.fontFamilyOption;
     button.setAttribute("aria-pressed", String(value === activeValue));
   });
 }
@@ -210,6 +211,32 @@ function applyLanguage(language: Locale, animate = false) {
       setLocalizedRich(element, translation, shouldAnimate);
     }
   });
+
+  document
+    .querySelectorAll<HTMLMetaElement>("[data-i18n-content-en]")
+    .forEach((element) => {
+      const text = language === "zh"
+        ? element.dataset.i18nContentZh ?? element.dataset.i18nContentEn
+        : element.dataset.i18nContentEn;
+      if (text !== undefined) {
+        element.content = language === "zh"
+          ? text.replaceAll("Yixin Cui", "崔浥新")
+          : text;
+      }
+    });
+
+  document
+    .querySelectorAll<HTMLTitleElement>("[data-i18n-title-en]")
+    .forEach((element) => {
+      const text = language === "zh"
+        ? element.dataset.i18nTitleZh ?? element.dataset.i18nTitleEn
+        : element.dataset.i18nTitleEn;
+      if (text !== undefined) {
+        element.textContent = language === "zh"
+          ? text.replaceAll("Yixin Cui", "崔浥新")
+          : text;
+      }
+    });
 
   document
     .querySelectorAll<HTMLElement>("[data-i18n-work-category]")
@@ -362,7 +389,11 @@ function applyLanguage(language: Locale, animate = false) {
   updateLanguageAvailability(language);
 
   const currentTheme = (document.documentElement.dataset.theme ?? "light") as Theme;
+  const currentFontFamily =
+    (document.documentElement.dataset.fontFamily as FontFamily | undefined) ??
+    "modern-mono";
   updateThemeToggleLabel(currentTheme, language);
+  updateFontFamilyToggleLabel(currentFontFamily, language);
   applyGuideLanguage(language);
   updatePressedState("[data-language-option]", language);
   store("yc-language", language);
@@ -383,6 +414,23 @@ function updateThemeToggleLabel(theme: Theme, language: Locale) {
     button.setAttribute("aria-label", label);
     button.title = label;
   });
+}
+
+function updateFontFamilyToggleLabel(fontFamily: FontFamily, language: Locale) {
+  const nextFontFamily: FontFamily =
+    fontFamily === "modern-mono" ? "garamond" : "modern-mono";
+  const label = translate(
+    language,
+    nextFontFamily === "garamond" ? "font.toGaramond" : "font.toModernMono",
+  );
+
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-font-family-toggle]")
+    .forEach((button) => {
+      button.dataset.nextFontFamily = nextFontFamily;
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    });
 }
 
 function activeLanguage(): Locale {
@@ -412,7 +460,7 @@ function applyTheme(theme: Theme, language: Locale, animate = false) {
 
 function applyFontSize(fontSize: FontSize, animate = false) {
   const currentSize =
-    (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "l";
+    (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "s";
   if (animate && motionSettings.fontSizeScale && currentSize !== fontSize) {
     const sizes: FontSize[] = ["s", "l"];
     document.documentElement.dataset.fontSizeTransition =
@@ -428,6 +476,16 @@ function applyFontSize(fontSize: FontSize, animate = false) {
   });
   updatePressedState("[data-font-size-option]", fontSize);
   store("yc-font-size", fontSize);
+}
+
+function applyFontFamily(fontFamily: FontFamily, language: Locale) {
+  document.documentElement.dataset.fontFamily = fontFamily;
+  updateFontFamilyToggleLabel(fontFamily, language);
+  updatePressedState("[data-font-family-option]", fontFamily);
+  store("yc-font-family", fontFamily);
+  document.dispatchEvent(
+    new CustomEvent("yc-font-family-change", { detail: { fontFamily } }),
+  );
 }
 
 export function initializePreferences() {
@@ -456,13 +514,21 @@ export function initializePreferences() {
     ? (siteDefaults.defaultLanguage as Locale)
     : "en";
   const language = readStored<Locale>("yc-language", localeCodes, fallbackLanguage);
-  const theme = readStored<Theme>("yc-theme", ["light", "dark"], "light");
-  // 旧值 "m"（以及被移除的旧 "l"）不在允许列表中，自动回落到新默认 L。
-  // Legacy "m" (and the removed old "l") fail the allow-list and fall back to L.
-  const fontSize = readStored<FontSize>("yc-font-size", ["s", "l"], "l");
+  const fallbackTheme: Theme = siteDefaults.defaultTheme === "dark" ? "dark" : "light";
+  const fallbackFontSize: FontSize = siteDefaults.defaultFontSize === "l" ? "l" : "s";
+  const fallbackFontFamily: FontFamily =
+    siteDefaults.defaultFontFamily === "garamond" ? "garamond" : "modern-mono";
+  const theme = readStored<Theme>("yc-theme", ["light", "dark"], fallbackTheme);
+  const fontSize = readStored<FontSize>("yc-font-size", ["s", "l"], fallbackFontSize);
+  const fontFamily = readStored<FontFamily>(
+    "yc-font-family",
+    ["modern-mono", "garamond"],
+    fallbackFontFamily,
+  );
 
   applyTheme(theme, language);
   applyFontSize(fontSize);
+  applyFontFamily(fontFamily, language);
   applyLanguage(language);
 
   document.querySelectorAll<HTMLButtonElement>("[data-language-toggle]").forEach((button) => {
@@ -486,8 +552,20 @@ export function initializePreferences() {
   document.querySelectorAll<HTMLButtonElement>("[data-font-size-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
       const current =
-        (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "l";
+        (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "s";
       applyFontSize(current === "s" ? "l" : "s", true);
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>("[data-font-family-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const current =
+        (document.documentElement.dataset.fontFamily as FontFamily | undefined) ??
+        "modern-mono";
+      applyFontFamily(
+        current === "modern-mono" ? "garamond" : "modern-mono",
+        activeLanguage(),
+      );
     });
   });
 

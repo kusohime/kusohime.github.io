@@ -14,7 +14,9 @@ import "../styles/global.css";
 
 interface Props {
   title?: string;
+  titleZh?: string;
   description?: string;
+  descriptionZh?: string;
   noindex?: boolean;
   adminOnly?: boolean;
   unavailableLanguages?: Locale[];
@@ -22,14 +24,21 @@ interface Props {
 
 const {
   title,
+  titleZh,
   description = site.description,
+  descriptionZh,
   noindex = false,
   adminOnly = false,
   unavailableLanguages = [],
 } = Astro.props;
 
 const pageTitle = title ? `${title} | ${site.name}` : site.name;
+const pageTitleZh = titleZh ? `${titleZh} | ${site.name}` : pageTitle;
 const defaultLanguage = siteDefaults.defaultLanguage;
+const defaultTheme = siteDefaults.defaultTheme === "dark" ? "dark" : "light";
+const defaultFontSize = siteDefaults.defaultFontSize === "l" ? "l" : "s";
+const defaultFontFamily =
+  siteDefaults.defaultFontFamily === "garamond" ? "garamond" : "modern-mono";
 
 interface HierarchyBackLink {
   href: string;
@@ -67,6 +76,7 @@ const hierarchyBack = (() => {
     works: "common.backWorks",
     events: "common.backEvents",
     writings: "common.backWritings",
+    projects: "common.backProjects",
     tools: "common.backTools",
   };
   const collectionLabel = collectionParents[pathParts[0] ?? ""];
@@ -95,7 +105,12 @@ const hierarchyBack = (() => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
+    <meta
+      name="description"
+      content={description}
+      data-i18n-content-en={description}
+      data-i18n-content-zh={descriptionZh}
+    />
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -133,29 +148,35 @@ const hierarchyBack = (() => {
         </>
       )
     }
-    <script is:inline define:vars={{ defaultLanguage }}>
-      // 在頁面繪製前恢復偏好設定，避免深淺色或字號短暫閃爍。
-      // Restore preferences before paint to prevent a theme or font-size flash.
+    <script is:inline define:vars={{ defaultLanguage, defaultTheme, defaultFontSize, defaultFontFamily }}>
+      // 在頁面繪製前恢復偏好設定，避免主題、字號或字體短暫閃爍。
+      // Restore preferences before paint to prevent a theme, size, or typeface flash.
       try {
-        const theme = localStorage.getItem("yc-theme");
-        const fontSize = localStorage.getItem("yc-font-size");
+        const storedTheme = localStorage.getItem("yc-theme");
+        const storedFontSize = localStorage.getItem("yc-font-size");
+        const storedFontFamily = localStorage.getItem("yc-font-family");
         const storedLanguage = localStorage.getItem("yc-language");
         const language = storedLanguage ?? defaultLanguage;
+        const theme = storedTheme === "dark" || storedTheme === "light"
+          ? storedTheme
+          : defaultTheme;
+        const fontSize = storedFontSize === "s" || storedFontSize === "l"
+          ? storedFontSize
+          : defaultFontSize;
+        const fontFamily = storedFontFamily === "garamond" || storedFontFamily === "modern-mono"
+          ? storedFontFamily
+          : defaultFontFamily;
 
-        if (theme === "light" || theme === "dark") {
-          document.documentElement.dataset.theme = theme;
-        }
-
-        if (fontSize === "s" || fontSize === "m" || fontSize === "l") {
-          document.documentElement.dataset.fontSize = fontSize;
-        }
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.fontSize = fontSize;
+        document.documentElement.dataset.fontFamily = fontFamily;
 
         if (language === "en" || language === "zh") {
           document.documentElement.lang = language === "zh" ? "zh-Hant-TW" : language;
         }
       } catch {}
     </script>
-    <title>{pageTitle}</title>
+    <title data-i18n-title-en={pageTitle} data-i18n-title-zh={pageTitleZh}>{pageTitle}</title>
   </head>
   <body data-style-source="src/styles/global.css">
     <a class="skip-link" href="#main-content" data-i18n-key="common.skip">

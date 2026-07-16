@@ -139,10 +139,10 @@ caption:
 ## Ruby annotation / Ruby 標註
 
 Japanese furigana attaches kana to kanji:
-<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>.
+<ruby><span class="ruby-base">音楽</span><rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>.
 
 日文振假名將假名標在漢字上：
-<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>。
+<ruby><span class="ruby-base">音楽</span><rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>。
 
 ## Code / 程式碼
 

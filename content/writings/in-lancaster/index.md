@@ -1,10 +1,12 @@
 ---
 title: "In Lancaster, PA"
+titleZh: "在賓州蘭開斯特"
 date: "2025-07-30"
 tags: ["Journal"]
 slug: "in-lancaster"
 order: 999
-excerpt: "In Lancaster, PA"
+excerpt: "Notes and footage from a summer evening in Lancaster, Pennsylvania."
+excerptZh: "賓夕法尼亞州蘭開斯特一個夏日傍晚的影像與隨記。"
 dropcap: true
 dropcapTarget: "marked"
 ---

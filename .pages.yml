@@ -136,6 +136,64 @@ content:
       - { name: comments, label: Open responses (comment zone) on this page, type: boolean }
       - { name: body, label: Program notes / 正文, type: rich-text }
 
+  # 項目：每個項目一個文件夾 content/projects/<slug>/index.md。
+  # Projects: one folder per project, content/projects/<slug>/index.md.
+  - name: projects
+    label: Projects / 項目
+    type: collection
+    path: content/projects
+    format: yaml-frontmatter
+    subfolders: true
+    filename: "{fields.slug}/index.md"
+    view:
+      fields: [title, status, startDate]
+      primary: title
+      sort: [order, startDate, title]
+      default:
+        sort: order
+        order: asc
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: titleZh, label: 中文標題, type: string }
+      - { name: subtitle, label: Subtitle, type: string }
+      - { name: subtitleZh, label: 中文副標題, type: string }
+      - { name: summary, label: Summary, type: text, required: true, options: { rows: 3 } }
+      - { name: summaryZh, label: 中文簡介, type: text, options: { rows: 3 } }
+      - name: status
+        label: Status
+        type: select
+        required: true
+        options:
+          values: [planning, in-progress, complete, archived]
+      - { name: startDate, label: Start date (YYYY-MM-DD), type: string, required: true }
+      - { name: updated, label: Last updated (YYYY-MM-DD), type: string }
+      - name: role
+        label: Role / 角色
+        type: object
+        fields:
+          - { name: en, label: English, type: string, required: true }
+          - { name: zh, label: 中文, type: string }
+      - name: collaborators
+        label: Collaborators / 合作者
+        type: object
+        list: true
+        fields:
+          - { name: en, label: English, type: string, required: true }
+          - { name: zh, label: 中文, type: string }
+      - { name: topics, label: Topics, type: string, list: true }
+      - name: links
+        label: Links
+        type: object
+        list: true
+        fields:
+          - { name: label, label: Label, type: string, required: true }
+          - { name: url, label: URL, type: string, required: true, pattern: { regex: "^https?://.+", message: "Must be a full http(s) URL" } }
+      - { name: slug, label: Slug (folder & URL name), type: string, required: true, pattern: { regex: "^[a-z0-9-]+$", message: "Lowercase letters, numbers, and hyphens only" } }
+      - { name: order, label: Order, type: number, default: 999 }
+      - { name: featured, label: Featured project, type: boolean }
+      - { name: draft, label: Draft (hidden from public index), type: boolean }
+      - { name: body, label: Project notes / 項目正文, type: rich-text }
+
   # 文章：每篇文章一个文件夹 content/writings/<slug>/index.md。
   # Writings: one folder per piece, content/writings/<slug>/index.md.
   # 活动：每个活动一个文件夹 content/events/<slug>/index.md。

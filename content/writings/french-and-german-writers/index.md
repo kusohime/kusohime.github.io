@@ -1,8 +1,10 @@
 ---
 title: "French and German Writers"
+titleZh: "法國與德國作家"
 date: "2024-10-26"
 tags: ["Essay"]
-excerpt: "French and German Writers"
+excerpt: "On the apparent prolixity of French and German writers, and the difference between genuine ardency and imitation."
+excerptZh: "談法國與德國作家表面上的繁複，以及真正的熱烈文風與模仿之間的差別。"
 slug: "french-and-german-writers"
 dropcap: true
 order: 999

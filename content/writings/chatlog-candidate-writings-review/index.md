@@ -1,9 +1,11 @@
 ---
 title: "Candidate Writings from Chat Logs"
+titleZh: "聊天記錄中的候選文章"
 date: "2026-06-19"
 displayDate: "Draft review"
 tags: ["Other"]
 excerpt: "Recovered candidate diary entries, notes, reviews, and formal-ish writings for review."
+excerptZh: "從聊天記錄中整理出的日記、筆記、評論及較正式文章草稿，供審閱。"
 slug: "chatlog-candidate-writings-review"
 order: 99
 draft: true

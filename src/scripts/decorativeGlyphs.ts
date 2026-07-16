@@ -17,10 +17,10 @@ function randomGlyph(urls: string[]) {
   return urls[Math.floor(Math.random() * urls.length)] ?? urls[0];
 }
 
-// 中文：方向符不再随机手绘箭头——统一为 CSS 里的红三角（triangle-1.svg）；
+// 中文：方向符不再随机手绘——统一为 CSS 里的红色箭头；
 // 这里只保留主题日／月图标的随机化。
 // English: Directional glyphs are no longer randomized hand-drawn arrows — they
-// are the uniform red triangle set in CSS (triangle-1.svg). Only the sun/moon
+// use uniform red arrows in CSS. Only the sun/moon
 // theme glyphs keep their per-visit variety.
 export function initializeDecorativeGlyphs() {
   const themeGlyphs = document.querySelectorAll<HTMLElement>("[data-theme-glyph]");

@@ -1,9 +1,14 @@
 ---
-title: "《歷史系男生》選段"
-subtitle: "The History Boys — Alan Bennett"
+title: "Excerpts from The History Boys"
+titleZh: "《歷史系男生》選段"
+subtitle: "Alan Bennett"
+subtitleZh: "Alan Bennett"
+translationFrom: "en"
+translationTo: ["zh-modern"]
 date: "2022-03-07"
 tags: ["Translation", "Drama"]
-excerpt: "如此一來，我們便能得出這個不足為奇的結論：對詩人來說，世界第一大戰是值得一番口誅筆伐的。"
+excerpt: "Thus we may arrive at the unsurprising conclusion that, for poets, the First World War was worth a good deal of denunciation."
+excerptZh: "如此一來，我們便能得出這個不足為奇的結論：對詩人來說，世界第一大戰是值得一番口誅筆伐的。"
 slug: "li-shi-xi-nan-sheng-xuan-duan"
 order: 2
 comments: true
@@ -124,7 +129,7 @@ comments: true
 >
 > 儘管已經延伸到
 >
-> <ruby>大橢圓<rt>The Oval</rt></ruby>和<ruby>維拉公園<rt>Villa Park</rt></ruby>那兒去了，
+> <ruby><span class="ruby-base">大橢圓</span><rt>The Oval</rt></ruby>和<ruby><span class="ruby-base">維拉公園</span><rt>Villa Park</rt></ruby>那兒去了，
 >
 > 冠冕般的帽子，太陽
 >

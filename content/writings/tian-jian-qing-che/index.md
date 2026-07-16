@@ -1,9 +1,14 @@
 ---
-title: "天上隙"
-subtitle: "Clairières dans le ciel — Lili Boulanger / Francis Jammes"
+title: "Clearings in the Sky"
+titleZh: "天上隙"
+subtitle: "Lili Boulanger · Francis Jammes"
+subtitleZh: "Lili Boulanger · Francis Jammes"
+translationFrom: "fr"
+translationTo: ["zh-modern"]
 date: "2025-03-04"
 tags: ["Translation", "Poetry", "French"]
-excerpt: "悉以那種能喚起仍充滿新鮮感的過去的情感演唱這些旋律。"
+excerpt: "Sing these melodies with the feeling that can evoke a past still filled with freshness."
+excerptZh: "悉以那種能喚起仍充滿新鮮感的過去的情感演唱這些旋律。"
 slug: "tian-jian-qing-che"
 order: 4
 comments: true
@@ -12,7 +17,7 @@ comments: true
 
 ## I.L 走下原野
 
-<a href="#clairieres-pronoun-toggle" id="clairieres-pronoun-toggle" class="clairieres-pronoun-toggle" data-clairieres-pronoun-toggle aria-pressed="false" aria-label="將譯文中的 L 切換為她"><ruby><span data-clairieres-pronoun>L</span><rt>Elle</rt></ruby></a>^[原文為 Elle （她），也是Lili Boulanger眾多自指的符號之一。為了加強這種感受，這版翻譯將原文所有“她”替換為 L。點擊這個 L 可將譯文中的 L 換回“她”。] 走下原野，<br />
+<a href="#clairieres-pronoun-toggle" id="clairieres-pronoun-toggle" class="clairieres-pronoun-toggle" data-clairieres-pronoun-toggle aria-pressed="false" aria-label="將譯文中的 L 切換為她"><ruby><span class="ruby-base"><span data-clairieres-pronoun>L</span></span><rt>Elle</rt></ruby></a>^[原文為 Elle （她），也是Lili Boulanger眾多自指的符號之一。為了加強這種感受，這版翻譯將原文所有“她”替換為 L。點擊這個 L 可將譯文中的 L 換回“她”。] 走下原野，<br />
 另，鑑其開遍了<br />
 水生的草木，<br />
 我得摘下那些泡在水裡的花。<br />
@@ -25,9 +30,9 @@ L 的雙眼像薰衣草. . .
 ## II. L 的愉悅顯得莊重
 
 . . . L 的愉悅顯得莊重。有時 L 向上望<br />
-好像要看透我在<ruby>思考<rt>pensée</rt></ruby>什麼。<br />
+好像要看透我在<ruby><span class="ruby-base">思考</span><rt>pensée</rt></ruby>什麼。<br />
 L 那時看著挺溫柔，像暮色中<br />
-<ruby>三色堇<rt>pensées</rt></ruby>小徑那種又黃又藍的紫色。
+<ruby><span class="ruby-base">三色堇</span><rt>pensées</rt></ruby>小徑那種又黃又藍的紫色。
 
 ## III. 有時我很難過
 
@@ -56,11 +61,11 @@ L 在菩提花開前走了，<br />
 ## V. 我床腳下
 
 我媽往我床腳下放了一個<br />
-<ruby>黑皮處女<rt>Vierge Négresse</rt></ruby>[^2]。我愛這個處女<br />
+<ruby><span class="ruby-base">黑皮處女</span><rt>Vierge Négresse</rt></ruby>[^2]。我愛這個處女<br />
 及其淡淡的意大利宗教味。<br />
-<ruby>洛雷託的處女<rt>Virgo Lauretana</rt></ruby>^[聖母的別稱。]，站在金色背牆前，<br />
+<ruby><span class="ruby-base">洛雷託的處女</span><rt>Virgo Lauretana</rt></ruby>^[聖母的別稱。]，站在金色背牆前，<br />
 你讓我想起了一千種港市售賣<br />
-的<ruby>海味<rt>fruits de mer</rt></ruby>，0絲風<br />
+的<ruby><span class="ruby-base">海味</span><rt>fruits de mer</rt></ruby>，0絲風<br />
 能捲起攪起倦怠睏覺的旗幟；<br />
 洛雷託的處女，您知道在這些<br />
 讓我覺得不值 L 的愛的時刻，<br />
@@ -98,7 +103,7 @@ L 在菩提花開前走了，<br />
 去年開過的丁香，<br />
 將在憂傷的園圃中再度開放。<br />
 纖瘦的桃樹已經綻滿藍天，<br />
-像<ruby>聖體寶血日<rt>Corpus Christi</rt></ruby>的孩子們拋灑花瓣。<br />
+像<ruby><span class="ruby-base">聖體寶血日</span><rt>Corpus Christi</rt></ruby>的孩子們拋灑花瓣。<br />
 我的心應在這些東西之間死掉，<br />
 因為在果園的白色與玫色中<br />
 我曾從您那兒盼著些什麼東西。<br />
@@ -140,7 +145,7 @@ L 在菩提花開前走了，<br />
 
 ## XIII. 明天就是一年了
 
-明天就是一年了，因為我在<ruby>奧多<rt>Audaux</rt></ruby><br />
+明天就是一年了，因為我在<ruby><span class="ruby-base">奧多</span><rt>Audaux</rt></ruby><br />
 在上述的潮溼原野摘了這些花。<br />
 今天是復活節間最美的一天。<br />
 我陷入了藍色的鄉野，<br />
@@ -174,4 +179,4 @@ L 在菩提花開前走了，<br />
 沒了。什麼都沒了，沒東西維繫我。
 
 
-[^2]: 即[<ruby>黑聖母<rt>Black Madonna</rt></ruby>](https://en.wikipedia.org/wiki/Black_Madonna)。
+[^2]: 即[<ruby><span class="ruby-base">黑聖母</span><rt>Black Madonna</rt></ruby>](https://en.wikipedia.org/wiki/Black_Madonna)。

@@ -16,7 +16,6 @@ import remarkMath from "remark-math";
 import remarkInlineFootnotes from "./src/lib/remarkInlineFootnotes.mjs";
 import rehypeCitationLinks from "./src/lib/rehypeCitationLinks.mjs";
 import rehypeEditionVariants from "./src/lib/rehypeEditionVariants.mjs";
-import rehypeChineseEmphasis from "./src/lib/rehypeChineseEmphasis.mjs";
 import rehypeEditionFootnotes from "./src/lib/rehypeEditionFootnotes.mjs";
 
 // 管理页面只在本地开发服务器中工作；文件读写接口仍只接受本地请求。
@@ -580,9 +579,24 @@ function localStudioPlugin() {
   };
 }
 
+const benQunLegacyNumbers = ["1", "2", "3", "4", "5", "6", "7", "8a", "8b", "9"];
+const legacyWritingRedirects = Object.fromEntries([
+  ...Array.from({ length: 22 }, (_, number) => [
+    `/writings/cui-xiong-pian-${number}/`,
+    number === 0
+      ? "/writings/cui-xiong-pian/"
+      : `/writings/cui-xiong-pian/${number}/`,
+  ]),
+  ...benQunLegacyNumbers.map((number) => [
+    `/writings/ben-qun-pian-${number}/`,
+    `/writings/cui-xiong-pian/ben-qun-${number}/`,
+  ]),
+]);
+
 export default defineConfig({
   site: "https://yixincui.com",
   output: "static",
+  redirects: legacyWritingRedirects,
   devToolbar: {
     enabled: false,
   },
@@ -610,7 +624,6 @@ export default defineConfig({
       rehypePlugins: [
       rehypeKatex,
       rehypeCitationLinks,
-      rehypeChineseEmphasis,
       rehypeEditionVariants,
         rehypeEditionFootnotes,
       ],

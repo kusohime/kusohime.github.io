@@ -4,31 +4,46 @@
 // only, while the current chapter is rendered in the right reading pane.
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../config/locales";
+import LocalizedText from "./LocalizedText.astro";
 
 interface Props {
   writing: CollectionEntry<"writings">;
   chapters: CollectionEntry<"writingChapters">[];
   currentChapter?: CollectionEntry<"writingChapters">;
   contentLang?: string;
+  imageLed?: boolean;
 }
 
-const { writing, chapters, currentChapter, contentLang } = Astro.props;
+const {
+  writing,
+  chapters,
+  currentChapter,
+  contentLang,
+  imageLed = false,
+} = Astro.props;
 const parentHref = `/writings/${writing.data.slug}/`;
 const dateLabel = writing.data.displayDate ?? String(writing.data.date);
 ---
 
-<div class="cui-reader">
+<div class:list={["cui-reader", { "series-reader--visual": imageLed }]}>
   <aside class="cui-reader-rail">
     <a
       class="cui-reader-title"
       href={parentHref}
-      lang={contentLang}
-      aria-current={!currentChapter ? "page" : undefined}
     >
-      {writing.data.title}
+      <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
     </a>
     <nav aria-label="脆熊篇目錄">
       <ol>
+        <li>
+          <a
+            href={parentHref}
+            lang={contentLang}
+            aria-current={!currentChapter ? "page" : undefined}
+          >
+            0
+          </a>
+        </li>
         {
           chapters.map((chapter) => (
             <li>
@@ -50,7 +65,7 @@ const dateLabel = writing.data.displayDate ?? String(writing.data.date);
     {
       !currentChapter && (
         <header class="detail-header cui-reader-header">
-            <h1 lang={contentLang}>{writing.data.title}</h1>
+            <h1><LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} /></h1>
             <p class="writing-metadata">
               <time datetime={String(writing.data.date)} data-i18n-date={dateLabel}>
                 {formatDate(dateLabel, "en")}

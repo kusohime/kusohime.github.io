@@ -1,10 +1,12 @@
 ---
 title: "Kotoba, Heidegger, and Epang"
+titleZh: "言葉、海德格爾與阿房宮"
 date: "2024-10-24"
 tags: ["Philosophy", "Linguistics", "Musicology"]
 slug: "kotoba-yu-e-pang-gong"
 order: 999
-excerpt: "Kotoba, Heidegger, and Epang"
+excerpt: "Notes on etymology, Heidegger, and the recurring architecture of metaphysics."
+excerptZh: "關於詞源、海德格爾，以及形上學反覆搭建的阿房宮。"
 ---
 
 > 从 1918 年到 27 年的短短 9 年期间，德意志世界冒出了六本奇书：布洛赫的《乌托邦精神》、斯宾格勒的《西方的没落》、卡尔·巴特的《罗马书释义》、罗森茨威格的《救赎之星》、海德格尔的《存在与时间》……还有希特勒的《我的奋斗》。在我看来，黑尼海是三位一体的，形而上学是人的永恒诉求，对阿房宫的建筑从不会终止（即便是拉康、德勒兹、齐泽克辈），但黑格尔与尼采发现了大厦的空中楼阁本质，秘密的思想之王海德格尔由是完成了黑泥海的诗性哲学历史接续——天地神人之为人的虚无主义存在之思。美国人写德国哲学都如此简单易懂（我这么说即是褒义又不是褒义），这让我想起了威廉·巴雷特。这本 78 年的著作在 87 年被引入国朝对海德格尔亲纳粹作为的实践历史之关注很符合民族性啊，不过这对于海德格尔与维特根斯坦来讲又算得了什么，惧怕非畏之在

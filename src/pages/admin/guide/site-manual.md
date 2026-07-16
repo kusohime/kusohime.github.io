@@ -157,15 +157,30 @@ Path: `content/writings/<folder>/index.md`.
 
 路徑：`content/writings/<folder>/index.md`。
 
-Required: `title`, `date`, `excerpt`, `slug`.
+Required: `title`, `titleZh`, `date`, `excerpt`, `excerptZh`, `slug`.
 
-必填：`title`、`date`、`excerpt`、`slug`。
+必填：英文標題 `title`、中文標題 `titleZh`、`date`、英文摘要 `excerpt`、
+中文摘要 `excerptZh`、`slug`。
 
-Optional: `subtitle`, `tags` (choose any number), `order`, `draft`, `comments`.
+Optional: `subtitle`, `subtitleZh`, `translationFrom`, `translationTo`, `tags`
+(choose any number), `order`, `draft`, `comments`.
 The old `type` and `language` fields are gone — tags replace them.
 
-可選：`subtitle`、`tags`（可多選）、`order`、`draft`、`comments`。
+可選：`subtitle`、`subtitleZh`、`tags`（可多選）、`order`、`draft`、`comments`。
 舊的 `type` 與 `language` 欄位已移除，改用標籤。
+
+For translations, `subtitle` / `subtitleZh` contain only the original author's
+name. The translated work title belongs in `title` / `titleZh`.
+
+`translationFrom` is one language code, and `translationTo` is a list of target
+language codes. Use `zh-classical` for Classical Chinese and `zh-modern` for
+Modern Chinese. The site displays the route after the author name.
+
+譯作的 `subtitle`／`subtitleZh` 只填原作者姓名；英、中文譯題分別填在
+`title`／`titleZh`。
+
+`translationFrom` 填一個來源語言代碼，`translationTo` 填目標語言代碼清單。
+古漢語使用 `zh-classical`，現代漢語使用 `zh-modern`；網站會把翻譯路線顯示在作者姓名之後。
 
 Tags: `Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`,
 `French`, `Russian`, `Philosophy`, `Moral Philosophy`, `Program Note`, `Review`,
@@ -245,11 +260,11 @@ Use Library for metadata. Use Files for prose and code.
 Markdown renders **strong**, *emphasis*, ***strong emphasis***,
 ~~deletion~~, `code`, [links](https://example.com), H<sub>2</sub>O,
 x<sup>2</sup>, <mark>mark</mark>, and Japanese furigana:
-<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>.
+<ruby><span class="ruby-base">音楽</span><rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>.
 
 Markdown 可呈現 **粗體**、*斜體*、***粗斜體***、~~刪除線~~、`程式碼`、
 [連結](https://example.com)、H<sub>2</sub>O、x<sup>2</sup>、<mark>標記</mark> 與
-日文振假名：<ruby>音楽<rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>。
+日文振假名：<ruby><span class="ruby-base">音楽</span><rp>(</rp><rt>おんがく</rt><rp>)</rp></ruby>。
 
 Footnotes, mathematics, figures, tables, block quotes, poetry blocks,
 definition lists, and `<details>` are supported.
@@ -328,13 +343,19 @@ live in `src/config/locales.ts`.
 共用文字、分類名稱、日期、時長與內容語言名稱位於 `src/config/locales.ts`。
 
 User choices live in browser storage: `yc-language`, `yc-theme`,
-`yc-font-size`.
+`yc-font-size`, and `yc-font-family`.
 
-使用者選擇存於瀏覽器：`yc-language`、`yc-theme`、`yc-font-size`。
+使用者選擇存於瀏覽器：`yc-language`、`yc-theme`、`yc-font-size`、
+`yc-font-family`。
 
-First-visit defaults live in `src/config/siteDefaults.json`.
+First-visit language, theme, text size, and typeface defaults live in
+`src/config/siteDefaults.json`. The public typeface toggle switches between
+`modern-mono` and `garamond`; its `Aa` sample previews the typeface a click will
+switch to.
 
-首次訪問預設值位於 `src/config/siteDefaults.json`。
+首次訪問的語言、主題、字號與字體預設值位於 `src/config/siteDefaults.json`。
+公開網站的字體按鈕在 `modern-mono` 與 `garamond` 之間切換；按鈕上的 `Aa`
+會預覽下一次點擊所切換到的字體。
 
 East Asian spacing lives in `src/config/typography.json`.
 

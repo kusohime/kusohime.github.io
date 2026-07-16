@@ -412,7 +412,7 @@
 
     const all = lookupAll(rel.relationId, rel);
     byId("kin-grid").innerHTML = all.map(({ lang, result }: any) => {
-      const warn = result.nb ? ' <span class="kin-warn" title="see N.B.">△</span>' : "";
+      const warn = result.nb ? ' <span class="kin-warn" title="see N.B.">→</span>' : "";
       const roman = state.roman && result.roman ? `<span class="kin-cell-roman">${escapeHtml(result.roman)}</span>` : "";
       const cls = result.kind === "class" || result.kind === "missing" ? " kin-cell--class" : "";
       const active = lang.id === state.language ? " kin-cell--active" : "";

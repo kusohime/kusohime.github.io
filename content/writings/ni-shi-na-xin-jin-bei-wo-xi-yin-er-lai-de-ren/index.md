@@ -1,9 +1,14 @@
 ---
-title: "你就是那個新近被我吸引而來的人嗎？"
-subtitle: "Are You the New Person Drawn Toward Me? — Walt Whitman"
+title: "Are You the New Person Drawn Toward Me?"
+titleZh: "你就是那個新近被我吸引而來的人嗎？"
+subtitle: "Walt Whitman"
+subtitleZh: "Walt Whitman"
+translationFrom: "en"
+translationTo: ["zh-modern"]
 date: "2026-07-09"
 tags: ["Translation", "Poetry"]
-excerpt: "你就是那個新近被我吸引而來的人嗎？"
+excerpt: "A Chinese translation of Walt Whitman’s poem on attraction, expectation, and the difficulty of intimacy."
+excerptZh: "惠特曼一首關於吸引、期待與親密之難的詩的中譯。"
 slug: "ni-shi-na-xin-jin-bei-wo-xi-yin-er-lai-de-ren"
 order: 6
 comments: true
@@ -21,8 +26,8 @@ comments: true
     你以為讓我成為你的愛人是那麼容易的嗎？<br />
     你以為與我相交，會是純然無瑕的滿足嗎？<br />
     你以為我是可靠而忠貞的嗎？<br />
-    你難道只看見我這<ruby>立面<rt>façade</rt></ruby>，只看見我這平滑寬容的模樣嗎？<br />
+    你難道只看見我這<ruby><span class="ruby-base">立面</span><rt>façade</rt></ruby>，只看見我這平滑寬容的模樣嗎？<br />
     你以為自己正踏在真實的土地上，走向一個真實的英雄人物嗎？<br />
-    你竟沒有想過嗎，夢者啊，這一切或許只是<ruby>摩耶<rt>Maya</rt></ruby>，只是幻象？
+    你竟沒有想過嗎，夢者啊，這一切或許只是<ruby><span class="ruby-base">摩耶</span><rt>Maya</rt></ruby>，只是幻象？
   </p>
 </div>

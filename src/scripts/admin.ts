@@ -348,6 +348,12 @@ export async function initializeAdminStudio() {
     studio.querySelector<HTMLButtonElement>("[data-search-clear]");
   const defaultLanguageSelect =
     studio.querySelector<HTMLSelectElement>("[data-default-language]");
+  const defaultFontFamilySelect =
+    studio.querySelector<HTMLSelectElement>("[data-default-font-family]");
+  const defaultFontSizeSelect =
+    studio.querySelector<HTMLSelectElement>("[data-default-font-size]");
+  const defaultThemeSelect =
+    studio.querySelector<HTMLSelectElement>("[data-default-theme]");
   const siteDefaultsFieldset =
     studio.querySelector<HTMLFieldSetElement>("[data-site-defaults]");
   const indentToggle =
@@ -456,6 +462,9 @@ export async function initializeAdminStudio() {
     !searchBlock ||
     !searchClearButton ||
     !defaultLanguageSelect ||
+    !defaultFontFamilySelect ||
+    !defaultFontSizeSelect ||
+    !defaultThemeSelect ||
     !siteDefaultsFieldset ||
     !indentToggle ||
     !newPageForm ||
@@ -1295,30 +1304,46 @@ export async function initializeAdminStudio() {
     void saveCssVariable("--paragraph-indent", value);
   });
 
-  /* ----- Site defaults (default language for new visitors) ----- */
+  /* ----- Site defaults for new visitors ----- */
+
+  interface SiteDefaults {
+    defaultLanguage: string;
+    defaultTheme: string;
+    defaultFontSize: string;
+    defaultFontFamily: string;
+  }
+
+  const currentSiteDefaults = (): SiteDefaults => ({
+    defaultLanguage: defaultLanguageSelect.value,
+    defaultTheme: defaultThemeSelect.value,
+    defaultFontSize: defaultFontSizeSelect.value,
+    defaultFontFamily: defaultFontFamilySelect.value,
+  });
 
   const loadSiteDefaults = async () => {
     const handle = fileHandles.get(SITE_DEFAULTS_PATH);
     siteDefaultsFieldset.disabled = !handle;
     if (!handle) return;
     try {
-      const parsed = JSON.parse(await (await handle.getFile()).text()) as {
-        defaultLanguage?: string;
-      };
+      const parsed = JSON.parse(await (await handle.getFile()).text()) as Partial<SiteDefaults>;
       if (parsed.defaultLanguage) {
         defaultLanguageSelect.value = parsed.defaultLanguage;
       }
+      defaultThemeSelect.value = parsed.defaultTheme === "dark" ? "dark" : "light";
+      defaultFontSizeSelect.value = parsed.defaultFontSize === "l" ? "l" : "s";
+      defaultFontFamilySelect.value =
+        parsed.defaultFontFamily === "garamond" ? "garamond" : "modern-mono";
     } catch {
       siteDefaultsFieldset.disabled = true;
     }
   };
 
-  defaultLanguageSelect.addEventListener("change", () => {
+  const saveSiteDefaults = () => {
     void (async () => {
       const handle = fileHandles.get(SITE_DEFAULTS_PATH);
       if (!handle) return;
       const nextText = `${JSON.stringify(
-        { defaultLanguage: defaultLanguageSelect.value },
+        currentSiteDefaults(),
         null,
         2,
       )}\n`;
@@ -1327,7 +1352,7 @@ export async function initializeAdminStudio() {
         await writable.write(nextText);
         await writable.close();
         setStatus(
-          `Default language set to ${defaultLanguageSelect.value}. Applies to first-time visitors; returning visitors keep their own choice.`,
+          "Site defaults updated. They apply to first-time visitors; returning visitors keep their own choices.",
         );
         schedulePreviewRefresh();
       } catch (error) {
@@ -1337,7 +1362,14 @@ export async function initializeAdminStudio() {
         );
       }
     })();
-  });
+  };
+
+  [
+    defaultLanguageSelect,
+    defaultFontFamilySelect,
+    defaultFontSizeSelect,
+    defaultThemeSelect,
+  ].forEach((select) => select.addEventListener("change", saveSiteDefaults));
 
   /* ----- Add page (works, events, and writings; drafts by default) ----- */
 
@@ -1861,6 +1893,23 @@ More information will be posted when details are confirmed.
     const date =
       newField<HTMLInputElement>("[data-new-date]")?.value.trim() ||
       new Date().toISOString().slice(0, 10);
+    const titleZh =
+      newField<HTMLInputElement>("[data-new-title-zh]")?.value.trim() ?? "";
+    const subtitle =
+      newField<HTMLInputElement>("[data-new-subtitle]")?.value.trim() ?? "";
+    const subtitleZh =
+      newField<HTMLInputElement>("[data-new-subtitle-zh]")?.value.trim() ?? "";
+    const translationFrom =
+      newField<HTMLInputElement>("[data-new-translation-from]")?.value.trim() ?? "";
+    const translationTo = (newField<HTMLInputElement>("[data-new-translation-to]")?.value ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+    const summaryZh =
+      newField<HTMLInputElement>("[data-new-summary-zh]")?.value.trim() ?? "";
+    if (!titleZh || !summaryZh) {
+      return { error: "A Chinese title and Chinese summary are required for a writing." };
+    }
     // 标签可多选；未勾选时省略 frontmatter 行。Tags allow several picks — omit the line when none.
     const tags = selectedTags(newTagsContainer);
     const tagsLine =
@@ -1872,8 +1921,10 @@ More information will be posted when details are confirmed.
       previewPath: `/writings/${slug}/`,
       source: `---
 title: ${yamlQuote(title)}
-date: ${yamlQuote(date)}
+titleZh: ${yamlQuote(titleZh)}
+${subtitle ? `subtitle: ${yamlQuote(subtitle)}\n` : ""}${subtitleZh ? `subtitleZh: ${yamlQuote(subtitleZh)}\n` : ""}${translationFrom ? `translationFrom: ${yamlQuote(translationFrom)}\n` : ""}${translationTo.length ? `translationTo: [${translationTo.map((value) => yamlQuote(value)).join(", ")}]\n` : ""}date: ${yamlQuote(date)}
 ${tagsLine}excerpt: ${yamlQuote(summary || title)}
+excerptZh: ${yamlQuote(summaryZh)}
 slug: ${yamlQuote(slug)}
 order: 999${draft ? "\ndraft: true" : ""}
 ---
@@ -1913,6 +1964,18 @@ Write the text here.
         window.setTimeout(() => refreshPreview(built.previewPath), 1500);
         newTitleInput.value = "";
         newSlugInput.value = "";
+        const newTitleZh = newField<HTMLInputElement>("[data-new-title-zh]");
+        const newSubtitle = newField<HTMLInputElement>("[data-new-subtitle]");
+        const newSubtitleZh = newField<HTMLInputElement>("[data-new-subtitle-zh]");
+        const newTranslationFrom = newField<HTMLInputElement>("[data-new-translation-from]");
+        const newTranslationTo = newField<HTMLInputElement>("[data-new-translation-to]");
+        const newSummaryZh = newField<HTMLInputElement>("[data-new-summary-zh]");
+        if (newTitleZh) newTitleZh.value = "";
+        if (newSubtitle) newSubtitle.value = "";
+        if (newSubtitleZh) newSubtitleZh.value = "";
+        if (newTranslationFrom) newTranslationFrom.value = "";
+        if (newTranslationTo) newTranslationTo.value = "";
+        if (newSummaryZh) newSummaryZh.value = "";
         slugEditedManually = false;
       } catch (error) {
         newMessage.textContent =
@@ -2032,8 +2095,12 @@ Write the text here.
     folder: string;
     folderSlug: string;
     title: string;
+    titleZh: string;
     slug: string;
     subtitle: string;
+    subtitleZh: string;
+    translationFrom: string;
+    translationTo: string[];
     year: string;
     date: string;
     time: string;
@@ -2054,6 +2121,7 @@ Write the text here.
     videoTitleZh: string;
     videoAspectRatio: string;
     summary: string;
+    summaryZh: string;
     links: string;
     order: string;
     draft: boolean;
@@ -2388,7 +2456,20 @@ Write the text here.
         aspectRatio: text("videoAspectRatio"),
       });
     } else if (entry.kind === "writings") {
+      const titleZh = text("titleZh");
+      const excerptZh = text("summaryZh");
+      if (!titleZh || !excerptZh) {
+        throw new Error("Writings need both a Chinese title and Chinese summary.");
+      }
+      setTopScalar(lines, "titleZh", titleZh);
       setTopScalar(lines, "subtitle", text("subtitle"), { omitEmpty: true });
+      setTopScalar(lines, "subtitleZh", text("subtitleZh"), { omitEmpty: true });
+      setTopScalar(lines, "translationFrom", text("translationFrom"), { omitEmpty: true });
+      setTopList(
+        lines,
+        "translationTo",
+        text("translationTo").split(",").map((value) => value.trim()).filter(Boolean),
+      );
       setTopScalar(lines, "comments", checked("comments"), { omitFalse: true });
       setTopScalar(
         lines,
@@ -2400,6 +2481,7 @@ Write the text here.
         text("tags").split(",").map((tag) => tag.trim()).filter(Boolean),
       );
       setTopScalar(lines, "excerpt", text("summary") || text("title"));
+      setTopScalar(lines, "excerptZh", excerptZh);
     } else {
       removeTopKey(lines, "subtitle");
       removeTopKey(lines, "comments");
@@ -2455,8 +2537,12 @@ Write the text here.
       folder: path.replace(/\/index\.md$/, ""),
       folderSlug,
       title: readTopScalar(lines, "title") || folderSlug,
+      titleZh: readTopScalar(lines, "titleZh"),
       slug: readTopScalar(lines, "slug") || folderSlug,
       subtitle: readTopScalar(lines, "subtitle"),
+      subtitleZh: readTopScalar(lines, "subtitleZh"),
+      translationFrom: readTopScalar(lines, "translationFrom"),
+      translationTo: readTopList(lines, "translationTo"),
       year: readTopScalar(lines, "year"),
       date: readTopScalar(lines, "date"),
       time: readTopScalar(lines, "time"),
@@ -2482,6 +2568,7 @@ Write the text here.
           : kind === "writings"
             ? readTopScalar(lines, "excerpt")
             : readTopScalar(lines, "brief"),
+      summaryZh: kind === "writings" ? readTopScalar(lines, "excerptZh") : "",
       links: readLinksText(lines),
       order: readTopScalar(lines, "order") || "999",
       draft: readTopScalar(lines, "draft") === "true",
@@ -2586,8 +2673,12 @@ Write the text here.
     libraryPathLabel.textContent = entry.path;
     setLibraryMode();
     setLibraryField("title", entry.title);
+    setLibraryField("titleZh", entry.titleZh);
     setLibraryField("slug", entry.slug);
     setLibraryField("subtitle", entry.subtitle);
+    setLibraryField("subtitleZh", entry.subtitleZh);
+    setLibraryField("translationFrom", entry.translationFrom);
+    setLibraryField("translationTo", entry.translationTo.join(", "));
     setLibraryField("year", entry.year);
     setLibraryField("category", entry.category);
     setLibraryField("instrumentation", entry.instrumentation);
@@ -2608,6 +2699,7 @@ Write the text here.
     setLibraryField("role", entry.role);
     setSelectedTags(libraryTagsContainer, entry.tags);
     setLibraryField("summary", entry.summary);
+    setLibraryField("summaryZh", entry.summaryZh);
     setLibraryField("links", entry.links);
     setLibraryField("order", entry.order);
     setLibraryField("draft", entry.draft);
@@ -2625,6 +2717,7 @@ Write the text here.
       .filter((entry) =>
         [
           entry.title,
+          entry.titleZh,
           entry.slug,
           entry.folderSlug,
           entry.category,

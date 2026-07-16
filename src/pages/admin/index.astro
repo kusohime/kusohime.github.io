@@ -190,6 +190,27 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 <option value="zh">中文</option>
               </select>
             </label>
+            <label>
+              Default typeface for new visitors
+              <select data-default-font-family>
+                <option value="modern-mono">Modern Mono</option>
+                <option value="garamond">Garamond</option>
+              </select>
+            </label>
+            <label>
+              Default text size for new visitors
+              <select data-default-font-size>
+                <option value="s">Small</option>
+                <option value="l">Large</option>
+              </select>
+            </label>
+            <label>
+              Default theme for new visitors
+              <select data-default-theme>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
           </fieldset>
 
           <fieldset class="design-group" data-design-settings disabled>
@@ -315,8 +336,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             <label>
               Home image edge fade
               <span class="range-control">
-                <input type="range" min="0" max="30" step="1"
-                  data-design-var="--home-image-fade-width" data-design-unit="%" />
+                <input type="range" min="0" max="80" step="1"
+                  data-design-var="--home-image-fade-width" data-design-unit="px" />
                 <output data-design-output="--home-image-fade-width"></output>
               </span>
             </label>
@@ -471,16 +492,32 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
               <legend>Catalog fields</legend>
               <p class="library-path" data-library-path></p>
               <label>
-                Title
+                Title (English for writings)
                 <input type="text" data-library-field="title" />
+              </label>
+              <label data-library-writing-only hidden>
+                Chinese title
+                <input type="text" data-library-field="titleZh" />
               </label>
               <label>
                 Slug
                 <input type="text" data-library-field="slug" />
               </label>
               <label data-library-non-event>
-                Subtitle
+                Subtitle (English for writings)
                 <input type="text" data-library-field="subtitle" />
+              </label>
+              <label data-library-writing-only hidden>
+                Chinese subtitle
+                <input type="text" data-library-field="subtitleZh" />
+              </label>
+              <label data-library-writing-only hidden>
+                Translation from (optional)
+                <input type="text" data-library-field="translationFrom" placeholder="en" />
+              </label>
+              <label data-library-writing-only hidden>
+                Translation to, comma-separated (optional)
+                <input type="text" data-library-field="translationTo" placeholder="zh-modern" />
               </label>
               <label data-library-work-only>
                 Year
@@ -581,8 +618,12 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 <input type="text" data-library-field="role" placeholder="composer, pianist..." />
               </label>
               <label>
-                Summary
+                Summary (English for writings)
                 <textarea rows="3" data-library-field="summary"></textarea>
+              </label>
+              <label data-library-writing-only hidden>
+                Chinese summary
+                <textarea rows="3" data-library-field="summaryZh"></textarea>
               </label>
               <label data-library-event-only hidden>
                 Links
@@ -632,7 +673,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 </select>
               </label>
               <label>
-                Title
+                Title (English for writings)
                 <input type="text" data-new-title placeholder="Still Water, Turning" required />
               </label>
               <label>
@@ -715,6 +756,26 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
               <div data-new-writing-fields hidden>
                 <label>
+                  Chinese title
+                  <input type="text" data-new-title-zh />
+                </label>
+                <label>
+                  Subtitle / original author, English (optional)
+                  <input type="text" data-new-subtitle />
+                </label>
+                <label>
+                  Subtitle / original author, Chinese (optional)
+                  <input type="text" data-new-subtitle-zh />
+                </label>
+                <label>
+                  Translation from (optional)
+                  <input type="text" data-new-translation-from placeholder="en" />
+                </label>
+                <label>
+                  Translation to, comma-separated (optional)
+                  <input type="text" data-new-translation-to placeholder="zh-modern" />
+                </label>
+                <label>
                   Date (YYYY or YYYY-MM-DD)
                   <input type="text" data-new-date placeholder="2026-06" />
                 </label>
@@ -722,6 +783,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                   <span class="tag-picker-label">Tags (choose any)</span>
                   <div class="tag-options" data-new-tags></div>
                 </div>
+                <label>
+                  Chinese one-line summary
+                  <input type="text" data-new-summary-zh />
+                </label>
               </div>
 
               <div data-new-event-fields hidden>

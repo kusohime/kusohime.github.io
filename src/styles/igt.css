@@ -129,7 +129,7 @@
 }
 
 .writing-title-page[data-writing-slug="on-alma"] .igt-cell {
-  font-family: var(--font-modern-mono);
+  font-family: var(--font-body);
   font-size: 0.92rem;
   line-height: 1.4;
 }
@@ -142,7 +142,7 @@
 .writing-title-page[data-writing-slug="on-alma"] .igt-translation {
   border-top: 1px dotted var(--color-rule);
   color: var(--color-muted);
-  font-family: var(--font-modern-mono);
+  font-family: var(--font-body);
   font-size: 0.88rem;
   line-height: 1.55;
   margin-top: 0.05rem;
@@ -151,21 +151,23 @@
 
 .writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(he),
 .writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(hbo) {
-  font-family: var(--font-hebrew-mono);
+  direction: rtl;
+  font-family: var(--font-hebrew-body);
   font-size: 1.08rem;
   font-style: normal;
   line-height: 1.55;
+  unicode-bidi: isolate;
 }
 
 .writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(grc),
 .writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(el) {
-  font-family: var(--font-greek-mono);
+  font-family: var(--font-greek-body);
   font-style: normal;
 }
 
 .writing-title-page[data-writing-slug="on-alma"] .igt-block :lang(ar) {
   direction: rtl;
-  font-family: var(--font-arabic-mono);
+  font-family: var(--font-arabic-body);
   font-size: 1.08rem;
   font-style: normal;
   line-height: 1.55;
