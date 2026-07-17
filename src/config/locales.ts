@@ -194,6 +194,7 @@ const workCategoryTranslations: Record<
   "Large Ensemble": { en: "Large Ensemble", zh: "大型合奏" },
   Orchestral: { en: "Orchestral", zh: "管弦樂" },
   "Vocal / Choral": { en: "Vocal / Choral", zh: "聲樂／合唱" },
+  Arrangements: { en: "Arrangements", zh: "編曲" },
   Other: { en: "Other", zh: "其他" },
 };
 

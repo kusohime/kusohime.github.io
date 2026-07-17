@@ -1,5 +1,5 @@
 ---
-title: "Notes on Les Rois thaumaturges"
+title: "Notes on *Les Rois thaumaturges*"
 titleZh: "《國王神蹟》讀書筆記"
 date: "2024-07-13"
 tags: ["Essay", "Anthropology", "Theology", "Review"]

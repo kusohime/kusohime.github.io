@@ -120,7 +120,7 @@ order: 1
 
 Valid categories / 可用分類:
 
-`Solo`, `Chamber`, `Large Ensemble`, `Orchestral`, `Vocal / Choral`, `Other`
+`Solo`, `Chamber`, `Large Ensemble`, `Orchestral`, `Vocal / Choral`, `Arrangements`, `Other`
 
 Keep those category values in English; their visible names are translated
 automatically. Localized fields use `en`, `zh`, `de`, `fr`, and `ja`, with

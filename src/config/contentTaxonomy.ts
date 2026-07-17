@@ -10,6 +10,7 @@ export const workCategories = [
   "Large Ensemble",
   "Orchestral",
   "Vocal / Choral",
+  "Arrangements",
   "Other",
 ] as const;
 

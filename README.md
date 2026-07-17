@@ -127,10 +127,10 @@ Optional: `subtitle`, `description`, `dedication`, `commission`, `credits`,
 `comments`。
 
 Categories: `Solo`, `Chamber`, `Large Ensemble`, `Orchestral`,
-`Vocal / Choral`, `Other`.
+`Vocal / Choral`, `Arrangements`, `Other`.
 
 分類：`Solo`、`Chamber`、`Large Ensemble`、`Orchestral`、`Vocal / Choral`、
-`Other`。
+`Arrangements`、`Other`。
 
 ### Events / 活動
 

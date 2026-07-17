@@ -14,8 +14,8 @@ description: "A four-movement large-ensemble work for two actors, high voice, an
 premiere:
   date: "2025-04-28"
   by:
-    en: "Joanna Hong ’27 and Annie Hauze ’27, actors; Che Lu ’26, voice; Kielor Tung ’25, conductor; Kaito Stohr ’28 and Emma Gabriel ’25, violin; David Ornelas ’25, viola; Julian Chen ’28, cello; Duncan Wall ’26, horn; Yiyang (Salome) Jin ’25, clarinet; Xinxin Li ’25, oboe; Ming Gao ’26 and Vic Wen ’26, flute and piccolo; Aaron Thammavongxay ’25, piano; Aiperi Bush ’28, organ; Spencer Kennedy ’27, Moss Wacker ’25, and Hannah Zhang ’25, percussion"
-    zh: "Joanna Hong ’27、Annie Hauze ’27，演員；Che Lu ’26，人聲；Kielor Tung ’25，指揮；Kaito Stohr ’28、Emma Gabriel ’25，小提琴；David Ornelas ’25，中提琴；Julian Chen ’28，大提琴；Duncan Wall ’26，法國號；Yiyang (Salome) Jin ’25，單簧管；Xinxin Li ’25，雙簧管；Ming Gao ’26、Vic Wen ’26，長笛與短笛；Aaron Thammavongxay ’25，鋼琴；Aiperi Bush ’28，管風琴；Spencer Kennedy ’27、Moss Wacker ’25、Hannah Zhang ’25，打擊樂"
+    en: "Joanna Hong and Annie Hauze, actors; Che Lu, voice; Kielor Tung, conductor; Kaito Stohr and Emma Gabriel, violin; David Ornelas, viola; Julian Chen, cello; Duncan Wall, horn; Yiyang (Salome) Jin, clarinet; Xinxin Li, oboe; Ming Gao and Vic Wen, flute and piccolo; Aaron Thammavongxay, piano; Aiperi Bush, organ; Spencer Kennedy, Moss Wacker, and Hannah Zhang, percussion"
+    zh: "Joanna Hong、Annie Hauze，演員；Che Lu，人聲；Kielor Tung，指揮；Kaito Stohr、Emma Gabriel，小提琴；David Ornelas，中提琴；Julian Chen，大提琴；Duncan Wall，法國號；Yiyang (Salome) Jin，單簧管；Xinxin Li，雙簧管；Ming Gao、Vic Wen，長笛與短笛；Aaron Thammavongxay，鋼琴；Aiperi Bush，管風琴；Spencer Kennedy、Moss Wacker、Hannah Zhang，打擊樂"
   venue:
     en: "Lang Concert Hall, Swarthmore, PA"
     zh: "Lang 音樂廳，賓州斯沃斯莫爾"
@@ -52,5 +52,4 @@ Drifting along the Mi-lo River in a Jane Eyre-esque reverie, Driang confided in 
 在《簡‧愛》式的遐想中沿汨羅江漂流，Driang 向狸吐露：她在夢中收到一則訊息——圍的魂魄並不安寧。召喚其亡靈的儀式，需要施行者投入強烈的情感；然而身為半神化的薩滿，Driang 卻患有萎縮的邊緣系統，以及由此而來的多巴胺失調，使她無法產生正常的人類情感（而狸則一如所有的貓，帶著述情障礙般的漠然）。最終，Driang 決意把這場儀式，轉化為一段傾訴式的佛洛伊德對話。
 
 </div>
-
 

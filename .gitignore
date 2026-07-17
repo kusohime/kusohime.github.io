@@ -10,3 +10,8 @@ desktop-dist/
 .publish-source.*
 .deploy-test/
 *.crdownload
+
+# Local generated artifacts; never offer these in Website Studio publishing.
+tmp/
+output/
+.claude/settings.local.json

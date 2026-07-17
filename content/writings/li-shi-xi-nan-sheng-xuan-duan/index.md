@@ -1,5 +1,5 @@
 ---
-title: "Excerpts from The History Boys"
+title: "Excerpts from *The History Boys*"
 titleZh: "《歷史系男生》選段"
 subtitle: "Alan Bennett"
 subtitleZh: "Alan Bennett"

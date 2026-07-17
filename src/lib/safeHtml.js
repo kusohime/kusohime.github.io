@@ -36,6 +36,13 @@ export function renderSafeInlineMarkdown(text) {
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 }
 
+export function inlineMarkdownToPlainText(text) {
+  return String(text ?? "")
+    .replace(/\[([^\]]+)\]\([^)\s]+\)/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1");
+}
+
 export function renderParagraphs(markdown) {
   return String(markdown ?? "")
     .trim()

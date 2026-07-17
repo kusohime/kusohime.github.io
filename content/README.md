@@ -113,7 +113,7 @@ order: 1
 
 Valid categories / 可用分類:
 
-`Solo`, `Chamber`, `Large Ensemble`, `Orchestral`, `Vocal / Choral`, `Other`
+`Solo`, `Chamber`, `Large Ensemble`, `Orchestral`, `Vocal / Choral`, `Arrangements`, `Other`
 
 Keep the category values above in English; the website translates their
 visible labels automatically. Instrumentation and credit fields use the same

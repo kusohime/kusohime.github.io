@@ -68,7 +68,7 @@ content:
         type: select
         required: true
         options:
-          values: [Solo, Chamber, Orchestral, "Vocal / Choral", "Music Theatre", Other]
+          values: [Solo, Chamber, Orchestral, "Vocal / Choral", Arrangements, "Music Theatre", Other]
       # 多语言字段：英文必填，中文可留空。
       # Localized field: English required, Chinese optional.
       - name: instrumentation

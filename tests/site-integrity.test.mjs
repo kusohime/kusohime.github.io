@@ -5,7 +5,10 @@ import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { renderCommentMarkdown } from "../src/lib/commentMarkdown.js";
-import { renderSafeInlineMarkdown } from "../src/lib/safeHtml.js";
+import {
+  inlineMarkdownToPlainText,
+  renderSafeInlineMarkdown,
+} from "../src/lib/safeHtml.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const contentRoot = path.join(root, "content");
@@ -120,6 +123,17 @@ await test("safe inline Markdown escapes HTML before adding links", async () => 
   assert.ok(html.includes('href="/works/"'));
   assert.ok(!html.includes('href="data:text/html'));
   assert.ok(html.includes("<strong>bold</strong>"));
+});
+
+await test("inline Markdown has a plain-text form for document and feed titles", async () => {
+  assert.equal(
+    inlineMarkdownToPlainText("Notes on *Les Rois thaumaturges*"),
+    "Notes on Les Rois thaumaturges",
+  );
+  assert.equal(
+    inlineMarkdownToPlainText("Read **closely** at [Writings](/writings/)"),
+    "Read closely at Writings",
+  );
 });
 
 await test("content collection slugs are unique", async () => {

@@ -9,6 +9,7 @@ import Preferences from "../components/Preferences.astro";
 import { translate, type Locale, type TranslationKey } from "../config/locales";
 import siteDefaults from "../config/siteDefaults.json";
 import { site } from "../config/site";
+import { inlineMarkdownToPlainText } from "../lib/safeHtml.js";
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
 
@@ -32,8 +33,12 @@ const {
   unavailableLanguages = [],
 } = Astro.props;
 
-const pageTitle = title ? `${title} | ${site.name}` : site.name;
-const pageTitleZh = titleZh ? `${titleZh} | ${site.name}` : pageTitle;
+const pageTitle = title
+  ? `${inlineMarkdownToPlainText(title)} | ${site.name}`
+  : site.name;
+const pageTitleZh = titleZh
+  ? `${inlineMarkdownToPlainText(titleZh)} | ${site.name}`
+  : pageTitle;
 const defaultLanguage = siteDefaults.defaultLanguage;
 const defaultTheme = siteDefaults.defaultTheme === "dark" ? "dark" : "light";
 const defaultFontSize = siteDefaults.defaultFontSize === "l" ? "l" : "s";

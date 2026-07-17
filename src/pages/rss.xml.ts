@@ -1,5 +1,6 @@
 import { getCollection } from "astro:content";
 import { site } from "../config/site";
+import { inlineMarkdownToPlainText } from "../lib/safeHtml.js";
 
 const SITE_URL = "https://yixincui.com";
 
@@ -38,7 +39,7 @@ export async function GET() {
 
       return `
     <item>
-      <title>${escapeXml(writing.data.title)}</title>
+      <title>${escapeXml(inlineMarkdownToPlainText(writing.data.title))}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${pubDate}</pubDate>
