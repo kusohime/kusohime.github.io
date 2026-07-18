@@ -21,6 +21,13 @@ import { chordRoughness, dyadSweep, pairRoughness } from "../src/lib/roughness.j
 import { applyOp, applyChain, hexatonicCycle, commonTones } from "../src/lib/triads.js";
 import { reflectPc, reflectMidi, negativeHarmonySum, pcMappingTable } from "../src/lib/reflect.js";
 import { validateEntry, ENTRIES } from "../src/lib/multiphonics-data.js";
+import {
+  COMPUTER_KEYBOARD_MAP,
+  COMPUTER_KEYBOARD_ROWS,
+  buildKeyboardNotes,
+  decodeMidiMessage,
+  midiToKeyboardLabel,
+} from "../src/lib/midi-keyboard.js";
 
 let passed = 0;
 function test(name, fn) {
@@ -106,6 +113,73 @@ test("31-EDO step 18 above A4", () => {
   const { cents, hz } = edoStep(18, 31, 440);
   approx(cents, 696.7741935, 1e-6);
   approx(hz, 440 * Math.pow(2, 18 / 31), 1e-9);
+});
+
+/* ---------- playable MIDI keyboard ---------- */
+test("computer keyboard mapping spans two chromatic octaves", () => {
+  assert.deepEqual(COMPUTER_KEYBOARD_ROWS.lower, [
+    "Z", "S", "X", "D", "C", "V", "G", "B", "H", "N", "J", "M",
+  ]);
+  assert.deepEqual(COMPUTER_KEYBOARD_ROWS.upper, [
+    "Q", "2", "W", "3", "E", "R", "5", "T", "6", "Y", "7", "U",
+  ]);
+  assert.equal(COMPUTER_KEYBOARD_MAP.Z, 0);
+  assert.equal(COMPUTER_KEYBOARD_MAP.M, 11);
+  assert.equal(COMPUTER_KEYBOARD_MAP.Q, 12);
+  assert.equal(COMPUTER_KEYBOARD_MAP.U, 23);
+});
+
+test("MIDI keyboard labels and geometry align black keys with preceding whites", () => {
+  assert.equal(midiToKeyboardLabel(0), "C-1");
+  assert.equal(midiToKeyboardLabel(60), "C4");
+  assert.equal(midiToKeyboardLabel(61), "C#4");
+  assert.equal(midiToKeyboardLabel(127), "G9");
+
+  const notes = buildKeyboardNotes(60);
+  assert.equal(notes.length, 24);
+  assert.deepEqual(notes[0], {
+    midi: 60, name: "C4", isBlack: false, whiteIndex: 0, computerKey: "Z",
+  });
+  assert.deepEqual(notes[1], {
+    midi: 61, name: "C#4", isBlack: true, whiteIndex: 0, computerKey: "S",
+  });
+  assert.deepEqual(notes[11], {
+    midi: 71, name: "B4", isBlack: false, whiteIndex: 6, computerKey: "M",
+  });
+  assert.deepEqual(notes[12], {
+    midi: 72, name: "C5", isBlack: false, whiteIndex: 7, computerKey: "Q",
+  });
+  assert.deepEqual(notes[23], {
+    midi: 83, name: "B5", isBlack: false, whiteIndex: 13, computerKey: "U",
+  });
+});
+
+test("MIDI message decoder covers notes, sustain, panic, and ignores other data", () => {
+  assert.deepEqual(decodeMidiMessage([0x92, 60, 96]), {
+    type: "note-on", midi: 60, velocity: 96, channel: 2,
+  });
+  assert.deepEqual(decodeMidiMessage(new Uint8Array([0x9f, 61, 0])), {
+    type: "note-off", midi: 61, velocity: 0, channel: 15,
+  });
+  assert.deepEqual(decodeMidiMessage([0x81, 62, 45]), {
+    type: "note-off", midi: 62, velocity: 45, channel: 1,
+  });
+  assert.deepEqual(decodeMidiMessage([0xb3, 64, 127]), {
+    type: "sustain", active: true, value: 127, channel: 3,
+  });
+  assert.deepEqual(decodeMidiMessage([0xb3, 64, 63]), {
+    type: "sustain", active: false, value: 63, channel: 3,
+  });
+  assert.deepEqual(decodeMidiMessage([0xb0, 120, 0]), {
+    type: "panic", controller: 120, channel: 0,
+  });
+  assert.deepEqual(decodeMidiMessage([0xb7, 123, 0]), {
+    type: "panic", controller: 123, channel: 7,
+  });
+  assert.equal(decodeMidiMessage([0xb0, 1, 64]), null);
+  assert.equal(decodeMidiMessage([0xe0, 0, 64]), null);
+  assert.equal(decodeMidiMessage([0x90, 60]), null);
+  assert.equal(decodeMidiMessage([0xf8, 0, 0]), null);
 });
 
 /* ---------- pc sets ---------- */
@@ -442,6 +516,116 @@ test("loudness compensation: flat above middle C, rising and capped in the bass"
   assert.equal(loudnessGain(0), 1); // guards against non-positive input
   // ~4.5 dB/octave: one octave down should be close to 10^(4.5/20).
   assert.ok(Math.abs(loudnessGain(130.81) - Math.pow(10, 4.5 / 20)) < 0.02);
+});
+
+test("poly synth offers four frozen, sustaining timbres and stays lazy", async () => {
+  const { POLY_SYNTH_PRESETS, createPolySynth } = await import("../src/lib/audio.js");
+  assert.deepEqual(Object.keys(POLY_SYNTH_PRESETS), ["pure", "warm", "organ", "pad"]);
+  assert.equal(new Set(Object.values(POLY_SYNTH_PRESETS).map((preset) => preset.label)).size, 4);
+  for (const preset of Object.values(POLY_SYNTH_PRESETS)) {
+    assert.ok(Object.isFrozen(preset));
+    assert.ok(Object.isFrozen(preset.oscillators));
+    assert.ok(preset.adsr.sustain > 0);
+    assert.ok(preset.adsr.release > 0);
+    assert.ok(preset.oscillators.length > 0);
+  }
+
+  // Construction and non-audio controls must not touch browser-only globals.
+  const synth = createPolySynth({ preset: "organ", volume: 0.6 });
+  assert.equal(synth.activeCount(), 0);
+  assert.equal(synth.setPreset("pad"), true);
+  assert.equal(synth.setPreset("not-a-preset"), false);
+  assert.equal(synth.setVolume(2), 1);
+  assert.equal(synth.panic(), 0);
+  synth.destroy();
+  assert.equal(synth.noteOn("after-destroy", 60), false);
+});
+
+test("poly synth holds notes until release and enforces its voice cap", async () => {
+  const previousWindow = globalThis.window;
+  const createdOscillators = [];
+
+  class MockParam {
+    constructor(value = 0) { this.value = value; }
+    setValueAtTime(value) { this.value = value; }
+    setTargetAtTime(value) { this.value = value; }
+    exponentialRampToValueAtTime(value) { this.value = value; }
+    cancelScheduledValues() {}
+    cancelAndHoldAtTime() {}
+  }
+  class MockNode {
+    connect(target) { this.target = target; return target; }
+    disconnect() { this.disconnected = true; }
+  }
+  class MockOscillator extends MockNode {
+    constructor() {
+      super();
+      this.frequency = new MockParam();
+      this.detune = new MockParam();
+      this.onended = null;
+      this.started = false;
+      this.stopped = false;
+      createdOscillators.push(this);
+    }
+    start() { this.started = true; }
+    stop() { this.stopped = true; }
+  }
+  class MockAudioContext {
+    constructor() {
+      this.currentTime = 0;
+      this.sampleRate = 48000;
+      this.state = "running";
+      this.destination = new MockNode();
+    }
+    createGain() {
+      const node = new MockNode();
+      node.gain = new MockParam(1);
+      return node;
+    }
+    createDynamicsCompressor() {
+      const node = new MockNode();
+      node.threshold = new MockParam();
+      node.knee = new MockParam();
+      node.ratio = new MockParam();
+      node.attack = new MockParam();
+      node.release = new MockParam();
+      return node;
+    }
+    createBiquadFilter() {
+      const node = new MockNode();
+      node.frequency = new MockParam();
+      node.Q = new MockParam();
+      return node;
+    }
+    createOscillator() { return new MockOscillator(); }
+    async resume() { this.state = "running"; }
+  }
+
+  try {
+    globalThis.window = { AudioContext: MockAudioContext };
+    const { createPolySynth } = await import("../src/lib/audio.js");
+    const synth = createPolySynth({ preset: "organ", maxVoices: 2 });
+
+    assert.equal(synth.noteOn("one", 48, { velocity: 96 }), true);
+    assert.equal(synth.activeCount(), 1);
+    assert.ok(createdOscillators.length >= 4);
+    assert.ok(createdOscillators.every((oscillator) => oscillator.started && !oscillator.stopped));
+
+    // With no note-off, every source remains alive: sustain is indefinite.
+    assert.equal(synth.activeCount(), 1);
+    assert.equal(synth.noteOn("two", 55), true);
+    assert.equal(synth.activeCount(), 2);
+    assert.equal(synth.noteOn("three", 60), true);
+    assert.equal(synth.activeCount(), 2);
+    assert.equal(synth.noteOff("one"), false); // oldest voice was stolen
+    assert.equal(synth.noteOff("two"), true);
+    assert.equal(synth.activeCount(), 1);
+    assert.ok(synth.panic() >= 1);
+    assert.equal(synth.activeCount(), 0);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
 });
 
 console.log(`${passed} tests passed${process.exitCode ? " (with failures)" : ""}`);

@@ -1,21 +1,42 @@
 {
-  "generated_at": "2026-07-16T03:37:15.824606+00:00",
+  "generated_at": "2026-07-17T02:19:16.347541+00:00",
   "nodes": {
+    "c_users_admin_documents_website_src_styles_global_css": {
+      "code_fingerprint": "1783681201f4e9a140525552c94fa3a1a1f4b56b7158ea50e62d6d7a3dc3d647",
+      "label": "../styles/global.css",
+      "last": "2026-07-17T02:19:16.347541+00:00",
+      "provenance": [
+        {
+          "date": "2026-07-17T02:19:16.347541+00:00",
+          "outcome": "useful",
+          "q": "论翻译腔's indentations are erratic"
+        }
+      ],
+      "score": 0.984973146,
+      "source_file": "src/styles/global.css",
+      "status": "tentative",
+      "uses": 1
+    },
     "src_content_config": {
       "code_fingerprint": "45b2a1e02255fec604ca5ab2c4b9f0559651a3397d28a166730e66dea2ec840d",
       "label": "content.config.ts",
-      "last": "2026-07-15T22:25:02.096956+00:00",
+      "last": "2026-07-17T02:19:16.347541+00:00",
       "provenance": [
+        {
+          "date": "2026-07-17T02:19:16.347541+00:00",
+          "outcome": "useful",
+          "q": "论翻译腔's indentations are erratic"
+        },
         {
           "date": "2026-07-15T22:25:02.096956+00:00",
           "outcome": "useful",
           "q": "Translate this into English preserving syntactic and vocabulary quirks, matching style of his contemporary. Under date 02/22/2023."
         }
       ],
-      "score": 0.995002794,
+      "score": 1.943838933,
       "source_file": "src/content.config.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     }
   },
   "version": 1

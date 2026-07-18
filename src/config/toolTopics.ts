@@ -42,10 +42,19 @@ export const toolTopicList: ToolTopicDef[] = [
     id: "harmony",
     group: "Composition",
     label: {
-      en: "Motif",
-      zh: "動機",
+      en: "Harmony & Motif",
+      zh: "和聲與動機",
     },
-    tools: ["melody-transformer", "neo-riemannian", "negative-harmony"],
+    blurb: {
+      en: "Audition harmony, voice leading, and motivic transformation.",
+      zh: "試聽和聲、聲部進行與動機變換。",
+    },
+    tools: [
+      "midi-keyboard",
+      "melody-transformer",
+      "neo-riemannian",
+      "negative-harmony",
+    ],
   },
   {
     id: "tuning-spectra",
