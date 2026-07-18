@@ -26,6 +26,7 @@ export const writingTypes = [
   "Russian",
   "Japanese",
   "Philosophy",
+  "Philosophy of Science",
   "Moral Philosophy",
   "Affect Theory",
   "Psychoanalysis",

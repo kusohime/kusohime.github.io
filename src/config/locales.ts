@@ -250,6 +250,10 @@ const writingTypeTranslations: Record<
     singular: { en: "Philosophy", zh: "哲學" },
     plural: { en: "Philosophy", zh: "哲學" },
   },
+  "Philosophy of Science": {
+    singular: { en: "Philosophy of Science", zh: "科學哲學" },
+    plural: { en: "Philosophy of Science", zh: "科學哲學" },
+  },
   "Moral Philosophy": {
     singular: { en: "Moral Philosophy", zh: "道德哲學" },
     plural: { en: "Moral Philosophy", zh: "道德哲學" },

@@ -188,7 +188,7 @@ after the author name.
 Valid types / 可用型別:
 
 `Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`, `French`,
-`Russian`, `Philosophy`, `Moral Philosophy`, `Program Note`, `Review`, `Other`
+`Russian`, `Philosophy`, `Philosophy of Science`, `Moral Philosophy`, `Program Note`, `Review`, `Other`
 
 Writing types, content-language labels, and dates are translated centrally in
 `src/config/locales.ts`. Add or revise shared translations there instead of

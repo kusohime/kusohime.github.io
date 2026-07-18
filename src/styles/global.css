@@ -4179,6 +4179,61 @@ main {
   font-size: 0.85rem;
 }
 
+/* Fodor (1974), schema 5: preserve the source topology while keeping labels legible on phones. */
+.fodor-reduction-schema {
+  overflow-x: auto;
+  margin-block: var(--space-lg);
+  padding-bottom: 0.2rem;
+}
+
+.fodor-reduction-schema svg {
+  display: block;
+  width: 100%;
+  min-width: 38rem;
+  height: auto;
+  margin-inline: auto;
+  color: var(--color-text);
+}
+
+.fodor-reduction-schema .schema-lines {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fodor-reduction-schema .schema-lines path {
+  vector-effect: non-scaling-stroke;
+}
+
+.fodor-reduction-schema .schema-copy {
+  fill: currentColor;
+  font-family: Georgia, "Times New Roman", "Noto Serif", serif;
+  font-size: 23px;
+}
+
+.fodor-reduction-schema .schema-label {
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.fodor-reduction-schema .schema-number,
+.fodor-reduction-schema .schema-bridge {
+  font-size: 19px;
+}
+
+.fodor-reduction-schema .schema-math {
+  font-family: "STIX Two Text", "Cambria Math", Georgia, serif;
+  font-style: italic;
+}
+
+.fodor-reduction-schema .schema-star {
+  font-size: 70%;
+}
+
+.fodor-reduction-schema figcaption {
+  text-align: center;
+}
+
 /*
  * 开篇排版 / Opening-paragraph typography
  * 1. 首段齐头（不缩进）——书籍惯例：缩进用于标示「新段」，而开篇无前段可分。
