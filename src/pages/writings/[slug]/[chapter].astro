@@ -53,6 +53,8 @@ const nextChapter =
     ? chapters[currentIndex + 1]
     : undefined;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
+const isSplitReader = isCuiXiong || writing.data.splitReader;
+const isLibrettoReader = writing.data.splitReader;
 const isBenQun = isCuiXiong && chapter.data.slug.startsWith("ben-qun");
 const isImageLed = isBenQun && (chapter.body ?? "").includes("/images/");
 // The chapter body is the most reliable signal for Simplified vs Traditional
@@ -65,7 +67,9 @@ const contentLang =
       chapter.data.title,
       chapter.data.excerpt,
     ].filter(Boolean).join(" "),
-  );
+  ) ??
+  writing.data.translationFrom ??
+  "en";
 // 中文：章节没有译本机制，正文必为单语；按主导语言提示另一语言不可用
 // （纯图片章节等无正文时不提示）。
 // English: Chapters have no translation mechanism, so the body is always
@@ -95,13 +99,16 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
     data-source-file={`content/writings/${chapter.id}.md`}
   >
     {
-      isCuiXiong ? (
+      isSplitReader ? (
         <CuiXiongReader
           writing={writing}
           chapters={chapters}
           currentChapter={chapter}
           contentLang={contentLang}
           imageLed={isImageLed}
+          variant={isLibrettoReader ? "libretto" : "cui"}
+          rootLabel={isLibrettoReader ? "Introduction" : "0"}
+          navLabel={isLibrettoReader ? "Libretto contents" : "脆熊篇目錄"}
         >
           <div
             lang={contentLang}
@@ -110,9 +117,10 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
               "writing-body",
               "chicago-prose",
               {
-                "cui-dialogue": !isBenQun,
+                "cui-dialogue": isCuiXiong && !isBenQun,
                 "poly-dialogue": isBenQun,
                 "series-visual": isImageLed,
+                "drama-body": writing.data.tags.includes("Drama"),
               },
             ]}
           >
@@ -166,7 +174,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
     }
 
     {
-      !isCuiXiong && (
+      !isSplitReader && (
         <nav class="back-link" aria-label="Footer navigation">
           <a href={`/writings/${writing.data.slug}/`}>
             <span

@@ -355,6 +355,7 @@ export function contentLanguageLabel(language: string, locale: Locale) {
 const translationLanguageLabels: Record<string, Record<Locale, string>> = {
   en: { en: "English", zh: "英文" },
   fr: { en: "French", zh: "法文" },
+  it: { en: "Italian", zh: "義大利文" },
   ja: { en: "Japanese", zh: "日文" },
   ru: { en: "Russian", zh: "俄文" },
   "zh-classical": { en: "Classical Chinese", zh: "古漢語" },

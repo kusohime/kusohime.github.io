@@ -151,7 +151,7 @@ await test("content collection slugs are unique", async () => {
   }
 });
 
-await test("writing entries carry bilingual listing metadata", async () => {
+await test("writing entries carry bilingual titles and paired optional summaries", async () => {
   const files = await filesUnder(path.join(contentRoot, "writings"), (file) =>
     file.endsWith(`${path.sep}index.md`),
   );
@@ -160,7 +160,13 @@ await test("writing entries carry bilingual listing metadata", async () => {
     const metadata = frontmatter(await readFile(file, "utf8"));
     const relative = path.relative(root, file);
     assert.ok(scalar(metadata, "titleZh"), `${relative} has no Chinese title`);
-    assert.ok(scalar(metadata, "excerptZh"), `${relative} has no Chinese excerpt`);
+    const excerpt = scalar(metadata, "excerpt");
+    const excerptZh = scalar(metadata, "excerptZh");
+    assert.equal(
+      Boolean(excerpt),
+      Boolean(excerptZh),
+      `${relative} must provide both English and Chinese excerpts, or neither`,
+    );
 
     if (/^tags:\s*\[[^\]]*"Translation"/m.test(metadata)) {
       const subtitle = scalar(metadata, "subtitle");

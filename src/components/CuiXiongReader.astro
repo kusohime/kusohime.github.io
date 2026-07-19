@@ -12,6 +12,9 @@ interface Props {
   currentChapter?: CollectionEntry<"writingChapters">;
   contentLang?: string;
   imageLed?: boolean;
+  variant?: "cui" | "libretto";
+  rootLabel?: string;
+  navLabel?: string;
 }
 
 const {
@@ -20,12 +23,15 @@ const {
   currentChapter,
   contentLang,
   imageLed = false,
+  variant = "cui",
+  rootLabel = "0",
+  navLabel = "Contents",
 } = Astro.props;
 const parentHref = `/writings/${writing.data.slug}/`;
 const dateLabel = writing.data.displayDate ?? String(writing.data.date);
 ---
 
-<div class:list={["cui-reader", { "series-reader--visual": imageLed }]}>
+<div class:list={["cui-reader", { "series-reader--visual": imageLed, "libretto-reader": variant === "libretto" }]}>
   <aside class="cui-reader-rail">
     <a
       class="cui-reader-title"
@@ -33,7 +39,7 @@ const dateLabel = writing.data.displayDate ?? String(writing.data.date);
     >
       <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
     </a>
-    <nav aria-label="脆熊篇目錄">
+    <nav aria-label={navLabel}>
       <ol>
         <li>
           <a
@@ -41,7 +47,7 @@ const dateLabel = writing.data.displayDate ?? String(writing.data.date);
             lang={contentLang}
             aria-current={!currentChapter ? "page" : undefined}
           >
-            0
+            {rootLabel}
           </a>
         </li>
         {
@@ -77,3 +83,16 @@ const dateLabel = writing.data.displayDate ?? String(writing.data.date);
     <slot />
   </section>
 </div>
+
+<script>
+  document
+    .querySelectorAll<HTMLOListElement>(".libretto-reader .cui-reader-rail ol")
+    .forEach((list) => {
+      const current = list.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!current || list.scrollWidth <= list.clientWidth) return;
+      list.scrollLeft = Math.max(
+        0,
+        current.offsetLeft - (list.clientWidth - current.clientWidth) / 2,
+      );
+    });
+</script>

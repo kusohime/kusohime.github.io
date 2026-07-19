@@ -87,6 +87,8 @@ const translationRoute =
 const isPoetry = writingTags.includes("Poetry");
 const isDrama = writingTags.includes("Drama");
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
+const isSplitReader = isCuiXiong || writing.data.splitReader;
+const isLibrettoReader = writing.data.splitReader;
 const dialogueSeries = new Set(["脆熊篇", "本羣篇"]);
 const seriesTitle = writing.data.series;
 const isSeriesDialogue = Boolean(seriesTitle && dialogueSeries.has(seriesTitle));
@@ -161,15 +163,26 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
             <Content />
           </div>
         </SeriesDialogueReader>
-      ) : isCuiXiong ? (
+      ) : isSplitReader ? (
         <CuiXiongReader
           writing={writing}
           chapters={chapters}
           contentLang={contentLang}
+          variant={isLibrettoReader ? "libretto" : "cui"}
+          rootLabel={isLibrettoReader ? "Introduction" : "0"}
+          navLabel={isLibrettoReader ? "Libretto contents" : "脆熊篇目錄"}
         >
           <div
             lang={contentLang}
-            class="prose writing-body chicago-prose cui-dialogue"
+            class:list={[
+              "prose",
+              "writing-body",
+              "chicago-prose",
+              {
+                "cui-dialogue": isCuiXiong,
+                "drama-body": isDrama,
+              },
+            ]}
           >
             <Content />
           </div>
@@ -385,7 +398,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
     }
 
     {
-      hasChapters && !isCuiXiong && (
+      hasChapters && !isSplitReader && (
         <nav class="writing-contents" aria-labelledby="contents-heading">
           <h2 id="contents-heading" data-i18n-key="common.contents">
             {translate("en", "common.contents")}

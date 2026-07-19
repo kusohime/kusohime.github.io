@@ -155,8 +155,10 @@ const writings = defineCollection({
     // English: Tags replace the old type/language fields and allow several values;
     // the body language is now inferred from the text itself.
     tags: z.array(z.enum(writingTypes)).default([]),
-    excerpt: z.string(),
-    excerptZh: z.string(),
+    // Catalog summaries are optional. Omitting them falls back to the site's
+    // default metadata instead of invalidating the entire content collection.
+    excerpt: z.string().optional(),
+    excerptZh: z.string().optional(),
     slug: z.string(),
     order: z.number().int().default(999),
     draft: z.boolean().default(false),
@@ -182,6 +184,9 @@ const writings = defineCollection({
     // Whether the contents list auto-numbers; set false when chapter titles are
     // themselves numbers, so the list does not repeat them.
     numberedContents: z.boolean().default(true),
+    // Use the persistent left-hand chapter rail and right-hand reading pane
+    // for long works whose sections should be read one at a time.
+    splitReader: z.boolean().default(false),
   }),
 });
 

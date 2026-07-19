@@ -157,16 +157,16 @@ Path: `content/writings/<folder>/index.md`.
 
 路徑：`content/writings/<folder>/index.md`。
 
-Required: `title`, `titleZh`, `date`, `excerpt`, `excerptZh`, `slug`.
+Required: `title`, `titleZh`, `date`, `slug`.
 
-必填：英文標題 `title`、中文標題 `titleZh`、`date`、英文摘要 `excerpt`、
-中文摘要 `excerptZh`、`slug`。
+必填：英文標題 `title`、中文標題 `titleZh`、`date`、`slug`。
 
 Optional: `subtitle`, `subtitleZh`, `translationFrom`, `translationTo`, `tags`
-(choose any number), `order`, `draft`, `comments`.
+(choose any number), `excerpt`, `excerptZh`, `order`, `draft`, `comments`.
 The old `type` and `language` fields are gone — tags replace them.
 
-可選：`subtitle`、`subtitleZh`、`tags`（可多選）、`order`、`draft`、`comments`。
+可選：`subtitle`、`subtitleZh`、`excerpt`、`excerptZh`、`tags`（可多選）、
+`order`、`draft`、`comments`。
 舊的 `type` 與 `language` 欄位已移除，改用標籤。
 
 For translations, `subtitle` / `subtitleZh` contain only the original author's

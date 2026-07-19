@@ -2285,6 +2285,79 @@ main {
   text-indent: 0;
 }
 
+/* Italian-English libretto lines: source and translation form a line-aligned
+   two-column score, with speaker cues spanning both columns. */
+.writing-body .libretto-source,
+.writing-body .libretto-translation {
+  display: block;
+  line-height: 1.45;
+}
+
+.writing-body :is(p, h2, h3, h4, h5):has(> .libretto-source),
+.writing-body p > em:has(> .libretto-source) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(1rem, 4vw, 3rem);
+  row-gap: 0.18em;
+  align-items: start;
+}
+
+.writing-body p > em:has(> .libretto-source) {
+  grid-column: 1 / -1;
+}
+
+.writing-body :is(p, h2, h3, h4, h5):has(> .libretto-source) > br,
+.writing-body p > em:has(> .libretto-source) > br {
+  display: none;
+}
+
+.writing-body :is(p, h2, h3, h4, h5):has(> .libretto-source) > strong {
+  grid-column: 1 / -1;
+  margin-bottom: 0.2em;
+}
+
+.writing-body :is(p, h2, h3, h4, h5) > .libretto-source,
+.writing-body p > em > .libretto-source {
+  grid-column: 1;
+}
+
+.writing-body .libretto-translation {
+  grid-column: 2;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.94em;
+}
+
+.writing-body .libretto-key {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(1rem, 4vw, 3rem);
+  margin-block: var(--space-sm) var(--space-lg);
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+
+.writing-body .libretto-key span::before {
+  content: "";
+  display: inline-block;
+  width: 1.1em;
+  margin-right: 0.42em;
+  border-top: 2px solid currentColor;
+  vertical-align: 0.25em;
+}
+
+@media (max-width: 45rem) {
+  .writing-body :is(p, h2, h3, h4, h5):has(> .libretto-source),
+  .writing-body p > em:has(> .libretto-source),
+  .writing-body .libretto-key {
+    column-gap: 0.75rem;
+  }
+
+  .writing-body .libretto-translation {
+    font-size: 0.92em;
+  }
+}
+
 .prose blockquote {
   /* 中文：引文縮排成一個區塊，正體不用斜體（斜體由內容層的 * 控制，已移除）。 */
   /* English: Indent quotations as a block; keep them upright (italics, if any,
@@ -2417,6 +2490,26 @@ main {
 
 .cui-reader-main .prose {
   width: 100%;
+}
+
+/* Long parallel texts reuse the same click-to-change reader, with enough
+   measure for a bilingual score and a rail wide enough for section names. */
+.libretto-reader {
+  grid-template-columns: minmax(13rem, 18rem) minmax(0, 62rem);
+}
+
+:is(.writing-title-page, .writing-chapter-page):has(.libretto-reader) {
+  max-width: var(--page-width);
+}
+
+.libretto-reader .cui-reader-main {
+  max-width: 62rem;
+}
+
+.libretto-reader .cui-reader-rail a:not(.cui-reader-title) {
+  width: auto;
+  font-size: 0.9rem;
+  line-height: 1.3;
 }
 
 .admin-guide-contents li a {
@@ -3422,6 +3515,29 @@ main {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem var(--space-sm);
+  }
+
+  .libretto-reader .cui-reader-rail ol {
+    flex-wrap: nowrap;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
+    scrollbar-width: thin;
+  }
+
+  .libretto-reader .cui-reader-rail {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .libretto-reader .cui-reader-rail li {
+    flex: 0 0 auto;
+  }
+
+  .libretto-reader .cui-reader-rail a:not(.cui-reader-title) {
+    white-space: nowrap;
   }
 
   .series-reader-rail ol {

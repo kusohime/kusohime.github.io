@@ -43,7 +43,7 @@ export async function GET() {
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${pubDate}</pubDate>
-      <description>${escapeXml(writing.data.excerpt)}</description>
+      <description>${escapeXml(writing.data.excerpt ?? writing.data.title)}</description>
     </item>`;
     })
     .join("");

@@ -2458,8 +2458,8 @@ Write the text here.
     } else if (entry.kind === "writings") {
       const titleZh = text("titleZh");
       const excerptZh = text("summaryZh");
-      if (!titleZh || !excerptZh) {
-        throw new Error("Writings need both a Chinese title and Chinese summary.");
+      if (!titleZh) {
+        throw new Error("Writings need a Chinese title.");
       }
       setTopScalar(lines, "titleZh", titleZh);
       setTopScalar(lines, "subtitle", text("subtitle"), { omitEmpty: true });
@@ -2480,8 +2480,8 @@ Write the text here.
         lines,
         text("tags").split(",").map((tag) => tag.trim()).filter(Boolean),
       );
-      setTopScalar(lines, "excerpt", text("summary") || text("title"));
-      setTopScalar(lines, "excerptZh", excerptZh);
+      setTopScalar(lines, "excerpt", text("summary"), { omitEmpty: true });
+      setTopScalar(lines, "excerptZh", excerptZh, { omitEmpty: true });
     } else {
       removeTopKey(lines, "subtitle");
       removeTopKey(lines, "comments");
