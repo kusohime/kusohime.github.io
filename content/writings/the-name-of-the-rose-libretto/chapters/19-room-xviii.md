@@ -73,7 +73,7 @@ order: 19
 
 **Bertrando, Michele, Jean d’Anneaux e altri monaci**  
 <span class="libretto-source" lang="la">Miserere nobis, Domine!</span><br />
-<span class="libretto-translation" lang="la">Miserere nobis, Domine!</span>
+<span class="libretto-translation" lang="en">Have mercy on us, Lord!</span>
 
 **Jorge**  
 <span class="libretto-source" lang="it">L’Anticristo sta arrivando.</span><br />

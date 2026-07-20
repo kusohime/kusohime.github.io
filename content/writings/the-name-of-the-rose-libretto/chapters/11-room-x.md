@@ -18,7 +18,7 @@ order: 11
 
 **Salvatore**  
 <span class="libretto-source" lang="la">Facilis est.</span><br />
-<span class="libretto-translation" lang="la">Facilis est.</span><br />
+<span class="libretto-translation" lang="en">It is easy.</span><br />
 <span class="libretto-source" lang="it">Pigli el casio</span><br />
 <span class="libretto-translation" lang="en">Take el casio</span><br />
 <span class="libretto-source" lang="it">che non sia troppo vecchio,</span><br />
@@ -60,7 +60,7 @@ order: 11
 <span class="libretto-source" lang="it">zucharum et cannella</span><br />
 <span class="libretto-translation" lang="en">zucharum et cinnamon</span><br />
 <span class="libretto-source" lang="la">supra positurum du bis.</span><br />
-<span class="libretto-translation" lang="la">supra positurum du bis.</span>
+<span class="libretto-translation" lang="en">sprinkle on top.</span>
 
 **Servi e cuochi**  
 <span class="libretto-source" lang="it">Timo, prezzemolo, aglio, pepe, sale.</span><br />
@@ -177,7 +177,7 @@ order: 11
 
 **Salvatore**  
 <span class="libretto-source" lang="la">Vide illuc.</span><br />
-<span class="libretto-translation" lang="la">Vide illuc.</span>
+<span class="libretto-translation" lang="en">Look there.</span>
 
 **Servi e cuochi**  
 <span class="libretto-source" lang="it">Trote, tinche e granchi.</span><br />
@@ -197,7 +197,7 @@ order: 11
 
 **Salvatore**  
 <span class="libretto-source" lang="la">Homo malissimo…</span><br />
-<span class="libretto-translation" lang="la">Homo malissimo…</span>
+<span class="libretto-translation" lang="en">Most evil man…</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">Perché?</span><br />
@@ -207,7 +207,7 @@ order: 11
 <span class="libretto-source" lang="it">Al mio vico</span><br />
 <span class="libretto-translation" lang="en">At my vico</span><br />
 <span class="libretto-source" lang="fr">autre fois.</span><br />
-<span class="libretto-translation" lang="fr">autre fois.</span><br />
+<span class="libretto-translation" lang="en">another time.</span><br />
 <span class="libretto-source" lang="it">Nel bosco</span><br />
 <span class="libretto-translation" lang="en">In the wood</span><br />
 <span class="libretto-source" lang="it">con la nebia…</span><br />
@@ -384,7 +384,7 @@ order: 11
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">Penitentiam agite,</span><br />
-<span class="libretto-translation" lang="la">Penitentiam agite,</span><br />
+<span class="libretto-translation" lang="en">Do penance,</span><br />
 <span class="libretto-source" lang="it">fate penitenza.</span><br />
 <span class="libretto-translation" lang="en">do penance.</span><br />
 <span class="libretto-source" lang="it">Un motto minorita;</span><br />

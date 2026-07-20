@@ -36,7 +36,7 @@ order: 23
 *<span class="libretto-source" lang="it">(rileggendo il messaggio di Venanzio)</span><br /><span class="libretto-translation" lang="en">(rereading Venanzio's message)</span>*
 
 <span class="libretto-source" lang="la">“Primum et septimum de quatuor”.</span><br />
-<span class="libretto-translation" lang="la">“Primum et septimum de quatuor”.</span><br />
+<span class="libretto-translation" lang="en">“The first and the seventh of the four.”</span><br />
 <span class="libretto-source" lang="it">La mano sopra l’idolo</span><br />
 <span class="libretto-translation" lang="en">The hand above the idol</span><br />
 <span class="libretto-source" lang="it">opera sul primo e il settimo dei quattro.</span><br />
@@ -70,7 +70,7 @@ order: 23
 <span class="libretto-source" lang="it">Un terzo del cavallo…</span><br />
 <span class="libretto-translation" lang="en">A third of the horse…</span><br />
 <span class="libretto-source" lang="la">Tertius equi!</span><br />
-<span class="libretto-translation" lang="la">Tertius equi!</span>
+<span class="libretto-translation" lang="en">Third horse!</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Cosa?</span><br />
@@ -90,13 +90,13 @@ order: 23
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">Equi?</span><br />
-<span class="libretto-translation" lang="la">Equi?</span>
+<span class="libretto-translation" lang="en">Horse?</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">Sì, ma in buon latino</span><br />
 <span class="libretto-translation" lang="en">Yes, but in good Latin</span><br />
 <span class="libretto-source" lang="la">Tertius equi</span><br />
-<span class="libretto-translation" lang="la">Tertius equi</span><br />
+<span class="libretto-translation" lang="en">Third horse</span><br />
 <span class="libretto-source" lang="it">non significa</span><br />
 <span class="libretto-translation" lang="en">does not signify</span><br />
 <span class="libretto-source" lang="it">il terzo cavallo</span><br />

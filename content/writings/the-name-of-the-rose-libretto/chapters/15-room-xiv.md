@@ -33,7 +33,7 @@ order: 15
 *<span class="libretto-translation" lang="en">(with an ambiguous air)</span>*
 
 <span class="libretto-source" lang="la">Benedicite.</span><br />
-<span class="libretto-translation" lang="la">Benedicite.</span>
+<span class="libretto-translation" lang="en">Bless me.</span>
 
 **Adso**  
 
@@ -63,7 +63,7 @@ order: 15
 
 **Salvatore**  
 <span class="libretto-source" lang="la">Illuc? Tertius equi?</span><br />
-<span class="libretto-translation" lang="la">Illuc? Tertius equi?</span>
+<span class="libretto-translation" lang="en">There? Third of a horse?</span>
 
 **Adso**  
 
@@ -83,7 +83,7 @@ order: 15
 
 **Adso**  
 <span class="libretto-source" lang="la">Ah, Tertius equus!</span><br />
-<span class="libretto-translation" lang="la">Ah, Tertius equus!</span><br />
+<span class="libretto-translation" lang="en">Ah, third horse!</span><br />
 <span class="libretto-source" lang="it">Il terzo cavallo!</span><br />
 <span class="libretto-translation" lang="en">The third horse!</span><br />
 <span class="libretto-source" lang="it">No, là dietro.</span><br />
@@ -91,7 +91,7 @@ order: 15
 
 **Salvatore**  
 <span class="libretto-source" lang="fr">Sais pas moi.</span><br />
-<span class="libretto-translation" lang="fr">Sais pas moi.</span>
+<span class="libretto-translation" lang="en">I don’t know.</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">Vediamo che nasconde…</span><br />
@@ -101,7 +101,7 @@ order: 15
 <span class="libretto-source" lang="it">Attend!</span><br />
 <span class="libretto-translation" lang="en">Attend!</span><br />
 <span class="libretto-source" lang="la">Cave illo!</span><br />
-<span class="libretto-translation" lang="la">Cave illo!</span><br />
+<span class="libretto-translation" lang="en">Beware of that!</span><br />
 <span class="libretto-source" lang="it">È il basilischium!</span><br />
 <span class="libretto-translation" lang="en">It is the basilischium!</span>
 
@@ -125,7 +125,7 @@ order: 15
 
 **Salvatore**  
 <span class="libretto-source" lang="la">Cura mea!</span><br />
-<span class="libretto-translation" lang="la">Cura mea!</span>
+<span class="libretto-translation" lang="en">My concern!</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">Come vuoi.</span><br />

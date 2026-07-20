@@ -43,11 +43,11 @@ order: 18
 
 **Abbone**  
 <span class="libretto-source" lang="la">In nomine Patris et Filii et Spiritus Sancti.</span><br />
-<span class="libretto-translation" lang="la">In nomine Patris et Filii et Spiritus Sancti.</span>
+<span class="libretto-translation" lang="en">In the name of the Father and of the Son and of the Holy Spirit.</span>
 
 **Tutti**  
 <span class="libretto-source" lang="la">Amen.</span><br />
-<span class="libretto-translation" lang="la">Amen.</span>
+<span class="libretto-translation" lang="en">Amen.</span>
 
 **Abbone**  
 
@@ -102,7 +102,7 @@ order: 18
 <span class="libretto-source" lang="it">è scritto nella bolla</span><br />
 <span class="libretto-translation" lang="en">it is written in the bull</span><br />
 <span class="libretto-source" lang="la">Cum inter nonnullos.</span><br />
-<span class="libretto-translation" lang="la">Cum inter nonnullos.</span>
+<span class="libretto-translation" lang="en">Among the many.</span>
 
 **Bertrando**  
 
@@ -248,7 +248,7 @@ order: 18
 *<span class="libretto-translation" lang="en">(under their breath, with irony)</span>*
 
 <span class="libretto-source" lang="la">Amen.</span><br />
-<span class="libretto-translation" lang="la">Amen.</span>
+<span class="libretto-translation" lang="en">Amen.</span>
 
 **Girolamo**  
 <span class="libretto-source" lang="it">… che meno chiaro sarebbe</span><br />

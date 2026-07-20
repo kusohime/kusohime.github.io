@@ -10,11 +10,11 @@ order: 17
 
 **Salvatore**  
 <span class="libretto-source" lang="la">Ornias, pecca pro nobis…</span><br />
-<span class="libretto-translation" lang="la">Ornias, pecca pro nobis…</span><br />
+<span class="libretto-translation" lang="en">Ornias, sin for us…</span><br />
 <span class="libretto-source" lang="la">Iamaliel miserere nobis…</span><br />
-<span class="libretto-translation" lang="la">Iamaliel miserere nobis…</span><br />
+<span class="libretto-translation" lang="en">Iamaliel, have mercy on us…</span><br />
 <span class="libretto-source" lang="la">Resahim, libera nos a bono…</span><br />
-<span class="libretto-translation" lang="la">Resahim, libera nos a bono…</span>
+<span class="libretto-translation" lang="en">Resahim, free us from good…</span>
 
 *<span class="libretto-source" lang="it">(Salvatore, con un galletto morto in mano, indica due uova su un mucchietto di letame)</span>*<br />
 *<span class="libretto-translation" lang="en">(Salvatore, with a dead cockerel in his hand, points to two eggs on a little pile of dung)</span>*
@@ -44,15 +44,15 @@ order: 17
 
 **Salvatore**  
 <span class="libretto-source" lang="de">Danke.</span><br />
-<span class="libretto-translation" lang="de">Danke.</span>
+<span class="libretto-translation" lang="en">Thank you.</span>
 
 *<span class="libretto-source" lang="it">(raccoglie lo sputo e inumidisce le uova con la saliva della Ragazza)</span>*<br />
 *<span class="libretto-translation" lang="en">(he collects the spit and moistens the eggs with the Girl’s saliva)</span>*
 
 <span class="libretto-source" lang="grc">Eyrevr eleison</span><br />
-<span class="libretto-translation" lang="grc">Eyrevr eleison</span><br />
+<span class="libretto-translation" lang="en">Eyrevr, have mercy</span><br />
 <span class="libretto-source" lang="grc">Belial eleison…</span><br />
-<span class="libretto-translation" lang="grc">Belial eleison…</span>
+<span class="libretto-translation" lang="en">Belial, have mercy…</span>
 
 *<span class="libretto-source" lang="it">(Salvatore prende il gatto chiuso in un sacco per cavargli gli occhi. Il gatto miagola inferocito. La Ragazza afferra il galletto e tenta di fuggire, Salvatore la insegue. Gli arcieri, sentiti i rumori, accorrono sul posto e bloccano la Ragazza che urla disperata. Arrivano Gui con Abbone e Jorge con Malachia. Assieme ad altri monaci arrivano anche Guglielmo e Adso. La Ragazza riconosce Adso e lo implora con lo sguardo)</span>*<br />
 *<span class="libretto-translation" lang="en">(Salvatore takes the cat shut in a sack to gouge out its eyes. The cat meows furiously. The Girl seizes the cockerel and tries to flee; Salvatore pursues her. The archers, hearing the noises, hurry to the spot and block the Girl, who screams desperately. Gui arrives with Abbone and Jorge with Malachia. Guglielmo and Adso arrive together with other monks. The Girl recognizes Adso and implores him with her gaze)</span>*
@@ -61,13 +61,13 @@ order: 17
 <span class="libretto-source" lang="it">Cos’è? Che succede?</span><br />
 <span class="libretto-translation" lang="en">What is it? What is happening?</span><br />
 <span class="libretto-source" lang="de">Was war das? Wer war das?</span><br />
-<span class="libretto-translation" lang="de">Was war das? Wer war das?</span><br />
+<span class="libretto-translation" lang="en">What was that? Who was that?</span><br />
 <span class="libretto-source" lang="de">Was geht hier vor?</span><br />
-<span class="libretto-translation" lang="de">Was geht hier vor?</span><br />
+<span class="libretto-translation" lang="en">What is going on here?</span><br />
 <span class="libretto-source" lang="fr">Qu’y a-t-il ? Quoi encore ?</span><br />
-<span class="libretto-translation" lang="fr">Qu’y a-t-il ? Quoi encore ?</span><br />
+<span class="libretto-translation" lang="en">What is it? What now?</span><br />
 <span class="libretto-source" lang="fr">Il est arrivé quelque chose…</span><br />
-<span class="libretto-translation" lang="fr">Il est arrivé quelque chose…</span>
+<span class="libretto-translation" lang="en">Something has happened…</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">È lei!</span><br />

@@ -9,11 +9,11 @@ order: 1
 
 **Coro**  
 <span class="libretto-source" lang="la">In principio erat Verbum,</span><br />
-<span class="libretto-translation" lang="la">In principio erat Verbum,</span><br />
+<span class="libretto-translation" lang="en">In the beginning was the Word,</span><br />
 <span class="libretto-source" lang="la">et Verbum erat apud Deum,</span><br />
-<span class="libretto-translation" lang="la">et Verbum erat apud Deum,</span><br />
+<span class="libretto-translation" lang="en">and the Word was with God,</span><br />
 <span class="libretto-source" lang="la">et Deus erat Verbum.</span><br />
-<span class="libretto-translation" lang="la">et Deus erat Verbum.</span>
+<span class="libretto-translation" lang="en">and the Word was God.</span>
 
 **Voce di Adso vecchio**  
 <span class="libretto-source" lang="it">Giunto al finire della vita,</span><br />
@@ -82,9 +82,9 @@ order: 1
 
 **Coro**  
 <span class="libretto-source" lang="la">Hoc erat in principio apud Deum.</span><br />
-<span class="libretto-translation" lang="la">Hoc erat in principio apud Deum.</span><br />
+<span class="libretto-translation" lang="en">He was in the beginning with God.</span><br />
 <span class="libretto-source" lang="la">Omnia per ipsum facta sunt,</span><br />
-<span class="libretto-translation" lang="la">Omnia per ipsum facta sunt,</span>
+<span class="libretto-translation" lang="en">All things were made through him,</span>
 
 **Voce di Adso vecchio**  
 <span class="libretto-source" lang="it">La missione di Guglielmo mi era ignota,</span><br />
@@ -149,9 +149,9 @@ order: 1
 
 **Coro**  
 <span class="libretto-source" lang="la">et sine ipso factum est nihil,</span><br />
-<span class="libretto-translation" lang="la">et sine ipso factum est nihil,</span><br />
+<span class="libretto-translation" lang="en">and without him nothing was made,</span><br />
 <span class="libretto-source" lang="la">quod factum est;</span><br />
-<span class="libretto-translation" lang="la">quod factum est;</span>
+<span class="libretto-translation" lang="en">that was made.</span>
 
 **Voce di Adso vecchio**  
 <span class="libretto-source" lang="it">Vedemmo infine l’Abbazia</span><br />

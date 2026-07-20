@@ -26,7 +26,7 @@ order: 13
 
 **Ragazza**  
 <span class="libretto-source" lang="fur">Ti ses giovin, ti ses bel.</span><br />
-<span class="libretto-translation" lang="fur">Ti ses giovin, ti ses bel.</span>
+<span class="libretto-translation" lang="en">You are young, you are handsome.</span>
 
 **Voce di Adso vecchio**  
 <span class="libretto-source" lang="it">Cosa vidi?</span><br />

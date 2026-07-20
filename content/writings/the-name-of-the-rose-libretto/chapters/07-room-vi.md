@@ -11,13 +11,13 @@ order: 7
 <span class="libretto-source" lang="it">Sangue, un mare di sangue.</span><br />
 <span class="libretto-translation" lang="en">Blood, a sea of blood.</span><br />
 <span class="libretto-source" lang="de">Noch ein Toter! Ein Leichnam…</span><br />
-<span class="libretto-translation" lang="de">Noch ein Toter! Ein Leichnam…</span><br />
+<span class="libretto-translation" lang="en">Another dead man! A corpse…</span><br />
 <span class="libretto-source" lang="de">Gott straft! Wenn er zürnt.</span><br />
-<span class="libretto-translation" lang="de">Gott straft! Wenn er zürnt.</span><br />
+<span class="libretto-translation" lang="en">God punishes when he is angry.</span><br />
 <span class="libretto-source" lang="fr">Craignez le Seigneur.</span><br />
-<span class="libretto-translation" lang="fr">Craignez le Seigneur.</span><br />
+<span class="libretto-translation" lang="en">Fear the Lord.</span><br />
 <span class="libretto-source" lang="fr">La mort à notre porte!</span><br />
-<span class="libretto-translation" lang="fr">La mort à notre porte!</span><br />
+<span class="libretto-translation" lang="en">Death is at our door!</span><br />
 <span class="libretto-source" lang="it">Come Adelmo, fra grandine e sangue,</span><br />
 <span class="libretto-translation" lang="en">Like Adelmo, amid hail and blood,</span><br />
 <span class="libretto-source" lang="it">un altro morto è caduto dal cielo.</span><br />
@@ -35,13 +35,13 @@ order: 7
 <span class="libretto-source" lang="it">Gli angeli suonano le sette trombe!</span><br />
 <span class="libretto-translation" lang="en">The angels sound the seven trumpets!</span><br />
 <span class="libretto-source" lang="de">Die sieben Trompeten!</span><br />
-<span class="libretto-translation" lang="de">Die sieben Trompeten!</span><br />
+<span class="libretto-translation" lang="en">The seven trumpets!</span><br />
 <span class="libretto-source" lang="it">Adelmo la prima tromba:</span><br />
 <span class="libretto-translation" lang="en">Adelmo the first trumpet:</span><br />
 <span class="libretto-source" lang="it">“grandine, fuoco e sangue”.</span><br />
 <span class="libretto-translation" lang="en">“hail, fire, and blood”.</span><br />
 <span class="libretto-source" lang="de">Ein Meer aus Blut!</span><br />
-<span class="libretto-translation" lang="de">Ein Meer aus Blut!</span><br />
+<span class="libretto-translation" lang="en">A sea of blood!</span><br />
 <span class="libretto-source" lang="it">Venanzio la seconda:</span><br />
 <span class="libretto-translation" lang="en">Venanzio the second:</span><br />
 <span class="libretto-source" lang="it">“e un terzo del mare</span><br />
@@ -49,7 +49,7 @@ order: 7
 <span class="libretto-source" lang="it">divenne sangue”.</span><br />
 <span class="libretto-translation" lang="en">became blood”.</span><br />
 <span class="libretto-source" lang="de">Überall Blut…</span><br />
-<span class="libretto-translation" lang="de">Überall Blut…</span><br />
+<span class="libretto-translation" lang="en">Blood everywhere…</span><br />
 <span class="libretto-source" lang="it">Attenti alla terza tromba!</span><br />
 <span class="libretto-translation" lang="en">Beware the third trumpet!</span><br />
 <span class="libretto-source" lang="it">“morirà la terza parte</span><br />
@@ -57,9 +57,9 @@ order: 7
 <span class="libretto-source" lang="it">delle creature viventi nel mare!”</span><br />
 <span class="libretto-translation" lang="en">of the living creatures in the sea!”</span><br />
 <span class="libretto-source" lang="fr">Le jour de sa colère est venu…</span><br />
-<span class="libretto-translation" lang="fr">Le jour de sa colère est venu…</span><br />
+<span class="libretto-translation" lang="en">The day of his wrath has come…</span><br />
 <span class="libretto-source" lang="fr">Le puits de l’abîme s’ouvre…</span><br />
-<span class="libretto-translation" lang="fr">Le puits de l’abîme s’ouvre…</span><br />
+<span class="libretto-translation" lang="en">The pit of the abyss opens…</span><br />
 <span class="libretto-source" lang="it">Qualcuno ha violato l’interdetto,</span><br />
 <span class="libretto-translation" lang="en">Someone has violated the interdict,</span><br />
 <span class="libretto-source" lang="it">ha rotto i sigilli del Labirinto,</span><br />

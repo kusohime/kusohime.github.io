@@ -7,9 +7,9 @@ order: 26
 
 **Coro**  
 <span class="libretto-source" lang="la">O quam salubre, quam iucundum et suave est</span><br />
-<span class="libretto-translation" lang="la">O quam salubre, quam iucundum et suave est</span><br />
+<span class="libretto-translation" lang="en">O how healthful, how joyful and sweet it is</span><br />
 <span class="libretto-source" lang="la">sedere in solitudine et tacere et loqui cum Deo</span><br />
-<span class="libretto-translation" lang="la">sedere in solitudine et tacere et loqui cum Deo</span>
+<span class="libretto-translation" lang="en">to sit in solitude, be silent, and speak with God</span>
 
 **Voce di Adso vecchio**  
 <span class="libretto-source" lang="it">L’abbazia arse per tre giorni e per tre notti.</span><br />
@@ -35,9 +35,9 @@ order: 26
 
 **Coro**  
 <span class="libretto-source" lang="la">O quam salubre, quam iucundum et suave est</span><br />
-<span class="libretto-translation" lang="la">O quam salubre, quam iucundum et suave est</span><br />
+<span class="libretto-translation" lang="en">O how healthful, how joyful and sweet it is</span><br />
 <span class="libretto-source" lang="la">sedere in solitudine et tacere et loqui cum Deo</span><br />
-<span class="libretto-translation" lang="la">sedere in solitudine et tacere et loqui cum Deo</span>
+<span class="libretto-translation" lang="en">to sit in solitude, be silent, and speak with God</span>
 
 **Voce di Adso vecchio**  
 <span class="libretto-source" lang="it">Guglielmo mi abbracciò come un padre</span><br />
@@ -77,9 +77,9 @@ order: 26
 
 **Coro**  
 <span class="libretto-source" lang="la">O quam salubre, quam iucundum et suave est</span><br />
-<span class="libretto-translation" lang="la">O quam salubre, quam iucundum et suave est</span><br />
+<span class="libretto-translation" lang="en">O how healthful, how joyful and sweet it is</span><br />
 <span class="libretto-source" lang="la">sedere in solitudine et tacere et loqui cum Deo</span><br />
-<span class="libretto-translation" lang="la">sedere in solitudine et tacere et loqui cum Deo</span>
+<span class="libretto-translation" lang="en">to sit in solitude, be silent, and speak with God</span>
 
 **Voce di Adso vecchio**  
 <span class="libretto-source" lang="it">Dell’unico amore terreno della mia vita</span><br />
@@ -93,6 +93,6 @@ order: 26
 
 **Coro voci bianche**  
 <span class="libretto-source" lang="la">Stat rosa pristina nomine, nomina nuda tenemus.</span><br />
-<span class="libretto-translation" lang="la">Stat rosa pristina nomine, nomina nuda tenemus.</span>
+<span class="libretto-translation" lang="en">The rose of old remains only in name; we hold bare names.</span>
 
 *<span class="libretto-source" lang="it">[SIPARIO]</span><br /><span class="libretto-translation" lang="en">[CURTAIN]</span>*

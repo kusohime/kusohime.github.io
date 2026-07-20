@@ -11,36 +11,36 @@ order: 6
 
 **Monaci**  
 <span class="libretto-source" lang="la">Benedicamus Domino</span><br />
-<span class="libretto-translation" lang="la">Benedicamus Domino</span>
+<span class="libretto-translation" lang="en">Let us bless the Lord.</span>
 
 **Altri monaci**  
 <span class="libretto-source" lang="la">Deo gratias</span><br />
-<span class="libretto-translation" lang="la">Deo gratias</span>
+<span class="libretto-translation" lang="en">Thanks be to God.</span>
 
 **Salvatore**  
 
 *<span class="libretto-source" lang="it">(sussurrando ad Adso)</span><br /><span class="libretto-translation" lang="en">(whispering to Adso)</span>*
 
 <span class="libretto-source" lang="mul">Te piase? Mira… pulchra ubere…</span><br />
-<span class="libretto-translation" lang="mul">Te piase? Mira… pulchra ubere…</span><br />
+<span class="libretto-translation" lang="en">Do you like it? Look… beautiful breast…</span><br />
 <span class="libretto-source" lang="mul">mais no se puede… Penitenziagite!</span><br />
-<span class="libretto-translation" lang="mul">mais no se puede… Penitenziagite!</span>
+<span class="libretto-translation" lang="en">but it cannot be… Do penance!</span>
 
 **Adso**  
 <span class="libretto-source" lang="la">Sub tuum praesidium confugimus,</span><br />
-<span class="libretto-translation" lang="la">Sub tuum praesidium confugimus,</span><br />
+<span class="libretto-translation" lang="en">We flee to your protection,</span><br />
 <span class="libretto-source" lang="la">Sancta Dei Genetrix;</span><br />
-<span class="libretto-translation" lang="la">Sancta Dei Genetrix;</span><br />
+<span class="libretto-translation" lang="en">holy Mother of God;</span><br />
 <span class="libretto-source" lang="la">nostras deprecationes</span><br />
-<span class="libretto-translation" lang="la">nostras deprecationes</span><br />
+<span class="libretto-translation" lang="en">our prayers</span><br />
 <span class="libretto-source" lang="la">ne despicias in necessitatibus,</span><br />
-<span class="libretto-translation" lang="la">ne despicias in necessitatibus,</span><br />
+<span class="libretto-translation" lang="en">do not despise in our needs,</span><br />
 <span class="libretto-source" lang="la">sed a periculis cunctis</span><br />
-<span class="libretto-translation" lang="la">sed a periculis cunctis</span><br />
+<span class="libretto-translation" lang="en">but from every danger</span><br />
 <span class="libretto-source" lang="la">libera nos semper,</span><br />
-<span class="libretto-translation" lang="la">libera nos semper,</span><br />
+<span class="libretto-translation" lang="en">deliver us always,</span><br />
 <span class="libretto-source" lang="la">Virgo gloriosa et benedicta.</span><br />
-<span class="libretto-translation" lang="la">Virgo gloriosa et benedicta.</span>
+<span class="libretto-translation" lang="en">glorious and blessed Virgin.</span>
 
 *<span class="libretto-source" lang="it">(Malachia scompare da una cappella laterale)</span><br /><span class="libretto-translation" lang="en">(Malachia disappears from a side chapel.)</span>*
 
@@ -63,48 +63,48 @@ order: 6
 
 **Monaci**  
 <span class="libretto-source" lang="la">Iam lucis orto sidere,</span><br />
-<span class="libretto-translation" lang="la">Iam lucis orto sidere,</span><br />
+<span class="libretto-translation" lang="en">Now that the star of dawn has risen,</span><br />
 <span class="libretto-source" lang="la">Deum precemur supplices,</span><br />
-<span class="libretto-translation" lang="la">Deum precemur supplices,</span><br />
+<span class="libretto-translation" lang="en">let us humbly beseech God,</span><br />
 <span class="libretto-source" lang="la">ut in diurnis actibus</span><br />
-<span class="libretto-translation" lang="la">ut in diurnis actibus</span><br />
+<span class="libretto-translation" lang="en">that in our daily acts</span><br />
 <span class="libretto-source" lang="la">nos servet a nocentibus.</span><br />
-<span class="libretto-translation" lang="la">nos servet a nocentibus.</span>
+<span class="libretto-translation" lang="en">he may keep us from harm.</span>
 
 <span class="libretto-source" lang="la">Linguam refrenans temperet,</span><br />
-<span class="libretto-translation" lang="la">Linguam refrenans temperet,</span><br />
+<span class="libretto-translation" lang="en">May he restrain and govern the tongue,</span><br />
 <span class="libretto-source" lang="la">ne litis horror insonet,</span><br />
-<span class="libretto-translation" lang="la">ne litis horror insonet,</span><br />
+<span class="libretto-translation" lang="en">lest the horror of strife resound,</span><br />
 <span class="libretto-source" lang="la">visum fovendo contegat,</span><br />
-<span class="libretto-translation" lang="la">visum fovendo contegat,</span><br />
+<span class="libretto-translation" lang="en">shielding and nurturing the sight,</span><br />
 <span class="libretto-source" lang="la">ne vanitates hauriat.</span><br />
-<span class="libretto-translation" lang="la">ne vanitates hauriat.</span>
+<span class="libretto-translation" lang="en">lest it drink in vanities.</span>
 
 <span class="libretto-source" lang="la">Sint pura cordis intima,</span><br />
-<span class="libretto-translation" lang="la">Sint pura cordis intima,</span><br />
+<span class="libretto-translation" lang="en">May the inmost heart be pure,</span><br />
 <span class="libretto-source" lang="la">absistat et vecordia:</span><br />
-<span class="libretto-translation" lang="la">absistat et vecordia:</span><br />
+<span class="libretto-translation" lang="en">and folly depart:</span><br />
 <span class="libretto-source" lang="la">carnis terat superbiam</span><br />
-<span class="libretto-translation" lang="la">carnis terat superbiam</span><br />
+<span class="libretto-translation" lang="en">may it crush the pride of the flesh</span><br />
 <span class="libretto-source" lang="la">potus cibique parcitas.</span><br />
-<span class="libretto-translation" lang="la">potus cibique parcitas.</span>
+<span class="libretto-translation" lang="en">through moderation in drink and food.</span>
 
 <span class="libretto-source" lang="la">Ut cum dies abscesserit,</span><br />
-<span class="libretto-translation" lang="la">Ut cum dies abscesserit,</span><br />
+<span class="libretto-translation" lang="en">So that when day has departed,</span><br />
 <span class="libretto-source" lang="la">noctemque sors reduxerit,</span><br />
-<span class="libretto-translation" lang="la">noctemque sors reduxerit,</span><br />
+<span class="libretto-translation" lang="en">and fate has brought back night,</span><br />
 <span class="libretto-source" lang="la">mundi per abstinentiam</span><br />
-<span class="libretto-translation" lang="la">mundi per abstinentiam</span><br />
+<span class="libretto-translation" lang="en">through abstinence from the world</span><br />
 <span class="libretto-source" lang="la">ipsi canamus gloriam.</span><br />
-<span class="libretto-translation" lang="la">ipsi canamus gloriam.</span><br />
+<span class="libretto-translation" lang="en">we may sing glory to him.</span><br />
 <span class="libretto-source" lang="la">Deo Patri sit gloria,</span><br />
-<span class="libretto-translation" lang="la">Deo Patri sit gloria,</span><br />
+<span class="libretto-translation" lang="en">Glory be to God the Father,</span><br />
 <span class="libretto-source" lang="la">eiusque soli Filio,</span><br />
-<span class="libretto-translation" lang="la">eiusque soli Filio,</span><br />
+<span class="libretto-translation" lang="en">and to his only Son,</span><br />
 <span class="libretto-source" lang="la">cum Spiritu Paraclito,</span><br />
-<span class="libretto-translation" lang="la">cum Spiritu Paraclito,</span><br />
+<span class="libretto-translation" lang="en">with the Paraclete Spirit,</span><br />
 <span class="libretto-source" lang="la">nunc et per omne saecu…</span><br />
-<span class="libretto-translation" lang="la">nunc et per omne saecu…</span>
+<span class="libretto-translation" lang="en">now and through every age…</span>
 
 **Adso**  
 
@@ -124,9 +124,9 @@ order: 6
 <span class="libretto-translation" lang="en">impetuous with faith.</span>
 
 <span class="libretto-source" lang="la">Te Deum laudamus,</span><br />
-<span class="libretto-translation" lang="la">Te Deum laudamus,</span><br />
+<span class="libretto-translation" lang="en">We praise you, O God,</span><br />
 <span class="libretto-source" lang="la">te Dominum confitemur.</span><br />
-<span class="libretto-translation" lang="la">te Dominum confitemur.</span>
+<span class="libretto-translation" lang="en">we acknowledge you as Lord.</span>
 
 <span class="libretto-source" lang="it">Grazie Signore</span><br />
 <span class="libretto-translation" lang="en">Thank you, Lord,</span><br />

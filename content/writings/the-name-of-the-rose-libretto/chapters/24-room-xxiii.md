@@ -361,11 +361,11 @@ order: 24
 <span class="libretto-source" lang="it">Ascolta la settima tromba!</span><br />
 <span class="libretto-translation" lang="en">Listen to the seventh trumpet!</span><br />
 <span class="libretto-source" lang="la">Accipe et devora illum;</span><br />
-<span class="libretto-translation" lang="la">Accipe et devora illum;</span><br />
+<span class="libretto-translation" lang="en">Take it and eat it;</span><br />
 <span class="libretto-source" lang="la">et faciet amaricare ventrem tuum,</span><br />
-<span class="libretto-translation" lang="la">et faciet amaricare ventrem tuum,</span><br />
+<span class="libretto-translation" lang="en">it will make your stomach bitter,</span><br />
 <span class="libretto-source" lang="la">sed in ore tuo erit dulcis tamquam mel.</span><br />
-<span class="libretto-translation" lang="la">sed in ore tuo erit dulcis tamquam mel.</span><br />
+<span class="libretto-translation" lang="en">but in your mouth it will be sweet like honey.</span><br />
 <span class="libretto-source" lang="it">Vedi? Ora sigillo</span><br />
 <span class="libretto-translation" lang="en">You see? Now I seal</span><br />
 <span class="libretto-source" lang="it">ciò che non andava detto</span><br />

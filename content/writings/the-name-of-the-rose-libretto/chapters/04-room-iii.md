@@ -9,7 +9,7 @@ order: 4
 
 **Berengario**  
 <span class="libretto-source" lang="la"><em>… De virtutibus herbarum</em></span><br />
-<span class="libretto-translation" lang="la"><em>… De virtutibus herbarum</em></span>
+<span class="libretto-translation" lang="en"><em>… On the virtues of herbs</em></span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">del Platearius</span><br />
@@ -25,7 +25,7 @@ order: 4
 
 **Berengario**  
 <span class="libretto-source" lang="la"><em>… De radiis stellatis</em></span><br />
-<span class="libretto-translation" lang="la"><em>… De radiis stellatis</em></span>
+<span class="libretto-translation" lang="en"><em>… On starry rays</em></span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">dell’arabo Alkindi</span><br />
@@ -86,11 +86,11 @@ order: 4
 
 **Berengario**  
 <span class="libretto-source" lang="la">Oculi de vitro cum capsula?</span><br />
-<span class="libretto-translation" lang="la">Oculi de vitro cum capsula?</span>
+<span class="libretto-translation" lang="en">Glass eyes with a capsule?</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">… ad legendum.</span><br />
-<span class="libretto-translation" lang="la">… ad legendum.</span>
+<span class="libretto-translation" lang="en">… for reading.</span>
 
 **Berengario**  
 
@@ -121,23 +121,23 @@ order: 4
 
 **Berengario**  
 <span class="libretto-source" lang="la">Libri tres quos Arculphus episcopus</span><br />
-<span class="libretto-translation" lang="la">Libri tres quos Arculphus episcopus</span><br />
+<span class="libretto-translation" lang="en">Three books that Bishop Arculphus</span><br />
 <span class="libretto-source" lang="la">Adamnano escipiente de locis sanctis</span><br />
-<span class="libretto-translation" lang="la">Adamnano escipiente de locis sanctis</span><br />
+<span class="libretto-translation" lang="en">with Adamnan as his source, on the holy places,</span><br />
 <span class="libretto-source" lang="la">ultramarinis designavit conscribendus…</span><br />
-<span class="libretto-translation" lang="la">ultramarinis designavit conscribendus…</span>
+<span class="libretto-translation" lang="en">designated to be written about the lands beyond the sea…</span>
 
 **Adso**  
 <span class="libretto-source" lang="la">Libri tres… quos ?</span><br />
-<span class="libretto-translation" lang="la">Libri tres… quos ?</span>
+<span class="libretto-translation" lang="en">Three books… which ones?</span>
 
 **Berengario**  
 <span class="libretto-source" lang="la">Quinti Sereni de medicamentis,</span><br />
-<span class="libretto-translation" lang="la">Quinti Sereni de medicamentis,</span><br />
+<span class="libretto-translation" lang="en">Quintus Serenus, On Medicines,</span><br />
 <span class="libretto-source" lang="la">Liber Aesopi de natura animalium,</span><br />
-<span class="libretto-translation" lang="la">Liber Aesopi de natura animalium,</span><br />
+<span class="libretto-translation" lang="en">Aesop’s Book on the Nature of Animals,</span><br />
 <span class="libretto-source" lang="la">Liber Aethici peronymi de cosmographia…</span><br />
-<span class="libretto-translation" lang="la">Liber Aethici peronymi de cosmographia…</span>
+<span class="libretto-translation" lang="en">Aethicus Ister’s Book on Cosmography…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">… e la posizione di ogni libro è indicata:</span><br />
@@ -158,15 +158,15 @@ order: 4
 *<span class="libretto-source" lang="it">(leggendo)</span><br /><span class="libretto-translation" lang="en">(reading)</span>*
 
 <span class="libretto-source" lang="la">Decimus, sextus gradus, tertium in secunda anglorum;</span><br />
-<span class="libretto-translation" lang="la">Decimus, sextus gradus, tertium in secunda anglorum;</span><br />
+<span class="libretto-translation" lang="en">Tenth, sixth degree, third in the second of the English;</span><br />
 <span class="libretto-source" lang="la">tertius, primus gradus, sextum in quinta graecorum;</span><br />
-<span class="libretto-translation" lang="la">tertius, primus gradus, sextum in quinta graecorum;</span><br />
+<span class="libretto-translation" lang="en">third, first degree, sixth in the fifth of the Greeks;</span><br />
 <span class="libretto-source" lang="la">quintus, tertius gradus, secundum in prima gallorum;</span><br />
-<span class="libretto-translation" lang="la">quintus, tertius gradus, secundum in prima gallorum;</span><br />
+<span class="libretto-translation" lang="en">fifth, third degree, second in the first of the Gauls;</span><br />
 <span class="libretto-source" lang="la">sextus, quartus gradus, primum in secunda yspaniorum;</span><br />
-<span class="libretto-translation" lang="la">sextus, quartus gradus, primum in secunda yspaniorum;</span><br />
+<span class="libretto-translation" lang="en">sixth, fourth degree, first in the second of the Spaniards;</span><br />
 <span class="libretto-source" lang="la">secundus, quartus gradus, septimum in sexta germanorum.</span><br />
-<span class="libretto-translation" lang="la">secundus, quartus gradus, septimum in sexta germanorum.</span>
+<span class="libretto-translation" lang="en">second, fourth degree, seventh in the sixth of the Germans.</span>
 
 **Venanzio**  
 
@@ -175,31 +175,31 @@ order: 4
 <span class="libretto-source" lang="it">λέγωμεν νῦν περὶ τῆς κωμῳδίας (Trattiamo ora della commedia…)</span><br />
 <span class="libretto-translation" lang="en">λέγωμεν νῦν περὶ τῆς κωμῳδίας (Let us now treat of comedy…)</span><br />
 <span class="libretto-source" lang="grc">Légomen nyn perì tès komodìas</span><br />
-<span class="libretto-translation" lang="grc">Légomen nyn perì tès komodìas</span>
+<span class="libretto-translation" lang="en">Let us speak now of comedy</span>
 
 <span class="libretto-source" lang="it">ὁ μὲν ἄνθρωπος ἐπίσταται γελᾶν (L’uomo è capace di ridere…)</span><br />
 <span class="libretto-translation" lang="en">ὁ μὲν ἄνθρωπος ἐπίσταται γελᾶν (Man is capable of laughter…)</span><br />
 <span class="libretto-source" lang="grc">ho mèn ànthropos epìstatai gelàn</span><br />
-<span class="libretto-translation" lang="grc">ho mèn ànthropos epìstatai gelàn</span>
+<span class="libretto-translation" lang="en">man knows how to laugh</span>
 
 <span class="libretto-source" lang="it">πότνια συκῆ (I venerandi fichi…)</span><br />
 <span class="libretto-translation" lang="en">πότνια συκῆ (The venerable fig trees…)</span><br />
 <span class="libretto-source" lang="grc">pòtnia sykè</span><br />
-<span class="libretto-translation" lang="grc">pòtnia sykè</span>
+<span class="libretto-translation" lang="en">mistress fig</span>
 
 <span class="libretto-source" lang="it">αὖτις ἐπὶ δάπεδόνδε κυλίνδετο λᾶας ἀναιδής (Di nuovo la pietra svergognata rotolava per</span><br />
 <span class="libretto-translation" lang="en">αὖτις ἐπὶ δάπεδόνδε κυλίνδετο λᾶας ἀναιδής (Again the shameless stone rolled across</span><br />
 <span class="libretto-source" lang="it">la pianura…)</span><br />
 <span class="libretto-translation" lang="en">the plain…)</span><br />
 <span class="libretto-source" lang="grc">àutis epì dapedònde kylìndeto làas anaidès</span><br />
-<span class="libretto-translation" lang="grc">àutis epì dapedònde kylìndeto làas anaidès</span>
+<span class="libretto-translation" lang="en">again upon the ground rolled the shameless stone</span>
 
 <span class="libretto-source" lang="it">ὅμοια ἔπη διαφόροις καὶ διάφορα ὁμοίοις (Parole simili per cose diverse e diverse per cose</span><br />
 <span class="libretto-translation" lang="en">ὅμοια ἔπη διαφόροις καὶ διάφορα ὁμοίοις (Similar words for different things and different words for</span><br />
 <span class="libretto-source" lang="it">simili…)</span><br />
 <span class="libretto-translation" lang="en">similar things…)</span><br />
 <span class="libretto-source" lang="grc">hòmoia èpe diafòrois kài diàfora homòiois</span><br />
-<span class="libretto-translation" lang="grc">hòmoia èpe diafòrois kài diàfora homòiois</span>
+<span class="libretto-translation" lang="en">similar words for different things, and different words for similar things</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">I libri son disposti</span><br />
@@ -314,11 +314,11 @@ order: 4
 
 **Malachia**  
 <span class="libretto-source" lang="fr">Babouins in Gallia.</span><br />
-<span class="libretto-translation" lang="fr">Babouins in Gallia.</span>
+<span class="libretto-translation" lang="en">Baboons in Gaul.</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="en">Babewyns in Anglia.</span><br />
-<span class="libretto-translation" lang="en">Babewyns in Anglia.</span>
+<span class="libretto-translation" lang="en">Baboons in England.</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">Qua una casa sulla guglia…</span><br />
@@ -330,19 +330,19 @@ order: 4
 
 **Adso**  
 <span class="libretto-source" lang="de">Aller Wunder si geswigen,</span><br />
-<span class="libretto-translation" lang="de">Aller Wunder si geswigen,</span><br />
+<span class="libretto-translation" lang="en">Let all wonders be silent,</span><br />
 <span class="libretto-source" lang="de">das herde himel hât überstigen,</span><br />
-<span class="libretto-translation" lang="de">das herde himel hât überstigen,</span><br />
+<span class="libretto-translation" lang="en">what the host of heaven has surpassed,</span><br />
 <span class="libretto-source" lang="de">daz sult is vür ein Wunder wigen.</span><br />
-<span class="libretto-translation" lang="de">daz sult is vür ein Wunder wigen.</span>
+<span class="libretto-translation" lang="en">you must count as a wonder.</span>
 
 **Malachia**  
 <span class="libretto-source" lang="de">Erd ob un himel unter</span><br />
-<span class="libretto-translation" lang="de">Erd ob un himel unter</span><br />
+<span class="libretto-translation" lang="en">Earth above and heaven below</span><br />
 <span class="libretto-source" lang="de">das sul tir hân besunder</span><br />
-<span class="libretto-translation" lang="de">das sul tir hân besunder</span><br />
+<span class="libretto-translation" lang="en">let this be yours alone</span><br />
 <span class="libretto-source" lang="de">vür aller Wunder ein Wunder.</span><br />
-<span class="libretto-translation" lang="de">vür aller Wunder ein Wunder.</span>
+<span class="libretto-translation" lang="en">a wonder beyond all wonders.</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Bravo Adso!</span><br />
@@ -403,7 +403,7 @@ order: 4
 
 **Jorge**  
 <span class="libretto-source" lang="la">Verba vana aut risui apta non loqui!</span><br />
-<span class="libretto-translation" lang="la">Verba vana aut risui apta non loqui!</span>
+<span class="libretto-translation" lang="en">Do not speak vain words or words fit for laughter!</span>
 
 **Malachia**  
 
@@ -429,9 +429,9 @@ order: 4
 <span class="libretto-source" lang="it">è diversa dalla vostra:</span><br />
 <span class="libretto-translation" lang="en">is different from yours:</span><br />
 <span class="libretto-source" lang="la">Stultus in risu</span><br />
-<span class="libretto-translation" lang="la">Stultus in risu</span><br />
+<span class="libretto-translation" lang="en">The fool in laughter</span><br />
 <span class="libretto-source" lang="la">exaltat vocem suam.</span><br />
-<span class="libretto-translation" lang="la">exaltat vocem suam.</span><br />
+<span class="libretto-translation" lang="en">raises his voice.</span><br />
 <span class="libretto-source" lang="it">Il riso squassa il corpo,</span><br />
 <span class="libretto-translation" lang="en">Laughter convulses the body,</span><br />
 <span class="libretto-source" lang="it">è segno di stoltezza,</span><br />
@@ -598,7 +598,7 @@ order: 4
 <span class="libretto-source" lang="it">per guardare, non vedete:</span><br />
 <span class="libretto-translation" lang="en">for looking, do not see:</span><br />
 <span class="libretto-source" lang="la">et Antichristus triumphabit.</span><br />
-<span class="libretto-translation" lang="la">et Antichristus triumphabit.</span><br />
+<span class="libretto-translation" lang="en">and Antichrist will triumph.</span><br />
 <span class="libretto-source" lang="it">L’Anticristo sta arrivando!</span><br />
 <span class="libretto-translation" lang="en">The Antichrist is coming!</span>
 

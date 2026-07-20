@@ -24,7 +24,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Apocalypsis Iesu Christi…</span><br />
-<span class="libretto-translation" lang="la">Apocalypsis Iesu Christi…</span>
+<span class="libretto-translation" lang="en">The Revelation of Jesus Christ…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Entriamo in quella stanza.</span><br />
@@ -35,7 +35,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Super thronos viginti quatuor…</span><br />
-<span class="libretto-translation" lang="la">Super thronos viginti quatuor…</span>
+<span class="libretto-translation" lang="en">Upon twenty-four thrones…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Sì, è chiaro</span><br />
@@ -52,7 +52,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Nomen illi mors…</span><br />
-<span class="libretto-translation" lang="la">Nomen illi mors…</span>
+<span class="libretto-translation" lang="en">Its name is Death…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Bene, andiamo avanti.</span><br />
@@ -75,7 +75,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Obscuratus est sol et aër…</span><br />
-<span class="libretto-translation" lang="la">Obscuratus est sol et aër…</span>
+<span class="libretto-translation" lang="en">The sun and the air were darkened…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">… stessi tavoli e armadi…</span><br />
@@ -89,7 +89,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Facta est grando et ignis…</span><br />
-<span class="libretto-translation" lang="la">Facta est grando et ignis…</span>
+<span class="libretto-translation" lang="en">There was hail and fire…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Il cartiglio è rosso…</span><br />
@@ -105,21 +105,21 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Nomen illi mors…</span><br />
-<span class="libretto-translation" lang="la">Nomen illi mors…</span><br />
+<span class="libretto-translation" lang="en">Its name is Death…</span><br />
 <span class="libretto-source" lang="la">Super thronos viginti quatuor…</span><br />
-<span class="libretto-translation" lang="la">Super thronos viginti quatuor…</span><br />
+<span class="libretto-translation" lang="en">Upon twenty-four thrones…</span><br />
 <span class="libretto-source" lang="la">Apocalypsis Iesu Christi…</span><br />
-<span class="libretto-translation" lang="la">Apocalypsis Iesu Christi…</span><br />
+<span class="libretto-translation" lang="en">The Revelation of Jesus Christ…</span><br />
 <span class="libretto-source" lang="la">Desiderabunt mori…</span><br />
-<span class="libretto-translation" lang="la">Desiderabunt mori…</span><br />
+<span class="libretto-translation" lang="en">They will long to die…</span><br />
 <span class="libretto-source" lang="la">Venit dies magnus irae ipsorum…</span><br />
-<span class="libretto-translation" lang="la">Venit dies magnus irae ipsorum…</span><br />
+<span class="libretto-translation" lang="en">The great day of their wrath has come…</span><br />
 <span class="libretto-source" lang="la">In diebus illis…</span><br />
-<span class="libretto-translation" lang="la">In diebus illis…</span><br />
+<span class="libretto-translation" lang="en">In those days…</span><br />
 <span class="libretto-source" lang="it">…</span><br />
 <span class="libretto-translation" lang="en">…</span><br />
 <span class="libretto-source" lang="la">Apocalypsis Iesu Christi…</span><br />
-<span class="libretto-translation" lang="la">Apocalypsis Iesu Christi…</span>
+<span class="libretto-translation" lang="en">The Revelation of Jesus Christ…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Le stanze son diverse</span><br />
@@ -132,9 +132,9 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Equus albus…</span><br />
-<span class="libretto-translation" lang="la">Equus albus…</span><br />
+<span class="libretto-translation" lang="en">A white horse…</span><br />
 <span class="libretto-source" lang="la">Apocalypsis Iesu Christi…</span><br />
-<span class="libretto-translation" lang="la">Apocalypsis Iesu Christi…</span>
+<span class="libretto-translation" lang="en">The Revelation of Jesus Christ…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Questa volta in rosso.</span><br />
@@ -153,7 +153,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">In diebus illis…</span><br />
-<span class="libretto-translation" lang="la">In diebus illis…</span>
+<span class="libretto-translation" lang="en">In those days…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Ci siamo già stati.</span><br />
@@ -165,7 +165,7 @@ order: 9
 <span class="libretto-source" lang="it">No, Maestro,</span><br />
 <span class="libretto-translation" lang="en">No, Master,</span><br />
 <span class="libretto-source" lang="la">primogenitus mortuorum…</span><br />
-<span class="libretto-translation" lang="la">primogenitus mortuorum…</span>
+<span class="libretto-translation" lang="en">the firstborn of the dead…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Non capisco. Dove siamo?</span><br />
@@ -175,7 +175,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Tertia pars combusta est…</span><br />
-<span class="libretto-translation" lang="la">Tertia pars combusta est…</span>
+<span class="libretto-translation" lang="en">A third was burned…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Sibili dalle feritoie…</span><br />
@@ -183,7 +183,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Venit dies magnus irae ipsorum…</span><br />
-<span class="libretto-translation" lang="la">Venit dies magnus irae ipsorum…</span>
+<span class="libretto-translation" lang="en">The great day of their wrath has come…</span>
 
 <span class="libretto-source" lang="it"><em>(Adso alza il lume e inizia a scrutare intorno, quando da una stanza gli viene incontro un demonio)</em></span><br />
 <span class="libretto-translation" lang="en"><em>(Adso raises the lamp and begins to peer around, when a demon comes toward him from one of the rooms.)</em></span>
@@ -205,7 +205,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Super thronos…</span><br />
-<span class="libretto-translation" lang="la">Super thronos…</span>
+<span class="libretto-translation" lang="en">Upon thrones…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Lo abbiamo già trovato</span><br />
@@ -217,27 +217,27 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Equus…</span><br />
-<span class="libretto-translation" lang="la">Equus…</span>
+<span class="libretto-translation" lang="en">Horse…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">Equus…</span><br />
-<span class="libretto-translation" lang="la">Equus…</span>
+<span class="libretto-translation" lang="en">Horse…</span>
 
 **Adso**  
 <span class="libretto-source" lang="la">Nomen illi…</span><br />
-<span class="libretto-translation" lang="la">Nomen illi…</span>
+<span class="libretto-translation" lang="en">Its name…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">Nomen…</span><br />
-<span class="libretto-translation" lang="la">Nomen…</span>
+<span class="libretto-translation" lang="en">Name…</span>
 
 **Adso**  
 <span class="libretto-source" lang="la">Obscuratus est…</span><br />
-<span class="libretto-translation" lang="la">Obscuratus est…</span>
+<span class="libretto-translation" lang="en">Was darkened…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">Obscuratus…</span><br />
-<span class="libretto-translation" lang="la">Obscuratus…</span>
+<span class="libretto-translation" lang="en">Darkened…</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">Ancora <em>Equus</em>…</span><br />
@@ -249,11 +249,11 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Luna tota facta est sicut sanguis…</span><br />
-<span class="libretto-translation" lang="la">Luna tota facta est sicut sanguis…</span>
+<span class="libretto-translation" lang="en">The whole moon became like blood…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">Luna…</span><br />
-<span class="libretto-translation" lang="la">Luna…</span>
+<span class="libretto-translation" lang="en">Moon…</span>
 
 **Adso**  
 <span class="libretto-source" lang="it">La parete è chiusa.</span><br />
@@ -284,7 +284,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Super…</span><br />
-<span class="libretto-translation" lang="la">Super…</span>
+<span class="libretto-translation" lang="en">Upon…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Esse.</span><br />
@@ -292,7 +292,7 @@ order: 9
 
 **Adso**  
 <span class="libretto-source" lang="la">Equus…</span><br />
-<span class="libretto-translation" lang="la">Equus…</span>
+<span class="libretto-translation" lang="en">Horse…</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">E.</span><br />
@@ -302,11 +302,11 @@ order: 9
 <span class="libretto-source" lang="it">Enne, O, E, Elle…</span><br />
 <span class="libretto-translation" lang="en">N, O, E, L…</span><br />
 <span class="libretto-source" lang="la">SENOEL?</span><br />
-<span class="libretto-translation" lang="la">SENOEL?</span>
+<span class="libretto-translation" lang="en">SENOEL?</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">LEONES!</span><br />
-<span class="libretto-translation" lang="la">LEONES!</span><br />
+<span class="libretto-translation" lang="en">Lions!</span><br />
 <span class="libretto-source" lang="it">I leoni cui alludeva Severino!</span><br />
 <span class="libretto-translation" lang="en">The lions to which Severino alluded!</span><br />
 <span class="libretto-source" lang="it">Proteggono la stanza che cerchiamo:</span><br />
@@ -336,7 +336,7 @@ order: 9
 
 **Guglielmo**  
 <span class="libretto-source" lang="la"><em>Se-cre-tum fi-nis A-fri-cae</em></span><br />
-<span class="libretto-translation" lang="la"><em>Se-cre-tum fi-nis A-fri-cae</em></span><br />
+<span class="libretto-translation" lang="en"><em>Se-cret, end, of Af-ri-ca</em></span><br />
 <span class="libretto-source" lang="it">la mano sopra l’idolo</span><br />
 <span class="libretto-translation" lang="en">the hand above the idol</span><br />
 <span class="libretto-source" lang="it">opera sul primo e sul settimo</span><br />

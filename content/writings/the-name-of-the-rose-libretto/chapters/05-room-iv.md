@@ -12,13 +12,13 @@ order: 5
 *<span class="libretto-source" lang="it">(canticchiando tra sé)</span><br /><span class="libretto-translation" lang="en">(humming to himself)</span>*
 
 <span class="libretto-source" lang="it">… Femena che vendese</span><br />
-<span class="libretto-translation" lang="it">… Femena che vendese</span><br />
+<span class="libretto-translation" lang="en">… A woman who is sold</span><br />
 <span class="libretto-source" lang="it">como mercandia,</span><br />
-<span class="libretto-translation" lang="it">como mercandia,</span><br />
+<span class="libretto-translation" lang="en">as merchandise,</span><br />
 <span class="libretto-source" lang="it">no po’ nunca bon essere,</span><br />
-<span class="libretto-translation" lang="it">no po’ nunca bon essere,</span><br />
+<span class="libretto-translation" lang="en">can never be good,</span><br />
 <span class="libretto-source" lang="it">nì aver cortesia…</span><br />
-<span class="libretto-translation" lang="it">nì aver cortesia…</span>
+<span class="libretto-translation" lang="en">nor have courtesy…</span>
 
 <span class="libretto-source" lang="it">Vene.</span><br />
 <span class="libretto-translation" lang="en">Come.</span>

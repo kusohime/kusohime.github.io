@@ -144,7 +144,7 @@ order: 20
 
 **Salvatore**  
 <span class="libretto-source" lang="la">Peccavi sine malitia!</span><br />
-<span class="libretto-translation" lang="la">Peccavi sine malitia!</span>
+<span class="libretto-translation" lang="en">I sinned without malice!</span>
 
 **Gui**  
 <span class="libretto-source" lang="it">Vai, vai, torna nella cella</span><br />
@@ -389,13 +389,13 @@ order: 20
 <span class="libretto-source" lang="it">offrendo in sacrificio un gatto nero al diavolo:</span><br />
 <span class="libretto-translation" lang="en">offering a black cat in sacrifice to the devil:</span><br />
 <span class="libretto-source" lang="la">Abigor, pecca pro nobis;</span><br />
-<span class="libretto-translation" lang="la">Abigor, pecca pro nobis;</span><br />
+<span class="libretto-translation" lang="en">Abigor, sin for us;</span><br />
 <span class="libretto-source" lang="la">Amon, miserere nobis;</span><br />
-<span class="libretto-translation" lang="la">Amon, miserere nobis;</span><br />
+<span class="libretto-translation" lang="en">Amon, have mercy on us;</span><br />
 <span class="libretto-source" lang="la">Samael, libera nos a bono;</span><br />
-<span class="libretto-translation" lang="la">Samael, libera nos a bono;</span><br />
+<span class="libretto-translation" lang="en">Samael, free us from good;</span><br />
 <span class="libretto-source" lang="la">Haborym, damnamus dominum.</span><br />
-<span class="libretto-translation" lang="la">Haborym, damnamus dominum.</span>
+<span class="libretto-translation" lang="en">Haborym, we condemn the Lord.</span>
 
 **Gui**  
 <span class="libretto-source" lang="it">Basta, basta!</span><br />

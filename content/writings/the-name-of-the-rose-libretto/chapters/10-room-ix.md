@@ -176,7 +176,7 @@ order: 10
 
 **Guglielmo**  
 <span class="libretto-source" lang="en">Zounds odsbodikins!</span><br />
-<span class="libretto-translation" lang="en">Zounds odsbodikins!</span><br />
+<span class="libretto-translation" lang="en">Good heavens!</span><br />
 <span class="libretto-source" lang="it">Quel martello degli eretici!</span><br />
 <span class="libretto-translation" lang="en">That hammer of heretics!</span><br />
 <span class="libretto-source" lang="it">La cosa non mi piace.</span><br />

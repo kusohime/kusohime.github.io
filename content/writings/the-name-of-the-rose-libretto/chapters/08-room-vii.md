@@ -10,39 +10,39 @@ order: 8
 
 **Berengario**  
 <span class="libretto-source" lang="grc">αὖτις</span><br />
-<span class="libretto-translation" lang="grc">αὖτις</span><br />
+<span class="libretto-translation" lang="en">again</span><br />
 <span class="libretto-source" lang="grc">àu-tis</span><br />
-<span class="libretto-translation" lang="grc">àu-tis</span><br />
+<span class="libretto-translation" lang="en">again</span><br />
 <span class="libretto-source" lang="it">di nuovo</span><br />
 <span class="libretto-translation" lang="en">again</span><br />
 <span class="libretto-source" lang="grc">ἐπὶ δάπεδόνδε</span><br />
-<span class="libretto-translation" lang="grc">ἐπὶ δάπεδόνδε</span><br />
+<span class="libretto-translation" lang="en">upon the ground</span><br />
 <span class="libretto-source" lang="grc">e-pì da-pe-dòn-de</span><br />
-<span class="libretto-translation" lang="grc">e-pì da-pe-dòn-de</span><br />
+<span class="libretto-translation" lang="en">upon the ground</span><br />
 <span class="libretto-source" lang="it">sulla pianura</span><br />
 <span class="libretto-translation" lang="en">across the plain</span><br />
 <span class="libretto-source" lang="grc">κυλίνδετο λᾶας ἀναιδής</span><br />
-<span class="libretto-translation" lang="grc">κυλίνδετο λᾶας ἀναιδής</span><br />
+<span class="libretto-translation" lang="en">rolled the shameless stone</span><br />
 <span class="libretto-source" lang="grc">ky-lìn-de-to là-as a-nai-dès</span><br />
-<span class="libretto-translation" lang="grc">ky-lìn-de-to là-as a-nai-dès</span><br />
+<span class="libretto-translation" lang="en">rolled the shameless stone</span><br />
 <span class="libretto-source" lang="it">rotolava… la pietra svergognata</span><br />
 <span class="libretto-translation" lang="en">was rolling… the shameless stone</span><br />
 <span class="libretto-source" lang="grc">οἱ τέττιγες</span><br />
-<span class="libretto-translation" lang="grc">οἱ τέττιγες</span><br />
+<span class="libretto-translation" lang="en">the cicadas</span><br />
 <span class="libretto-source" lang="grc">hòi tèt-tiges</span><br />
-<span class="libretto-translation" lang="grc">hòi tèt-tiges</span><br />
+<span class="libretto-translation" lang="en">the cicadas</span><br />
 <span class="libretto-source" lang="it">le cicale</span><br />
 <span class="libretto-translation" lang="en">the cicadas</span><br />
 <span class="libretto-source" lang="grc">ἑαυτοῖς</span><br />
-<span class="libretto-translation" lang="grc">ἑαυτοῖς</span><br />
+<span class="libretto-translation" lang="en">for themselves</span><br />
 <span class="libretto-source" lang="grc">he-au-tòis</span><br />
-<span class="libretto-translation" lang="grc">he-au-tòis</span><br />
+<span class="libretto-translation" lang="en">for themselves</span><br />
 <span class="libretto-source" lang="it">per se stesse</span><br />
 <span class="libretto-translation" lang="en">for themselves</span><br />
 <span class="libretto-source" lang="grc">χαμόθεν ᾄσονται</span><br />
-<span class="libretto-translation" lang="grc">χαμόθεν ᾄσονται</span><br />
+<span class="libretto-translation" lang="en">they will sing from the ground</span><br />
 <span class="libretto-source" lang="grc">cha-mò-then à-son-tai</span><br />
-<span class="libretto-translation" lang="grc">cha-mò-then à-son-tai</span><br />
+<span class="libretto-translation" lang="en">they will sing from the ground</span><br />
 <span class="libretto-source" lang="it">da terra canteranno</span><br />
 <span class="libretto-translation" lang="en">from the earth shall sing</span>
 
@@ -108,7 +108,7 @@ order: 8
 
 **Guglielmo**  
 <span class="libretto-source" lang="arc">… Mane Tekel Fares…</span><br />
-<span class="libretto-translation" lang="arc">… Mane Tekel Fares…</span><br />
+<span class="libretto-translation" lang="en">… Mene, Mene, Tekel, Parsin…</span><br />
 <span class="libretto-source" lang="it">Al calore si rivela un inchiostro</span><br />
 <span class="libretto-translation" lang="en">Under heat an ink reveals itself</span><br />
 <span class="libretto-source" lang="it">che nasconde ciò che scrive…</span><br />
@@ -219,11 +219,11 @@ order: 8
 <span class="libretto-translation" lang="en">and repeat aloud:</span>
 
 <span class="libretto-source" lang="zxx">Ta-ta-ta, ta-ta, ta-ta-ta.</span><br />
-<span class="libretto-translation" lang="zxx">Ta-ta-ta, ta-ta, ta-ta-ta.</span>
+<span class="libretto-translation" lang="en">Ta-ta-ta, ta-ta, ta-ta-ta.</span>
 
 **Adso**  
 <span class="libretto-source" lang="zxx">Ta-ta-ta, ta-ta, ta-ta-ta?</span><br />
-<span class="libretto-translation" lang="zxx">Ta-ta-ta, ta-ta, ta-ta-ta?</span>
+<span class="libretto-translation" lang="en">Ta-ta-ta, ta-ta, ta-ta-ta?</span>
 
 **Guglielmo**  
 <span class="libretto-source" lang="it">Non ti viene in mente nulla?</span><br />
@@ -238,7 +238,7 @@ order: 8
 <span class="libretto-translation" lang="en">But to me, yes.</span>
 
 <span class="libretto-source" lang="la">Se-cre-tum, fi-nis, A-fri-cae.</span><br />
-<span class="libretto-translation" lang="la">Se-cre-tum, fi-nis, A-fri-cae.</span>
+<span class="libretto-translation" lang="en">Se-cret, end, of Af-ri-ca.</span>
 
 <span class="libretto-source" lang="it">Se osservi bene i simboli</span><br />
 <span class="libretto-translation" lang="en">If you observe the symbols well</span><br />
@@ -355,9 +355,9 @@ order: 8
 
 **Guglielmo**  
 <span class="libretto-source" lang="la">… <em>est domus in terris,</em></span><br />
-<span class="libretto-translation" lang="la">… <em>est domus in terris,</em></span><br />
+<span class="libretto-translation" lang="en">… <em>is a house on earth,</em></span><br />
 <span class="libretto-source" lang="la"><em>clara quae voce resultat…</em></span><br />
-<span class="libretto-translation" lang="la"><em>clara quae voce resultat…</em></span><br />
+<span class="libretto-translation" lang="en"><em>bright, which resounds with its voice…</em></span><br />
 <span class="libretto-source" lang="it">… e i pesci, sono Zeta.</span><br />
 <span class="libretto-translation" lang="en">… and Pisces is Z.</span><br />
 <span class="libretto-source" lang="it">Adesso Adso leggi.</span><br />
@@ -385,13 +385,13 @@ order: 8
 <span class="libretto-source" lang="it">Mercurio Terra e Sole…</span><br />
 <span class="libretto-translation" lang="en">Mercury Earth and Sun…</span><br />
 <span class="libretto-source" lang="la"><em>Se-cre-tum fi-nis A-fri-cae</em></span><br />
-<span class="libretto-translation" lang="la"><em>Se-cre-tum fi-nis A-fri-cae</em></span><br />
+<span class="libretto-translation" lang="en"><em>Se-cret, end, of Af-ri-ca</em></span><br />
 <span class="libretto-source" lang="la"><em>ma-nus su-pra i-do–lum</em></span><br />
-<span class="libretto-translation" lang="la"><em>ma-nus su-pra i-do–lum</em></span><br />
+<span class="libretto-translation" lang="en"><em>hand above the idol</em></span><br />
 <span class="libretto-source" lang="la"><em>age pri-mum et sep-ti-mum</em></span><br />
-<span class="libretto-translation" lang="la"><em>age pri-mum et sep-ti-mum</em></span><br />
+<span class="libretto-translation" lang="en"><em>do the first and the seventh</em></span><br />
 <span class="libretto-source" lang="la"><em>de qua-tu-or.</em></span><br />
-<span class="libretto-translation" lang="la"><em>de qua-tu-or.</em></span>
+<span class="libretto-translation" lang="en"><em>of the four.</em></span>
 
 <span class="libretto-source" lang="it">La mano sopra l’idolo</span><br />
 <span class="libretto-translation" lang="en">The hand above the idol</span><br />
