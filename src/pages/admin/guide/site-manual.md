@@ -162,11 +162,12 @@ Required: `title`, `titleZh`, `date`, `slug`.
 必填：英文標題 `title`、中文標題 `titleZh`、`date`、`slug`。
 
 Optional: `subtitle`, `subtitleZh`, `translationFrom`, `translationTo`, `tags`
-(choose any number), `excerpt`, `excerptZh`, `order`, `draft`, `comments`.
+(choose any number), `excerpt`, `excerptZh`, `multilingualBody`, `order`, `draft`,
+`comments`.
 The old `type` and `language` fields are gone — tags replace them.
 
 可選：`subtitle`、`subtitleZh`、`excerpt`、`excerptZh`、`tags`（可多選）、
-`order`、`draft`、`comments`。
+`multilingualBody`、`order`、`draft`、`comments`。
 舊的 `type` 與 `language` 欄位已移除，改用標籤。
 
 For translations, `subtitle` / `subtitleZh` contain only the original author's
@@ -181,6 +182,13 @@ Modern Chinese. The site displays the route after the author name.
 
 `translationFrom` 填一個來源語言代碼，`translationTo` 填目標語言代碼清單。
 古漢語使用 `zh-classical`，現代漢語使用 `zh-modern`；網站會把翻譯路線顯示在作者姓名之後。
+
+For a single body that intentionally displays multiple languages together, set
+`multilingualBody: true` and add an explicit `lang` attribute to each
+language-specific block. Do not also create `index.zh.md` for that entry.
+
+若同一份正文刻意並列多種語言，請設定 `multilingualBody: true`，並為每個
+分語言區塊明確標上 `lang`；該文章不再另建 `index.zh.md`。
 
 Tags: `Translation`, `Essay`, `Drama`, `Fiction`, `Blog`, `Poetry`,
 `French`, `Russian`, `Philosophy`, `Moral Philosophy`, `Program Note`, `Review`,

@@ -165,6 +165,7 @@ subtitle: "Optional subtitle"
 subtitleZh: "可選的中文副標題"
 translationFrom: "en"
 translationTo: ["zh-modern"]
+multilingualBody: true
 order: 1
 ```
 
@@ -184,6 +185,15 @@ after the author name.
 
 可選的 `translationFrom`／`translationTo` 分別記錄來源語言與一個或多個目標語言。
 古漢語使用 `zh-classical`，現代漢語使用 `zh-modern`；目錄頁會把它安靜地顯示在作者姓名之後。
+
+Set `multilingualBody: true` only when one Markdown body intentionally shows
+multiple languages together. Add an explicit `lang` attribute to each
+language-specific block. This keeps both interface languages available without
+creating a sibling `index.zh.md`.
+
+只有在同一份 Markdown 正文刻意同時顯示多種語言時，才設定
+`multilingualBody: true`。每個分語言區塊都要明確標上 `lang`，如此便可保留
+兩種介面語言，而不必另建 `index.zh.md`。
 
 Valid types / 可用型別:
 

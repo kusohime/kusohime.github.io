@@ -86,6 +86,7 @@ const translationRoute =
 // Poetry bodies take no first-line indent (see .poetry-body in global.css).
 const isPoetry = writingTags.includes("Poetry");
 const isDrama = writingTags.includes("Drama");
+const isMultilingualBody = writing.data.multilingualBody;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isSplitReader = isCuiXiong || writing.data.splitReader;
 const isLibrettoReader = writing.data.splitReader;
@@ -105,7 +106,9 @@ const isClairieres = writing.data.slug === "tian-jian-qing-che";
 // The prose body is a more reliable language signal than a bilingual title or
 // subtitle (which may contain a quoted Japanese or Chinese title).
 const bodyLang = dominantContentLang(writing.body ?? "");
-const contentLang = bodyLang ?? cjkLangFromText(writing.body ?? "") ?? "en";
+const contentLang = isMultilingualBody
+  ? "en"
+  : (bodyLang ?? cjkLangFromText(writing.body ?? "") ?? "en");
 // 中文正文块的 lang 按其正文文字推断（简繁/日文）。
 // The Chinese block's lang is inferred from its own body text (Hans/Hant/ja).
 const zhBodyLang = zhEntry
@@ -117,7 +120,7 @@ const zhBodyLang = zhEntry
 // 「某语言不可用」的提示（随语言切换显示）。
 // English: Without a Chinese body file the page is single-language; note which
 // locale is unavailable, keyed to the body's dominant language.
-const unavailableLanguages: ("en" | "zh")[] = !zhEntry && bodyLang
+const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody && bodyLang
   ? bodyLang === "en"
     ? ["zh"]
     : bodyLang === "zh"

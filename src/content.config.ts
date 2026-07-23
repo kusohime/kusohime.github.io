@@ -169,6 +169,10 @@ const writings = defineCollection({
     // continuous prose that begins with a full paragraph; leave off for poetry
     // or texts opening with an epigraph / source line (the cap would land wrong).
     dropcap: z.boolean().default(false),
+    // Mixed-language bodies keep both interface languages available and use
+    // explicit lang attributes inside the Markdown for correct typography.
+    // 雙語混排正文不顯示「語言不可用」提示；各段須在 Markdown 中標明 lang。
+    multilingualBody: z.boolean().default(false),
     // Opt a title page into indenting the first prose paragraph after an
     // epigraph, source note, or other opening block.
     firstParagraphIndent: z.boolean().default(false),
