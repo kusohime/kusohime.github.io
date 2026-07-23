@@ -32,15 +32,12 @@ multilingualBody: true
         <span lang="en">W. H. Auden · from <em>Another Time</em> (1940)</span>
       </p>
     </header>
-
     <p class="poem-diptych__label no-indent">
       <span lang="en">Chinese synopsis</span>
       <span aria-hidden="true"> / </span>
       <span lang="zh-Hant-TW">中文梗概</span>
     </p>
-
     <p class="no-indent" lang="zh-Hant-TW">黃昏的城市裡，一名行人偶然聽見戀人許下永恆的誓言；隨後，城市的鐘聲彷彿開口反駁，提醒人們青春、承諾乃至生命都受時間支配。等到人群散去、鐘聲沉寂，留下的是仍然向前的世界，以及明知生命有限卻仍須去愛的難題。</p>
-
     <div class="poem-diptych__notice">
       <p class="no-indent" lang="en">This paired reading uses a Chinese synopsis rather than reproducing or translating the copyrighted poem line by line.</p>
       <p class="no-indent" lang="zh-Hant-TW">本頁以中文梗概參與這組唱和，不逐行重印或翻譯仍受著作權保護的詩作。</p>
@@ -53,7 +50,6 @@ multilingualBody: true
       </p>
     </div>
   </section>
-
   <section class="poem-diptych__panel" aria-labelledby="impossible-vows-shang-ye">
     <header class="poem-diptych__header">
       <p class="poem-diptych__number no-indent" aria-hidden="true">II</p>
@@ -67,7 +63,6 @@ multilingualBody: true
         <span lang="zh-Hant-TW">漢樂府佚名</span>
       </p>
     </header>
-
     <div class="poem-diptych__texts">
       <section aria-labelledby="impossible-vows-original">
         <h3 id="impossible-vows-original" class="poem-diptych__label">
@@ -89,7 +84,6 @@ multilingualBody: true
           </p>
         </blockquote>
       </section>
-
       <section aria-labelledby="impossible-vows-translation">
         <h3 id="impossible-vows-translation" class="poem-diptych__label">
           <span lang="en">English translation</span>
