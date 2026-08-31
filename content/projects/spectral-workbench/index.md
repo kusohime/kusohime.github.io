@@ -22,7 +22,7 @@ links:
 slug: spectral-workbench
 order: 2
 featured: false
-draft: false
+draft: true
 ---
 
 ## Aim

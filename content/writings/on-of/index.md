@@ -8,7 +8,7 @@ excerptZh: "現代英語的領屬結構像是兩重歷史疊在一起。"
 slug: "on-of"
 dropcap: true
 order: 999
-draft: false
+draft: true
 ---
 
 現代英語的領屬結構像是兩重歷史疊在一起：*John’s book* 中的 *’s* 延續日耳曼語固有的屈折屬格，*the cover of the book* 中的 *of* 則是本族介詞在中古英語時期大幅擴張的結果。前者並非法語遺留，後者也不是從法語直接借來的一個詞。

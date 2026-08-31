@@ -22,7 +22,7 @@ links:
 slug: scorefollower
 order: 3
 featured: false
-draft: false
+draft: true
 ---
 
 ## Aim
