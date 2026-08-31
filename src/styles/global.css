@@ -1826,6 +1826,27 @@ main {
   margin: var(--space-xs) 0 0;
 }
 
+.work-excerpts {
+  margin: var(--space-lg) 0 0;
+}
+
+.work-excerpts-list {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.work-excerpts img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-rule);
+}
+
+.work-excerpts figcaption {
+  margin-top: var(--space-xs);
+  color: var(--color-muted);
+}
+
 .metadata-list {
   max-width: var(--reading-width);
   margin: 0 0 var(--space-md);

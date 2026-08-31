@@ -419,4 +419,20 @@ await test("typeface preference has stable defaults and real script-aware fonts"
   assert.match(styles, /--font-greek-body:\s*var\(--font-greek\)/);
 });
 
+await test("footnotes and vertical kanbun preserve their reading starts", async () => {
+  const [sidenotes, workPage] = await Promise.all([
+    readFile(path.join(root, "src/scripts/footnoteSidenotes.ts"), "utf8"),
+    readFile(path.join(root, "src/pages/works/[slug].astro"), "utf8"),
+  ]);
+
+  // Footnote lists can be emitted after sibling language blocks, so refs must
+  // resolve their targets from the containing prose rather than their block.
+  assert.match(sidenotes, /document\.getElementById\(targetId\)/);
+  assert.match(sidenotes, /prose\.contains\(item\)/);
+
+  // Vertical-rl content reads from the right, including after fonts settle.
+  assert.match(workPage, /embed\.scrollLeft\s*=\s*embed\.scrollWidth/);
+  assert.match(workPage, /document\.fonts\?\.ready\.then\(alignToReadingStart\)/);
+});
+
 console.log(`${passed} site integrity tests passed${process.exitCode ? " (with failures)" : ""}`);

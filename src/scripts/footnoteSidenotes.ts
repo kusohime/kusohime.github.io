@@ -159,22 +159,12 @@ function setupPhoneJiazhuRendering(): void {
   document.fonts?.ready.then(renderIfPhone).catch(() => undefined);
 }
 
-// 中文：双语正文（.lang-block）时每个语言块各有一份脚注列表，须按块处理，
-// 否则第二个块的标记在第一个块的列表里查不到内容。
-// English: A bilingual body (.lang-block) carries one footnote list per language
-// block, so each block is enhanced in its own scope — otherwise the second
-// block's refs never match ids collected from the first block's list.
+// 中文：双语正文按语言块分别插入边注；脚注定义则从整个正文查找，因为 Markdown
+// 渲染器也可能把所有语言块的脚注统一收集到末尾。
+// English: Enhance bilingual prose one language block at a time, but resolve
+// definitions from the whole prose because Markdown renderers may collect every
+// language block's notes into one shared list at the end.
 function enhanceScope(scope: HTMLElement, prose: HTMLElement): void {
-  const section = scope.querySelector<HTMLElement>(
-    "section.footnotes, [data-footnotes]",
-  );
-  if (!section) return;
-
-  const contentById = new Map<string, Node[]>();
-  section.querySelectorAll<HTMLLIElement>("li[id]").forEach((item) => {
-    contentById.set(item.id, inlineNoteContent(item));
-  });
-
   const refs = scope.querySelectorAll<HTMLAnchorElement>("a[data-footnote-ref]");
   const disableJumpLinks = prose.closest(".writing-title-page") !== null;
   let placed = 0;
@@ -184,7 +174,12 @@ function enhanceScope(scope: HTMLElement, prose: HTMLElement): void {
     const targetId = decodeURIComponent(
       (ref.getAttribute("href") ?? "").replace(/^#/, ""),
     );
-    const content = contentById.get(targetId);
+    // Markdown renderers may collect notes from several raw-HTML language
+    // blocks into one shared footnote section after those blocks. Resolve the
+    // referenced list item from the whole prose container instead of assuming
+    // that every language block owns its own footnote section.
+    const item = document.getElementById(targetId);
+    const content = item && prose.contains(item) ? inlineNoteContent(item) : null;
     if (!marker || !content) return;
 
     // 标记：红色括号 (n)，样式在 CSS。Marker becomes a red "(n)" via CSS.

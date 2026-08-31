@@ -1,5 +1,5 @@
 ---
-title: "Impasse of the Weasels 鼬の困"
+title: "Impasse of the Weasels 鼬ノ困"
 year: 2025
 category: "Orchestral"
 instrumentation:
@@ -45,7 +45,7 @@ The title is an allusion to Stefania Pandolfo’s 1997 book *[Impasse of the Ang
 
 ## 節目說明
 
-《鼬の困》源自我在 2025 年一月與父母及祖母同遊中國東北（即所謂「<ruby><span class="ruby-base">滿洲</span><rt>Manchuria</rt></ruby>」或「[滿洲國](https://en.wikipedia.org/wiki/Manchukuo)」）時所積累的印象。那時正值幽深而寧靜的隆冬，茫茫大雪幾乎覆蓋了目之所及的一切，令我想起作家[遲子建](https://en.wikipedia.org/wiki/Chi_Zijian)——她在這片土地上寫下許多浸潤著巫魅（「薩滿」一詞源自通行於中國東北與東西伯利亞的[通古斯語族](https://en.wikipedia.org/wiki/Tungusic_languages)）與戲劇性苦澀的作品，然而她筆下的每一個字，又都籠罩在一種宏大而潔白的靜默之中。正是這樣的風格與氛圍，啟發了我為這部作品所定下的基調。
+《鼬ノ困》源自我在 2025 年一月與父母及祖母同遊中國東北（即所謂「<ruby><span class="ruby-base">滿洲</span><rt>Manchuria</rt></ruby>」或「[滿洲國](https://en.wikipedia.org/wiki/Manchukuo)」）時所積累的印象。那時正值幽深而寧靜的隆冬，茫茫大雪幾乎覆蓋了目之所及的一切，令我想起作家[遲子建](https://en.wikipedia.org/wiki/Chi_Zijian)——她在這片土地上寫下許多浸潤著巫魅（「薩滿」一詞源自通行於中國東北與東西伯利亞的[通古斯語族](https://en.wikipedia.org/wiki/Tungusic_languages)）與戲劇性苦澀的作品，然而她筆下的每一個字，又都籠罩在一種宏大而潔白的靜默之中。正是這樣的風格與氛圍，啟發了我為這部作品所定下的基調。
 
 鄂溫克族的旗幟，宛如一面倒置的愛沙尼亞「*Sinimustvalge*」——其中 *sini-*（藍）恰好是 *Sina*（中國／秦）的一個變格，而那片白，又因一輪紅日恰好成了日本的國旗。彷彿歷史本身早已預示了這樣的結局：帶有北波羅的海氣質的中國東北，被迫起而抵抗日本的侵略，最終卻無法抹去其社會文化的烙印。在那蕭索的鏽帶風景裡，我也得以窺見歷史中種種精神病徵的痕跡——從古老神秘主義的衝擊，到那位被迫遣返故土的末代皇后[婉容](https://en.wikipedia.org/wiki/Empress_Wanrong)或許帶有遺傳性的精神崩解。這些都成了這部作品素材的文化與情感靈感。
 
@@ -53,7 +53,7 @@ The title is an allusion to Stefania Pandolfo’s 1997 book *[Impasse of the Ang
 
 > 列車一路向北，穿越朝鮮，渡過鴨綠江，終於進入滿洲。過了安東^[[丹東](https://en.wikipedia.org/wiki/Dandong)的舊稱]，[鳳城](https://en.wikipedia.org/wiki/Fengcheng,_Liaoning)便不遠了。窗外是無邊的黑暗，然而清澈而乾燥的空氣自窗縫透入。他漫不經心地呼吸著，捕捉到那幾乎被遺忘的滿洲氣味。他覺得日本的空氣略濕一些，朝鮮的空氣更乾，但兩者都帶著植物的氣息。
 
-漸漸地，在那些彷彿仍停滯於千禧之初、籠罩於灰白日光下的東北城市裡，我體認到一種感受——那不只是遺忘，即敘事的喪失，而是歷史的喪失。在這趟旅程中，作為一個初來乍到、坐享其便的人，我獲得了某種可稱為逆向<ruby><span class="ruby-base">呼召</span><rt>ekklēsis</rt></ruby>（evocation）的奇異經驗：透過先前對民族誌的閱讀，我得以取得種種虛幻而縹緲的「記憶」指標；而當我真正抵達、親自呼吸那裡的空氣時，空氣的嗅覺與物理屬性，又將那些指標<ruby><span class="ruby-base">實現</span><rt>entelechize</rt></ruby>了。呼吸這種回憶屬性的、時間倒轉的製圖式遊戲，便成了這部作品的形式。
+漸漸地，在那些彷彿仍停滯於千禧之初、籠罩於灰白日光下的東北城市裡，我體認到一種感受，即敘事的喪失，乃至歷史的喪失。在這趟旅程中，作為一個初來乍到、坐享其便的人，我獲得了某種可稱為逆向<ruby><span class="ruby-base">呼召</span><rt>ekklēsis</rt></ruby>（evocation）的奇異經驗：透過先前對民族誌的閱讀，我得以取得種種虛幻而縹緲的「記憶」指標；而當我真正抵達、親自呼吸那裡的空氣時，空氣的嗅覺與物理屬性，又將那些指標<ruby><span class="ruby-base">實現</span><rt>entelechize</rt></ruby>了。呼吸這種回憶屬性的、時間倒轉的製圖式遊戲，便成了這部作品的形式。
 
 標題化用自 Stefania Pandolfo 1997 年的著作《[Impasse of the Angels](https://books.google.com/books/about/Impasse_of_the_Angels.html?id=XnUt6akQeFQC)》——一部關於摩洛哥南部馬格里布地區的民族誌。「天使的困境」是對 *[Barzakh](https://en.wikipedia.org/wiki/Barzakh)* 的詩意想像：在後殖民現代性的衝擊下、當民間與神話傳統日漸式微之際，Barzakh 即伊斯蘭中相當於靈薄獄或中陰的境地。它令我想起蒙古族導演顧桃 2011 年的紀錄片《[神翳](https://www.orientindiefilms.com/content/documentary/the-opaque-god/)》，與 Pandolfo 的標題頗有相通之處。該片講述一位年邁的[鄂倫春](https://en.wikipedia.org/wiki/Oroqen_people)薩滿的故事：在這個再無人相信其傳統的世紀裡，她終究未能尋得傳人。在中國東北，西伯利亞鼬被視為通靈而受人供奉，我想，用牠來替換天使，會是個不錯的選擇。
 
