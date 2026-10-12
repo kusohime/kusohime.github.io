@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content";
 import { site } from "../config/site";
 import { inlineMarkdownToPlainText } from "../lib/safeHtml.js";
+import { privateAreaMessage } from "../config/privacy.mjs";
 
 const SITE_URL = "https://yixincui.com";
 
@@ -23,7 +24,9 @@ function normalizedDate(value: string | number) {
 }
 
 export async function GET() {
-  const writings = (await getCollection("writings", ({ data }) => !data.draft))
+  const writings = (import.meta.env.DEV
+    ? await getCollection("writings", ({ data }) => !data.draft)
+    : [])
     .sort(
       (a, b) =>
         normalizedDate(b.data.date).getTime() -
@@ -54,7 +57,7 @@ export async function GET() {
     <title>${escapeXml(site.name)} Writings</title>
     <link>${SITE_URL}/writings/</link>
     <atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
-    <description>${escapeXml(site.description)}</description>
+    <description>${escapeXml(import.meta.env.DEV ? site.description : privateAreaMessage)}</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>${items}
   </channel>

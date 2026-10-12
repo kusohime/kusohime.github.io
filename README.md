@@ -36,6 +36,7 @@ publishing, or maintenance rules change, update this manual in the same change.
 | Edit / 編輯 | `npm run dev` | Local site and Studio / 本地網站與管理器 |
 | Check / 檢查 | `npm run check` | Astro and TypeScript diagnostics / Astro 與 TypeScript 診斷 |
 | Build / 建置 | `npm run build` | Production `dist/` / 正式 `dist/` |
+| Verify privacy / 驗證隱私 | `npm run test:privacy` | Check the built public artifact / 檢查建置後的公開產物 |
 | Preview build / 預覽建置 | `npm run preview` | Serve built output / 預覽建置結果 |
 | Test tool logic / 測試工具邏輯 | `node tests/tools-core.test.mjs` | Framework-free library tests / 無框架函式庫測試 |
 
@@ -49,14 +50,15 @@ publishing, or maintenance rules change, update this manual in the same change.
 | `content/tools/` | Tool notes and references / 工具說明與參考文獻 |
 | `content/comments/` | Approved public responses / 已核准公開回應 |
 | `content/_trash/` | Removed local content / 已移除本地內容 |
-| `public/images/` | Public images / 公開圖片 |
+| `public/images/` | Images; private-section assets are excluded from production / 圖片；私人區域素材不進入正式建置 |
 | `public/icons/` | Decorative sun, moon, arrow glyphs / 太陽、月亮、箭頭裝飾字形 |
-| `public/files/` | Downloads, including C.V. PDF / 下載檔，含履歷 PDF |
+| `public/files/` | Downloads; C.V. PDF is local only / 下載檔；履歷 PDF 僅供本地使用 |
 | `src/pages/` | URL routes / 網址路由 |
 | `src/layouts/` | Page shells / 頁面外殼 |
 | `src/components/` | Reusable visible parts / 可重用可見部件 |
 | `src/components/tools/` | Interactive tools / 互動工具 |
 | `src/config/` | Site data, taxonomies, translations, guide order / 網站資料、分類、翻譯、指南順序 |
+| `src/config/privacy.mjs` | Private sections and excluded assets / 私人區域與排除素材 |
 | `src/styles/global.css` | Public site style / 公開網站樣式 |
 | `src/styles/tools.css` | Tools style / 工具樣式 |
 | `src/styles/admin.css` | Studio style / 管理器樣式 |
@@ -76,14 +78,15 @@ publishing, or maintenance rules change, update this manual in the same change.
 | `/works/<slug>/` | work frontmatter `slug` | Work detail / 作品詳頁 |
 | `/events/` | `content/events/*/index.md` | Event catalogue / 活動目錄 |
 | `/events/<slug>/` | event frontmatter `slug` | Event detail / 活動詳頁 |
-| `/writings/` | `content/writings/*/index.md` | Writing catalogue / 文章目錄 |
-| `/writings/<slug>/` | writing frontmatter `slug` | Writing title page / 文章標題頁 |
-| `/writings/<slug>/<chapter>/` | `chapters/*.md` frontmatter `slug` | Writing chapter / 文章章節 |
-| `/tools/` | `content/tools/`, `src/config/toolTopics.ts` | Tool catalogue / 工具目錄 |
-| `/tools/composition/<topic>/` | topic grouping | Grouped composition tools / 分組作曲工具 |
-| `/tools/<slug>/` | individual tool route | Linguistics tools; redirects old composition URLs / 語言學工具；舊作曲工具網址轉向 |
-| `/cv/` | `src/pages/cv.astro`, `public/files/yixin-cui-cv.pdf` | Web C.V. and PDF / 網頁履歷與 PDF |
-| `/rss.xml` | `src/pages/rss.xml.ts` | RSS feed / RSS |
+| `/writings/` | `content/writings/*/index.md` | Private notice; catalogue in local dev / 私人區域提示；本地開發顯示文章目錄 |
+| `/writings/<slug>/` | writing frontmatter `slug` | Private notice; writing in local dev / 私人區域提示；本地開發顯示文章 |
+| `/writings/<slug>/<chapter>/` | `chapters/*.md` frontmatter `slug` | Private notice; chapter in local dev / 私人區域提示；本地開發顯示章節 |
+| `/projects/`, `/projects/<slug>/` | `content/projects/*/index.md` | Private notice; projects in local dev / 私人區域提示；本地開發顯示項目 |
+| `/tools/` | `content/tools/`, `src/config/toolTopics.ts` | Private notice; catalogue in local dev / 私人區域提示；本地開發顯示工具目錄 |
+| `/tools/composition/<topic>/` | topic grouping | Private notice; grouped tools in local dev / 私人區域提示；本地開發顯示分組工具 |
+| `/tools/<slug>/` | individual tool route | Private notice; tool or redirect in local dev / 私人區域提示；本地開發顯示工具或轉向 |
+| `/cv/` | `src/pages/cv.astro` | Private notice; full C.V. in local dev / 私人區域提示；本地開發顯示完整履歷 |
+| `/rss.xml` | `src/pages/rss.xml.ts` | Empty public feed; writing entries in local dev / 公開 feed 無條目；本地開發顯示文章條目 |
 | `/drafts/` | draft content in dev | Local draft shelf / 本地草稿架 |
 | `/admin/` | `src/pages/admin/index.astro` | Local Studio / 本地管理器 |
 | `/admin/guide/` | `src/pages/admin/guide/` | Local manual / 本地手冊 |
@@ -91,6 +94,25 @@ publishing, or maintenance rules change, update this manual in the same change.
 `/admin/` and `/drafts/` are removed from the public Pages artifact.
 
 `/admin/` 與 `/drafts/` 會從公開 Pages 產物中移除。
+
+The entire **Blog** menu (Writings, Projects, and Tools) and C.V. are currently
+private. Production builds show “This area is currently private.” / “此區域目前不對外開放。”
+at section indexes and existing detail, chapter, topic, and legacy URLs. Original
+content and its metadata are excluded from those public pages; hiding a menu or
+adding `noindex` alone does not make content private.
+
+整個 **Blog／網誌** 選單（文章、項目、工具）與履歷目前不公開。正式建置在各區域目錄
+及現有詳頁、章節、主題與舊網址顯示「This area is currently private.」／「此區域目前不對外開放。」。
+原始內容與其中繼資料不會進入這些公開頁面；只隱藏選單或加上 `noindex` 並不能保護內容。
+
+`npm run dev` retains the full local content, tools, and C.V. PDF. `npm run build`
+and `npm run preview` use the public private-notice behavior. The policy in
+`src/config/privacy.mjs` also excludes the C.V. PDF and writing/project-specific
+images from production output. The public RSS feed contains no writing entries.
+
+`npm run dev` 保留完整本地內容、工具與履歷 PDF。`npm run build` 與 `npm run preview`
+採用公開網站的私人區域提示。`src/config/privacy.mjs` 的規則亦將履歷 PDF 及文章／項目專用
+圖片排除於正式產物之外。公開 RSS feed 不包含文章條目。
 
 ## 4. Content Model / 內容模型
 
@@ -302,10 +324,13 @@ The player is `src/components/PeerTubeEmbed.astro`; schema is
 `src/pages/admin/index.astro` 與 `src/scripts/admin.ts`。
 
 The C.V. PDF is `public/files/yixin-cui-cv.pdf`; generation helper:
-`scripts/generate-cv-pdf.py`.
+`scripts/generate-cv-pdf.py`. It remains available in local development at
+`/files/yixin-cui-cv.pdf`, but the privacy build policy removes it from production
+output while the C.V. is private. Removing the download link alone is insufficient.
 
 履歷 PDF 是 `public/files/yixin-cui-cv.pdf`；生成輔助程式為
-`scripts/generate-cv-pdf.py`。
+`scripts/generate-cv-pdf.py`。本地開發仍可透過 `/files/yixin-cui-cv.pdf` 開啟；
+履歷不公開期間，隱私建置規則會將 PDF 從正式產物移除。只移除下載連結並不足夠。
 
 ## 8. Language, Theme, Type / 語言、主題、字體
 
@@ -427,6 +452,13 @@ deploys to GitHub Pages.
 `.github/workflows/deploy-pages.yml` 執行 `npm ci`、`npm run check`、
 `npm run build`，移除只供本地使用的 `dist/admin` 與 `dist/drafts`，再發布至
 GitHub Pages。
+
+Privacy applies during `npm run build`, before deployment: private-section pages
+contain only notices, the RSS feed has no entries, and private assets are omitted.
+Check both local development and the built preview when changing this policy.
+
+隱私規則在部署前的 `npm run build` 即生效：私人區域頁面只包含提示、RSS feed 無條目，
+私人素材不會輸出。修改規則時，須同時檢查本地開發與建置後的預覽。
 
 Custom domain: `yixincui.com`. DNS lives outside this repository. `CNAME` and
 `public/CNAME` record the domain.

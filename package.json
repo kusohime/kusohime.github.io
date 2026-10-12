@@ -16,6 +16,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test:privacy": "node --test tests/public-privacy.test.mjs",
     "test": "node tests/tools-core.test.mjs && node tests/site-integrity.test.mjs && node --test tests/ornament-variants.test.mjs",
     "desktop": "electron apps/desktop/main.cjs",
     "desktop:build": "electron-packager . \"Yixin Studio\" --platform=win32 --arch=x64 --out=desktop-dist --overwrite --ignore=\"^/(content|src|public|scripts|tests|docs|icon-sources|node_modules|dist|desktop-dist|\\.desktop-build|\\.git|\\.astro|\\.claude|\\.github|\\.npm-cache|.*\\.log|\\.publish-source\\..*|\\.pages\\.yml|CNAME|README\\.md|tsconfig\\.json|package-lock\\.json)($|/)\""

@@ -28,7 +28,6 @@ import {
   type Locale,
   type TranslationKey,
 } from "../config/locales";
-import { toolTopicBlurb, toolTopicLabel } from "../config/toolTopics";
 
 type Theme = "light" | "dark";
 // 中文：字号只有两档——S（預設緊湊）與 L（較大閱讀字號）。
@@ -269,19 +268,26 @@ function applyLanguage(language: Locale, animate = false) {
       setLocalizedText(element, toolGroupLabel(group, language), shouldAnimate);
     });
 
-  document
-    .querySelectorAll<HTMLElement>("[data-i18n-tool-topic]")
-    .forEach((element) => {
-      const topic = element.dataset.i18nToolTopic ?? "";
-      setLocalizedText(element, toolTopicLabel(topic, language), shouldAnimate);
-    });
+  // Private tool metadata must not enter the shared production UI bundle.
+  // Load it only for the full local development pages.
+  if (import.meta.env.DEV) {
+    void import("../config/toolTopics").then(({ toolTopicLabel, toolTopicBlurb }) => {
+      const currentLanguage = activeLanguage();
+      document
+        .querySelectorAll<HTMLElement>("[data-i18n-tool-topic]")
+        .forEach((element) => {
+          const topic = element.dataset.i18nToolTopic ?? "";
+          setLocalizedText(element, toolTopicLabel(topic, currentLanguage), shouldAnimate);
+        });
 
-  document
-    .querySelectorAll<HTMLElement>("[data-i18n-tool-topic-blurb]")
-    .forEach((element) => {
-      const topic = element.dataset.i18nToolTopicBlurb ?? "";
-      setLocalizedText(element, toolTopicBlurb(topic, language), shouldAnimate);
+      document
+        .querySelectorAll<HTMLElement>("[data-i18n-tool-topic-blurb]")
+        .forEach((element) => {
+          const topic = element.dataset.i18nToolTopicBlurb ?? "";
+          setLocalizedText(element, toolTopicBlurb(topic, currentLanguage), shouldAnimate);
+        });
     });
+  }
 
   document
     .querySelectorAll<HTMLElement>("[data-i18n-content-language]")

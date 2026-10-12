@@ -41,16 +41,8 @@ jobs:
       - name: Build website
         run: npm run build
 
-      - name: Remove local-only Studio and drafts
-        shell: bash
-        run: |
-          rm -rf dist/admin dist/drafts
-          if [ -d dist/_astro ]; then
-            matched_files="$(find dist/_astro -type f -name '*.js' -exec grep -l 'yixin-cui-studio-passcode' {} + || true)"
-            if [ -n "$matched_files" ]; then
-              rm -f $matched_files
-            fi
-          fi
+      - name: Check public privacy
+        run: npm run test:privacy
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

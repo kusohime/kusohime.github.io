@@ -17,6 +17,7 @@ import remarkInlineFootnotes from "./src/lib/remarkInlineFootnotes.mjs";
 import rehypeCitationLinks from "./src/lib/rehypeCitationLinks.mjs";
 import rehypeEditionVariants from "./src/lib/rehypeEditionVariants.mjs";
 import rehypeEditionFootnotes from "./src/lib/rehypeEditionFootnotes.mjs";
+import publicPrivacy from "./scripts/public-privacy.mjs";
 
 // 管理页面只在本地开发服务器中工作；文件读写接口仍只接受本地请求。
 // The Studio runs only in local development; its file API still accepts local requests only.
@@ -596,6 +597,7 @@ const legacyWritingRedirects = Object.fromEntries([
 export default defineConfig({
   site: "https://yixincui.com",
   output: "static",
+  integrations: [publicPrivacy()],
   redirects: legacyWritingRedirects,
   devToolbar: {
     enabled: false,

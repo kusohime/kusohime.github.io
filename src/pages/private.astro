@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import {
+  privateAreaMessage,
+  privateAreaMessageZh,
+} from "../config/privacy.mjs";
+---
+
+<BaseLayout
+  title="Private"
+  titleZh="非公開區域"
+  description={privateAreaMessage}
+  descriptionZh={privateAreaMessageZh}
+  noindex
+>
+  <section class="private-area" aria-labelledby="private-area-heading">
+    <h1
+      id="private-area-heading"
+      data-i18n-en={privateAreaMessage}
+      data-i18n-zh={privateAreaMessageZh}
+    >
+      {privateAreaMessage}
+    </h1>
+  </section>
+</BaseLayout>
+
+<style>
+  .private-area {
+    padding-block: var(--space-xl);
+  }
+
+  .private-area h1 {
+    font-size: 1rem;
+    font-weight: normal;
+  }
+</style>
