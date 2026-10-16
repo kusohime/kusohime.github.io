@@ -2,7 +2,7 @@
 title: "Sprechlehre 蒙學"
 subtitle: "for piano trio"
 subtitleZh: "為鋼琴三重奏"
-year: 2025
+year: 2026
 category: "Chamber"
 instrumentation:
   en: "Violin, cello, and piano"
@@ -11,7 +11,7 @@ duration: {}
 dedication:
   en: "Kaito Stohr"
   zh: "Kaito Stohr"
-description: "Sprechlehre 蒙學 (2025), for violin, cello, and piano, dedicated to Kaito Stohr."
+description: "Sprechlehre 蒙學 (2026), for violin, cello, and piano, dedicated to Kaito Stohr."
 slug: "sprechlehre"
 order: 4
 ---

@@ -168,8 +168,13 @@ empty. / Studio 資料庫保存時，分鐘欄為空也會保留 `duration.displ
 Categories: `Solo`, `Chamber`, `Large Ensemble`, `Orchestral`,
 `Vocal / Choral`, `Arrangements`, `Other`.
 
+Within each work category, entries are sorted by year from newest to oldest;
+`order` breaks ties within the same year.
+
 分類：`Solo`、`Chamber`、`Large Ensemble`、`Orchestral`、`Vocal / Choral`、
 `Arrangements`、`Other`。
+
+各作品分類內按年份由新到舊排列；同年作品才依 `order` 排序。
 
 ### Events / 活動
 
@@ -362,9 +367,11 @@ live in `src/config/locales.ts`.
 
 Public pages have a fixed 16px base size and compact letter spacing. Body text
 uses American Garamond (`AmeriGarmnd BT`); navigation and names use Adobe
-Garamond Small Caps & Old at regular weight (400). These installed faces are
-resolved through CSS `local()` rather than bundled font files. EB Garamond
-provides a portable fallback, with serif fallbacks for other scripts. The S/L
+Garamond Small Caps & Old at regular weight (400). The original Adobe Small Caps
+OTF and four American Garamond TTF styles are bundled in `public/fonts/garamond/`
+and loaded through CSS URLs on every platform, including macOS. The regular body
+and Small Caps faces are preloaded; installed copies and EB Garamond remain
+fallbacks, with serif fallbacks for other scripts. The S/L
 and Aa controls are removed, and saved size or typeface choices are ignored.
 
 The Small Caps face uses its original glyphs with cap conversion and font
@@ -374,8 +381,9 @@ words use slightly wider tracking while body text stays small and compact.
 
 公開頁面固定使用 16px 基準字號與緊湊字距。正文使用 American Garamond
 （`AmeriGarmnd BT`），導覽與姓名使用 Adobe Garamond Small Caps & Old
-的標準字重（400）。這些字型由 CSS `local()` 讀取本機已安裝版本，沒有將字型檔
-打包發布；其他裝置以 EB Garamond 及各文種的襯線字型後備。S/L 與 Aa
+的標準字重（400）。原始 Adobe Small Caps OTF 與 American Garamond 四種樣式的
+TTF 已存於 `public/fonts/garamond/`，經 CSS 網址載入，macOS 也使用同一套字型。
+正文標準體與 Small Caps 預先載入；本機版本、EB Garamond 及各文種襯線字型仍作後備。S/L 與 Aa
 切換鈕已移除，舊有字號與字體選擇不再套用。
 
 Small Caps 直接使用原字形，關閉額外的大寫轉換與字型合成。

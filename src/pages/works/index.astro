@@ -15,7 +15,7 @@ import {
 } from "../../config/locales";
 
 const works = (await getCollection("works", ({ data }) => !data.draft)).sort(
-  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year,
+  (a, b) => b.data.year - a.data.year || a.data.order - b.data.order,
 );
 
 const worksByCategory = workCategories.map((category) => ({

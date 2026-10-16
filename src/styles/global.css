@@ -16,10 +16,11 @@
     U+FE70-FEFF;
 }
 
-/* Exact installed faces, with portable Garamond fallbacks in the stacks below. */
+/* Original font files are served with the site, including to macOS visitors. */
 @font-face {
   font-family: "Adobe Garamond Small Caps & Old";
-  src: local("AGaramond-RegularSC"), local("Adobe Garamond Small Caps & Oldstyle Figures");
+  src: url("/fonts/garamond/AdobeGaramond-RegularSC.otf") format("opentype"),
+    local("AGaramond-RegularSC"), local("Adobe Garamond Small Caps & Oldstyle Figures");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -27,7 +28,8 @@
 
 @font-face {
   font-family: "AmeriGarmnd BT";
-  src: local("AmeriGarmnd BT Roman"), local("AmericanGaramondBT-Roman");
+  src: url("/fonts/garamond/AmericanGaramondBT-Roman.ttf") format("truetype"),
+    local("AmeriGarmnd BT Roman"), local("AmericanGaramondBT-Roman");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -35,7 +37,8 @@
 
 @font-face {
   font-family: "AmeriGarmnd BT";
-  src: local("AmeriGarmnd BT Italic"), local("AmericanGaramondBT-Italic");
+  src: url("/fonts/garamond/AmericanGaramondBT-Italic.ttf") format("truetype"),
+    local("AmeriGarmnd BT Italic"), local("AmericanGaramondBT-Italic");
   font-style: italic;
   font-weight: 400;
   font-display: swap;
@@ -43,7 +46,8 @@
 
 @font-face {
   font-family: "AmeriGarmnd BT";
-  src: local("AmeriGarmnd BT Bold"), local("AmericanGaramondBT-Bold");
+  src: url("/fonts/garamond/AmericanGaramondBT-Bold.ttf") format("truetype"),
+    local("AmeriGarmnd BT Bold"), local("AmericanGaramondBT-Bold");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -51,7 +55,8 @@
 
 @font-face {
   font-family: "AmeriGarmnd BT";
-  src: local("AmeriGarmnd BT Bold Italic"), local("AmericanGaramondBT-BoldItalic");
+  src: url("/fonts/garamond/AmericanGaramondBT-BoldItalic.ttf") format("truetype"),
+    local("AmeriGarmnd BT Bold Italic"), local("AmericanGaramondBT-BoldItalic");
   font-style: italic;
   font-weight: 700;
   font-display: swap;
