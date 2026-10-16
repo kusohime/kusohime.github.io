@@ -1872,6 +1872,25 @@ main:has(> .home-page) {
   margin-bottom: var(--space-md);
 }
 
+.work-notes .movement-titles ruby {
+  ruby-position: over;
+  ruby-align: center;
+}
+
+.work-notes .movement-titles rt {
+  font-family: var(--font-body);
+  font-size: 0.5em;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.work-notes .movement-titles p:has(ruby) {
+  line-height: 1.74;
+}
+
 .work-title-line {
   display: flex;
   flex-wrap: wrap;

@@ -23,6 +23,8 @@ slug: "twink-death"
 order: 1
 ---
 
+<div class="lang-block movement-titles" data-lang="en" lang="en">
+
 ## Movements
 
 I. Troubadours *der Welt abhanden gekommen* ~ On Unlikable Felinity ~
@@ -32,6 +34,22 @@ II. Bildungsroman is all about the homoeroticism that is only observable in its 
 III. Echolalia
 
 IV. Kotodama = Protactile of Jinx’n’
+
+</div>
+
+<div class="lang-block movement-titles" data-lang="zh" lang="zh-Hant">
+
+## 樂章
+
+I. <ruby><span class="ruby-base">被世界遺失</span><rt lang="de">der Welt abhanden gekommen</rt></ruby>的吟遊詩人 ～ 論不討喜的<ruby><span class="ruby-base">貓科性</span><rt lang="en">Felinity</rt></ruby> ～
+
+II. <ruby><span class="ruby-base">成長小說</span><rt lang="de">Bildungsroman</rt></ruby>所關乎的，無非是唯有在第三人稱的<ruby><span class="ruby-base">自我回望</span><rt lang="en">illeist retrospect</rt></ruby>中才顯現的同性情慾
+
+III. <ruby><span class="ruby-base">仿說</span><rt lang="en">Echolalia</rt></ruby>
+
+IV. <span lang="ja">コトダマ</span>＝Jinx’n’的觸語（Protactile）
+
+</div>
 
 <div class="lang-block" data-lang="en">
 
@@ -47,9 +65,9 @@ Drifting along the Mi-lo River in a Jane Eyre-esque reverie, Driang confided in 
 
 ## 節目說明
 
-楚靈王，名圍，是中國歷史上著名的暴君，於周代公元前 540 至 529 年間統治楚國。一場民變之後，他出逃成了亡命之徒，不久便自盡。他兒時的玩伴、後來的國巫 Driang（讀音近於 John），選擇帶著她那隻能心電感應的貓「狸」離開這個動盪的國度。
+楚靈王，名圍，是中國歷史上著名的暴君，於周代公元前 540 至 529 年間統治楚國。一場民變之後，他出逃成了亡命之徒，不久便自盡。他兒時的玩伴、後來的國巫 Driang（名陽，即巫陽；讀音近於 John），選擇帶著她那隻能心電感應的貓「狸」離開這個動盪的國度。
 
-在《簡‧愛》式的遐想中沿汨羅江漂流，Driang 向狸吐露：她在夢中收到一則訊息——圍的魂魄並不安寧。召喚其亡靈的儀式，需要施行者投入強烈的情感；然而身為半神化的薩滿，Driang 卻患有萎縮的邊緣系統，以及由此而來的多巴胺失調，使她無法產生正常的人類情感（而狸則一如所有的貓，帶著述情障礙般的漠然）。最終，Driang 決意把這場儀式，轉化為一段傾訴式的佛洛伊德對話。
+在《簡‧愛》式的遐想中沿汨羅江漂流，陽向狸吐露：她在夢中收到一則訊息——圍的魂魄並不安寧。召喚其亡靈的儀式，需要施行者投入強烈的情感；然而身為半神化的薩滿，陽卻患有萎縮的邊緣系統，以及由此而來的多巴胺失調，使她無法產生正常的人類情感（而狸則一如所有的貓，帶著述情障礙般的漠然）。最終，陽決意把這場儀式，轉化為一段傾訴式的佛洛伊德對話。
 
 </div>
 
