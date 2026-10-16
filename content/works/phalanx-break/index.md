@@ -1,5 +1,5 @@
 ---
-title: "Phalanx Break"
+title: "Phalanx Break 破陣"
 year: 2025
 category: "Chamber"
 instrumentation:

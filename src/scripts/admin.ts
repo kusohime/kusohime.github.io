@@ -2337,7 +2337,14 @@ Write the text here.
     if (!(minutes > 0)) {
       const index = topKeyIndex(lines, "duration");
       if (index >= 0) {
-        lines.splice(index, topBlockEnd(lines, index) - index, "duration: {}");
+        // 中文：清空分鐘數時保留顯示文字、約數與持續播放等其他時長資料。
+        // English: Clearing minutes preserves display text and other duration metadata.
+        for (let child = topBlockEnd(lines, index) - 1; child > index; child -= 1) {
+          if (lines[child].match(/^\s+minutes:\s*/)) lines.splice(child, 1);
+        }
+        if (lines[index].trim() === "duration:" && topBlockEnd(lines, index) === index + 1) {
+          lines[index] = "duration: {}";
+        }
       } else {
         lines.push("duration: {}");
       }

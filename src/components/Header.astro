@@ -1,12 +1,19 @@
 ---
-// 中文：公開網站頁首、主導覽與三個偏好選單。
-// English: Public header, primary navigation, and three preference menus.
+// 中文：公開網站頁首、印章、主導覽與偏好控制。
+// English: Public header, seal, primary navigation, and preference controls.
 import NamePronunciation from "./NamePronunciation.astro";
+import Preferences from "./Preferences.astro";
 import {
   translate,
+  type Locale,
   type TranslationKey,
 } from "../config/locales";
 
+interface Props {
+  unavailableLanguages?: Locale[];
+}
+
+const { unavailableLanguages = [] } = Astro.props;
 const { pathname } = Astro.url;
 const currentPath = pathname.replace(/\/$/, "") || "/";
 
@@ -35,6 +42,16 @@ const navGroups = [
 
 <header class="site-header" data-source-file="src/components/Header.astro">
   <div class="header-row">
+    <a class="site-seal" href="/" aria-label="Yixin Cui, home">
+      <img
+        class="site-seal-image"
+        src="/favicon-512.png"
+        alt=""
+        width="32"
+        height="32"
+        aria-hidden="true"
+      />
+    </a>
     <p class="site-name">
       <a
         href="/"
@@ -83,6 +100,6 @@ const navGroups = [
         }
       </ul>
     </nav>
-
+    <Preferences unavailableLanguages={unavailableLanguages} />
   </div>
 </header>

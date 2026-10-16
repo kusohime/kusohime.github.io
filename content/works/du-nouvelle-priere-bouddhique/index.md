@@ -1,5 +1,8 @@
 ---
-title: "DU:: nouvelle prière bouddhique 度"
+title: "DU, nouvelle prière bouddhique 妳：古代佛教祈禱"
+titleRuby:
+  - base: "妳"
+    annotation: "度"
 year: 2025
 category: "Vocal / Choral"
 instrumentation:

@@ -35,6 +35,26 @@ const introRest = (markdown: string) =>
 
 <BaseLayout>
   <div class="home-page" data-source-file="src/pages/index.astro">
+    {homeContent.image && (
+      <figure class="home-image-frame">
+        <img
+          src={homeContent.image}
+          alt={homeContent.imageAlt ?? ""}
+          width="2955"
+          height="996"
+          decoding="async"
+          fetchpriority="high"
+        />
+        {(homeContent.caption.en || homeContent.caption.zh) && <figcaption>
+          <span class="home-caption" data-lang="en" data-editable-text
+            data-source-file="src/config/homeContent.json" data-json-path="caption.en"
+            set:html={renderSafeInlineMarkdown(homeContent.caption.en)} />
+          <span class="home-caption" data-lang="zh" data-editable-text
+            data-source-file="src/config/homeContent.json" data-json-path="caption.zh"
+            set:html={renderSafeInlineMarkdown(homeContent.caption.zh)} />
+        </figcaption>}
+      </figure>
+    )}
     <section aria-labelledby="home-title">
       <h1
         id="home-title"
@@ -62,7 +82,7 @@ const introRest = (markdown: string) =>
             data-source-file="src/config/homeContent.json"
             data-json-path="intro.en"
             set:html={introLead(homeContent.intro.en)}
-          />
+          />{" "}<a class="home-bio-link" href="/bio/">Read full bio.</a>
         </p>
         <div
           data-editable-text
@@ -82,7 +102,7 @@ const introRest = (markdown: string) =>
             data-source-file="src/config/homeContent.json"
             data-json-path="intro.zh"
             set:html={introLead(homeContent.intro.zh)}
-          />
+          />{" "}<a class="home-bio-link" href="/bio/">閱讀完整簡介</a>
         </p>
         <div
           data-editable-text
@@ -92,40 +112,5 @@ const introRest = (markdown: string) =>
         />
       </div>
     </section>
-
-    {homeContent.image && (
-    <figure class="home-image-frame">
-      <img
-        src={homeContent.image}
-        alt={homeContent.imageAlt ?? ""}
-        width="2955"
-        height="996"
-        decoding="async"
-      />
-      <figcaption>
-        <!--
-          中文：说明文字两种语言都在 DOM 中，由 CSS 依 <html lang> 显示其一，可保留斜体与链接。
-          English: Both caption languages live in the DOM; CSS shows one by <html lang>,
-          keeping italics and links.
-        -->
-        <span
-          class="home-caption"
-          data-lang="en"
-          data-editable-text
-          data-source-file="src/config/homeContent.json"
-          data-json-path="caption.en"
-          set:html={renderSafeInlineMarkdown(homeContent.caption.en)}
-        />
-        <span
-          class="home-caption"
-          data-lang="zh"
-          data-editable-text
-          data-source-file="src/config/homeContent.json"
-          data-json-path="caption.zh"
-          set:html={renderSafeInlineMarkdown(homeContent.caption.zh)}
-        />
-      </figcaption>
-    </figure>
-    )}
   </div>
 </BaseLayout>

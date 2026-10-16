@@ -1,7 +1,7 @@
 ---
 title: "A Past Life 前世"
 year: 2025
-category: "Other"
+category: "Solo"
 instrumentation:
   en: "Solo sign-singer in Chinese Sign Language"
   zh: "中國手語的獨演手語歌者"

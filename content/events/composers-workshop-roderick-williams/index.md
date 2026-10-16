@@ -8,7 +8,7 @@ locationZh: "賓州斯沃斯莫爾"
 role: composer
 roleZh: "作曲"
 brief: Première of A Song in the Winter.
-briefZh: "《A Song in the Winter》首演。"
+briefZh: "《A Song in the Winter 冬天的一首歌》首演。"
 slug: composers-workshop-roderick-williams
 order: 1
 draft: false

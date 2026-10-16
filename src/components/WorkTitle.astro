@@ -1,0 +1,42 @@
+---
+// Titles stay plain text in metadata; optional annotations appear only in visible headings.
+interface Props {
+  title: string;
+  ruby?: { base: string; annotation: string }[];
+}
+
+const { title, ruby = [] } = Astro.props;
+type TitlePart = { text: string; annotation?: string };
+let parts: TitlePart[] = [{ text: title }];
+
+for (const { base, annotation } of ruby) {
+  parts = parts.flatMap((part) => {
+    if (part.annotation !== undefined || !base) return [part];
+    const segments = part.text.split(base);
+    return segments.flatMap((text, index): TitlePart[] => [
+      ...(index > 0 ? [{ text: base, annotation }] : []),
+      ...(text ? [{ text }] : []),
+    ]);
+  });
+}
+---
+
+{parts.map((part) => part.annotation !== undefined
+  ? <ruby><span class="ruby-base">{part.text}</span><rt>{part.annotation}</rt></ruby>
+  : part.text)}
+
+<style>
+  ruby {
+    ruby-position: over;
+    ruby-align: center;
+  }
+
+  rt {
+    font-family: var(--font-cjk-serif);
+    font-size: 0.5em;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+</style>

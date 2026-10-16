@@ -6,6 +6,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
+import WorkTitle from "../../components/WorkTitle.astro";
 import Comments from "../../components/Comments.astro";
 import PeerTubeEmbed from "../../components/PeerTubeEmbed.astro";
 import {
@@ -43,7 +44,9 @@ const { Content } = await render(work);
 // English: Work notes are written bilingually inline (no index.zh.md); when the
 // body carries almost no Han text, treat it as English-only and note that in
 // the Chinese UI.
-const { han, latinWords } = proseCounts(work.body ?? "");
+// Image attributes and link labels for controls are not prose requiring translation.
+const bodyProse = (work.body ?? "").replace(/<[^>]*>/g, " ");
+const { han, latinWords } = proseCounts(bodyProse);
 // 一两句以内的说明不值得挂提示，只对有实际英文段落的作品显示。
 // Skip the note when the body is only a line or two of text.
 const notesEnglishOnly = han < 20 && latinWords >= 15;
@@ -65,6 +68,7 @@ const {
   imageAlt,
   description,
 } = work.data;
+const hasDuration = duration.display || duration.minutes !== undefined || duration.continuous;
 ---
 
 <BaseLayout
@@ -80,7 +84,7 @@ const {
     <header class="detail-header work-detail-header">
       {work.data.draft && <p class="draft-flag">Draft — not listed publicly</p>}
       <div class="work-title-line">
-        <h1>{title}</h1>
+        <h1><WorkTitle title={title} ruby={work.data.titleRuby} /></h1>
         <p class="work-year">
           <time datetime={String(year)} data-i18n-date={String(year)}>
             {formatDate(year, "en")}
@@ -92,15 +96,19 @@ const {
       )}
       <p class="work-facts">
         <span class="work-instrumentation"><LocalizedText value={instrumentation} /></span>
-        <span
-          class="work-duration"
-          data-i18n-duration
-          data-duration-minutes={duration.minutes}
-          data-duration-continuous={String(duration.continuous)}
-          data-duration-approximate={String(duration.approximate)}
-        >
-          {formatDuration(duration, "en")}
-        </span>
+        {hasDuration && (duration.display ? (
+          <span class="work-duration"><LocalizedText value={duration.display} /></span>
+        ) : (
+          <span
+            class="work-duration"
+            data-i18n-duration
+            data-duration-minutes={duration.minutes}
+            data-duration-continuous={String(duration.continuous)}
+            data-duration-approximate={String(duration.approximate)}
+          >
+            {formatDuration(duration, "en")}
+          </span>
+        ))}
       </p>
 
       {commission && (

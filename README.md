@@ -74,6 +74,7 @@ publishing, or maintenance rules change, update this manual in the same change.
 | URL / 網址 | Source / 來源 | Function / 功能 |
 | --- | --- | --- |
 | `/` | `src/pages/index.astro`, `src/config/homeContent.json` | Home / 首頁 |
+| `/bio/` | `src/pages/bio.astro`, `src/config/bioContent.json` | Public bilingual biography / 公開雙語個人簡介 |
 | `/works/` | `content/works/*/index.md` | Work catalogue / 作品目錄 |
 | `/works/<slug>/` | work frontmatter `slug` | Work detail / 作品詳頁 |
 | `/events/` | `content/events/*/index.md` | Event catalogue / 活動目錄 |
@@ -140,13 +141,29 @@ Required: `title`, `year`, `category`, `instrumentation.en`, `duration`, `slug`.
 
 必填：`title`、`year`、`category`、`instrumentation.en`、`duration`、`slug`。
 
-Optional: `subtitle`, `description`, `dedication`, `commission`, `credits`,
+Optional: `titleRuby`, `subtitle`, `description`, `dedication`, `commission`, `credits`,
 `premiere`, `recordingUrl`, `scoreUrl`, `video`, `image`, `imageAlt`, `order`,
 `draft`, `comments`.
+
+`titleRuby` pairs `base` text with an `annotation` above it in work headings and
+catalogues. Keep `title` plain for browser titles and other metadata.
+
+`titleRuby` 以 `base` 與 `annotation` 配對，在作品標題和目錄中將注字放在基字上方；
+`title` 保持純文字，供瀏覽器標題及其他中介資料使用。
 
 可選：`subtitle`、`description`、`dedication`、`commission`、`credits`、`premiere`、
 `recordingUrl`、`scoreUrl`、`video`、`image`、`imageAlt`、`order`、`draft`、
 `comments`。
+
+Use optional `duration.display.en` / `duration.display.zh` for a duration range
+(e.g. `approx. 13–14′` / `約 13–14 分鐘`); this overrides the numeric label and
+allows `duration.minutes` to be omitted.
+
+時長範圍可使用 `duration.display.en`／`duration.display.zh`（如 `approx. 13–14′`／
+`約 13–14 分鐘`）；此文字取代數值時長標籤，並可省略 `duration.minutes`。
+
+Studio Library saves preserve `duration.display` when the minutes field is
+empty. / Studio 資料庫保存時，分鐘欄為空也會保留 `duration.display`。
 
 Categories: `Solo`, `Chamber`, `Large Ensemble`, `Orchestral`,
 `Vocal / Choral`, `Arrangements`, `Other`.
@@ -343,10 +360,31 @@ live in `src/config/locales.ts`.
 
 共用文字、分類名稱、日期、時長與內容語言名稱位於 `src/config/locales.ts`。
 
-User choices live in browser storage: `yc-language`, `yc-theme`,
-`yc-font-size`.
+Public pages have a fixed 16px base size and compact letter spacing. Body text
+uses American Garamond (`AmeriGarmnd BT`); navigation and names use Adobe
+Garamond Small Caps & Old at regular weight (400). These installed faces are
+resolved through CSS `local()` rather than bundled font files. EB Garamond
+provides a portable fallback, with serif fallbacks for other scripts. The S/L
+and Aa controls are removed, and saved size or typeface choices are ignored.
 
-使用者選擇存於瀏覽器：`yc-language`、`yc-theme`、`yc-font-size`。
+The Small Caps face uses its original glyphs with cap conversion and font
+synthesis disabled. Only its lowercase glyphs are enlarged by 15% through
+`--small-caps-lowercase-scale`; original capitals keep their size. All-uppercase
+words use slightly wider tracking while body text stays small and compact.
+
+公開頁面固定使用 16px 基準字號與緊湊字距。正文使用 American Garamond
+（`AmeriGarmnd BT`），導覽與姓名使用 Adobe Garamond Small Caps & Old
+的標準字重（400）。這些字型由 CSS `local()` 讀取本機已安裝版本，沒有將字型檔
+打包發布；其他裝置以 EB Garamond 及各文種的襯線字型後備。S/L 與 Aa
+切換鈕已移除，舊有字號與字體選擇不再套用。
+
+Small Caps 直接使用原字形，關閉額外的大寫轉換與字型合成。
+僅以 `--small-caps-lowercase-scale` 將小寫字形放大 15%，原有大寫字形維持原尺寸。
+全大寫單詞稍微加寬字距，正文仍維持小字號與緊湊字距。
+
+User choices live in browser storage: `yc-language`, `yc-theme`.
+
+使用者選擇存於瀏覽器：`yc-language`、`yc-theme`。
 
 First-visit defaults live in `src/config/siteDefaults.json`.
 
@@ -367,6 +405,16 @@ preferences. `Footer.astro` ends the shell.
 
 `BaseLayout.astro` 包住公開頁。`Header.astro` 提供導覽與偏好設定。
 `Footer.astro` 結束頁面外殼。
+
+The homepage's “Read full bio” link opens `/bio/`. Edit its English and Chinese
+introduction and body in `src/config/bioContent.json`, or select the biography
+text in the local Studio. Blank lines separate paragraphs; inline Markdown
+supports links and emphasis. Biography copy uses public facts and does not
+import the private C.V.
+
+首頁的「Read full bio／閱讀完整簡介」連結開啟 `/bio/`。雙語首段與正文位於
+`src/config/bioContent.json`，也可在本地 Studio 點選簡介文字編輯。空行分段，
+行內 Markdown 可加入連結與強調。簡介只使用公開資料，不匯入私人履歷。
 
 `global.css` controls public typography, color, spacing, layout, comments,
 media, works, writings, events, C.V., and guide pages.

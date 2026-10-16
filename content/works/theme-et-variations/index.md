@@ -1,5 +1,5 @@
 ---
-title: "Thème et Variations"
+title: "Thème et Variations 主題與變奏"
 subtitle: "after Lili Boulanger, arranged for orchestra"
 subtitleZh: "據 Lili Boulanger 原作，改編為管弦樂團"
 year: 2024

@@ -392,26 +392,31 @@ await test("ornament facsimile manifest and assets are complete and reproducible
   }
 });
 
-await test("typeface preference has stable defaults and real script-aware fonts", async () => {
+await test("public typography stays fixed Garamond without font controls", async () => {
   const defaults = JSON.parse(
     await readFile(path.join(root, "src/config/siteDefaults.json"), "utf8"),
   );
-  assert.deepEqual(defaults, {
-    defaultLanguage: "en",
-    defaultTheme: "light",
-    defaultFontSize: "s",
-    defaultFontFamily: "modern-mono",
-  });
+  assert.equal(defaults.defaultLanguage, "en");
+  assert.equal(defaults.defaultTheme, "light");
+  assert.equal(defaults.defaultFontFamily, "garamond");
 
-  const [preferences, preferenceScript, styles] = await Promise.all([
+  const [preferences, preferenceScript, layout, styles] = await Promise.all([
     readFile(path.join(root, "src/components/Preferences.astro"), "utf8"),
     readFile(path.join(root, "src/scripts/preferences.ts"), "utf8"),
+    readFile(path.join(root, "src/layouts/BaseLayout.astro"), "utf8"),
     readFile(path.join(root, "src/styles/global.css"), "utf8"),
   ]);
 
-  assert.match(preferences, /data-font-family-toggle/);
-  assert.match(preferenceScript, /yc-font-family/);
-  assert.match(preferenceScript, /"modern-mono"\s*\|\s*"garamond"/);
+  assert.doesNotMatch(preferences, /data-font-family-toggle/);
+  assert.doesNotMatch(preferences, /data-font-size-toggle|data-current-font-size/);
+  assert.doesNotMatch(preferenceScript, /readStored[^;]*yc-font-family/s);
+  assert.doesNotMatch(preferenceScript, /readStored[^;]*yc-font-size/s);
+  assert.doesNotMatch(layout, /localStorage\.getItem\("yc-font-family"\)/);
+  assert.doesNotMatch(layout, /localStorage\.getItem\("yc-font-size"\)/);
+  assert.doesNotMatch(layout, /dataset\.fontSize\s*=/);
+  assert.match(preferenceScript, /dataset\.fontFamily\s*=\s*"garamond"/);
+  assert.match(layout, /const defaultFontFamily\s*=\s*"garamond"/);
+  assert.match(styles, /--base-font-size:\s*16px;/);
   assert.match(styles, /EB\+Garamond:ital,wght@0,/);
   assert.match(styles, /\[data-font-family="garamond"\]/);
   assert.match(styles, /--font-cjk-body:\s*var\(--font-cjk-serif\)/);

@@ -8,7 +8,7 @@ locationZh: "賓州斯沃斯莫爾"
 role: composer and pianist
 roleZh: "作曲、鋼琴"
 brief: Première of Sonatinetta II, performed by Duncan Wall and Yixin Cui.
-briefZh: "《Sonatinetta II》首演，由 Duncan Wall 與崔浥新演出。"
+briefZh: "《Sonatinetta II 微奏鳴曲 II》首演，由 Duncan Wall 與崔浥新演出。"
 slug: duncan-wall-senior-recital
 order: 1
 draft: false

@@ -1,5 +1,5 @@
 ---
-title: "Twink Death"
+title: "Twink Death 菊花殘"
 subtitle: "for two actors and a large ensemble"
 subtitleZh: "為兩名演員與大型合奏"
 year: 2025

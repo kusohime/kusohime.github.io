@@ -50,6 +50,10 @@ const works = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
+    titleRuby: z.array(z.object({
+      base: z.string().min(1),
+      annotation: z.string().min(1),
+    })).optional(),
     subtitle: z.string().optional(),
     // 中文：标题保持原文；副标题等描述性文字可加中文。
     // English: Titles stay in the original; descriptive fields may carry Chinese.
@@ -61,6 +65,7 @@ const works = defineCollection({
       minutes: z.number().positive().optional(),
       continuous: z.boolean().default(false),
       approximate: z.boolean().default(false),
+      display: localizedText.optional(),
     }),
     dedication: localizedText.optional(),
     commission: localizedText.optional(),

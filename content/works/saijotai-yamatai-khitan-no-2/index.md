@@ -1,7 +1,7 @@
 ---
 title: "Saijōtai Yamata[i]-K[h]itan No. 2 罪狀體邪馬臺綺譚 其二"
 year: 2025
-category: "Other"
+category: "Chamber"
 instrumentation:
   en: "Percussion and voice"
   zh: "打擊樂與人聲"
@@ -30,7 +30,7 @@ The earliest known version of this piece is said to have been written by the Ita
 
 For several centuries it remained with a female Japanese collector-scholar who, despite her efforts, never quite understood it. The only successful yield was an esoteric chart. I have translated it to English and put it on the right. During the Second World War, a Japanese general, an amateur musicologist, brought the manuscript to Shanghai in hopes of finding someone who could interpret it. Copies were made at that time; one fell into the hands of a wealthy merchant who later emigrated to North America, bringing with him a version marked with baffling, ungrammatical Japanese pronunciation guides. This appears to have been the last surviving copy.
 
-Soviet agents reportedly sought it during the Cold War, but the anonymous keeper chose to destroy the physical manuscript and commit the entire piece to memory instead. I was fortunate to be able to transcribe the music on the day before the final keeper passed away. His last word was:
+Soviet agents reportedly sought it during the Cold War, but the anonymous keeper chose to destroy the physical manuscript and commit the entire piece to memory instead. I was fortunate to be able to transcribe the music on the day before the final keeper passed away. His last words were,
 
 > *sempre ad lib. e espr. assai...*
 

@@ -5,7 +5,6 @@
 // Caveat: Changes here affect every public page except the Studio.
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import Preferences from "../components/Preferences.astro";
 import { translate, type Locale, type TranslationKey } from "../config/locales";
 import siteDefaults from "../config/siteDefaults.json";
 import { site } from "../config/site";
@@ -41,9 +40,7 @@ const pageTitleZh = titleZh
   : pageTitle;
 const defaultLanguage = siteDefaults.defaultLanguage;
 const defaultTheme = siteDefaults.defaultTheme === "dark" ? "dark" : "light";
-const defaultFontSize = siteDefaults.defaultFontSize === "l" ? "l" : "s";
-const defaultFontFamily =
-  siteDefaults.defaultFontFamily === "garamond" ? "garamond" : "modern-mono";
+const defaultFontFamily = "garamond";
 
 interface HierarchyBackLink {
   href: string;
@@ -103,6 +100,7 @@ const hierarchyBack = (() => {
 <!doctype html>
 <html
   lang="en"
+  data-font-family={defaultFontFamily}
   data-unavailable-languages={unavailableLanguages.length > 0
     ? unavailableLanguages.join(" ")
     : undefined}
@@ -153,28 +151,18 @@ const hierarchyBack = (() => {
         </>
       )
     }
-    <script is:inline define:vars={{ defaultLanguage, defaultTheme, defaultFontSize, defaultFontFamily }}>
-      // 在頁面繪製前恢復偏好設定，避免主題、字號或字體短暫閃爍。
-      // Restore preferences before paint to prevent a theme, size, or typeface flash.
+    <script is:inline define:vars={{ defaultLanguage, defaultTheme, defaultFontFamily }}>
+      // 在頁面繪製前恢復偏好設定，並固定公開頁面的 Garamond 字體。
+      // Restore preferences before paint and keep Garamond across the public site.
       try {
         const storedTheme = localStorage.getItem("yc-theme");
-        const storedFontSize = localStorage.getItem("yc-font-size");
-        const storedFontFamily = localStorage.getItem("yc-font-family");
         const storedLanguage = localStorage.getItem("yc-language");
         const language = storedLanguage ?? defaultLanguage;
         const theme = storedTheme === "dark" || storedTheme === "light"
           ? storedTheme
           : defaultTheme;
-        const fontSize = storedFontSize === "s" || storedFontSize === "l"
-          ? storedFontSize
-          : defaultFontSize;
-        const fontFamily = storedFontFamily === "garamond" || storedFontFamily === "modern-mono"
-          ? storedFontFamily
-          : defaultFontFamily;
-
         document.documentElement.dataset.theme = theme;
-        document.documentElement.dataset.fontSize = fontSize;
-        document.documentElement.dataset.fontFamily = fontFamily;
+        document.documentElement.dataset.fontFamily = defaultFontFamily;
 
         if (language === "en" || language === "zh") {
           document.documentElement.lang = language === "zh" ? "zh-Hant-TW" : language;
@@ -188,10 +176,7 @@ const hierarchyBack = (() => {
       {translate("en", "common.skip")}
     </a>
     <div class="site-shell">
-      <Header />
-      <div class="site-preferences-rail">
-        <Preferences unavailableLanguages={unavailableLanguages} />
-      </div>
+      <Header unavailableLanguages={unavailableLanguages} />
       <main id="main-content">
         {
           hierarchyBack && (
@@ -232,6 +217,11 @@ const hierarchyBack = (() => {
       import { initializeCjkTypography } from "../scripts/cjkTypography";
 
       initializeCjkTypography();
+    </script>
+    <script>
+      import { initializeNameSmallCaps } from "../scripts/nameSmallCaps";
+
+      initializeNameSmallCaps();
     </script>
   </body>
 </html>

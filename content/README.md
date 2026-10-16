@@ -68,6 +68,33 @@ slug: "work-title"
 
 Optional fields / 可選欄位:
 
+Keep `title` plain text. Optional `titleRuby` annotations appear above matching
+text in work headings and catalogues; document titles retain only the base text.
+／`title` 保持純文字；可用 `titleRuby` 在作品標題及目錄的對應文字上方加注，
+瀏覽器標題只保留基字。
+
+```yaml
+title: "DU, nouvelle prière bouddhique 妳：古代佛教祈禱"
+titleRuby:
+  - base: "妳"
+    annotation: "度"
+```
+
+For a duration range, `duration.display` overrides the numeric duration label;
+`minutes` may be omitted. / 時長為範圍時，`duration.display` 取代數值時長標籤，
+可省略 `minutes`。
+
+Studio Library saves preserve `duration.display`, including when the minutes
+field is empty. / Studio 資料庫保存時會保留 `duration.display`，即使分鐘欄為空。
+
+```yaml
+duration:
+  display:
+    en: "approx. 13–14′"
+    zh: "約 13–14 分鐘"
+  approximate: true
+```
+
 ```yaml
 subtitle: "Optional subtitle"
 description: "Optional page metadata summary."

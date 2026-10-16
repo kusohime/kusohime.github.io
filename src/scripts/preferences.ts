@@ -1,6 +1,6 @@
 /**
- * 中文：管理公開網站的語言、明暗主題、字號、字體和可選動畫。
- * English: Manages language, theme, font size, typeface, and optional public-site motion.
+ * 中文：管理公開網站的語言、明暗主題和可選動畫。
+ * English: Manages language, theme, and optional public-site motion.
  */
 import motionSettings from "../config/motion.json";
 import siteDefaults from "../config/siteDefaults.json";
@@ -30,10 +30,6 @@ import {
 } from "../config/locales";
 
 type Theme = "light" | "dark";
-// 中文：字号只有两档——S（預設緊湊）與 L（較大閱讀字號）。
-// English: Two text sizes only — S (the compact default) and L (larger reading size).
-type FontSize = "s" | "l";
-type FontFamily = "modern-mono" | "garamond";
 
 const flapTimers = new WeakMap<HTMLElement, number>();
 
@@ -60,9 +56,7 @@ function updatePressedState(selector: string, activeValue: string) {
   document.querySelectorAll<HTMLButtonElement>(selector).forEach((button) => {
     const value =
       button.dataset.languageOption ??
-      button.dataset.themeOption ??
-      button.dataset.fontSizeOption ??
-      button.dataset.fontFamilyOption;
+      button.dataset.themeOption;
     button.setAttribute("aria-pressed", String(value === activeValue));
   });
 }
@@ -395,11 +389,7 @@ function applyLanguage(language: Locale, animate = false) {
   updateLanguageAvailability(language);
 
   const currentTheme = (document.documentElement.dataset.theme ?? "light") as Theme;
-  const currentFontFamily =
-    (document.documentElement.dataset.fontFamily as FontFamily | undefined) ??
-    "modern-mono";
   updateThemeToggleLabel(currentTheme, language);
-  updateFontFamilyToggleLabel(currentFontFamily, language);
   applyGuideLanguage(language);
   updatePressedState("[data-language-option]", language);
   store("yc-language", language);
@@ -420,23 +410,6 @@ function updateThemeToggleLabel(theme: Theme, language: Locale) {
     button.setAttribute("aria-label", label);
     button.title = label;
   });
-}
-
-function updateFontFamilyToggleLabel(fontFamily: FontFamily, language: Locale) {
-  const nextFontFamily: FontFamily =
-    fontFamily === "modern-mono" ? "garamond" : "modern-mono";
-  const label = translate(
-    language,
-    nextFontFamily === "garamond" ? "font.toGaramond" : "font.toModernMono",
-  );
-
-  document
-    .querySelectorAll<HTMLButtonElement>("[data-font-family-toggle]")
-    .forEach((button) => {
-      button.dataset.nextFontFamily = nextFontFamily;
-      button.setAttribute("aria-label", label);
-      button.title = label;
-    });
 }
 
 function activeLanguage(): Locale {
@@ -464,36 +437,6 @@ function applyTheme(theme: Theme, language: Locale, animate = false) {
   store("yc-theme", theme);
 }
 
-function applyFontSize(fontSize: FontSize, animate = false) {
-  const currentSize =
-    (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "s";
-  if (animate && motionSettings.fontSizeScale && currentSize !== fontSize) {
-    const sizes: FontSize[] = ["s", "l"];
-    document.documentElement.dataset.fontSizeTransition =
-      sizes.indexOf(fontSize) > sizes.indexOf(currentSize) ? "grow" : "shrink";
-    window.setTimeout(() => {
-      delete document.documentElement.dataset.fontSizeTransition;
-    }, 280);
-  }
-
-  document.documentElement.dataset.fontSize = fontSize;
-  document.querySelectorAll<HTMLElement>("[data-current-font-size]").forEach((element) => {
-    element.textContent = fontSize.toUpperCase();
-  });
-  updatePressedState("[data-font-size-option]", fontSize);
-  store("yc-font-size", fontSize);
-}
-
-function applyFontFamily(fontFamily: FontFamily, language: Locale) {
-  document.documentElement.dataset.fontFamily = fontFamily;
-  updateFontFamilyToggleLabel(fontFamily, language);
-  updatePressedState("[data-font-family-option]", fontFamily);
-  store("yc-font-family", fontFamily);
-  document.dispatchEvent(
-    new CustomEvent("yc-font-family-change", { detail: { fontFamily } }),
-  );
-}
-
 export function initializePreferences() {
   initializeCjkTypography();
 
@@ -508,7 +451,6 @@ export function initializePreferences() {
 
   root.dataset.motionLanguage = String(motionSettings.languageFlap);
   root.dataset.motionTheme = String(motionSettings.themeFade);
-  root.dataset.motionFontSize = String(motionSettings.fontSizeScale);
   root.dataset.motionGlyphs = String(motionSettings.glyphRotation);
   root.dataset.motionInterface = String(motionSettings.interfaceMotion);
 
@@ -521,20 +463,11 @@ export function initializePreferences() {
     : "en";
   const language = readStored<Locale>("yc-language", localeCodes, fallbackLanguage);
   const fallbackTheme: Theme = siteDefaults.defaultTheme === "dark" ? "dark" : "light";
-  const fallbackFontSize: FontSize = siteDefaults.defaultFontSize === "l" ? "l" : "s";
-  const fallbackFontFamily: FontFamily =
-    siteDefaults.defaultFontFamily === "garamond" ? "garamond" : "modern-mono";
   const theme = readStored<Theme>("yc-theme", ["light", "dark"], fallbackTheme);
-  const fontSize = readStored<FontSize>("yc-font-size", ["s", "l"], fallbackFontSize);
-  const fontFamily = readStored<FontFamily>(
-    "yc-font-family",
-    ["modern-mono", "garamond"],
-    fallbackFontFamily,
-  );
-
+  // 中文：舊訪客保存的字體選擇不再覆蓋網站的 Garamond 設計。
+  // English: Legacy stored font choices no longer override the site's Garamond.
+  root.dataset.fontFamily = "garamond";
   applyTheme(theme, language);
-  applyFontSize(fontSize);
-  applyFontFamily(fontFamily, language);
   applyLanguage(language);
 
   document.querySelectorAll<HTMLButtonElement>("[data-language-toggle]").forEach((button) => {
@@ -551,26 +484,6 @@ export function initializePreferences() {
         currentTheme === "light" ? "dark" : "light",
         activeLanguage(),
         true,
-      );
-    });
-  });
-
-  document.querySelectorAll<HTMLButtonElement>("[data-font-size-toggle]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const current =
-        (document.documentElement.dataset.fontSize as FontSize | undefined) ?? "s";
-      applyFontSize(current === "s" ? "l" : "s", true);
-    });
-  });
-
-  document.querySelectorAll<HTMLButtonElement>("[data-font-family-toggle]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const current =
-        (document.documentElement.dataset.fontFamily as FontFamily | undefined) ??
-        "modern-mono";
-      applyFontFamily(
-        current === "modern-mono" ? "garamond" : "modern-mono",
-        activeLanguage(),
       );
     });
   });

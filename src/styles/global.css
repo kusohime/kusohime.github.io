@@ -16,6 +16,47 @@
     U+FE70-FEFF;
 }
 
+/* Exact installed faces, with portable Garamond fallbacks in the stacks below. */
+@font-face {
+  font-family: "Adobe Garamond Small Caps & Old";
+  src: local("AGaramond-RegularSC"), local("Adobe Garamond Small Caps & Oldstyle Figures");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AmeriGarmnd BT";
+  src: local("AmeriGarmnd BT Roman"), local("AmericanGaramondBT-Roman");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AmeriGarmnd BT";
+  src: local("AmeriGarmnd BT Italic"), local("AmericanGaramondBT-Italic");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AmeriGarmnd BT";
+  src: local("AmeriGarmnd BT Bold"), local("AmericanGaramondBT-Bold");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AmeriGarmnd BT";
+  src: local("AmeriGarmnd BT Bold Italic"), local("AmericanGaramondBT-BoldItalic");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light;
 
@@ -168,7 +209,11 @@
                        var(--font-cjk-serif);
 
   /* OPTION 6: Garamond / Garamond 襯線 */
-  --font-garamond: "EB Garamond",
+  --font-small-caps: "Adobe Garamond Small Caps & Old", "AGaramond-RegularSC",
+                     "Adobe Garamond Pro", "EB Garamond", Garamond, var(--font-cjk-serif);
+  --small-caps-lowercase-scale: 1.15;
+  --all-caps-letter-spacing: 0.035em;
+  --font-garamond: "AmeriGarmnd BT", "American Garamond", "EB Garamond",
                    Garamond,
                    Georgia,
                    var(--font-scripts),
@@ -186,36 +231,36 @@
                      var(--font-cjk-serif);
 
   /* The active body-script faces switch with the public typeface toggle. */
-  --font-cjk-body: var(--font-cjk-mono);
-  --font-cjk-punctuation-body: var(--font-cjk-punctuation);
-  --font-hebrew-body: var(--font-hebrew-mono);
-  --font-greek-body: var(--font-greek-mono);
-  --font-arabic-body: var(--font-arabic-mono);
+  --font-cjk-body: var(--font-cjk-serif);
+  --font-cjk-punctuation-body: var(--font-cjk-serif);
+  --font-hebrew-body: var(--font-hebrew);
+  --font-greek-body: var(--font-greek);
+  --font-arabic-body: var(--font-arabic);
 
   /*
    * DESIGN DASHBOARD / 设计面板
    * The local Studio edits only the variables in this documented block.
    * 本地管理器只会修改这个区块中的变量。
    */
-  --font-body: var(--font-modern-mono);
+  --font-body: var(--font-garamond);
 
   --font-heading: var(--font-body);
-  --base-font-size: 17px;
+  --base-font-size: 16px;
 
-  --color-text: #000;
+  --color-text: #252320;
   --color-background: #fff;
-  --color-muted: #555;
-  --color-rule: #aaa;
-  --color-control-border: #888;
+  --color-muted: #76716b;
+  --color-rule: #e8e5df;
+  --color-control-border: #d5d0c8;
   /*
    * 全站主题色：链接下划线、箭头、引用线等都引用这个变量。
    * Global accent: link underlines, arrow glyphs, quote rules, and related details use it.
    */
-  --theme-color: #c81e1e;
+  --theme-color: #bf262d;
 
-  --page-width: 76rem;
-  --content-width: 46rem;
-  --reading-width: 40rem;
+  --page-width: 38rem;
+  --content-width: 38rem;
+  --reading-width: 38rem;
   --page-gutter: 1.5rem;
   --home-image-fade-width: 11px;
 
@@ -225,8 +270,8 @@
   --space-lg: 2.8rem;
   --space-xl: 4rem;
 
-  --line-height: 1.42;
-  --prose-line-height: 1.52;
+  --line-height: 1.5;
+  --prose-line-height: 1.6;
   --heading-line-height: 1.18;
   --heading-size: 1rem;
   /* Heading-scale trial: set both values back to var(--heading-size) to
@@ -234,7 +279,7 @@
   --page-heading-size: clamp(1.5rem, 1.38rem + 0.45vw, 1.7rem);
   --section-heading-size: 1.18rem;
   --floating-control-size: 2rem;
-  --header-padding: 0.7rem;
+  --header-padding: 0.35rem;
   --footer-min-height: 5rem;
   --paragraph-indent: 2em;
   --paragraph-spacing: 1.05rem;
@@ -358,18 +403,8 @@
   font-family: var(--font-body);
 }
 
-/* Public typeface modes. All script-specific faces change with the Latin body. */
+/* Garamond is the public face; script-specific fallbacks preserve scholarly text. */
 :root,
-:root[data-font-family="modern-mono"] {
-  --font-body: var(--font-modern-mono);
-  --font-heading: var(--font-body);
-  --font-cjk-body: var(--font-cjk-mono);
-  --font-cjk-punctuation-body: var(--font-cjk-punctuation);
-  --font-hebrew-body: var(--font-hebrew-mono);
-  --font-greek-body: var(--font-greek-mono);
-  --font-arabic-body: var(--font-arabic-mono);
-}
-
 :root[data-font-family="garamond"] {
   --font-body: var(--font-garamond);
   --font-heading: var(--font-garamond);
@@ -392,22 +427,16 @@ html {
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --color-text: #f2f2f2;
-  --color-background: #111;
-  --color-muted: #bbb;
-  --color-rule: #666;
-  --color-control-border: #777;
-  --theme-color: #e85d5d;
+  --color-text: #eee9e0;
+  --color-background: #171717;
+  --color-muted: #b4aea5;
+  --color-rule: #3b3935;
+  --color-control-border: #49453f;
+  --theme-color: #ed8880;
 }
 
-/* 中文：字号两档——S 為預設緊湊檔，L 為較大閱讀字號。 */
-/* English: Two sizes — S is the compact default and L is the larger reading size. */
-:root,
-:root[data-font-size="s"] {
-  font-size: calc(var(--base-font-size) - 2px);
-}
-
-:root[data-font-size="l"] {
+/* A single compact scale, independent of older saved text-size preferences. */
+:root {
   font-size: var(--base-font-size);
 }
 
@@ -440,6 +469,11 @@ body {
   background: var(--color-background);
   color: var(--color-text);
   line-height: var(--line-height);
+  letter-spacing: -0.025em;
+  word-spacing: -0.035em;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  -webkit-font-smoothing: antialiased;
 }
 
 :root[data-font-family="modern-mono"] body {
@@ -470,11 +504,11 @@ body {
 }
 
 .cjk-run {
-  font-family: var(--font-cjk-mono);
+  font-family: var(--font-cjk-body);
 }
 
 .cjk-punctuation {
-  font-family: var(--font-cjk-punctuation);
+  font-family: var(--font-cjk-punctuation-body);
   font-feature-settings: "kern" 1;
 }
 
@@ -531,8 +565,8 @@ body {
 a {
   color: inherit;
   text-decoration-color: var(--theme-color);
-  text-decoration-thickness: 0.09em;
-  text-underline-offset: 0.15em;
+  text-decoration-thickness: 0.055em;
+  text-underline-offset: 0.19em;
 }
 
 a:hover,
@@ -556,6 +590,7 @@ h6 {
   font-size: var(--heading-size);
   font-weight: bold;
   line-height: var(--heading-line-height);
+  letter-spacing: -0.04em;
   margin-block: 0 var(--space-sm);
 }
 
@@ -587,9 +622,10 @@ summary {
 
 .site-shell {
   position: relative;
+  container: site / inline-size;
   width: min(100% - (2 * var(--page-gutter)), var(--page-width));
   margin: 0 auto;
-  padding: var(--space-md) 0;
+  padding: clamp(3rem, 14vh, 6.5rem) 0 3rem;
   text-align: left;
 }
 
@@ -631,6 +667,8 @@ summary {
 
 .site-header {
   padding: var(--header-padding) 0;
+  position: relative;
+  z-index: 30;
 }
 
 .site-footer {
@@ -639,6 +677,11 @@ summary {
   align-content: start;
   min-height: var(--footer-min-height);
   padding: var(--space-sm) 0;
+  font-size: 0.75rem;
+}
+
+.site-footer > a {
+  width: fit-content;
 }
 
 .rss-link {
@@ -670,14 +713,36 @@ summary {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 0.85rem;
   min-block-size: var(--floating-control-size);
   white-space: nowrap;
+  font-family: var(--font-small-caps);
+  font-variant-caps: normal;
+  font-synthesis: none;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: -0.025em;
 }
 
 .site-name {
   flex: none;
   margin: 0;
+}
+
+.site-seal {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: var(--floating-control-size);
+  margin-inline-end: 0.4rem;
+}
+
+.site-seal-image {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
 }
 
 .site-name .name-pronunciation {
@@ -730,68 +795,68 @@ summary {
   display: none;
 }
 
-/* 中文：无边框下拉——左侧一道主题色竖线，列表左缘与标题文字对齐；
-   展开／收拢动画见文件尾的 menu-unfold 区块。 */
-/* English: Frameless dropdown — a theme-colored left rule, list edge aligned
-   with the summary text. Unfold/fold animations live in the menu-unfold block
-   at the end of this file. */
+/* Floating paper panels: the inner surface stays clipped during unfolding. */
 .nav-dropdown-panel {
   position: absolute;
-  top: calc(100% + 0.4rem);
-  left: 0;
-  z-index: 20;
+  top: calc(100% + 0.65rem);
+  left: -0.75rem;
+  z-index: 40;
   display: grid;
   grid-template-rows: 1fr;
-  min-width: 8.5rem;
+  min-width: 10.5rem;
+  max-width: calc(100vw - 2 * var(--page-gutter));
+  filter: drop-shadow(0 0.5rem 1rem rgb(0 0 0 / 7%));
 }
 
 .nav-dropdown-list {
   min-height: 0;
   overflow: hidden;
   display: grid;
-  gap: 0.2rem;
-  padding: 0.15rem 0.6rem 0.2rem 0.7rem;
-  border-left: 2px solid var(--theme-color);
-  background: var(--color-background);
+  gap: 0.05rem;
+  padding: 0.35rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, var(--color-background) 97%, var(--color-rule));
 }
 
 .nav-dropdown[data-active="true"] > summary {
   text-decoration: underline;
   text-decoration-color: var(--theme-color);
-  text-decoration-thickness: 0.14em;
-  text-underline-offset: 0.15em;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.24em;
 }
 
 .nav-dropdown summary:hover,
 .nav-dropdown summary:focus-visible {
   text-decoration: underline;
   text-decoration-color: var(--theme-color);
-  text-decoration-thickness: 0.14em;
-  text-underline-offset: 0.15em;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.24em;
 }
 
 .nav-dropdown-list a {
   display: block;
-  padding: 0.1rem 0;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.15rem;
+  font-size: 0.95rem;
+  line-height: 1.3;
 }
 
 .header-tools {
-  position: sticky;
-  top: var(--space-md);
+  position: static;
   z-index: 20;
   display: flex;
   flex: none;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 0;
-  margin: 0;
+  gap: 0.15rem;
+  margin: 0 0 0 auto;
   width: max-content;
-  transform: translateX(-100%);
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
-  font-size: max(0.875rem, 14px);
+  font-size: 0.875rem;
   pointer-events: auto;
 }
 
@@ -799,7 +864,7 @@ summary {
 .site-header button,
 .site-header summary {
   color: var(--color-text);
-  font-weight: bold;
+  font-weight: 400;
 }
 
 .site-header a {
@@ -809,18 +874,22 @@ summary {
 .site-header a:hover,
 .site-header a:focus-visible,
 .site-header a[aria-current="page"] {
-  font-weight: bold;
   text-decoration: underline;
   text-decoration-color: var(--theme-color);
-  text-decoration-thickness: 0.14em;
-  text-underline-offset: 0.15em;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.24em;
 }
 
 .nav-dropdown-list a:hover,
 .nav-dropdown-list a:focus-visible,
 .nav-dropdown-list a[aria-current="page"] {
-  text-decoration-color: var(--theme-color);
-  text-decoration-thickness: 0.09em;
+  background: color-mix(in srgb, var(--theme-color) 5%, var(--color-background));
+  color: var(--theme-color);
+  text-decoration: none;
+}
+
+.site-header .site-seal {
+  text-decoration: none;
 }
 
 .preference-menu {
@@ -842,6 +911,10 @@ summary {
 
 .preference-value {
   text-decoration: none;
+}
+
+[data-current-language] {
+  font-size: 0.75rem;
 }
 
 :root:lang(en)[data-unavailable-languages~="en"] [data-current-language],
@@ -1029,9 +1102,11 @@ details:not(.nav-dropdown):not(.rail-disclosure):not(.cv-fold)[open]
   top: calc(100% + 0.35rem);
   left: 0;
   min-width: 7rem;
-  padding: var(--space-xs);
-  border: 1px solid var(--theme-color);
+  padding: 0.35rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 0.3rem;
   background: var(--color-background);
+  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 8%);
 }
 
 .preference-options button {
@@ -1052,7 +1127,11 @@ details:not(.nav-dropdown):not(.rail-disclosure):not(.cv-fold)[open]
 }
 
 main {
-  padding: var(--space-lg) 0;
+  padding: 1.1rem 0 1rem;
+}
+
+main:has(> .home-page) {
+  padding-top: 0.25rem;
 }
 
 .home-page,
@@ -1062,9 +1141,60 @@ main {
 .writing-title-page,
 .writing-chapter-page {
   max-width: var(--content-width);
+  margin-inline: auto;
 }
 
-.home-page > section,
+.home-page > section {
+  margin-bottom: 0;
+}
+
+.home-intro {
+  font-size: 1.07rem;
+  line-height: 1.3;
+}
+
+.home-intro p {
+  margin-block: 0 1rem;
+}
+
+.home-intro p:last-child {
+  margin-bottom: 0;
+}
+
+.home-bio-link {
+  color: var(--theme-color);
+  font-size: 0.75rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.personal-name,
+.name-pronunciation {
+  font-family: var(--font-small-caps);
+  font-variant-caps: normal;
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.025em;
+}
+
+.site-header .personal-name {
+  font-size: inherit;
+}
+
+/* The installed face already draws lowercase letters as small capitals. */
+.small-caps-lowercase {
+  font-size: calc(1em * var(--small-caps-lowercase-scale));
+}
+
+.all-caps-run {
+  letter-spacing: var(--all-caps-letter-spacing);
+}
+
+:where(pre, code, kbd, samp, .katex, .igt-block, :lang(ar), :lang(he), :lang(hbo)) {
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
 .page-introduction,
 .category-navigation,
 .category-group,
@@ -1074,8 +1204,8 @@ main {
 }
 
 .home-image-frame {
-  width: min(100%, var(--reading-width));
-  margin: 0;
+  width: 100%;
+  margin: 0 0 0.65rem;
 }
 
 .home-image-frame img {
@@ -1215,11 +1345,15 @@ main {
 
 /* 首段与姓名同行，其余段落正常成块。 First paragraph runs inline with the name. */
 .home-intro-lead {
-  margin: 0 0 var(--paragraph-spacing);
+  margin: 0;
 }
 
 .home-intro p {
-  margin-block: 0 var(--paragraph-spacing);
+  margin-block: 0 0.6rem;
+}
+
+.home-intro .home-intro-lead:has(+ [data-editable-text]:empty) {
+  margin-bottom: 0;
 }
 
 .page-introduction {
@@ -1775,6 +1909,44 @@ main {
   color: var(--color-muted);
 }
 
+.work-notes .score-preview {
+  margin: 1.4rem 0;
+}
+
+.score-preview > a {
+  display: block;
+  cursor: zoom-in;
+  text-decoration: none;
+}
+
+.score-preview img {
+  width: 100%;
+  height: auto;
+  background: #fff;
+}
+
+.score-preview figcaption {
+  margin-top: 0.4rem;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.score-preface > summary {
+  cursor: pointer;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.score-preface > summary .lang-block {
+  display: none;
+}
+
+:root:lang(en) .score-preface > summary [data-lang="en"],
+:root:lang(zh) .score-preface > summary [data-lang="zh"] {
+  display: inline;
+}
+
 .writing-metadata {
   display: flex;
   flex-wrap: wrap;
@@ -1839,7 +2011,7 @@ main {
   display: block;
   width: 100%;
   height: auto;
-  border: 1px solid var(--color-rule);
+  border: 0;
 }
 
 .work-excerpts figcaption {
@@ -3026,15 +3198,6 @@ main {
   height: 0.72em;
 }
 
-.site-preferences-rail {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 0;
-  pointer-events: none;
-}
-
 .guide-chapter-navigation {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -3710,37 +3873,29 @@ main {
 
   .header-row,
   .header-row .nav-list {
-    gap: 0.35rem;
+    gap: 0.6rem;
   }
 
   .header-row {
-    flex-wrap: wrap;
-    font-size: max(0.875rem, 14px);
-    white-space: normal;
+    flex-wrap: nowrap;
+    font-size: 0.95rem;
+    white-space: nowrap;
   }
 
   .header-row nav {
-    flex-basis: 100%;
+    flex-basis: auto;
   }
 
   .header-tools {
-    position: fixed;
-    top: calc(var(--space-md) + env(safe-area-inset-top));
-    right: max(
-      var(--page-gutter),
-      env(safe-area-inset-right),
-      calc((100vw - var(--page-width)) / 2)
-    );
-    z-index: 50;
+    position: static;
     width: auto;
     transform: none;
     gap: 0;
-    margin: 0;
-    padding: 0.1rem;
-    border: 1px solid var(--color-control-border);
-    background: color-mix(in srgb, var(--color-background) 94%, transparent);
-    box-shadow: 0 0.35rem 1.1rem color-mix(in srgb, var(--color-text) 10%, transparent);
-    backdrop-filter: blur(10px);
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .preference-menu summary {
@@ -3750,8 +3905,8 @@ main {
 
   .header-tools .preference-toggle,
   .theme-toggle {
-    width: var(--floating-control-size);
-    min-width: var(--floating-control-size);
+    width: 1.6rem;
+    min-width: 1.6rem;
   }
 
   .hierarchy-back {
@@ -3768,7 +3923,7 @@ main {
 
   .nav-dropdown-list a {
     width: 100%;
-    padding-inline: 0.35rem;
+    padding-inline: 0.65rem;
   }
 
   h1,
@@ -3801,34 +3956,6 @@ main {
     right: 0;
     left: auto;
   }
-}
-
-.preference-toggle.font-family-toggle {
-  min-width: 2.45rem;
-}
-
-.font-family-glyph {
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: center;
-  letter-spacing: -0.08em;
-  line-height: 1;
-}
-
-.font-family-glyph > span:last-child {
-  margin-inline-start: -0.02em;
-  font-size: 0.72em;
-}
-
-:root:not([data-font-family="garamond"]) .font-family-glyph {
-  font-family: var(--font-garamond);
-  font-synthesis: none;
-  font-variant-ligatures: common-ligatures;
-}
-
-:root[data-font-family="garamond"] .font-family-glyph {
-  font-family: var(--font-modern-mono);
-  font-variant-ligatures: none;
 }
 
 @media (max-width: 30rem) {
@@ -4638,11 +4765,103 @@ main {
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
-  font-weight: bold;
+  font-weight: 400;
   color: var(--color-text);
 }
 
 .preference-toggle:hover .preference-value,
 .preference-toggle:focus-visible .preference-value {
   color: var(--theme-color);
+}
+
+/* Contents, category navigation, and work groups share the small-cap face. */
+.site-shell :is(.category-navigation, .catalog-rail, .writing-contents-rail, .tool-rail),
+.site-shell :is(.category-navigation, .catalog-rail, .writing-contents-rail, .tool-rail) :is(a, button, summary, h2, h3, p),
+.works-index .category-group > h2 {
+  font-family: var(--font-small-caps);
+  font-variant-caps: normal;
+  font-synthesis: none;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.site-shell .writing-contents-rail-title {
+  text-transform: none;
+}
+
+.bio-page h1 {
+  font-weight: 400;
+}
+
+/* Use the available column width, including on wide screens with a narrow shell. */
+@container site (max-width: 44rem) {
+  .site-shell :is(.works-index, .writings-index, .tools-index, .events-index, .cv-index,
+    .writing-layout.has-rail, .tool-layout.has-rail, .cui-reader, .series-reader) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-md);
+  }
+
+  .site-shell :is(.catalog-rail, .cui-reader-rail, .series-reader-rail) {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0 0 var(--space-sm);
+    border-bottom: 0;
+  }
+
+  .site-shell .catalog-rail ul,
+  .site-shell .cui-reader-rail ol,
+  .site-shell .series-reader-rail ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+  }
+
+  .site-shell .writing-layout.has-rail .writing-contents-rail,
+  .site-shell .tool-layout.has-rail .tool-rail {
+    display: none;
+  }
+
+  .site-shell .writing-layout.has-rail .in-body-contents {
+    display: block;
+  }
+
+  .site-shell .libretto-reader .cui-reader-rail ol {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 30rem) {
+  .site-shell {
+    padding-top: 2.8rem;
+  }
+
+  .header-row {
+    display: grid;
+    grid-template-columns: 1.7rem minmax(0, 1fr) auto;
+    gap: 0 0.7rem;
+  }
+
+  .site-seal {
+    margin-inline-end: 0;
+  }
+
+  .header-row nav {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
+
+  .header-tools {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .home-image-frame {
+    margin-bottom: 0.65rem;
+  }
+
+  .nav-dropdown-panel {
+    min-width: 9rem;
+  }
 }

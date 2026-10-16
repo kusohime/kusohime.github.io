@@ -1,1 +1,1 @@
-- [*Sonatinetta II*](/works/sonatinetta-ii/)（首演）。[Duncan Wall](https://www.swarthmore.edu/music/duncan-wall-26)，法國號；崔浥新，鋼琴。
+- [*Sonatinetta II 微奏鳴曲 II*](/works/sonatinetta-ii/)（首演）。[Duncan Wall](https://www.swarthmore.edu/music/duncan-wall-26)，法國號；崔浥新，鋼琴。

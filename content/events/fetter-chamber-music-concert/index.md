@@ -8,7 +8,7 @@ locationZh: "賓州斯沃斯莫爾"
 role: composer and conductor
 roleZh: "作曲、指揮"
 brief: Program featuring Twink Death and Haydn's Symphony No. 45.
-briefZh: "節目含《Twink Death》與海頓第 45 號交響曲。"
+briefZh: "節目含《Twink Death 菊花殘》與海頓第 45 號交響曲。"
 slug: fetter-chamber-music-concert
 order: 1
 draft: false
