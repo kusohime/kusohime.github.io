@@ -412,9 +412,16 @@ text in the local Studio. Blank lines separate paragraphs; inline Markdown
 supports links and emphasis. Biography copy uses public facts and does not
 import the private C.V.
 
+While `underConstruction` is `true`, the biography page shows a bilingual
+construction notice. Set it to `false` when the biography is ready; the saved
+introduction and body remain in `bioContent.json`.
+
 首頁的「Read full bio／閱讀完整簡介」連結開啟 `/bio/`。雙語首段與正文位於
 `src/config/bioContent.json`，也可在本地 Studio 點選簡介文字編輯。空行分段，
 行內 Markdown 可加入連結與強調。簡介只使用公開資料，不匯入私人履歷。
+
+`underConstruction` 為 `true` 時只顯示雙語施工提示；簡介完成後改為 `false`。
+原有首段與正文仍保留於 `bioContent.json`。
 
 `global.css` controls public typography, color, spacing, layout, comments,
 media, works, writings, events, C.V., and guide pages.

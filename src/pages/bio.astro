@@ -13,14 +13,19 @@ import { renderParagraphs, renderSafeInlineMarkdown } from "../lib/safeHtml.js";
 <BaseLayout
   title={bioContent.title.en}
   titleZh={bioContent.title.zh}
-  description={bioContent.description.en}
-  descriptionZh={bioContent.description.zh}
+  description={bioContent.underConstruction ? "Biography — under construction." : bioContent.description.en}
+  descriptionZh={bioContent.underConstruction ? "個人簡介：施工中。" : bioContent.description.zh}
 >
   <article class="detail-page bio-page" data-source-file="src/pages/bio.astro">
     <header class="detail-header">
       <h1><LocalizedText value={bioContent.title} /></h1>
     </header>
 
+    {bioContent.underConstruction ? (
+      <p class="bio-construction">
+        <LocalizedText value={{ en: "Under construction.", zh: "施工中" }} />
+      </p>
+    ) : (
     <div class="prose bio-body" data-source-file="src/config/bioContent.json">
       <div class="lang-block" data-lang="en">
         <p>
@@ -55,6 +60,7 @@ import { renderParagraphs, renderSafeInlineMarkdown } from "../lib/safeHtml.js";
         />
       </div>
     </div>
+    )}
   </article>
 </BaseLayout>
 
