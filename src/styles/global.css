@@ -3005,6 +3005,10 @@ main:has(> .home-page) {
   background: var(--color-background);
 }
 
+.cv-index {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .cv-page {
   max-width: min(100%, 48rem);
 }

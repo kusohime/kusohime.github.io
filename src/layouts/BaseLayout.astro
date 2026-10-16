@@ -19,6 +19,7 @@ interface Props {
   descriptionZh?: string;
   noindex?: boolean;
   adminOnly?: boolean;
+  showHierarchyBack?: boolean;
   unavailableLanguages?: Locale[];
 }
 
@@ -29,6 +30,7 @@ const {
   descriptionZh,
   noindex = false,
   adminOnly = false,
+  showHierarchyBack = true,
   unavailableLanguages = [],
 } = Astro.props;
 
@@ -181,7 +183,7 @@ const hierarchyBack = (() => {
       <Header unavailableLanguages={unavailableLanguages} />
       <main id="main-content">
         {
-          hierarchyBack && (
+          showHierarchyBack && hierarchyBack && (
             <nav class="hierarchy-back-nav" aria-label="Hierarchy navigation">
               <a class="hierarchy-back" href={hierarchyBack.href}>
                 <span

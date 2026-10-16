@@ -165,27 +165,11 @@ const t = (en: string, zh: string): LT => ({ en, zh });
 <BaseLayout
   title="C.V."
   description="Curriculum vitae for Yixin Cui, as of June 2026"
+  showHierarchyBack={false}
 >
   <div class="index-page cv-index" data-source-file="src/pages/cv.astro">
-    <nav class="catalog-rail cv-rail" aria-label="C.V. contents">
-      <ul>
-        {
-          sections.map((section) => (
-            <li>
-              <a href={`#${section.id}`}>
-                <LocalizedText value={section.label} />
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-
     <article class="detail-page cv-page">
       <header class="detail-header cv-header">
-        <p class="detail-kicker">
-          <LocalizedText value={t("Curriculum vitae", "履歷")} />
-        </p>
         <h1><NamePronunciation translate /></h1>
         <p>
           <LocalizedText
