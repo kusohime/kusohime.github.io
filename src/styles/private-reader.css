@@ -1,0 +1,266 @@
+/* This stylesheet is imported only by the local, non-published reading route. */
+.private-reader-progress {
+  position: fixed;
+  z-index: 30;
+  inset: 0 0 auto;
+  height: 2px;
+  pointer-events: none;
+}
+
+.private-reader-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--theme-color);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.private-reader {
+  --private-rail-width: 13.5rem;
+}
+
+.private-reader-header {
+  max-width: var(--reading-width);
+  margin: 0 0 var(--space-xl) calc(var(--private-rail-width) + var(--space-lg));
+}
+
+.private-reader-header h1 {
+  margin: 0 0 var(--space-xs);
+  text-wrap: balance;
+}
+
+.private-reader-status {
+  display: inline-block;
+  margin: 0 0 var(--space-md);
+  border: 1px solid var(--color-rule);
+  padding: 0.18rem 0.55rem;
+  color: var(--color-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+}
+
+.private-reader-original-title,
+.private-reader-byline,
+.private-reader-source,
+.private-reader-note {
+  margin: 0 0 var(--space-xs);
+}
+
+.private-reader-original-title {
+  font-style: italic;
+}
+
+.private-reader-byline {
+  margin-top: var(--space-sm);
+  font-weight: 600;
+}
+
+.private-reader-source,
+.private-reader-note {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.private-reader-note {
+  margin-top: var(--space-sm);
+  padding-left: var(--space-sm);
+  border-left: 2px solid var(--color-rule);
+}
+
+.private-reader-source-link {
+  display: inline-block;
+  margin-top: var(--space-sm);
+}
+
+.private-reader-layout {
+  display: grid;
+  grid-template-columns: var(--private-rail-width) minmax(0, var(--reading-width));
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.private-reader-rail {
+  position: sticky;
+  top: var(--space-md);
+  max-height: calc(100vh - (2 * var(--space-md)));
+  overflow: auto;
+  padding-right: var(--space-sm);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  scrollbar-width: thin;
+}
+
+.private-reader-library summary {
+  cursor: pointer;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.private-reader-library ol,
+.private-reader-outline ol {
+  margin: var(--space-sm) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.private-reader-library li + li,
+.private-reader-outline li + li {
+  margin-top: 0.48rem;
+}
+
+.private-reader-library a,
+.private-reader-outline a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.private-reader-library a:hover,
+.private-reader-library a:focus-visible,
+.private-reader-library a[aria-current="page"],
+.private-reader-outline a:hover,
+.private-reader-outline a:focus-visible {
+  color: var(--theme-color);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.private-reader-library a[aria-current="page"] {
+  font-weight: 600;
+}
+
+.private-reader-library small {
+  display: block;
+  margin-top: 0.08rem;
+  color: var(--color-muted);
+}
+
+.private-reader-outline {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+.private-reader-outline > p {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.private-reader-outline .is-subheading {
+  padding-left: var(--space-sm);
+}
+
+.private-reader-prose {
+  min-width: 0;
+  max-width: var(--reading-width);
+  font-size: 1.07rem;
+  line-height: 1.78;
+}
+
+.private-reader-prose h2 {
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.private-reader-prose h2,
+.private-reader-prose h3 {
+  text-wrap: balance;
+}
+
+.private-reader-prose blockquote {
+  color: var(--color-muted);
+}
+
+.private-reader-prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.private-reader-prose th,
+.private-reader-prose td {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--color-rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.private-reader-prose hr {
+  margin-block: var(--space-xl);
+}
+
+.private-reader-footer {
+  max-width: var(--reading-width);
+  margin: var(--space-xl) 0 0 calc(var(--private-rail-width) + var(--space-lg));
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 64rem) {
+  .private-reader-header,
+  .private-reader-footer {
+    margin-left: 0;
+  }
+
+  .private-reader-layout {
+    grid-template-columns: minmax(0, var(--reading-width));
+  }
+
+  .private-reader-rail {
+    position: static;
+    max-width: var(--reading-width);
+    max-height: none;
+    margin-bottom: var(--space-md);
+    padding: var(--space-sm) 0;
+    border-block: 1px solid var(--color-rule);
+  }
+
+  .private-reader-outline {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 48rem) {
+  /* The site's compact inline notes suit short essays, but become dense in a
+     translated monograph-length article. Keep the markers and collect the
+     full notes at the end of the private reader on small screens. */
+  .private-reader-prose.has-sidenotes .sidenote,
+  .private-reader-prose.has-sidenotes .jiazhu {
+    display: none !important;
+  }
+
+  .private-reader-prose.has-sidenotes section.footnotes,
+  .private-reader-prose.has-sidenotes [data-footnotes] {
+    display: block;
+    margin-top: var(--space-xl);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-rule);
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+}
+
+@media print {
+  .private-reader-progress,
+  .private-reader-rail,
+  .private-reader-source-link,
+  .private-reader-footer,
+  .site-header,
+  .site-footer,
+  .site-preferences-rail,
+  .hierarchy-back-nav {
+    display: none !important;
+  }
+
+  .private-reader-header,
+  .private-reader-layout {
+    display: block;
+    margin-left: 0;
+  }
+}

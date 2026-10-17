@@ -1,10 +1,11 @@
 ---
-// 中文：按年份与月份列出活动，默认显示近期活动，并在同页侧栏切换历史月份。
-// English: Lists events by year and month, defaulting to upcoming events with same-page archive navigation.
+// 中文：以紧凑年份索引展开月份，并于同页切换历史活动。
+// English: Unfold months from a compact year index and switch event panels in place.
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
 import { formatDate, translate } from "../../config/locales";
+import "../../styles/events.css";
 
 type EventEntry = CollectionEntry<"events">;
 
@@ -20,6 +21,11 @@ const todayUtc = new Date(
 
 const monthFormatter = new Intl.DateTimeFormat("en-US", {
   month: "long",
+  timeZone: "UTC",
+});
+
+const shortMonthFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
   timeZone: "UTC",
 });
 
@@ -59,6 +65,7 @@ const groupEvents = (eventsToGroup: EventEntry[]) => {
     months: Array.from(months.entries()).map(([month, monthEvents]) => ({
       month,
       label: monthFormatter.format(new Date(Date.UTC(Number(year), Number(month) - 1, 1))),
+      shortLabel: shortMonthFormatter.format(new Date(Date.UTC(Number(year), Number(month) - 1, 1))),
       events: monthEvents,
     })),
   }));
@@ -94,84 +101,38 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
 
     {
       hasEvents && (
-        <nav class="catalog-rail event-rail" aria-label="Browse events by date">
-          <div class="event-rail-section">
-            <a
-              class="event-rail-home"
-              href="#events-upcoming"
-              data-event-nav
-              aria-current="page"
-            >
-              Upcoming
-            </a>
-            {upcomingYearGroups.length > 0 && (
-              <ul class="event-archive event-archive-upcoming">
-                {upcomingYearGroups.map(({ year, months }) => (
-                  <li>
-                    <details class="rail-disclosure" data-unfold open>
-                      <summary>
-                        <span
-                          class="glyph-arrow glyph-arrow--disclosure"
-                          data-arrow-glyph
-                          aria-hidden="true"
-                        ></span>
-                        <span>{year}</span>
-                      </summary>
-                      <div class="rail-unfold">
-                        <ul>
-                          {months.map(({ month, label, events: monthEvents }) => (
-                            <li>
-                              <a
-                                href={`#${monthAnchor("future", year, month)}`}
-                                data-event-nav
-                              >
-                                {label} ({monthEvents.length})
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </details>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
+        <nav class="event-date-navigation" aria-label="Browse events by date">
           {pastYearGroups.length > 0 && (
-            <div class="event-rail-section event-rail-section--archive">
-              <p class="event-rail-label">Archive</p>
-              <ul class="event-archive event-archive-past">
-                {pastYearGroups.map(({ year, months }) => (
-                  <li>
-                    <details class="rail-disclosure" data-unfold>
-                      <summary>
-                        <span
-                          class="glyph-arrow glyph-arrow--disclosure"
-                          data-arrow-glyph
-                          aria-hidden="true"
-                        ></span>
-                        <span>{year}</span>
-                      </summary>
-                      <div class="rail-unfold">
-                        <ul>
-                          {months.map(({ month, label, events: monthEvents }) => (
-                            <li>
-                              <a
-                                href={`#${monthAnchor("past", year, month)}`}
-                                data-event-nav
-                              >
-                                {label} ({monthEvents.length})
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </details>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <section class="event-timeline" aria-labelledby="event-archive-heading">
+              <h2 id="event-archive-heading">
+                <LocalizedText value={{ en: "Archive", zh: "活動存檔" }} />
+              </h2>
+                <ol class="event-timeline-years">
+                  {pastYearGroups.map(({ year, months, count }) => (
+                    <li class="event-timeline-year" data-timeline-year>
+                      <details class="rail-disclosure event-timeline-disclosure" data-unfold>
+                        <summary>
+                          <span class="event-timeline-year-number">{year}</span>
+                          <span class="visually-hidden"><LocalizedText value={{ en: `${count} ${count === 1 ? "event" : "events"}`, zh: `${count} 項活動` }} /></span>
+                          <span class="event-timeline-chevron" aria-hidden="true"></span>
+                        </summary>
+                        <div class="rail-unfold event-timeline-months">
+                          <ul>
+                            {months.map(({ month, label, shortLabel, events: monthEvents }) => (
+                              <li>
+                                <a href={`#${monthAnchor("past", year, month)}`} data-event-nav>
+                                  <span aria-hidden="true"><LocalizedText value={{ en: shortLabel, zh: `${Number(month)}月` }} /></span>
+                                  <span class="visually-hidden"><LocalizedText value={{ en: `${label}, ${monthEvents.length} ${monthEvents.length === 1 ? "event" : "events"}`, zh: `${Number(month)}月，${monthEvents.length} 項活動` }} /></span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </details>
+                    </li>
+                  ))}
+                </ol>
+            </section>
           )}
         </nav>
       )
@@ -185,7 +146,7 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
         tabindex="-1"
         aria-labelledby="events-upcoming-heading"
       >
-        <h2 id="events-upcoming-heading">Upcoming</h2>
+        <h2 id="events-upcoming-heading"><LocalizedText value={{ en: "Upcoming", zh: "近期活動" }} /></h2>
         {
           hasUpcomingEvents ? (
             <>
@@ -202,7 +163,7 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
                       id={monthAnchor("future", year, month)}
                       aria-labelledby={`${monthAnchor("future", year, month)}-heading`}
                     >
-                      <h4 id={`${monthAnchor("future", year, month)}-heading`}>{label}</h4>
+                      <h4 id={`${monthAnchor("future", year, month)}-heading`}><LocalizedText value={{ en: label, zh: `${Number(month)} 月` }} /></h4>
                       <ol class="catalog-list event-list">
                         {monthEvents.map((event) => (
                           <li data-source-file={`content/events/${event.id}/index.md`}>
@@ -254,7 +215,7 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
             >
               <p class="event-panel-kicker">{year}</p>
               <h2 id={`${monthAnchor("past", year, month)}-heading`}>
-                {label}
+                <LocalizedText value={{ en: label, zh: `${Number(month)} 月` }} />
               </h2>
               <ol class="catalog-list event-list">
                 {monthEvents.map((event) => (
@@ -301,7 +262,13 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
       document.querySelectorAll<HTMLAnchorElement>("[data-event-nav]"),
     );
 
-    const hashId = () => decodeURIComponent(window.location.hash.slice(1));
+    const hashId = () => {
+      try {
+        return decodeURIComponent(window.location.hash.slice(1));
+      } catch {
+        return "";
+      }
+    };
 
     const resolvePanelId = () => {
       const requestedId = hashId();
@@ -328,17 +295,21 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
 
         if (isCurrent) {
           link.setAttribute("aria-current", "page");
-          link.closest("details")?.setAttribute("open", "");
         } else {
           link.removeAttribute("aria-current");
         }
       });
 
+      document.querySelectorAll<HTMLElement>("[data-timeline-year]").forEach((year) => {
+        year.dataset.current = String(Boolean(year.querySelector('[aria-current="page"]')));
+      });
+
       if (!scroll) return;
 
       window.requestAnimationFrame(() => {
-        const target =
-          document.getElementById(requestedId) ?? document.getElementById(panelId);
+        const target = requestedId.startsWith("events-future-")
+          ? document.getElementById(requestedId)
+          : document.querySelector(".event-date-navigation") ?? document.getElementById(panelId);
         target?.scrollIntoView({ block: "start" });
         document.getElementById(panelId)?.focus({ preventScroll: true });
       });
@@ -346,6 +317,7 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
 
     navLinks.forEach((link) => {
       link.addEventListener("click", (event) => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         const requestedId = decodeURIComponent(link.hash.slice(1));
         const canHandle =
           panelIds.has(requestedId) ||

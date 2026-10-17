@@ -17,10 +17,6 @@ subtitle: "for solo sign-singer"
 subtitleZh: "為獨演手語歌者"
 ---
 
-## Program Notes
-
-Program note forthcoming.
-
 ## Text
 
 <!--

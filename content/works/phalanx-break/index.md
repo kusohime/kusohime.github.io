@@ -25,5 +25,4 @@ This piece is based on a melody allegedly from <ruby><span class="ruby-base">*[K
     <img src="/images/works/phalanx-break/excerpt-02.png" alt="Score excerpt from Phalanx Break beginning at measure 57" width="2097" height="858" loading="lazy" decoding="async" />
     <img src="/images/works/phalanx-break/excerpt-03.png" alt="Score excerpt from Phalanx Break beginning at measure 32" width="2105" height="921" loading="lazy" decoding="async" />
   </div>
-  <figcaption>Excerpts</figcaption>
 </figure>

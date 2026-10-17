@@ -58,3 +58,9 @@ The title is an allusion to Stefania Pandolfo’s 1997 book *[Impasse of the Ang
 標題化用自 Stefania Pandolfo 1997 年的著作《[Impasse of the Angels](https://books.google.com/books/about/Impasse_of_the_Angels.html?id=XnUt6akQeFQC)》——一部關於摩洛哥南部馬格里布地區的民族誌。「天使的困境」是對 *[Barzakh](https://en.wikipedia.org/wiki/Barzakh)* 的詩意想像：在後殖民現代性的衝擊下、當民間與神話傳統日漸式微之際，Barzakh 即伊斯蘭中相當於靈薄獄或中陰的境地。它令我想起蒙古族導演顧桃 2011 年的紀錄片《[神翳](https://www.orientindiefilms.com/content/documentary/the-opaque-god/)》，與 Pandolfo 的標題頗有相通之處。該片講述一位年邁的[鄂倫春](https://en.wikipedia.org/wiki/Oroqen_people)薩滿的故事：在這個再無人相信其傳統的世紀裡，她終究未能尋得傳人。在中國東北，西伯利亞鼬被視為通靈而受人供奉，我想，用牠來替換天使，會是個不錯的選擇。
 
 </div>
+
+<figure class="work-excerpts impasse-score-excerpts">
+  <div class="work-excerpts-list">
+    <img src="/images/works/impasse-of-the-weasels/excerpt-01-orchestral-passage.png" alt="Score excerpt from Impasse of the Weasels, measures 36–43, for percussion, piano, celesta, and strings." width="1560" height="1770" loading="lazy" decoding="async" />
+  </div>
+</figure>

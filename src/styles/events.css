@@ -1,0 +1,85 @@
+/* A compact year index with abbreviated months directly below each year. */
+.index-page.events-index {
+  display: block;
+  min-width: 0;
+}
+
+.event-date-navigation { min-width: 0; margin-bottom: 1.25rem; text-align: center; }
+.event-timeline > h2 {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+.event-timeline-years {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.event-timeline-year { flex: 0 0 3rem; width: 3rem; }
+.event-timeline-disclosure { margin: 0; }
+.event-timeline-disclosure > summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 1.45rem;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.event-timeline-disclosure > summary::-webkit-details-marker { display: none; }
+.event-timeline-year-number { font-size: 1rem; line-height: 1.45; font-weight: 400; }
+.event-timeline-chevron {
+  width: 0.25rem;
+  height: 0.25rem;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  border-right: 1px solid var(--color-muted);
+  border-bottom: 1px solid var(--color-muted);
+  transform: rotate(45deg);
+}
+.event-timeline-disclosure[open] > summary .event-timeline-chevron { transform: rotate(225deg); }
+.event-timeline-disclosure > summary:hover,
+.event-timeline-year[data-current="true"] .event-timeline-year-number { color: var(--theme-color); }
+.event-timeline-months { padding-top: 0.15rem; }
+.event-timeline-months ul {
+  display: grid;
+  gap: 0.05rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.event-timeline-months a {
+  display: block;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 0.1rem 0;
+  text-decoration: none;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.event-timeline-months a:hover,
+.event-timeline-months a[aria-current="page"] {
+  color: var(--theme-color);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+.event-timeline-disclosure > summary:focus-visible,
+.event-timeline-months a:focus-visible {
+  outline: 1px solid var(--theme-color);
+  outline-offset: 2px;
+}
+.events-index .event-groups { max-width: 100%; }
+
+@media (pointer: coarse) {
+  .event-timeline-months a { padding-block: 0.3rem; }
+}

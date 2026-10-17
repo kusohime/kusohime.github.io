@@ -1,424 +1,47 @@
 ---
-// 中文：按日期列出文章；原来的类型改为可点击标签。
-// English: Lists writings by date; former types are now clickable tags.
-// Caveat / 注意：默认视图是日期，标签面板通过 URL hash 切换。
-// Caveat: The date view is the default; tag panels are selected by URL hash.
-import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
-import {
-  toAnchor,
-  writingTypes,
-  type WritingType,
-} from "../../config/contentTaxonomy";
-import {
-  formatDate,
-  formatTranslationRoute,
-  translate,
-  writingTypeLabel,
-} from "../../config/locales";
+import { blogCategories, blogCategoryHref, getBlogEntries, parseBlogDate } from "../../utils/blog";
+import { formatDate } from "../../config/locales";
+import "../../styles/blog.css";
 
-type WritingEntry = CollectionEntry<"writings">;
-
-interface ParsedWritingDate {
-  year: string;
-  month?: string;
-  day?: string;
-  sortTime: number;
-}
-
-const defaultPanelId = "writings-by-date";
-
-const tagAnchor = (type: WritingType) => `writings-tag-${toAnchor(type)}`;
-const writingAnchor = (writing: WritingEntry) =>
-  `writing-entry-${toAnchor(writing.data.slug)}`;
-
-const parseWritingDate = (value: string | number): ParsedWritingDate | null => {
-  const raw = String(value);
-  const match = raw.match(/^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$/);
-  if (!match) return null;
-
-  const [, year, month, day] = match;
-  return {
-    year,
-    month,
-    day,
-    sortTime: Date.UTC(Number(year), Number(month ?? 1) - 1, Number(day ?? 1)),
-  };
-};
-
-const sortByDateDescending = (a: WritingEntry, b: WritingEntry) =>
-  (parseWritingDate(b.data.date)?.sortTime ?? Number.NEGATIVE_INFINITY) -
-    (parseWritingDate(a.data.date)?.sortTime ?? Number.NEGATIVE_INFINITY) ||
-  a.data.order - b.data.order ||
-  a.data.title.localeCompare(b.data.title);
-
-const tagsForWriting = (writing: WritingEntry) => writing.data.tags;
-
-const writingView = (writing: WritingEntry) => {
-  const dateLabel = writing.data.displayDate ?? String(writing.data.date);
-  const parsedDate = parseWritingDate(writing.data.date);
-
-  return {
-    anchor: writingAnchor(writing),
-    dateLabel,
-    dateTime: parsedDate ? String(writing.data.date) : undefined,
-    tags: tagsForWriting(writing).map((tag) => ({
-      tag,
-      anchor: tagAnchor(tag),
-      isTranslation: tag === "Translation",
-    })),
-    isTranslation: tagsForWriting(writing).includes("Translation"),
-    translationRoute:
-      writing.data.translationFrom && writing.data.translationTo.length > 0
-        ? {
-            en: formatTranslationRoute(
-              writing.data.translationFrom,
-              writing.data.translationTo,
-              "en",
-            ),
-            zh: formatTranslationRoute(
-              writing.data.translationFrom,
-              writing.data.translationTo,
-              "zh",
-            ),
-          }
-        : undefined,
-    sourceFile: `content/writings/${writing.id}/index.md`,
-    url: `/writings/${writing.data.slug}/`,
-  };
-};
-
-const writings = (
-  await getCollection("writings", ({ data }) => !data.draft)
-).sort(sortByDateDescending);
-
-const dateSidebarYears = Array.from(
-  new Set(writings.map((writing) => parseWritingDate(writing.data.date)?.year ?? "undated")),
-).map((year) => {
-  const yearWritings = writings.filter(
-    (writing) => (parseWritingDate(writing.data.date)?.year ?? "undated") === year,
-  );
-  const firstWriting = writings.find(
-    (writing) => (parseWritingDate(writing.data.date)?.year ?? "undated") === year,
-  );
-  return {
-    year,
-    anchor: firstWriting ? writingAnchor(firstWriting) : defaultPanelId,
-    dateValue: year === "undated" ? undefined : year,
-    label: year === "undated" ? translate("en", "common.undated") : formatDate(year, "en"),
-    count: yearWritings.length,
-  };
-});
-
-const tagGroups = writingTypes.map((type) => ({
-  type,
-  anchor: tagAnchor(type),
-  heading: writingTypeLabel(type, "en"),
-  writings: writings.filter((writing) => tagsForWriting(writing).includes(type)),
-})).filter(({ writings: groupedWritings }) => groupedWritings.length > 0);
+const entries = await getBlogEntries();
+const sections = blogCategories.map((section) => ({
+  ...section,
+  items: entries.filter((entry) => entry.category === section.id),
+}));
 ---
-
-<BaseLayout
-  title="Writings"
-  titleZh="文章"
-  description="Translations, essays, fiction, blog entries, program notes, and other texts by Yixin Cui."
-  descriptionZh="崔浥新的翻譯、隨筆、小說、網誌、節目冊文字及其他文章。"
->
-  <div
-    class="index-page writings-index"
-    data-source-file="src/pages/writings/index.astro"
-  >
-    <h1
-      class="visually-hidden"
-      data-i18n-key="nav.writings"
-    >
-      {translate("en", "nav.writings")}
-    </h1>
-
-    <nav class="catalog-rail writing-rail" aria-label="Browse writings by date and tag">
-      <div class="writing-rail-section">
-        <p class="writing-rail-label" data-i18n-key="common.date">
-          {translate("en", "common.date")}
-        </p>
-        <ul class="writing-date-archive">
-          {dateSidebarYears.map((group) => {
-            return (
-              <li>
-                <a href={`#${group.anchor}`}>
-                  {group.dateValue ? (
-                    <span data-i18n-date={group.dateValue}>{group.label}</span>
-                  ) : (
-                    <span data-i18n-key="common.undated">{group.label}</span>
-                  )} ({group.count})
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
-      <details class="writing-rail-section writing-tag-disclosure rail-disclosure" data-unfold>
-        <summary>
-          <span
-            class="glyph-arrow glyph-arrow--disclosure"
-            data-arrow-glyph
-            aria-hidden="true"
-          ></span>
-          <span data-i18n-key="common.tags">{translate("en", "common.tags")}</span>
-        </summary>
-        {/* 中文：rail-unfold 是展开动画容器；内层列表被其裁切。 */}
-        {/* English: rail-unfold animates the unfold; the list is clipped inside. */}
-        <div class="rail-unfold">
-          <ul class="writing-tag-archive">
-            {
-              tagGroups.map(({ type, anchor, heading, writings: groupedWritings }) => (
+<BaseLayout title="Blog" titleZh="Blog" description="Translations, essays, and Dialogues with Kuma by Yixin Cui." descriptionZh="崔浥新的翻譯、隨筆與脆熊篇。" showHierarchyBack={false}>
+  <div class="blog-page blog-home" data-source-file="src/pages/writings/index.astro">
+    <header class="blog-page-heading"><h1 class="blog-small-caps">Blog</h1></header>
+    <ol class="blog-sections">
+      {sections.map((section) => (
+        <li class="blog-section">
+          <section aria-labelledby={`blog-${section.id}`}>
+            <a class="blog-section-link" href={blogCategoryHref(section.id)}>
+              <h2 class="blog-small-caps" id={`blog-${section.id}`}><LocalizedText value={section.label} /></h2>
+              <span class="blog-section-count">{section.items.length}</span>
+            </a>
+            <ul class="blog-section-preview">
+              {section.items.slice(0, 6).map((entry) => (
                 <li>
-                  <a href={`#${anchor}`} data-writing-link>
-                    <span data-i18n-writing-type={type}>
-                      {heading}
-                    </span>{" "}
-                    ({groupedWritings.length})
-                  </a>
+                  <a href={entry.url}><LocalizedText value={entry.title} /></a>
+                  <time datetime={parseBlogDate(entry.date) ? entry.date : undefined} data-i18n-date={entry.date} data-i18n-date-format="short">{formatDate(entry.date, "en", "short")}</time>
                 </li>
-              ))
-            }
-          </ul>
-        </div>
-      </details>
-    </nav>
-
-    <div class="catalog-groups writing-groups">
-      <section
-        class="writing-panel writing-panel--date"
-        id={defaultPanelId}
-        data-writing-panel
-        data-writing-date-anchor
-        tabindex="-1"
-        aria-labelledby="writings-by-date-heading"
-      >
-        <h2
-          id="writings-by-date-heading"
-          class="visually-hidden"
-          data-i18n-key="common.date"
-        >
-          {translate("en", "common.date")}
-        </h2>
-        <ol class="catalog-list dated-list writing-list">
-          {writings.map((writing) => {
-            const entry = writingView(writing);
-            return (
-              <li id={entry.anchor}>
-                <time
-                  datetime={entry.dateTime}
-                  data-i18n-date={entry.dateLabel}
-                  data-i18n-date-format="short"
-                >
-                  {formatDate(entry.dateLabel, "en", "short")}
-                </time>
-                <article
-                  class="entry-summary writing-summary"
-                  data-source-file={entry.sourceFile}
-                >
-                  <div class="writing-title-line">
-                    <h3>
-                      <a href={entry.url}>
-                        <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
-                      </a>
-                    </h3>
-                    <span class="writing-tags">
-                      {entry.tags.map(({ tag, anchor, isTranslation }) => (
-                        <a
-                          class:list={[
-                            "writing-tag",
-                            { "writing-tag--translation": isTranslation },
-                          ]}
-                          href={`#${anchor}`}
-                          data-writing-link
-                          data-i18n-writing-type={tag}
-                        >
-                          {writingTypeLabel(tag, "en")}
-                        </a>
-                      ))}
-                    </span>
-                  </div>
-                  {(writing.data.subtitle || entry.translationRoute) && (
-                    <p class="writing-list-subtitle">
-                      {writing.data.subtitle && (
-                        <LocalizedText value={{ en: writing.data.subtitle, zh: writing.data.subtitleZh }} />
-                      )}
-                      {entry.translationRoute && (
-                        <span class="writing-translation-route">
-                          <span aria-hidden="true"> · </span>
-                          <LocalizedText value={entry.translationRoute} />
-                        </span>
-                      )}
-                    </p>
-                  )}
-                </article>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-
-      {
-        tagGroups.map(({ type, anchor, heading, writings: groupedWritings }) => (
-          <section
-            class="writing-panel writing-panel--tag"
-            id={anchor}
-            data-writing-panel
-            hidden
-            tabindex="-1"
-            aria-labelledby={`${anchor}-heading`}
-          >
-            <p class="writing-panel-kicker">Tag</p>
-            <h2 id={`${anchor}-heading`} data-i18n-writing-type={type}>
-              {heading}
-            </h2>
-            <ol class="catalog-list dated-list writing-list">
-              {groupedWritings.map((writing) => {
-                const entry = writingView(writing);
-                return (
-                  <li>
-                    <time
-                      datetime={entry.dateTime}
-                      data-i18n-date={entry.dateLabel}
-                      data-i18n-date-format="short"
-                    >
-                      {formatDate(entry.dateLabel, "en", "short")}
-                    </time>
-                    <article
-                      class="entry-summary writing-summary"
-                      data-source-file={entry.sourceFile}
-                    >
-                      <div class="writing-title-line">
-                        <h3>
-                          <a href={entry.url}>
-                            <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
-                          </a>
-                        </h3>
-                        <span class="writing-tags">
-                          {entry.tags.map(({ tag, anchor, isTranslation }) => (
-                            <a
-                              class:list={[
-                                "writing-tag",
-                                { "writing-tag--translation": isTranslation },
-                              ]}
-                              href={`#${anchor}`}
-                              data-writing-link
-                              data-i18n-writing-type={tag}
-                            >
-                              {writingTypeLabel(tag, "en")}
-                            </a>
-                          ))}
-                        </span>
-                      </div>
-                      {(writing.data.subtitle || entry.translationRoute) && (
-                        <p class="writing-list-subtitle">
-                          {writing.data.subtitle && (
-                            <LocalizedText value={{ en: writing.data.subtitle, zh: writing.data.subtitleZh }} />
-                          )}
-                          {entry.translationRoute && (
-                            <span class="writing-translation-route">
-                              <span aria-hidden="true"> · </span>
-                              <LocalizedText value={entry.translationRoute} />
-                            </span>
-                          )}
-                        </p>
-                      )}
-                    </article>
-                  </li>
-                );
-              })}
-            </ol>
+              ))}
+            </ul>
+            <a class="blog-view-all blog-small-caps" href={blogCategoryHref(section.id)}><LocalizedText value={{ en: "View all", zh: "查看全部" }} /><span aria-hidden="true"> → </span></a>
           </section>
-        ))
-      }
-    </div>
+        </li>
+      ))}
+    </ol>
   </div>
-
   <script>
-    const defaultWritingPanelId = "writings-by-date";
-    const writingPanels = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-writing-panel]"),
-    );
-    const writingPanelIds = new Set(writingPanels.map((panel) => panel.id));
-    const writingDateAnchorIds = new Set(
-      Array.from(
-        document.querySelectorAll<HTMLElement>("[data-writing-date-anchor]"),
-      ).map((element) => element.id),
-    );
-    const writingLinks = Array.from(
-      document.querySelectorAll<HTMLAnchorElement>("[data-writing-link]"),
-    );
-    const writingRailLinks = Array.from(
-      document.querySelectorAll<HTMLAnchorElement>(
-        ".writing-rail [data-writing-link]",
-      ),
-    );
-
-    const writingHashId = () => decodeURIComponent(window.location.hash.slice(1));
-
-    const writingPanelForHash = () => {
-      const requestedId = writingHashId();
-      if (writingPanelIds.has(requestedId)) return requestedId;
-      if (writingDateAnchorIds.has(requestedId)) return defaultWritingPanelId;
-      return defaultWritingPanelId;
-    };
-
-    const syncWritingPanels = (scroll = false) => {
-      const requestedId = writingHashId();
-      const panelId = writingPanelForHash();
-      const activeId =
-        requestedId &&
-        (writingPanelIds.has(requestedId) || writingDateAnchorIds.has(requestedId))
-          ? requestedId
-          : panelId;
-
-      writingPanels.forEach((panel) => {
-        panel.hidden = panel.id !== panelId;
-      });
-
-      writingRailLinks.forEach((link) => {
-        const linkId = decodeURIComponent(link.hash.slice(1));
-        if (linkId === activeId) {
-          link.setAttribute("aria-current", "page");
-        } else {
-          link.removeAttribute("aria-current");
-        }
-      });
-
-      if (!scroll) return;
-
-      window.requestAnimationFrame(() => {
-        const target =
-          document.getElementById(requestedId) ?? document.getElementById(panelId);
-        target?.scrollIntoView({ block: "start" });
-        document.getElementById(panelId)?.focus({ preventScroll: true });
-      });
-    };
-
-    writingLinks.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        const requestedId = decodeURIComponent(link.hash.slice(1));
-        const canHandle =
-          writingPanelIds.has(requestedId) ||
-          writingDateAnchorIds.has(requestedId) ||
-          requestedId === defaultWritingPanelId;
-
-        if (!canHandle) return;
-
-        event.preventDefault();
-        if (window.location.hash !== link.hash) {
-          history.pushState(null, "", link.hash);
-        }
-        syncWritingPanels(true);
-      });
-    });
-
-    syncWritingPanels(Boolean(window.location.hash));
-    window.addEventListener("popstate", () => syncWritingPanels(true));
-    window.addEventListener("hashchange", () => syncWritingPanels(true));
+    // Keep old bookmarked tag URLs useful after replacing the combined index.
+    const oldTag = decodeURIComponent(location.hash.slice(1)).match(/^writings-tag-(.+)$/)?.[1];
+    if (oldTag) {
+      const category = oldTag === "translation" ? "translation" : "essays";
+      location.replace(`/writings/${category}/${oldTag === "translation" ? "" : `?tag=${encodeURIComponent(oldTag)}`}`);
+    }
   </script>
 </BaseLayout>

@@ -39,6 +39,7 @@ interface Props {
 
 const { work } = Astro.props;
 const { Content } = await render(work);
+const hasWorkContent = Boolean(work.body?.trim());
 // 中文：作品说明采用「同页双语段落」写法，而非 index.zh.md；正文里几乎
 // 没有汉字时视为只有英文，切到中文界面时给出提示。
 // English: Work notes are written bilingually inline (no index.zh.md); when the
@@ -69,6 +70,21 @@ const {
   description,
 } = work.data;
 const hasDuration = duration.display || duration.minutes !== undefined || duration.continuous;
+// A "for ..." subtitle is already a scoring line. Show the more informative
+// of the two lines on detail pages while keeping subtitles in the works index.
+// The choices below were checked against both English and Chinese metadata.
+const detailedScoring = new Set([
+  "a-past-life",
+  "a-song-in-the-winter",
+  "sprechlehre",
+  "twink-death",
+  "urtonforschungen-ii",
+  "wasserlenken",
+]);
+const scoringSubtitle = /^for\s+/i.test(subtitle?.trim() ?? "");
+const preferInstrumentation = detailedScoring.has(work.id);
+const showSubtitle = Boolean(subtitle && (!scoringSubtitle || !preferInstrumentation));
+const showInstrumentation = !scoringSubtitle || preferInstrumentation;
 ---
 
 <BaseLayout
@@ -79,23 +95,24 @@ const hasDuration = duration.display || duration.minutes !== undefined || durati
 >
   <article
     class="detail-page work-detail"
+    data-work-slug={work.data.slug}
     data-source-file={`content/works/${work.id}/index.md`}
   >
     <header class="detail-header work-detail-header">
       {work.data.draft && <p class="draft-flag">Draft — not listed publicly</p>}
       <div class="work-title-line">
-        <h1><WorkTitle title={title} ruby={work.data.titleRuby} /></h1>
+        <h1><WorkTitle title={title} ruby={work.data.titleRuby} splitLanguages /></h1>
         <p class="work-year">
           <time datetime={String(year)} data-i18n-date={String(year)}>
             {formatDate(year, "en")}
           </time>
         </p>
       </div>
-      {subtitle && (
+      {showSubtitle && subtitle && (
         <p><LocalizedText value={{ en: subtitle, zh: subtitleZh }} /></p>
       )}
-      <p class="work-facts">
-        <span class="work-instrumentation"><LocalizedText value={instrumentation} /></span>
+      {(showInstrumentation || hasDuration) && <p class="work-facts">
+        {showInstrumentation && <span class="work-instrumentation"><LocalizedText value={instrumentation} /></span>}
         {hasDuration && (duration.display ? (
           <span class="work-duration"><LocalizedText value={duration.display} /></span>
         ) : (
@@ -109,7 +126,7 @@ const hasDuration = duration.display || duration.minutes !== undefined || durati
             {formatDuration(duration, "en")}
           </span>
         ))}
-      </p>
+      </p>}
 
       {commission && (
         <p class="work-commission">
@@ -156,9 +173,11 @@ const hasDuration = duration.display || duration.minutes !== undefined || durati
       )
     }
 
-    <div class="prose work-notes">
-      <Content />
-    </div>
+    {hasWorkContent && (
+      <div class="prose work-notes">
+        <Content />
+      </div>
+    )}
 
     {
       (dedication || credits || premiere) && (

@@ -1,0 +1,25 @@
+---
+import LocalizedText from "./LocalizedText.astro";
+import { blogCategories, blogCategoryHref, type BlogCategoryId } from "../utils/blog";
+import type { LocalizedText as LocalizedValue } from "../config/locales";
+import "../styles/blog.css";
+
+interface Props {
+  category: BlogCategoryId;
+  atCategory?: boolean;
+  parent?: { href: string; label: LocalizedValue };
+}
+const { category, atCategory = false, parent } = Astro.props;
+const section = blogCategories.find(({ id }) => id === category)!;
+---
+<nav class="blog-breadcrumbs blog-small-caps" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/writings/">Blog</a></li>
+    <li>
+      {atCategory
+        ? <span aria-current="page"><LocalizedText value={section.label} /></span>
+        : <a href={blogCategoryHref(category)}><LocalizedText value={section.label} /></a>}
+    </li>
+    {parent && <li><a href={parent.href}><LocalizedText value={parent.label} /></a></li>}
+  </ol>
+</nav>

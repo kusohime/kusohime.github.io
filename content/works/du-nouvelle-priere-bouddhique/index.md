@@ -22,7 +22,7 @@ premiere:
 slug: "du-nouvelle-priere-bouddhique"
 order: 4
 subtitle: "for SATB, percussion, and piano"
-subtitleZh: "為混聲合唱、打擊樂與鋼琴"
+subtitleZh: "為混聲合唱（SATB）、打擊樂與鋼琴"
 ---
 
 <div class="lang-block" data-lang="en">
@@ -44,3 +44,12 @@ I composed this because I wanted to write a “<ruby><span class="ruby-base">req
 以「相信轉世，並可作用在非人類之上的安魂曲」為理念創作了這部作品。關於「<ruby><span class="ruby-base">重現</span><rt>Wiederkunft</rt></ruby>—<ruby><span class="ruby-base">輪迴</span><rt>Samsara</rt></ruby>」的汎吠陀時間觀、重複與無窮（盤長）、巨大數字、正念、偶然和永遠，「新生兒的囟門」和「<ruby><span class="ruby-base">人</span><rt>Homo</rt></ruby><sub>2</sub><ruby><span class="ruby-base">二</span><rt>Du-</rt></ruby><sub>レ</sub><ruby><span class="ruby-base">重</span><rt>plex</rt></ruby><sub>1</sub>的骨化」、「芥子須彌」、剎那無常及無礙。
 
 </div> 
+
+<figure class="work-excerpts du-score-excerpts">
+  <div class="work-excerpts-list" style="filter: grayscale(1)">
+    <img src="/images/works/du-nouvelle-priere-bouddhique/excerpt-01-madrigal.png" alt="DU score excerpt: I. Madrigal, page 1, with animal-sound cues and percussion instructions." width="1876" height="1309" loading="lazy" decoding="async" />
+    <img src="/images/works/du-nouvelle-priere-bouddhique/excerpt-02-organum.png" alt="DU score excerpt: II. Organum, page 2, showing the change from animal sounds to choral notation." width="1848" height="1309" loading="lazy" decoding="async" />
+    <img src="/images/works/du-nouvelle-priere-bouddhique/excerpt-03-passacaglia.png" alt="DU score excerpt: III. Passacaglia, page 7, for choir, piano, and percussion." width="1800" height="1294" loading="lazy" decoding="async" />
+    <img src="/images/works/du-nouvelle-priere-bouddhique/excerpt-04-choral-passage.png" alt="DU score excerpt: choral passage on page 9, with voices and Kantilan." width="1788" height="1284" loading="lazy" decoding="async" />
+  </div>
+</figure>

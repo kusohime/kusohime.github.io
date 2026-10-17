@@ -29,14 +29,9 @@ const navGroups = [
       { key: "nav.cv" as TranslationKey, href: "/cv" },
     ],
   },
-  {
-    key: "nav.blog" as TranslationKey,
-    items: [
-      { key: "nav.writings" as TranslationKey, href: "/writings" },
-      { key: "nav.projects" as TranslationKey, href: "/projects" },
-      { key: "nav.tools" as TranslationKey, href: "/tools" },
-    ],
-  },
+];
+const directLinks = [
+  { key: "nav.blog" as TranslationKey, href: "/writings" },
 ];
 ---
 
@@ -98,8 +93,25 @@ const navGroups = [
             </li>
           ))
         }
+        {directLinks.map((item) => (
+          <li class="nav-direct">
+            <a href={item.href} aria-current={isActivePath(item.href) ? "page" : undefined}>
+              <span data-i18n-key={item.key}>{translate("en", item.key)}</span>
+            </a>
+          </li>
+        ))}
       </ul>
     </nav>
     <Preferences unavailableLanguages={unavailableLanguages} />
   </div>
 </header>
+
+<style>
+  @media (max-width: 40rem) {
+    .nav-direct a {
+      display: inline-flex;
+      align-items: center;
+      min-block-size: var(--floating-control-size);
+    }
+  }
+</style>

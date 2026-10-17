@@ -280,7 +280,7 @@ def build():
         line_item("Impasse of the Weasels - 6′20″, orchestra", "2025"),
         section("Scholarships and Fellowships"),
         line_item("Hannah A. Leedom Fellowship, Swarthmore College", "2026-2027"),
-        line_item("Merit Scholarships, University of Rochester", "2026-present"),
+        line_item("Warren Benson Scholarship in Composition, University of Rochester", "2026-present"),
         line_item("Freeman Scholars, Swarthmore Music Department", "2024-2025"),
         section("Languages"),
         p("Listed from higher to lower proficiency.", "small"),

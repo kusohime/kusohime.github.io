@@ -338,20 +338,3 @@
   background: var(--color-text, #000);
   border-color: var(--color-text, #000);
 }
-
-/* Small reference link to the Kanbun tool, beneath the embed. */
-.kanbun-ref {
-  margin-top: 0.6rem;
-  font-size: 0.8rem;
-  color: var(--color-muted, #555);
-}
-
-.kanbun-ref a {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
-
-.kanbun-ref a:hover {
-  color: var(--theme-color, #c81e1e);
-}

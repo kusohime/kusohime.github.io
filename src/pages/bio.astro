@@ -1,13 +1,37 @@
 ---
 // 中文：公開個人簡介；雙語正文可直接編輯 bioContent.json，或在本地 Studio 點選文字。
 // English: Public biography; edit bilingual copy in bioContent.json or select text in the local Studio.
-// Caveat / 注意：此頁只使用已公開資料，不從私人履歷、文章或項目匯入內容。
-// Caveat: Use public facts here; do not import material from private C.V., writings, or projects.
+// 中文：作者提供的簡介使用完整 Markdown，與博客共用右側腳注。
+// English: Author-supplied copy uses Markdown and the blog's shared margin notes.
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import LocalizedText from "../components/LocalizedText.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
 import bioContent from "../config/bioContent.json";
-import { renderParagraphs, renderSafeInlineMarkdown } from "../lib/safeHtml.js";
+
+async function renderBio(language: "en" | "zh") {
+  const renderer = await createMarkdownProcessor({
+    syntaxHighlight: false,
+    smartypants: false,
+    remarkRehype: { clobberPrefix: `bio-${language}-` },
+  });
+  const { code } = await renderer.render(
+    `# ${bioContent.title[language]}[^as-of]\n\n${bioContent.intro[language]}\n\n${bioContent.body[language]}`,
+  );
+  const html = code
+    .replaceAll('"footnote-label"', `"bio-${language}-footnote-label"`)
+    .replace(/<a href="(\/(?:works|writings)\/[^"]*)">(?=Read\s|閱讀)/g, '<a class="home-bio-link bio-read-link" href="$1">');
+  const heading = html.match(/^<h1\b[^>]*>[\s\S]*?<\/h1>/);
+  const content = html.slice(heading?.[0].length ?? 0).trimStart();
+  const intro = content.match(/^<p>([\s\S]*?)<\/p>/);
+  return {
+    heading: heading?.[0] ?? "",
+    intro: intro?.[1] ?? "",
+    body: content.slice(intro?.[0].length ?? 0),
+  };
+}
+
+const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")]);
 ---
 
 <BaseLayout
@@ -15,48 +39,52 @@ import { renderParagraphs, renderSafeInlineMarkdown } from "../lib/safeHtml.js";
   titleZh={bioContent.title.zh}
   description={bioContent.underConstruction ? "Biography — under construction." : bioContent.description.en}
   descriptionZh={bioContent.underConstruction ? "個人簡介：施工中。" : bioContent.description.zh}
+  showHierarchyBack={false}
 >
   <article class="detail-page bio-page" data-source-file="src/pages/bio.astro">
-    <header class="detail-header">
-      <h1><LocalizedText value={bioContent.title} /></h1>
-    </header>
-
     {bioContent.underConstruction ? (
+      <>
+      <header class="detail-header">
+        <h1><LocalizedText value={bioContent.title} /></h1>
+      </header>
       <p class="bio-construction">
         <LocalizedText value={{ en: "Under construction.", zh: "施工中" }} />
       </p>
+      </>
     ) : (
     <div class="prose bio-body" data-source-file="src/config/bioContent.json">
       <div class="lang-block" data-lang="en">
+        <header class="detail-header" set:html={english.heading} />
         <p>
           <NamePronunciation translate />{" "}<span
             data-editable-text
             data-source-file="src/config/bioContent.json"
             data-json-path="intro.en"
-            set:html={renderSafeInlineMarkdown(bioContent.intro.en)}
+            set:html={english.intro}
           />
         </p>
         <div
           data-editable-text
           data-source-file="src/config/bioContent.json"
           data-json-path="body.en"
-          set:html={renderParagraphs(bioContent.body.en)}
+          set:html={english.body}
         />
       </div>
       <div class="lang-block" data-lang="zh">
+        <header class="detail-header" set:html={chinese.heading} />
         <p>
           <NamePronunciation translate /><span
             data-editable-text
             data-source-file="src/config/bioContent.json"
             data-json-path="intro.zh"
-            set:html={renderSafeInlineMarkdown(bioContent.intro.zh)}
+            set:html={chinese.intro}
           />
         </p>
         <div
           data-editable-text
           data-source-file="src/config/bioContent.json"
           data-json-path="body.zh"
-          set:html={renderParagraphs(bioContent.body.zh)}
+          set:html={chinese.body}
         />
       </div>
     </div>
@@ -68,5 +96,88 @@ import { renderParagraphs, renderSafeInlineMarkdown } from "../lib/safeHtml.js";
   .bio-page {
     max-width: var(--reading-width);
     margin-inline: auto;
+  }
+
+  .bio-body {
+    --sidenote-width: min(13rem, calc((100vw - var(--reading-width)) / 2 - var(--sidenote-gap) - 2rem));
+  }
+
+  :global(.bio-body .detail-header .fn-ref),
+  :global(.bio-body .detail-header .sidenote) {
+    font-size: 0.82rem;
+  }
+
+  :global(.bio-body .detail-header .sidenote) {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: normal;
+  }
+
+  :global(.bio-body .bio-read-link) {
+    color: var(--theme-color);
+    font-size: 0.75rem;
+    text-decoration: none;
+    white-space: normal;
+  }
+
+  :global(.bio-body .bio-read-link:hover) {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  :global(.bio-body .bio-read-link:has(.mongolian-text)) {
+    white-space: nowrap;
+  }
+
+  :global(.bio-body .bio-read-link .mongolian-text) {
+    display: inline;
+    writing-mode: horizontal-tb;
+    vertical-align: baseline;
+    margin-inline-start: 0.2em;
+  }
+
+  :global(.bio-body .bio-read-link :is(.cjk-run, .cjk-punctuation, .ruby-base)) {
+    display: inline-block;
+    font-size: 0.84em;
+    font-style: normal;
+    font-synthesis: none;
+    line-height: 1;
+    vertical-align: baseline;
+    transform: scaleY(0.88);
+    transform-origin: center bottom;
+  }
+
+  :global(.bio-body .bio-read-link ruby) {
+    ruby-position: over;
+    ruby-align: center;
+  }
+
+  :global(.bio-body .bio-read-link rt) {
+    font-family: var(--font-cjk-serif);
+    font-size: 0.5em;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0;
+  }
+
+  /* Keep links in citations and C.V. notes usable on phones. Text-only notes still
+     use the blog's two-line annotation; wider screens share its right margin. */
+  @media (max-width: 40rem) {
+    :global(.bio-body.has-sidenotes .detail-header .jiazhu),
+    :global(.bio-body.has-sidenotes .jiazhu:has(+ .sidenote a)) {
+      display: none;
+    }
+
+    :global(.bio-body.has-sidenotes .detail-header .sidenote),
+    :global(.bio-body.has-sidenotes .sidenote:has(a)) {
+      position: static;
+      width: auto;
+      height: auto;
+      margin-left: 0.2em;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+    }
   }
 </style>

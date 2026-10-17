@@ -22,7 +22,3 @@ subtitle: "for small chamber ensemble"
 subtitleZh: "為小型室內樂"
 draft: true
 ---
-
-## Program Notes
-
-Program note forthcoming.

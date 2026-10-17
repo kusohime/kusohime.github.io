@@ -1,5 +1,5 @@
 ---
-title: "A Song in the Winter 冬天的一首歌"
+title: "A Song in the Winter"
 year: 2025
 category: "Vocal / Choral"
 instrumentation:
@@ -23,7 +23,3 @@ subtitleZh: "聲樂與鋼琴"
 ---
 
 Poet: Qing Hao
-
-## Program Notes
-
-Program note forthcoming.

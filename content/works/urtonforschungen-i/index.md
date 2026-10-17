@@ -14,7 +14,3 @@ subtitle: "for piano and vibraphone"
 subtitleZh: "鋼琴與顫音琴"
 draft: true
 ---
-
-## Program Notes
-
-Program note forthcoming.

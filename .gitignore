@@ -14,4 +14,6 @@ desktop-dist/
 # Local generated artifacts; never offer these in Website Studio publishing.
 tmp/
 output/
+# Personal reading translations and their source metadata stay on this machine.
+private-reading/
 .claude/settings.local.json

@@ -12,7 +12,3 @@ draft: false
 subtitle: "for piano one hand"
 subtitleZh: "鋼琴單手連彈"
 ---
-
-## Program Notes
-
-Write about this piece here.

@@ -1,0 +1,146 @@
+---
+// Local-only long-form reader. Its source files are gitignored and production
+// builds deliberately receive no static paths.
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  loadPrivateReaderArticles,
+  privateReaderSummaries,
+  type PrivateReaderArticle,
+  type PrivateReaderSummary,
+} from "../../utils/privateReader";
+import "../../styles/private-reader.css";
+
+export async function getStaticPaths() {
+  if (!import.meta.env.DEV) return [];
+
+  const articles = await loadPrivateReaderArticles();
+  const library = privateReaderSummaries(articles);
+
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article, library },
+  }));
+}
+
+interface Props {
+  article: PrivateReaderArticle;
+  library: PrivateReaderSummary[];
+}
+
+const { article, library } = Astro.props;
+const processor = await createMarkdownProcessor({
+  syntaxHighlight: false,
+  smartypants: false,
+});
+const rendered = await processor.render(article.content);
+const outline = rendered.metadata.headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+const sourcePdfUrl = `/local-reader/source/${article.slug}.pdf`;
+---
+
+<BaseLayout
+  title={article.title}
+  description={`${article.author}《${article.title}》中文私人阅读页`}
+  noindex
+  adminOnly
+  unavailableLanguages={["en"]}
+>
+  <div class="private-reader-progress" aria-hidden="true">
+    <span data-private-reader-progress></span>
+  </div>
+
+  <article class="detail-page private-reader" lang="zh-Hans">
+    <header class="private-reader-header">
+      <p class="private-reader-status">仅限本地阅读 · 不参与网站发布</p>
+      <h1>{article.title}</h1>
+      <p class="private-reader-original-title" lang="en">
+        {article.titleOriginal}
+      </p>
+      <p class="private-reader-byline">{article.author}</p>
+      <p class="private-reader-source">{article.source}</p>
+      {
+        article.translatorNote && (
+          <p class="private-reader-note">{article.translatorNote}</p>
+        )
+      }
+      <a
+        class="private-reader-source-link"
+        href={sourcePdfUrl}
+        target="_blank"
+        rel="noreferrer"
+      >
+        在新标签页打开原 PDF
+      </a>
+    </header>
+
+    <div class="private-reader-layout">
+      <aside class="private-reader-rail" aria-label="私人阅读书架与本文目录">
+        <details class="private-reader-library">
+          <summary>私人阅读书架</summary>
+          <ol>
+            {
+              library.map((entry) => (
+                <li>
+                  <a
+                    href={`/local-reader/${entry.slug}/`}
+                    aria-current={entry.slug === article.slug ? "page" : undefined}
+                  >
+                    <span>{entry.title}</span>
+                    <small>{entry.author}</small>
+                  </a>
+                </li>
+              ))
+            }
+          </ol>
+        </details>
+
+        {
+          outline.length > 0 && (
+            <nav class="private-reader-outline" aria-label="本文目录">
+              <p>本文目录</p>
+              <ol>
+                {outline.map((heading) => (
+                  <li class:list={{ "is-subheading": heading.depth === 3 }}>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+      </aside>
+
+      <div
+        class="prose chicago-prose private-reader-prose"
+        set:html={rendered.code}
+      />
+    </div>
+
+    <footer class="private-reader-footer">
+      <a href={sourcePdfUrl} target="_blank" rel="noreferrer">核对原 PDF</a>
+      <span aria-hidden="true"> · </span>
+      <span>此页只在本机开发模式生成</span>
+    </footer>
+  </article>
+
+  <script>
+    const progress = document.querySelector<HTMLElement>(
+      "[data-private-reader-progress]",
+    );
+    const article = document.querySelector<HTMLElement>(".private-reader-prose");
+
+    const updateProgress = () => {
+      if (!progress || !article) return;
+      const start = article.offsetTop;
+      const distance = Math.max(article.offsetHeight - window.innerHeight, 1);
+      const ratio = Math.min(Math.max((window.scrollY - start) / distance, 0), 1);
+      progress.style.transform = `scaleX(${ratio})`;
+    };
+
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+  </script>
+</BaseLayout>

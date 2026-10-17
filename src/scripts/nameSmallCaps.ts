@@ -52,6 +52,7 @@ const smallCapsSelector = [
   ".works-index .category-group > h2",
   ".writing-contents-rail",
   ".tool-rail",
+  ".blog-small-caps",
 ].join(",");
 
 const namePattern = /\bYixin\s+Cui\b/g;

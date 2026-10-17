@@ -7,6 +7,7 @@
 // Caveat: Keep selected works and recent writings off this page.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import NamePronunciation from "../components/NamePronunciation.astro";
+import PhotoPeople from "../components/PhotoPeople.astro";
 import homeContentData from "../config/homeContent.json";
 import { renderParagraphs, renderSafeInlineMarkdown } from "../lib/safeHtml.js";
 
@@ -37,6 +38,7 @@ const introRest = (markdown: string) =>
   <div class="home-page" data-source-file="src/pages/index.astro">
     {homeContent.image && (
       <figure class="home-image-frame">
+        <PhotoPeople>
         <img
           src={homeContent.image}
           alt={homeContent.imageAlt ?? ""}
@@ -45,6 +47,7 @@ const introRest = (markdown: string) =>
           decoding="async"
           fetchpriority="high"
         />
+        </PhotoPeople>
         {(homeContent.caption.en || homeContent.caption.zh) && <figcaption>
           <span class="home-caption" data-lang="en" data-editable-text
             data-source-file="src/config/homeContent.json" data-json-path="caption.en"

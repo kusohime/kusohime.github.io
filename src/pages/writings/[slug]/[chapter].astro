@@ -7,6 +7,8 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CuiXiongReader from "../../../components/CuiXiongReader.astro";
 import LocalizedText from "../../../components/LocalizedText.astro";
+import BlogBreadcrumbs from "../../../components/BlogBreadcrumbs.astro";
+import { writingCategory } from "../../../utils/blog";
 import { contentFolder } from "../../../utils/contentPaths";
 import { cjkLangFromText, dominantContentLang } from "../../../utils/cjkLanguage";
 import { translate } from "../../../config/locales";
@@ -92,7 +94,9 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
   descriptionZh={chapter.data.excerpt ?? writing.data.excerptZh}
   noindex={writing.data.draft}
   unavailableLanguages={unavailableLanguages}
+  showHierarchyBack={false}
 >
+  <BlogBreadcrumbs category={writingCategory(writing)} parent={{ href: `/writings/${writing.data.slug}/`, label: { en: writing.data.title, zh: writing.data.titleZh } }} />
   <article
     class="detail-page writing-chapter-page"
     data-writing-slug={writing.data.slug}

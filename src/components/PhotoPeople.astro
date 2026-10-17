@@ -1,0 +1,88 @@
+---
+// Positions are percentages of the uncropped homepage concert photograph.
+const people = [
+  { name: 'Kaito Stohr', x: 19, y: 39, w: 8, h: 42 },
+  { name: 'Emma Gabriel', x: 28, y: 34, w: 8, h: 42 },
+  { name: 'Kielor Tung', x: 39, y: 31, w: 8, h: 44, url: 'https://www.kielor.com/' },
+  { name: 'Yixin Cui', x: 53, y: 19, w: 9, h: 53 },
+  { name: 'Hillary Tran', x: 63, y: 39, w: 5, h: 38 },
+  { name: 'Julian Chen', x: 68, y: 44, w: 5, h: 47 },
+  { name: 'Spencer Klaw Kennedy', x: 85, y: 34, w: 9, h: 63, url: 'https://spencerklawkennedy.com/' },
+];
+---
+
+<div class="photo-people">
+  <slot />
+  {people.map((person) => {
+    const Tag = person.url ? 'a' : 'button';
+    return <Tag
+      class="photo-person"
+      style={`--x:${person.x}%;--y:${person.y}%;--w:${person.w}%;--h:${person.h}%`}
+      href={person.url}
+      target={person.url ? '_blank' : undefined}
+      rel={person.url ? 'noopener noreferrer' : undefined}
+      type={person.url ? undefined : 'button'}
+      aria-label={person.name}
+      data-photo-person
+    >
+      <span class:list={['photo-person-name', { 'align-right': person.x > 80 }]}>
+        {person.name}{person.url && <span aria-hidden="true"> ↗</span>}
+      </span>
+    </Tag>;
+  })}
+</div>
+
+<style>
+  .photo-people { position: relative; }
+  .photo-person {
+    position: absolute;
+    left: var(--x); top: var(--y); width: var(--w); height: var(--h);
+    display: block; padding: 0; margin: 0; border: 0; border-radius: 3px;
+    background: transparent; color: #fff; text-decoration: none;
+    cursor: default; -webkit-tap-highlight-color: transparent;
+  }
+  a.photo-person { cursor: pointer; }
+  .photo-person:focus-visible { outline: 1px solid #ffffffa0; outline-offset: 3px; }
+  .photo-person-name {
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    padding: 4px 7px; margin-bottom: 5px; border-radius: 3px;
+    background: rgb(20 20 20 / 84%); color: #fff;
+    font: 400 11px/1.4 system-ui, sans-serif;
+    white-space: nowrap; opacity: 0; visibility: hidden;
+    pointer-events: none; transition: opacity 120ms ease;
+  }
+  .align-right { left: auto; right: 0; transform: none; }
+  .photo-person:focus .photo-person-name { opacity: 1; visibility: visible; }
+  @media (hover: hover) {
+    .photo-person:hover .photo-person-name { opacity: 1; visibility: visible; }
+    .photo-person:hover { z-index: 1; }
+  }
+  .photo-person:focus { z-index: 2; }
+  @media (prefers-reduced-motion: reduce) {
+    .photo-person-name { transition: none; }
+  }
+</style>
+
+<script>
+  // On touch screens the first tap reveals the name; the second follows a link.
+  document.querySelectorAll<HTMLElement>('[data-photo-person]').forEach((person) => {
+    let wasFocused = false;
+    person.addEventListener('pointerdown', () => {
+      wasFocused = document.activeElement === person;
+    });
+    person.addEventListener('click', (event) => {
+      if (event instanceof PointerEvent && event.pointerType === 'touch' && !wasFocused) {
+        event.preventDefault();
+        person.focus();
+      }
+    });
+    person.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') person.blur();
+    });
+  });
+  document.addEventListener('pointerdown', (event) => {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && active.matches('[data-photo-person]') &&
+        event.target instanceof Node && !active.contains(event.target)) active.blur();
+  });
+</script>

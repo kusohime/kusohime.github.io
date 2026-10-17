@@ -8,6 +8,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Comments from "../../components/Comments.astro";
 import CuiXiongReader from "../../components/CuiXiongReader.astro";
 import LocalizedText from "../../components/LocalizedText.astro";
+import BlogBreadcrumbs from "../../components/BlogBreadcrumbs.astro";
+import { writingCategory, blogCategoryHref } from "../../utils/blog";
 import SeriesDialogueReader from "../../components/SeriesDialogueReader.astro";
 import { toAnchor } from "../../config/contentTaxonomy";
 import WritingContentsRail from "../../components/WritingContentsRail.astro";
@@ -38,6 +40,7 @@ interface Props {
 }
 
 const { writing } = Astro.props;
+const blogCategory = writingCategory(writing);
 const { Content } = await render(writing);
 // 中文：若同目录存在 index.zh.md，则正文按站点语言在英文主文与中文正文间切换。
 // English: When a sibling index.zh.md exists, the body swaps between the English
@@ -136,7 +139,9 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
   descriptionZh={excerptZh}
   noindex={writing.data.draft}
   unavailableLanguages={unavailableLanguages}
+  showHierarchyBack={false}
 >
+  <BlogBreadcrumbs category={blogCategory} />
   <article
     class="detail-page writing-title-page"
     data-writing-slug={writing.data.slug}
@@ -203,7 +208,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
                 {isTranslation && (
                   <a
                     class="writing-tag writing-tag--translation"
-                    href={`/writings/#writings-tag-${toAnchor("Translation")}`}
+                    href={blogCategoryHref("translation")}
                     data-i18n-writing-type="Translation"
                   >
                     {writingTypeLabel("Translation", "en")}
@@ -430,7 +435,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
             "writing-tag",
             { "writing-tag--translation": tag === "Translation" },
           ]}
-          href={`/writings/#writings-tag-${toAnchor(tag)}`}
+          href={`${blogCategoryHref(blogCategory)}${tag === "Translation" ? "" : `?tag=${toAnchor(tag)}`}`}
           data-i18n-writing-type={tag}
         >
           {writingTypeLabel(tag, "en")}
@@ -447,9 +452,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
           data-arrow-glyph
           aria-hidden="true"
         ></span>
-        <span data-i18n-key="common.backWritings">
-          {translate("en", "common.backWritings")}
-        </span>
+        <LocalizedText value={{ en: "Back to Blog", zh: "返回 Blog 首頁" }} />
       </a>
     </nav>
   </article>

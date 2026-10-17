@@ -3,29 +3,71 @@
 interface Props {
   title: string;
   ruby?: { base: string; annotation: string }[];
+  splitLanguages?: boolean;
 }
 
-const { title, ruby = [] } = Astro.props;
-type TitlePart = { text: string; annotation?: string };
-let parts: TitlePart[] = [{ text: title }];
+const { title, ruby = [], splitLanguages = false } = Astro.props;
+type TitlePart = { text: string; annotation?: string; mongolian?: boolean };
+const mongolianPattern = /[\u1800-\u18af]+/u;
+const cjkPattern = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 
-for (const { base, annotation } of ruby) {
-  parts = parts.flatMap((part) => {
-    if (part.annotation !== undefined || !base) return [part];
-    const segments = part.text.split(base);
-    return segments.flatMap((text, index): TitlePart[] => [
-      ...(index > 0 ? [{ text: base, annotation }] : []),
-      ...(text ? [{ text }] : []),
-    ]);
-  });
-}
+const mongolianMatch = title.match(mongolianPattern);
+const mongolianTitle = mongolianMatch?.[0] ?? "";
+const titleWithoutMongolian = title.replace(mongolianPattern, "").trim();
+const cjkIndex = titleWithoutMongolian.search(cjkPattern);
+const primaryTitle = splitLanguages && cjkIndex >= 0
+  ? titleWithoutMongolian.slice(0, cjkIndex).trim()
+  : titleWithoutMongolian;
+const secondaryTitle = splitLanguages && cjkIndex >= 0
+  ? titleWithoutMongolian.slice(cjkIndex).trim()
+  : "";
+
+const makeParts = (value: string) => {
+  let parts: TitlePart[] = [{ text: value }];
+
+  for (const { base, annotation } of ruby) {
+    parts = parts.flatMap((part) => {
+      if (part.annotation !== undefined || !base) return [part];
+      const segments = part.text.split(base);
+      return segments.flatMap((text, index): TitlePart[] => [
+        ...(index > 0 ? [{ text: base, annotation }] : []),
+        ...(text ? [{ text }] : []),
+      ]);
+    });
+  }
+
+  return parts;
+};
+
 ---
 
-{parts.map((part) => part.annotation !== undefined
-  ? <ruby><span class="ruby-base">{part.text}</span><rt>{part.annotation}</rt></ruby>
-  : part.text)}
+{splitLanguages ? (
+  <span class="work-title-language-layout">
+    <span class="work-title-primary">{makeParts(primaryTitle).map((part) => part.annotation !== undefined
+      ? <ruby><span class="ruby-base">{part.text}</span><rt>{part.annotation}</rt></ruby>
+      : part.text)}</span>
+    {mongolianTitle && <span class="work-title-mongolian mongolian-text" lang="mn-Mong">{mongolianTitle}</span>}
+    {secondaryTitle && <span class="work-title-secondary">{makeParts(secondaryTitle).map((part) => part.annotation !== undefined
+      ? <ruby><span class="ruby-base">{part.text}</span><rt>{part.annotation}</rt></ruby>
+      : part.text)}</span>}
+  </span>
+) : (
+  <>
+    {makeParts(titleWithoutMongolian).map((part) => part.annotation !== undefined
+      ? <ruby><span class="ruby-base">{part.text}</span><rt>{part.annotation}</rt></ruby>
+      : part.text)}
+    {mongolianTitle && <span class="work-title-mongolian-inline mongolian-text" lang="mn-Mong">{mongolianTitle}</span>}
+  </>
+)}
 
 <style>
+  .work-title-mongolian-inline {
+    display: inline;
+    writing-mode: horizontal-tb;
+    margin-inline-start: 0.5em;
+    vertical-align: baseline;
+  }
+
   ruby {
     ruby-position: over;
     ruby-align: center;

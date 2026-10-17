@@ -21,7 +21,3 @@ premiere:
 subtitle: "for horn and piano"
 subtitleZh: "法國號與鋼琴"
 ---
-
-## Program Notes
-
-Write about this piece here.

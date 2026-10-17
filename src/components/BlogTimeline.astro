@@ -1,0 +1,34 @@
+---
+import LocalizedText from "./LocalizedText.astro";
+import { parseBlogDate, type BlogEntry } from "../utils/blog";
+import { formatDate } from "../config/locales";
+import { toAnchor } from "../config/contentTaxonomy";
+
+interface Props { entries: BlogEntry[]; }
+const { entries } = Astro.props;
+const years = [...new Set(entries.map((entry) => parseBlogDate(entry.date)?.year ?? "undated"))];
+---
+<div class="blog-timeline">
+  {years.map((year) => (
+    <section class="blog-year" id={`year-${year}`} data-blog-year aria-labelledby={`heading-${year}`}>
+      <h2 id={`heading-${year}`}>
+        {year === "undated" ? <LocalizedText value={{ en: "Undated", zh: "未註日期" }} /> : year}
+      </h2>
+      <ol>
+        {entries.filter((entry) => (parseBlogDate(entry.date)?.year ?? "undated") === year).map((entry) => {
+          const date = parseBlogDate(entry.date);
+          return (
+            <li data-blog-entry data-tags={entry.tags.map(toAnchor).join(" ")} data-date={entry.date}>
+              <time datetime={date ? entry.date : undefined} aria-label={formatDate(entry.date, "en")}>
+                {date?.month ? `${date.month}${date.day ? `.${date.day}` : ""}` : "—"}
+              </time>
+              <article>
+                <h3><a href={entry.url}><LocalizedText value={entry.title} /></a></h3>
+              </article>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  ))}
+</div>

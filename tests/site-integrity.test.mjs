@@ -151,6 +151,26 @@ await test("content collection slugs are unique", async () => {
   }
 });
 
+await test("local reader content cannot enter a production build", async () => {
+  const [ignoreFile, readerPage, sourceRoute, rssRoute] = await Promise.all([
+    readFile(path.join(root, ".gitignore"), "utf8"),
+    readFile(path.join(root, "src", "pages", "local-reader", "[slug].astro"), "utf8"),
+    readFile(
+      path.join(root, "src", "pages", "local-reader", "source", "[slug].pdf.ts"),
+      "utf8",
+    ),
+    readFile(path.join(root, "src", "pages", "rss.xml.ts"), "utf8"),
+  ]);
+
+  assert.match(ignoreFile, /^private-reading\/$/m);
+  assert.match(readerPage, /if \(!import\.meta\.env\.DEV\) return \[\];/);
+  assert.match(readerPage, /\bnoindex\b/);
+  assert.match(readerPage, /\badminOnly\b/);
+  assert.match(sourceRoute, /if \(!import\.meta\.env\.DEV\) return \[\];/);
+  assert.match(sourceRoute, /X-Robots-Tag.*noindex, nofollow, noarchive/s);
+  assert.doesNotMatch(rssRoute, /private-reading|local-reader/);
+});
+
 await test("writing entries carry bilingual titles and paired optional summaries", async () => {
   const files = await filesUnder(path.join(contentRoot, "writings"), (file) =>
     file.endsWith(`${path.sep}index.md`),
