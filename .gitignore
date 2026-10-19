@@ -7,6 +7,7 @@ desktop-dist/
 .DS_Store
 *.log
 .tmp-*
+.tmp/
 .publish-source.*
 .deploy-test/
 *.crdownload

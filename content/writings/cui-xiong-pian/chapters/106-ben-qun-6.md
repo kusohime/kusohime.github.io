@@ -15,6 +15,18 @@ source:
   messageIds: ["message4476", "message4477"]
   timestamp: "2024-03-29T21:39:02-05:00"
 ---
-![本羣篇 6 image](/images/chat-export-2026-06-19/photo_486@29-03-2024_21-39-02.jpg)
+* serpentofarabia：蒽
+* serpentofarabia：我第一个看的是《网球王子》
+* serpentofarabia：感觉说过
+* 脆：我是双子星球变生公主。
+* serpentofarabia：谁看过。
+* 脆：我们不是一个性别啦///
+* serpentofarabia：指看完
+* 熊：我是鲁邦三世
+* 熊：。
+* serpentofarabia：我们都不是一个性别
 
-![本羣篇 6 image](/images/chat-export-2026-06-19/photo_487@29-03-2024_21-39-02.jpg)
+* 脆：同性恋（>《网球王子》）
+* 脆：同性恋（>我是双子星球变生公主。）
+* 脆：同性恋（>我是鲁邦三世）
+* 脆：所指各有千秋…

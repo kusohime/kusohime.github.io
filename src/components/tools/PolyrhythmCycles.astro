@@ -228,7 +228,7 @@
       for (let k = 0; k < count; k++) {
         const x = left + ((right - left) * k) / count;
         const coincides = redSteps[layer].has(k);
-        linear.append(el("circle", { cx: x, cy: y, r: coincides ? 4.8 : 4.2, fill: coincides ? "#c81e1e" : "currentColor" }));
+        linear.append(el("circle", { cx: x, cy: y, r: coincides ? 4.8 : 4.2, fill: coincides ? "var(--theme-color)" : "currentColor" }));
       }
       const label = el("text", { x: 6, y: y + 3.5, "font-size": 10, fill: "currentColor" });
       label.textContent = String(count);
@@ -240,7 +240,7 @@
       const x = left + (right - left) * fnum(c.at);
       linear.append(el("rect", {
         x: x - 4.4, y: axisY - 4.4, width: 8.8, height: 8.8,
-        fill: "#c81e1e", transform: `rotate(45 ${x} ${axisY})`,
+        fill: "var(--theme-color)", transform: `rotate(45 ${x} ${axisY})`,
       }));
     }
     linear.setAttribute("viewBox", `0 0 720 ${axisY + 18}`);
@@ -259,7 +259,7 @@
           cx: cx + r * Math.cos(angle),
           cy: cy + r * Math.sin(angle),
           r: coincides ? 4.2 : 3.6,
-          fill: coincides ? "#c81e1e" : "currentColor",
+          fill: coincides ? "var(--theme-color)" : "currentColor",
         }));
       }
     });
@@ -269,11 +269,11 @@
     // on the circle. Hidden until playback starts.
     linear.append(el("line", {
       x1: left, y1: top - 12, x2: left, y2: axisY,
-      stroke: "#c81e1e", "stroke-width": 1.8, opacity: 0, id: "pr-ph-line",
+      stroke: "var(--theme-color)", "stroke-width": 1.8, opacity: 0, id: "pr-ph-line",
     }));
     circle.append(el("line", {
       x1: cx, y1: cy, x2: cx, y2: cy - 100,
-      stroke: "#c81e1e", "stroke-width": 1.4, opacity: 0, id: "pr-ph-radius",
+      stroke: "var(--theme-color)", "stroke-width": 1.4, opacity: 0, id: "pr-ph-radius",
     }));
   }
 
@@ -603,9 +603,9 @@
         if (step.rest) {
           svg.append(el("circle", { cx: x, cy: y, r: 1.2, fill: "currentColor", opacity: 0.3 }));
         } else if (step.hold) {
-          svg.append(el("circle", { cx: x, cy: y, r: 2.4, fill: "none", stroke: accent ? "#c81e1e" : "currentColor", "stroke-width": 1 }));
+          svg.append(el("circle", { cx: x, cy: y, r: 2.4, fill: "none", stroke: accent ? "var(--theme-color)" : "currentColor", "stroke-width": 1 }));
         } else {
-          svg.append(el("circle", { cx: x, cy: y, r: 4, fill: accent ? "#c81e1e" : "currentColor" }));
+          svg.append(el("circle", { cx: x, cy: y, r: 4, fill: accent ? "var(--theme-color)" : "currentColor" }));
         }
       });
     };
@@ -618,7 +618,7 @@
     svg.append(el("circle", {
       cx: cx + 66 * Math.cos(startAngle),
       cy: cy + 66 * Math.sin(startAngle),
-      r: 8, fill: "none", stroke: "#c81e1e", "stroke-width": 1,
+      r: 8, fill: "none", stroke: "var(--theme-color)", "stroke-width": 1,
     }));
     // playhead radius (voice 1's position in its cycle)
     const playhead = canonPlayheadPhase();
@@ -628,7 +628,7 @@
         x1: cx, y1: cy,
         x2: cx + 104 * Math.cos(playheadAngle),
         y2: cy + 104 * Math.sin(playheadAngle),
-        stroke: "#c81e1e", "stroke-width": 1.6, opacity: 0.85,
+        stroke: "var(--theme-color)", "stroke-width": 1.6, opacity: 0.85,
       }));
     }
   }
@@ -653,21 +653,21 @@
         if (step.rest) {
           svg.append(el("line", { x1: x, y1: row.y - 2.5, x2: x, y2: row.y + 2.5, stroke: "currentColor", "stroke-width": 0.7, opacity: 0.3 }));
         } else if (step.hold) {
-          svg.append(el("circle", { cx: x, cy: row.y, r: 2.6, fill: "none", stroke: row.accent ? "#c81e1e" : "currentColor", "stroke-width": 1 }));
+          svg.append(el("circle", { cx: x, cy: row.y, r: 2.6, fill: "none", stroke: row.accent ? "var(--theme-color)" : "currentColor", "stroke-width": 1 }));
         } else {
-          svg.append(el("circle", { cx: x, cy: row.y, r: 4.6, fill: row.accent ? "#c81e1e" : "currentColor" }));
+          svg.append(el("circle", { cx: x, cy: row.y, r: 4.6, fill: row.accent ? "var(--theme-color)" : "currentColor" }));
         }
       });
     }
     const v1 = el("text", { x: 4, y: 41, "font-size": 9, fill: "currentColor" });
     v1.textContent = "V1";
-    const v2 = el("text", { x: 4, y: 95, "font-size": 9, fill: "#c81e1e" });
+    const v2 = el("text", { x: 4, y: 95, "font-size": 9, fill: "var(--theme-color)" });
     v2.textContent = "V2";
     svg.append(v1, v2);
     // halo on voice 2's pattern start
     const startX = left + (((rows[1].rotation % 1) + 1) % 1) * width;
     svg.append(el("circle", {
-      cx: startX, cy: 92, r: 8.5, fill: "none", stroke: "#c81e1e", "stroke-width": 1,
+      cx: startX, cy: 92, r: 8.5, fill: "none", stroke: "var(--theme-color)", "stroke-width": 1,
     }));
     // playhead sweeping voice 1's cycle
     const playhead = canonPlayheadPhase();
@@ -675,7 +675,7 @@
       const x = left + playhead * width;
       svg.append(el("line", {
         x1: x, y1: 16, x2: x, y2: 114,
-        stroke: "#c81e1e", "stroke-width": 1.6, opacity: 0.85,
+        stroke: "var(--theme-color)", "stroke-width": 1.6, opacity: 0.85,
       }));
     }
   }
@@ -860,7 +860,7 @@
         const x = left + ((right - left) * (k * track.params.interval)) / windowSeconds;
         const accent = k % track.params.beats === 0;
         if (accent) {
-          svg.append(el("line", { x1: x, y1: y - 8, x2: x, y2: y + 8, stroke: "#c81e1e", "stroke-width": 1.6 }));
+          svg.append(el("line", { x1: x, y1: y - 8, x2: x, y2: y + 8, stroke: "var(--theme-color)", "stroke-width": 1.6 }));
         } else {
           svg.append(el("line", { x1: x, y1: y - 4.5, x2: x, y2: y + 4.5, stroke: "currentColor", "stroke-width": 1 }));
         }

@@ -6,9 +6,10 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CuiXiongReader from "../../../components/CuiXiongReader.astro";
+import DialogueBubbles from "../../../components/DialogueBubbles.astro";
 import LocalizedText from "../../../components/LocalizedText.astro";
 import BlogBreadcrumbs from "../../../components/BlogBreadcrumbs.astro";
-import { writingCategory } from "../../../utils/blog";
+import { dialogueSeriesLabel, writingCategory } from "../../../utils/blog";
 import { contentFolder } from "../../../utils/contentPaths";
 import { cjkLangFromText, dominantContentLang } from "../../../utils/cjkLanguage";
 import { translate } from "../../../config/locales";
@@ -58,7 +59,10 @@ const isCuiXiong = writing.data.slug === "cui-xiong-pian";
 const isSplitReader = isCuiXiong || writing.data.splitReader;
 const isLibrettoReader = writing.data.splitReader;
 const isBenQun = isCuiXiong && chapter.data.slug.startsWith("ben-qun");
-const isImageLed = isBenQun && (chapter.body ?? "").includes("/images/");
+const isImageLed = false;
+const chapterDisplayTitle = isCuiXiong
+  ? `${dialogueSeriesLabel(chapter.data.series) ?? "Dialogue"} · ${chapter.data.seriesNumber ?? chapter.data.title}`
+  : chapter.data.title;
 // The chapter body is the most reliable signal for Simplified vs Traditional
 // Chinese. Metadata can be too short or deliberately mix script variants, as
 // in a Traditional series title wrapped around a Simplified archival excerpt.
@@ -88,7 +92,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
 ---
 
 <BaseLayout
-  title={`${chapter.data.title} | ${writing.data.title}`}
+  title={`${chapterDisplayTitle} | ${writing.data.title}`}
   titleZh={`${chapter.data.title} | ${writing.data.titleZh}`}
   description={chapter.data.excerpt ?? writing.data.excerpt}
   descriptionZh={chapter.data.excerpt ?? writing.data.excerptZh}
@@ -96,7 +100,11 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
   unavailableLanguages={unavailableLanguages}
   showHierarchyBack={false}
 >
-  <BlogBreadcrumbs category={writingCategory(writing)} parent={{ href: `/writings/${writing.data.slug}/`, label: { en: writing.data.title, zh: writing.data.titleZh } }} />
+  <BlogBreadcrumbs
+    category={writingCategory(writing)}
+    parent={isCuiXiong ? undefined : { href: `/writings/${writing.data.slug}/`, label: { en: writing.data.title, zh: writing.data.titleZh } }}
+    current={isCuiXiong ? { en: chapterDisplayTitle, zh: chapterDisplayTitle } : undefined}
+  />
   <article
     class="detail-page writing-chapter-page"
     data-writing-slug={writing.data.slug}
@@ -112,7 +120,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
           imageLed={isImageLed}
           variant={isLibrettoReader ? "libretto" : "cui"}
           rootLabel={isLibrettoReader ? "Introduction" : "0"}
-          navLabel={isLibrettoReader ? "Libretto contents" : "脆熊篇目錄"}
+          navLabel={isLibrettoReader ? "Libretto contents" : "Dialogue contents"}
         >
           <div
             lang={contentLang}
@@ -129,6 +137,7 @@ const unavailableLanguages: ("en" | "zh")[] = bodyLang
             ]}
           >
             <Content />
+            {isCuiXiong && <DialogueBubbles />}
           </div>
         </CuiXiongReader>
       ) : (

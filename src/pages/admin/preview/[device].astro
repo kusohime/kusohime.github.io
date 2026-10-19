@@ -1,0 +1,103 @@
+---
+// A persistent local preview canvas; production builds generate no route.
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { device: "mobile" } }] : [];
+}
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>手機預覽 · Yixin Cui</title>
+  </head>
+  <body>
+    <header>
+      <strong>手機預覽</strong>
+      <label>
+        寬度
+        <select id="preview-width" aria-label="手機寬度">
+          <option value="320">320 px</option>
+          <option value="375">375 px</option>
+          <option value="390" selected>390 px</option>
+          <option value="430">430 px</option>
+        </select>
+      </label>
+      <label>
+        頁面
+        <select id="preview-page" aria-label="預覽頁面">
+          <option value="/">首頁</option>
+          <option value="/works/">Music</option>
+          <option value="/bio/">Biography</option>
+          <option value="/writings/">Blog</option>
+          <option value="/writings/translation/">Translation</option>
+          <option value="/writings/dialogues/">Dialogues</option>
+        </select>
+      </label>
+    </header>
+    <main>
+      <iframe id="phone-preview" title="網站手機預覽" src="/" width="390" height="844"></iframe>
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(:root) {
+    --phone-width: 390px;
+    color-scheme: light;
+    background: #f3f2f0;
+    color: #292723;
+    font: 13px/1.4 system-ui, sans-serif;
+  }
+
+  :global(*) { box-sizing: border-box; }
+  body { margin: 0; min-width: calc(var(--phone-width) + 40px); }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px 22px;
+    min-height: 58px;
+    padding: 10px 16px;
+    background: #fff;
+    border-bottom: 1px solid #e5e2dd;
+  }
+  strong { font-weight: 500; }
+  label { display: inline-flex; align-items: center; gap: 8px; color: #66615a; }
+  select {
+    min-height: 32px;
+    padding: 3px 8px;
+    border: 1px solid #ddd8d0;
+    border-radius: 4px;
+    background: #fff;
+    color: #292723;
+    font: inherit;
+  }
+  main { padding: 24px 20px 36px; }
+  iframe {
+    display: block;
+    width: var(--phone-width);
+    height: 844px;
+    margin-inline: auto;
+    border: 0;
+    outline: 1px solid #ddd8d0;
+    background: #fff;
+    box-shadow: 0 8px 32px rgb(35 29 20 / 6%);
+  }
+</style>
+
+<script>
+  const width = document.querySelector<HTMLSelectElement>("#preview-width");
+  const page = document.querySelector<HTMLSelectElement>("#preview-page");
+  const preview = document.querySelector<HTMLIFrameElement>("#phone-preview");
+  width?.addEventListener("change", () => {
+    document.documentElement.style.setProperty("--phone-width", width.value + "px");
+  });
+  page?.addEventListener("change", () => {
+    if (preview) preview.src = page.value;
+  });
+</script>

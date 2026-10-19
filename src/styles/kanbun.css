@@ -269,7 +269,7 @@
 /* Text inside 「…」 is highlighted in the site accent (wired up per page from
    the embed script, which walks the run across column breaks). */
 .kanbun .kb-quote {
-  color: var(--theme-color, #c81e1e);
+  color: var(--theme-color, #b0232a);
 }
 
 /* Loanword readings that flip between kana and their source word on click. */

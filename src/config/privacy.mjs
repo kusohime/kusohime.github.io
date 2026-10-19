@@ -14,6 +14,7 @@ export function isPrivatePath(pathname) {
 export const privatePublicAssets = [
   "files/yixin-cui-cv.pdf",
   "images/chat-export-2026-06-19",
+  "images/writings",
   "images/projects",
   "images/murakamiandoe.jpg",
   "images/manuscript-home.webp",

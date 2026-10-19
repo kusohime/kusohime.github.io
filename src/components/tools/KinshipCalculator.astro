@@ -144,7 +144,7 @@
   function themeColors() {
     const cs = getComputedStyle(document.body);
     const v = (n: string, f: string) => (cs.getPropertyValue(n).trim() || f);
-    const accent = v("--theme-color", "#c81e1e");
+    const accent = v("--theme-color", "#b0232a");
     return {
       ink: v("--color-text", "#000"),
       muted: v("--color-muted", "#555"),
@@ -557,7 +557,7 @@
     const chips: string[] = [rel.side, rel.crossParallel, degreePhrase(rel)].filter(Boolean) as string[];
     const card = renderCardSvg({
       chips, relationLabel: relationLabel(rel.relationId), primary, others,
-    }, { paper: "#ffffff", ink: "#000", muted: "#555", rule: "#aaa", accent: "#c81e1e" });
+    }, { paper: "#ffffff", ink: "#000", muted: "#555", rule: "#aaa", accent: "#b0232a" });
     const png = await svgToPng(card.svg, card.width, card.height, 2);
     download(png, "kinship-card.png");
   });

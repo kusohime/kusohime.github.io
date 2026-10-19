@@ -12,19 +12,3 @@ description: "An orchestral arrangement of Lili Boulanger’s Thème et Variatio
 slug: "theme-et-variations"
 order: 1
 ---
-
-<div class="lang-block" data-lang="en">
-
-## Program Notes
-
-This orchestral arrangement of Lili Boulanger’s *Thème et Variations* was completed in 2024.
-
-</div>
-
-<div class="lang-block" data-lang="zh">
-
-## 節目說明
-
-此版為 Lili Boulanger《Thème et Variations》的管弦樂改編，完成於 2024 年。
-
-</div>

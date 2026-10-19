@@ -3,16 +3,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import LocalizedText from "./LocalizedText.astro";
 import BlogBreadcrumbs from "./BlogBreadcrumbs.astro";
 import BlogTimeline from "./BlogTimeline.astro";
-import { blogCategories, blogCategoryHref, getBlogEntries, type BlogCategoryId } from "../utils/blog";
-import { toAnchor, type WritingType } from "../config/contentTaxonomy";
-import { writingTypeLabel } from "../config/locales";
+import { blogCategories, getBlogEntries, type BlogCategoryId } from "../utils/blog";
 import "../styles/blog.css";
+import { getCollection, render } from "astro:content";
+import DialogueBubbles from "./DialogueBubbles.astro";
 
 interface Props { category: BlogCategoryId; }
 const { category } = Astro.props;
 const section = blogCategories.find(({ id }) => id === category)!;
-const entries = (await getBlogEntries()).filter((entry) => entry.category === category);
-const tags = [...new Set(entries.flatMap((entry) => entry.tags))].filter((tag) => tag !== "Translation").sort();
+const entries = (await getBlogEntries()).filter((entry) => entry.category === category && !(category === "dialogues" && entry.url === "/writings/cui-xiong-pian/"));
+const dialogueIntroduction = category === "dialogues"
+  ? (await getCollection("writings")).find((entry) => entry.data.slug === "cui-xiong-pian")
+  : undefined;
+const Introduction = dialogueIntroduction ? (await render(dialogueIntroduction)).Content : null;
 ---
 <BaseLayout title={`${section.label.en} | Blog`} titleZh={`${section.label.zh} | Blog`} description={section.description.en} descriptionZh={section.description.zh} showHierarchyBack={false}>
   <BlogBreadcrumbs category={category} atCategory />
@@ -20,50 +23,12 @@ const tags = [...new Set(entries.flatMap((entry) => entry.tags))].filter((tag) =
     <header class="blog-page-heading">
       <h1 class="blog-small-caps"><LocalizedText value={section.label} /></h1>
     </header>
-    <nav class="blog-category-nav blog-small-caps" aria-label="Blog categories">
-      {blogCategories.map((item) => <a href={blogCategoryHref(item.id)} aria-current={item.id === category ? "page" : undefined}><LocalizedText value={item.label} /></a>)}
-    </nav>
-    <div class="blog-archive-tools">
-      <p><LocalizedText value={{ en: "Newest first", zh: "由新至舊" }} /><span aria-hidden="true"> · </span><span data-blog-count>{entries.length}</span> <LocalizedText value={{ en: "entries", zh: "篇" }} /></p>
-      <label class="blog-topic-filter">
-        <span class="visually-hidden"><LocalizedText value={{ en: "Filter by topic", zh: "按主題篩選" }} /></span>
-        <select data-blog-topic>
-          <option value="" data-i18n-en="All topics" data-i18n-zh="所有主題">All topics</option>
-          {tags.map((tag) => <option value={toAnchor(tag)} data-i18n-writing-type={tag}>{writingTypeLabel(tag as WritingType, "en")}</option>)}
-        </select>
-      </label>
-    </div>
+    {Introduction && (
+      <section class="dialogues-introduction prose writing-body cui-dialogue" lang="zh-Hant">
+        <Introduction />
+        <DialogueBubbles />
+      </section>
+    )}
     <BlogTimeline entries={entries} />
-    <p data-blog-empty hidden><LocalizedText value={{ en: "No entries for this topic.", zh: "此主題下暫無文章。" }} /></p>
   </div>
-  <script>
-    const picker = document.querySelector<HTMLSelectElement>("[data-blog-topic]");
-    const syncTopic = () => {
-      if (!picker) return;
-      const requested = new URLSearchParams(location.search).get("tag") ?? "";
-      const tag = [...picker.options].some((option) => option.value === requested) ? requested : "";
-      picker.value = tag;
-      let count = 0;
-      document.querySelectorAll<HTMLElement>("[data-blog-entry]").forEach((entry) => {
-        entry.hidden = Boolean(tag && !entry.dataset.tags?.split(" ").includes(tag));
-        if (!entry.hidden) count += 1;
-      });
-      document.querySelectorAll<HTMLElement>("[data-blog-year]").forEach((year) => {
-        year.hidden = !year.querySelector("[data-blog-entry]:not([hidden])");
-      });
-      const counter = document.querySelector("[data-blog-count]");
-      if (counter) counter.textContent = String(count);
-      const empty = document.querySelector<HTMLElement>("[data-blog-empty]");
-      if (empty) empty.hidden = count > 0;
-    };
-    picker?.addEventListener("change", () => {
-      const url = new URL(location.href);
-      if (picker.value) url.searchParams.set("tag", picker.value);
-      else url.searchParams.delete("tag");
-      history.pushState(null, "", url);
-      syncTopic();
-    });
-    window.addEventListener("popstate", syncTopic);
-    syncTopic();
-  </script>
 </BaseLayout>

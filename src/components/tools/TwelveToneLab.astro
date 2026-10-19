@@ -102,7 +102,7 @@
     const allInterval = isAllInterval(row);
     byId("tt-facts").innerHTML =
       `Ordered intervals: &lt;${ints.join(" ")}&gt;` +
-      (allInterval ? ` — <span style="color:#c81e1e;">all-interval row</span>` : "");
+      (allInterval ? ` — <span style="color:var(--theme-color);">all-interval row</span>` : "");
 
     const matrix: number[][] = rowMatrix(row);
     const table = byId("tt-matrix");

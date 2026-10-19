@@ -6,7 +6,7 @@ subtitleZh: "Francesco Filidei · Stefano Busellato"
 translationFrom: "it"
 translationTo: ["en"]
 date: "2026-07-18"
-tags: ["Translation", "Drama"]
+tags: ["Translation", "Libretto", "Opera"]
 slug: "the-name-of-the-rose-libretto"
 order: 999
 draft: false

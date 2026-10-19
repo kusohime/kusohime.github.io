@@ -1,14 +1,15 @@
 ---
 import LocalizedText from "./LocalizedText.astro";
+import DialogueArchiveRelations from "./DialogueArchiveRelations.astro";
 import { parseBlogDate, type BlogEntry } from "../utils/blog";
 import { formatDate } from "../config/locales";
-import { toAnchor } from "../config/contentTaxonomy";
 
 interface Props { entries: BlogEntry[]; }
 const { entries } = Astro.props;
+const isDialogueArchive = entries.some((entry) => entry.category === "dialogues");
 const years = [...new Set(entries.map((entry) => parseBlogDate(entry.date)?.year ?? "undated"))];
 ---
-<div class="blog-timeline">
+<div class:list={["blog-timeline", { "dialogue-archive-map": isDialogueArchive }]} data-dialogue-archive={isDialogueArchive || undefined}>
   {years.map((year) => (
     <section class="blog-year" id={`year-${year}`} data-blog-year aria-labelledby={`heading-${year}`}>
       <h2 id={`heading-${year}`}>
@@ -18,12 +19,17 @@ const years = [...new Set(entries.map((entry) => parseBlogDate(entry.date)?.year
         {entries.filter((entry) => (parseBlogDate(entry.date)?.year ?? "undated") === year).map((entry) => {
           const date = parseBlogDate(entry.date);
           return (
-            <li data-blog-entry data-tags={entry.tags.map(toAnchor).join(" ")} data-date={entry.date}>
+            <li data-blog-entry data-date={entry.date} data-dialogue-slug={entry.category === "dialogues" ? entry.url.replace(/\/$/, "").split("/").pop() : undefined}>
               <time datetime={date ? entry.date : undefined} aria-label={formatDate(entry.date, "en")}>
                 {date?.month ? `${date.month}${date.day ? `.${date.day}` : ""}` : "—"}
               </time>
               <article>
-                <h3><a href={entry.url}><LocalizedText value={entry.title} /></a></h3>
+                <h3>
+                  <a href={entry.url}><LocalizedText value={entry.title} /></a>
+                  {entry.category === "translation" && entry.author && (
+                    <span class="blog-entry-author"><LocalizedText value={entry.author} /></span>
+                  )}
+                </h3>
               </article>
             </li>
           );
@@ -31,4 +37,5 @@ const years = [...new Set(entries.map((entry) => parseBlogDate(entry.date)?.year
       </ol>
     </section>
   ))}
+  {isDialogueArchive && <DialogueArchiveRelations />}
 </div>

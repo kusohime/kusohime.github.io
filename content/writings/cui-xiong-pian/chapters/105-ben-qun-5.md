@@ -15,18 +15,15 @@ source:
   messageIds: ["message4269", "message4270", "message4271", "message4272", "message4273", "message4274", "message4275", "message4276"]
   timestamp: "2024-03-19T14:27:29-05:00"
 ---
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_463@19-03-2024_14-27-29.jpg)
+* 美姬：昨天梦到本群了
+* Harlan：昨天梦到本群了
+* Cpt：昨天梦到本群了
+* serpentofarabia：本群复调阶段
+* serpentofarabia：本群有两个人生被诅咒二分之一毁了
+* 孽畜：本群禁以下人名：skepta、wiley、jlsx—串数字
+* 孽畜：本群禁 bpm：140
+* 愤怒的男模：反正本群本来也只有一个人在骂原生家庭
+* serpentofarabia：以上是我们中任何人死后翻本群消息的心情之「你是天性不爱笑吗？」
+* 外翻脆脆（收徒）：本群各有所转但只会爱零次
+* serpentofarabia：本群各有所转但只会爱零次
 
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_464@19-03-2024_14-27-29.jpg)
-
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_465@19-03-2024_14-27-29.jpg)
-
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_466@19-03-2024_14-27-30.jpg)
-
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_467@19-03-2024_14-27-30.jpg)
-
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_468@19-03-2024_14-27-30.jpg)
-
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_469@19-03-2024_14-27-30.jpg)
-
-![本羣篇 5 image](/images/chat-export-2026-06-19/photo_470@19-03-2024_14-27-30.jpg)

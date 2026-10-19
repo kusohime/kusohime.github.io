@@ -55,7 +55,9 @@ H:
 C: 我操你媽笑死我了  
 X: 我已經把那種行所裡智能自動理解為一種蠢. . .
 
-> 立體防禦 怎麼感覺像 aho 一輩子在做的事
+> 立體防禦
+
+怎麼感覺像 aho 一輩子在做的事
 
 C: 厭蠢可不可以 reduce 到那個蠢 but weaponize 之和蠢但防禦
 
@@ -68,9 +70,13 @@ X: 感覺我會 phantasize 被爆操一頓後可以修好的那個終局
 C: 不要為自己還在跟盧卡斯和某女說話找藉口了  
 X: 對不起。怎麼這麼懂我好討厭 但盧卡斯感覺也是因為蠢所以被愛 某女完全可以還原到這一層 所以他的腦殘ness是 iatrogenic
 
-> 立體防禦 感覺是我在做的。所以我對直男性的厭跨投射有一層是 這個 之慾的 displacements 所以我看黃曼也是代入插入式被 dom . . . 我 mereological apoptosis 了
+> 立體防禦
+
+感覺是我在做的。所以我對直男性的厭跨投射有一層是 這個 之慾的 displacements 所以我看黃曼也是代入插入式被 dom . . . 我 mereological apoptosis 了
 
 . . .
+
+<span data-dialogue-quote-kind="reply" data-dialogue-quote-author="熊" data-dialogue-quote-source="所以我看黃曼也是代入插入式被 dom"></span>
 
 > ~黃漫~
 
@@ -97,6 +103,8 @@ X: 為什麼 synecdoche 到了增效地
 H: 好像就是拉康 找到源頭之後反而不美了。 我們繼續意淫吧 怎麼這麼切題. . .  
 X: the way 我不讀書一年後覺得把全系秒了  
 H:
+
+<span data-dialogue-quote-kind="external" data-dialogue-quote-author="白鶴林"></span>
 
 > 《孤獨》 白鶴林
 > 從童年起，我便獨自一人

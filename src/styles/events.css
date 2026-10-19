@@ -4,7 +4,7 @@
   min-width: 0;
 }
 
-.event-date-navigation { min-width: 0; margin-bottom: 1.25rem; text-align: center; }
+.event-date-navigation { min-width: 0; margin-bottom: 1.25rem; text-align: left; }
 .event-timeline > h2 {
   margin: 0 0 0.35rem;
   font-size: 0.9rem;
@@ -15,7 +15,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.6rem;
   margin: 0;
   padding: 0;
@@ -26,7 +26,7 @@
 .event-timeline-disclosure > summary {
   display: flex;
   align-items: baseline;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.2rem;
   min-height: 1.45rem;
   padding: 0;
@@ -59,7 +59,7 @@
 .event-timeline-months a {
   display: block;
   width: fit-content;
-  margin-inline: auto;
+  margin-inline: 0;
   padding: 0.1rem 0;
   text-decoration: none;
   color: var(--color-muted);

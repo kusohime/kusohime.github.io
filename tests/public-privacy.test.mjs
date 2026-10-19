@@ -55,6 +55,7 @@ test("artifact cleanup removes private downloads and bundles while preserving tr
       "drafts/index.html": "private draft",
       "files/yixin-cui-cv.pdf": "private resume",
       "images/chat-export-2026-06-19/photo.jpg": "private photo",
+      "images/writings/cui-xiong-pian/illustration.png": "private writing illustration",
       "images/projects/chart.webp": "private chart",
       "images/murakamiandoe.jpg": "private writing image",
       "images/manuscript-home.webp": "private comment image",

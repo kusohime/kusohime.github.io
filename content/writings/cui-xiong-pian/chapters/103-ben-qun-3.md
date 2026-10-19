@@ -25,6 +25,8 @@ source:
 * 我也覺得
 * 恨是 l'aide-mémoire perpétuelle, rétentivité récursive de la volonté alternative de vivre 另類分離焦慮 / 家族牽掛. . . 如果一個人每天早上起來第一件事情是扎我的小人我會覺得很幸福
 
+<span data-dialogue-quote-kind="reply" data-dialogue-quote-author="聊天记录"></span>
+
 > 和別人只能建立摧枯拉朽狂操一頓（但退房之前沒有人比我更愛你）的關係 xor 這輩子不見面但通過某種超越連接相互永久詛咒的關係 10/26/23
 
 * . . .

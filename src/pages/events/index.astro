@@ -103,10 +103,7 @@ const hasEvents = hasUpcomingEvents || pastYearGroups.length > 0;
       hasEvents && (
         <nav class="event-date-navigation" aria-label="Browse events by date">
           {pastYearGroups.length > 0 && (
-            <section class="event-timeline" aria-labelledby="event-archive-heading">
-              <h2 id="event-archive-heading">
-                <LocalizedText value={{ en: "Archive", zh: "活動存檔" }} />
-              </h2>
+            <section class="event-timeline" aria-label="Past events">
                 <ol class="event-timeline-years">
                   {pastYearGroups.map(({ year, months, count }) => (
                     <li class="event-timeline-year" data-timeline-year>

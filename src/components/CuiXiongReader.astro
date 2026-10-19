@@ -1,10 +1,9 @@
 ---
-// 中文：《脆熊篇》專用的雙欄閱讀器；左側只保留篇號，右側顯示當前正文。
-// English: Two-column reader for Cui Xiong Pian; the left rail contains titles
-// only, while the current chapter is rendered in the right reading pane.
+// Dialogue episodes use adjacent-episode navigation; librettos retain their contents rail.
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../config/locales";
 import LocalizedText from "./LocalizedText.astro";
+import { dialogueSeriesLabel } from "../utils/blog";
 
 interface Props {
   writing: CollectionEntry<"writings">;
@@ -27,45 +26,80 @@ const {
   rootLabel = "0",
   navLabel = "Contents",
 } = Astro.props;
-const parentHref = `/writings/${writing.data.slug}/`;
+const parentHref = variant === "cui" ? "/writings/dialogues/" : `/writings/${writing.data.slug}/`;
 const dateLabel = writing.data.displayDate ?? String(writing.data.date);
+const chapterLabel = (chapter: CollectionEntry<"writingChapters">) => {
+  const seriesLabel = dialogueSeriesLabel(chapter.data.series);
+  return seriesLabel === "Trilogue"
+    ? `${seriesLabel} · ${chapter.data.seriesNumber ?? chapter.data.title}`
+    : chapter.data.title;
+};
+const episodeSeries = chapters
+  .filter((chapter) => dialogueSeriesLabel(chapter.data.series) === dialogueSeriesLabel(currentChapter?.data.series))
+  .sort((a, b) => a.data.order - b.data.order);
+const episodeIndex = episodeSeries.findIndex((chapter) => chapter.id === currentChapter?.id);
+const previousEpisode = episodeIndex > 0 ? episodeSeries[episodeIndex - 1] : undefined;
+const nextEpisode = episodeIndex >= 0 ? episodeSeries[episodeIndex + 1] : undefined;
+const openingEpisode = episodeIndex === 0 && dialogueSeriesLabel(currentChapter?.data.series) === "Dialogue";
+const episodeHref = (chapter: CollectionEntry<"writingChapters">) => `/writings/${writing.data.slug}/${chapter.data.slug}/`;
+const episodeNumber = (chapter: CollectionEntry<"writingChapters">) => chapter.data.seriesNumber ?? chapter.data.title;
 ---
 
-<div class:list={["cui-reader", { "series-reader--visual": imageLed, "libretto-reader": variant === "libretto" }]}>
-  <aside class="cui-reader-rail">
-    <a
-      class="cui-reader-title"
-      href={parentHref}
-    >
-      <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
-    </a>
-    <nav aria-label={navLabel}>
-      <ol>
-        <li>
-          <a
-            href={parentHref}
-            lang={contentLang}
-            aria-current={!currentChapter ? "page" : undefined}
-          >
-            {rootLabel}
+<div class:list={["cui-reader", { "cui-reader--dialogue": variant === "cui", "series-reader--visual": imageLed, "libretto-reader": variant === "libretto" }]}>
+  {variant === "cui" ? (
+    <header class="dialogue-episode-header">
+      {currentChapter && <h1 class="visually-hidden">{dialogueSeriesLabel(currentChapter.data.series) ?? "Dialogue"} · {episodeNumber(currentChapter)}</h1>}
+      {currentChapter && <nav class="dialogue-episode-nav" aria-label="Adjacent episodes">
+        {previousEpisode || openingEpisode ? (
+          <a class="dialogue-episode-previous" href={previousEpisode ? episodeHref(previousEpisode) : parentHref} rel="prev">
+            <span class="glyph-arrow glyph-arrow--back" data-arrow-glyph aria-hidden="true"></span>
+            <span>Previous ({previousEpisode ? episodeNumber(previousEpisode) : "0"})</span>
           </a>
-        </li>
-        {
-          chapters.map((chapter) => (
-            <li>
-              <a
-                href={`${parentHref}${chapter.data.slug}/`}
-                lang={contentLang}
-                aria-current={currentChapter?.id === chapter.id ? "page" : undefined}
-              >
-                {chapter.data.title}
-              </a>
-            </li>
-          ))
-        }
-      </ol>
-    </nav>
-  </aside>
+        ) : <span></span>}
+        {nextEpisode && <a class="dialogue-episode-next" href={episodeHref(nextEpisode)} rel="next">
+          <span>Next ({episodeNumber(nextEpisode)})</span>
+          <span class="glyph-arrow glyph-arrow--forward" data-arrow-glyph aria-hidden="true"></span>
+        </a>}
+      </nav>}
+    </header>
+  ) : <aside class="cui-reader-rail">
+    {
+        <>
+          <a
+            class="cui-reader-title"
+            href={parentHref}
+          >
+            <LocalizedText value={{ en: writing.data.title, zh: writing.data.titleZh }} />
+          </a>
+          <nav aria-label={navLabel}>
+            <ol>
+              <li>
+                <a
+                  href={parentHref}
+                  lang={contentLang}
+                  aria-current={!currentChapter ? "page" : undefined}
+                >
+                  {rootLabel}
+                </a>
+              </li>
+              {
+                chapters.map((chapter) => (
+                  <li>
+                    <a
+                      href={`${parentHref}${chapter.data.slug}/`}
+                      lang={contentLang}
+                      aria-current={currentChapter?.id === chapter.id ? "page" : undefined}
+                    >
+                      {chapterLabel(chapter)}
+                    </a>
+                  </li>
+                ))
+              }
+            </ol>
+          </nav>
+        </>
+    }
+  </aside>}
 
   <section class="cui-reader-main">
     {

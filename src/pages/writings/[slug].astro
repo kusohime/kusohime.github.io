@@ -11,6 +11,7 @@ import LocalizedText from "../../components/LocalizedText.astro";
 import BlogBreadcrumbs from "../../components/BlogBreadcrumbs.astro";
 import { writingCategory, blogCategoryHref } from "../../utils/blog";
 import SeriesDialogueReader from "../../components/SeriesDialogueReader.astro";
+import DialogueBubbles from "../../components/DialogueBubbles.astro";
 import { toAnchor } from "../../config/contentTaxonomy";
 import WritingContentsRail from "../../components/WritingContentsRail.astro";
 import { contentFolder } from "../../utils/contentPaths";
@@ -91,13 +92,15 @@ const isPoetry = writingTags.includes("Poetry");
 const isDrama = writingTags.includes("Drama");
 const isMultilingualBody = writing.data.multilingualBody;
 const isCuiXiong = writing.data.slug === "cui-xiong-pian";
+if (isCuiXiong) return Astro.redirect("/writings/dialogues/");
 const isSplitReader = isCuiXiong || writing.data.splitReader;
 const isLibrettoReader = writing.data.splitReader;
-const dialogueSeries = new Set(["脆熊篇", "本羣篇"]);
+const dialogueSeries = new Set(["脆熊篇", "本羣篇", "Dialogue", "Trilogue"]);
 const seriesTitle = writing.data.series;
 const isSeriesDialogue = Boolean(seriesTitle && dialogueSeries.has(seriesTitle));
-const isBenQun = seriesTitle === "本羣篇";
-const isImageLedSeries = isBenQun && (writing.body ?? "").includes("/images/");
+const isBenQun = seriesTitle === "本羣篇" || seriesTitle === "Trilogue";
+const hasDialogueTranscript = /(?:^|\n)\s*(?:[*-]\s+)?(?:[A-Za-z\u3400-\u9fff][^:\n]{0,48})(?::|：|\s+-\s+)/m.test(writing.body ?? "");
+const isImageLedSeries = isBenQun && (writing.body ?? "").includes("/images/") && !hasDialogueTranscript;
 const seriesEntries = isSeriesDialogue
   ? (await getCollection(
       "writings",
@@ -169,6 +172,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
             ]}
           >
             <Content />
+            <DialogueBubbles />
           </div>
         </SeriesDialogueReader>
       ) : isSplitReader ? (
@@ -178,7 +182,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
           contentLang={contentLang}
           variant={isLibrettoReader ? "libretto" : "cui"}
           rootLabel={isLibrettoReader ? "Introduction" : "0"}
-          navLabel={isLibrettoReader ? "Libretto contents" : "脆熊篇目錄"}
+          navLabel={isLibrettoReader ? "Libretto contents" : "Dialogue contents"}
         >
           <div
             lang={contentLang}
@@ -192,7 +196,7 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
               },
             ]}
           >
-            <Content />
+            {!isCuiXiong && <Content />}
           </div>
         </CuiXiongReader>
       ) : (

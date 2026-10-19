@@ -1,0 +1,100 @@
+/* Local CJK faces for the dialogue archive. The original Latin face is kept. */
+@font-face {
+  font-family: "Dialogue Punctuation";
+  src: url("/fonts/dialogue-mincho/noto-serif-sc-punctuation-400.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dialogue Punctuation";
+  src: url("/fonts/dialogue-mincho/noto-serif-sc-punctuation-700.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Dialogue Mincho";
+  src: url("/fonts/dialogue-mincho/shippori-mincho-400.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+2E80-30FF, U+31F0-9FFF, U+F900-FAFF, U+FF01-FF60, U+20000-3134F;
+}
+
+@font-face {
+  font-family: "Dialogue Mincho";
+  src: url("/fonts/dialogue-mincho/shippori-mincho-700.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+2E80-30FF, U+31F0-9FFF, U+F900-FAFF, U+FF01-FF60, U+20000-3134F;
+}
+
+/* Simplified and uncommon Chinese glyphs absent from the Japanese font. */
+@font-face {
+  font-family: "Dialogue Mincho SC";
+  src: url("/fonts/dialogue-mincho/noto-serif-sc-fill-400.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+2E80-30FF, U+31F0-9FFF, U+F900-FAFF, U+FF01-FF60, U+20000-3134F;
+}
+
+@font-face {
+  font-family: "Dialogue Mincho SC";
+  src: url("/fonts/dialogue-mincho/noto-serif-sc-fill-700.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+2E80-30FF, U+31F0-9FFF, U+F900-FAFF, U+FF01-FF60, U+20000-3134F;
+}
+
+.writing-body.cui-dialogue,
+.writing-body.poly-dialogue,
+.dialogue-keyword,
+.dialogue-directory-keyword {
+  --dialogue-font-cjk: "Dialogue Mincho", "Dialogue Mincho SC", "Noto Serif SC",
+    "Noto Serif TC", "Yu Mincho", "Hiragino Mincho ProN", "Songti SC", serif;
+  --dialogue-font-text: "AmeriGarmnd BT", "American Garamond", "EB Garamond",
+    Garamond, var(--dialogue-font-cjk);
+  font-family: var(--dialogue-font-text);
+}
+
+/* The archive enhancer creates some speaker names and quote text as plain
+   text. Keeping the mixed stack on their containers gives those Chinese
+   glyphs the same Mincho face without replacing American Garamond letters. */
+.writing-body.cui-dialogue :is(.dialogue-bubble, .dialogue-speaker, .dialogue-quote-content, .dialogue-quote-heading),
+.writing-body.poly-dialogue :is(.dialogue-bubble, .dialogue-speaker, .dialogue-quote-content, .dialogue-quote-heading) {
+  font-family: var(--dialogue-font-text);
+}
+
+/* Use the bundled 700 CJK faces directly for both speakers' names. */
+.writing-body:is(.cui-dialogue, .poly-dialogue) .dialogue-speaker {
+  font-family: "Dialogue Mincho", "Dialogue Mincho SC", var(--font-garamond);
+  font-weight: 700;
+  font-synthesis: none;
+}
+
+/* Specificity deliberately exceeds the global Garamond-mode CJK rule. */
+.writing-body.cui-dialogue :is(.cjk-run, .cjk-punctuation),
+.writing-body.poly-dialogue :is(.cjk-run, .cjk-punctuation),
+:root .dialogue-keyword :is(.cjk-run, .cjk-punctuation),
+:root .dialogue-directory-keyword :is(.cjk-run, .cjk-punctuation) {
+  font-family: var(--dialogue-font-cjk);
+  font-style: normal;
+  font-synthesis: none;
+}
+
+/* Chinese punctuation keeps its Chinese positioning and metrics instead of
+   inheriting Japanese Mincho punctuation. Explicit spacing prevents ambient
+   CJK tracking from opening gaps around individually wrapped marks. */
+.writing-body.cui-dialogue .cjk-punctuation,
+.writing-body.poly-dialogue .cjk-punctuation,
+:root .dialogue-keyword .cjk-punctuation,
+:root .dialogue-directory-keyword .cjk-punctuation {
+  font-family: "Dialogue Punctuation", var(--dialogue-font-cjk);
+  letter-spacing: 0;
+  text-autospace: no-autospace;
+}

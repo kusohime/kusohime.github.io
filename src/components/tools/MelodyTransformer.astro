@@ -103,7 +103,7 @@
         svg.append(el("circle", { cx: x(i, series.length), cy: y(m), r: 3.6, fill: color, opacity: dashed ? 0.55 : 1 })));
     };
     drawLine(original, "currentColor", true);
-    drawLine(notes, "#c81e1e", false);
+    drawLine(notes, "var(--theme-color)", false);
   }
 
   byId("tr-load").addEventListener("click", load);

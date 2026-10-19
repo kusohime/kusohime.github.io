@@ -1,0 +1,357 @@
+---
+import { dialogueArchiveRelations, type DialogueArchiveRelation } from "../data/dialogueArchiveRelations";
+
+interface Props {
+  relations?: DialogueArchiveRelation[];
+}
+
+const { relations = dialogueArchiveRelations } = Astro.props;
+---
+<!-- Place inside a [data-dialogue-archive] containing [data-dialogue-slug] rows. -->
+<div class="dialogue-archive-relations" data-dialogue-archive-relations data-relations={JSON.stringify(relations)}>
+  <svg class="dialogue-archive-lines" role="group" aria-label="Replies and echoes between dialogues"></svg>
+  <aside class="dialogue-archive-relation-card" aria-live="polite" hidden></aside>
+</div>
+
+<style is:global>
+  .blog-timeline[data-dialogue-archive] .blog-year li {
+    column-gap: calc(0.3rem + var(--dialogue-archive-left-gutter, 0px));
+  }
+  .dialogue-archive-relations {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .dialogue-archive-lines {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .dialogue-archive-relation { outline: none; cursor: pointer; }
+  .dialogue-archive-relation-stroke {
+    fill: none;
+    stroke: var(--color-text, #222);
+    stroke-width: 0.7;
+    opacity: 0.42;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+    transition: opacity 140ms;
+  }
+  .dialogue-archive-relation--reply .dialogue-archive-relation-stroke {
+    stroke: var(--theme-color, #be2330);
+    opacity: 0.72;
+    stroke-width: 0.85;
+  }
+  .dialogue-archive-relation--echo .dialogue-archive-relation-stroke {
+    fill: var(--color-text, #222);
+    stroke: none;
+  }
+  .dialogue-archive-relation-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 10;
+    vector-effect: non-scaling-stroke;
+    pointer-events: stroke;
+  }
+  .dialogue-archive-relation.is-active .dialogue-archive-relation-stroke,
+  .dialogue-archive-relation:focus-visible .dialogue-archive-relation-stroke {
+    opacity: 1;
+  }
+  .dialogue-archive-relation--reply.is-active .dialogue-archive-relation-stroke,
+  .dialogue-archive-relation--reply:focus-visible .dialogue-archive-relation-stroke {
+    stroke-width: 1.4;
+  }
+  [data-dialogue-slug].dialogue-archive-related-active > article h3 > a {
+    color: var(--theme-color, #be2330);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .dialogue-archive-relation-card {
+    position: absolute;
+    z-index: 3;
+    box-sizing: border-box;
+    width: min(26rem, calc(100% - 4px));
+    padding: 0.65rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--theme-color, #be2330) 24%, transparent);
+    background: var(--color-background, #fff);
+    color: var(--color-text, #222);
+    box-shadow: 0 4px 18px rgb(0 0 0 / 7%);
+    font: 0.76rem/1.35 var(--font-body, serif);
+    pointer-events: auto;
+  }
+  .dialogue-archive-relation-card[hidden] { display: none; }
+  .dialogue-archive-evidence {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .dialogue-archive-evidence + .dialogue-archive-evidence { margin-top: 0.5rem; }
+  .dialogue-archive-evidence:hover,
+  .dialogue-archive-evidence:focus-visible { color: var(--theme-color, #be2330); }
+  @media (prefers-reduced-motion: reduce) {
+    .dialogue-archive-relation-stroke { transition: none; }
+  }
+</style>
+
+<script>
+  import type { DialogueArchiveRelation } from "../data/dialogueArchiveRelations";
+  import { dialogueSlur } from "../utils/dialogueSlur";
+
+  const archiveNamespace = "http://www.w3.org/2000/svg";
+  const makeArchiveSvg = (tag: string, attributes: Record<string, string>) => {
+    const element = document.createElementNS(archiveNamespace, tag);
+    Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+    return element;
+  };
+
+  // Give independent ideas room on both sides of the chapter titles. The
+  // peaks are deliberately displaced along each span, rather than stacked
+  // at its midpoint in a uniform bundle against the right edge.
+  const echoLayout: Record<string, { side: "left" | "right"; crest: number; depth: number }> = {
+    "13:2": { side: "left", crest: 0.3, depth: 0 },
+    "14:1": { side: "right", crest: 0.7, depth: 3 },
+    "ben-qun-3:3": { side: "left", crest: 0.65, depth: 2 },
+    "ben-qun-7:ben-qun-3": { side: "right", crest: 0.32, depth: -2 },
+    "ben-qun-9:ben-qun-3": { side: "left", crest: 0.72, depth: 1 },
+    "ben-qun-2:11": { side: "right", crest: 0.6, depth: 1 },
+    "ben-qun-8b:21": { side: "right", crest: 0.38, depth: -1 },
+    "23-0:21": { side: "right", crest: 0.7, depth: 4 },
+    "ben-qun-9:13": { side: "right", crest: 0.26, depth: 0 },
+    "23-0:ben-qun-9": { side: "left", crest: 0.58, depth: 0 },
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-dialogue-archive-relations]").forEach((controller, archiveIndex) => {
+    if (controller.dataset.ready) return;
+    const root = controller.closest<HTMLElement>("[data-dialogue-archive]");
+    const svg = controller.querySelector<SVGSVGElement>("svg");
+    const card = controller.querySelector<HTMLElement>("aside");
+    if (!root || !svg || !card) return;
+    controller.dataset.ready = "true";
+
+    const rows = new Map(Array.from(root.querySelectorAll<HTMLElement>("[data-dialogue-slug]")).map((row) => [row.dataset.dialogueSlug!, row]));
+    const relations = (JSON.parse(controller.dataset.relations ?? "[]") as DialogueArchiveRelation[])
+      .filter((relation) => rows.has(relation.from) && rows.has(relation.to));
+    if (!relations.length) return;
+    root.dataset.archiveReplyConnections = String(relations.filter((relation) => relation.kind === "reply").length);
+    root.dataset.archiveEchoConnections = String(relations.filter((relation) => relation.kind === "echo").length);
+    root.dataset.archiveDottedConnections = String(relations.filter((relation) => relation.kind === "echo" && relation.dotted).length);
+
+    const markerId = `dialogue-archive-reply-${archiveIndex}`;
+    const defs = makeArchiveSvg("defs", {});
+    const marker = makeArchiveSvg("marker", { id: markerId, viewBox: "0 0 8 8", refX: "7", refY: "4", markerWidth: "5", markerHeight: "5", orient: "auto", markerUnits: "strokeWidth" });
+    marker.append(makeArchiveSvg("path", { d: "M 1 1 L 7 4 L 1 7", fill: "none", stroke: "var(--theme-color, #be2330)", "stroke-width": "1.3" }));
+    defs.append(marker);
+    svg.append(defs);
+
+    let selected: number | null = null;
+    let hovered: number | null = null;
+    let focused: number | null = null;
+    let frame = 0;
+    const rowTitle = (row: HTMLElement) => row.querySelector<HTMLAnchorElement>("h3 > a")?.textContent?.trim() ?? row.dataset.dialogueSlug!;
+
+    const clear = () => {
+      selected = hovered = focused = null;
+      update();
+    };
+    const positionCard = (index: number, clientY?: number) => {
+      const bounds = root.getBoundingClientRect();
+      const source = rows.get(relations[index].from)!.getBoundingClientRect();
+      const viewportTop = Math.max(2, -bounds.top + 8);
+      const viewportBottom = Math.min(bounds.height - 2, window.innerHeight - bounds.top - 8);
+      const desiredTop = (clientY ?? source.top + source.height / 2) - bounds.top + 10;
+      const top = Math.max(viewportTop, Math.min(desiredTop, viewportBottom - card.offsetHeight));
+      card.style.top = `${Math.min(Math.max(0, bounds.height - card.offsetHeight), top)}px`;
+      card.style.left = `${Math.max(2, bounds.width - card.offsetWidth - 2)}px`;
+    };
+    const renderCard = (index: number) => {
+      const relation = relations[index];
+      card.replaceChildren();
+      (["from", "to"] as const).forEach((end) => {
+        const row = rows.get(relation[end])!;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "dialogue-archive-evidence";
+        button.lang = "zh-Hant";
+        button.textContent = relation.evidence[end];
+        button.addEventListener("click", () => {
+          row.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+          card.hidden = true;
+          const link = row.querySelector<HTMLAnchorElement>("h3 > a");
+          link?.focus({ preventScroll: true });
+        });
+        card.append(button);
+      });
+      card.hidden = false;
+    };
+
+    const drawings = relations.map((relation, index) => {
+      const layout = relation.kind === "echo" ? echoLayout[`${relation.from}:${relation.to}`] : undefined;
+      const side = layout?.side ?? "right";
+      const crest = layout?.crest ?? 0.5;
+      const depth = layout?.depth ?? 0;
+      const dotted = relation.kind === "echo" && relation.dotted;
+      const group = makeArchiveSvg("g", { class: `dialogue-archive-relation dialogue-archive-relation--${relation.kind}${dotted ? " dialogue-archive-relation--dotted" : ""}`, "data-side": side, "data-crest": String(crest), "data-dotted": String(Boolean(dotted)), tabindex: "0", role: "button", "aria-expanded": "false", "aria-label": `${rowTitle(rows.get(relation.from)!)} → ${rowTitle(rows.get(relation.to)!)}: ${relation.label.en}${dotted ? " (associative echo)" : ""}` });
+      const path = makeArchiveSvg("path", { class: "dialogue-archive-relation-stroke", ...(relation.kind === "reply" ? { "marker-end": `url(#${markerId})` } : {}) });
+      const hit = makeArchiveSvg("path", { class: "dialogue-archive-relation-hit" });
+      group.append(path, hit);
+      group.addEventListener("mouseenter", (event) => { hovered = index; update((event as MouseEvent).clientY); });
+      group.addEventListener("mouseleave", () => { hovered = null; update(); });
+      group.addEventListener("focus", () => { focused = index; update(); });
+      group.addEventListener("blur", () => { focused = null; update(); });
+      group.addEventListener("click", (event) => {
+        event.stopPropagation();
+        selected = selected === index ? null : index;
+        hovered = null;
+        focused = null;
+        update((event as MouseEvent).clientY);
+      });
+      group.addEventListener("keydown", (event) => {
+        const key = (event as KeyboardEvent).key;
+        if (key === "Enter" || key === " ") {
+          event.preventDefault();
+          selected = selected === index ? null : index;
+          update();
+        }
+        if (key === "Escape") clear();
+      });
+      svg.append(group);
+      return { relation, group, path, hit, side, crest, depth };
+    });
+    root.dataset.archiveLeftConnections = String(drawings.filter((drawing) => drawing.side === "left").length);
+    root.dataset.archiveRightConnections = String(drawings.filter((drawing) => drawing.side === "right").length);
+
+    function update(clientY?: number) {
+      const active = selected ?? hovered ?? focused;
+      rows.forEach((row) => row.classList.remove("dialogue-archive-related-active"));
+      drawings.forEach(({ group, relation }, index) => {
+        const on = active === index;
+        group.classList.toggle("is-active", on);
+        group.setAttribute("aria-expanded", String(on));
+        if (on) {
+          rows.get(relation.from)!.classList.add("dialogue-archive-related-active");
+          rows.get(relation.to)!.classList.add("dialogue-archive-related-active");
+        }
+      });
+      if (active === null) card!.hidden = true;
+      else {
+        renderCard(active);
+        positionCard(active, clientY);
+      }
+    }
+
+    const draw = () => {
+      const bounds = root.getBoundingClientRect();
+      const compact = window.matchMedia("(max-width: 40rem)").matches;
+      const leftGap = compact ? 7 : 10;
+      const rightGap = compact ? 9 : 14;
+      const tracks: Record<string, number[]> = { "right-reply": [], "right-echo": [], "left-echo": [] };
+      const anchors = new Map(Array.from(rows.entries()).map(([slug, row]) => {
+        const heading = row.querySelector<HTMLAnchorElement>("h3 > a") ?? row;
+        const rect = heading.getBoundingClientRect();
+        return [slug, { left: rect.left - bounds.left - 5, right: rect.right - bounds.left + 7, y: rect.top - bounds.top + rect.height / 2 }];
+      }));
+      const prepared = drawings.map((drawing) => {
+        const from = anchors.get(drawing.relation.from)!;
+        const to = anchors.get(drawing.relation.to)!;
+        return { drawing, from, to, start: Math.min(from.y, to.y), end: Math.max(from.y, to.y), lane: 0 };
+      }).sort((a, b) => a.start - b.start || a.end - b.end);
+      prepared.forEach((item) => {
+        const key = `${item.drawing.side}-${item.drawing.relation.kind}`;
+        const lanes = tracks[key] ?? (tracks[key] = []);
+        let lane = lanes.findIndex((end) => end + 8 < item.start);
+        if (lane < 0) lane = lanes.length;
+        lanes[lane] = item.end;
+        item.lane = lane;
+      });
+      const leftLanes = tracks["left-echo"].length;
+      const replyLanes = tracks["right-reply"].length;
+      const rightLanes = tracks["right-echo"].length + replyLanes;
+      const rightGutter = Math.ceil(18 + rightLanes * rightGap);
+      const leftGutter = leftLanes ? Math.ceil(20 + Math.max(0, leftLanes - 1) * leftGap) : 0;
+      let geometryChanged = false;
+      Object.entries({ "--dialogue-archive-gutter": rightGutter, "--dialogue-archive-left-gutter": leftGutter }).forEach(([property, value]) => {
+        if (root.style.getPropertyValue(property) !== `${value}px`) {
+          root.style.setProperty(property, `${value}px`);
+          geometryChanged = true;
+        }
+      });
+      if (geometryChanged) {
+        requestDraw();
+        return;
+      }
+      const height = Math.ceil(bounds.height);
+      svg.setAttribute("viewBox", `0 0 ${bounds.width} ${height}`);
+      svg.setAttribute("width", String(bounds.width));
+      svg.setAttribute("height", String(height));
+      // Keep the outgoing edge beyond every chapter label, then size each
+      // bow from that edge. A short two-row echo should never travel across
+      // hundreds of pixels merely because the reading column is wide.
+      const titleEdge = Math.max(...Array.from(anchors.values()).map((anchor) => anchor.right));
+      prepared.forEach(({ drawing, from, to, lane }) => {
+        const left = drawing.side === "left";
+        const laneIndex = lane + (drawing.relation.kind === "echo" && !left ? replyLanes : 0);
+        const verticalSpan = Math.abs(to.y - from.y);
+        const naturalDepth = verticalSpan < 90
+          ? Math.min(42, 16 + Math.sqrt(verticalSpan) * 1.5 + lane * 3 + drawing.depth)
+          : Math.min(compact ? 96 : 130, 22 + Math.sqrt(verticalSpan) * 1.65 + lane * (compact ? 7 : 10) + drawing.depth);
+        const rightDepth = drawing.relation.kind === "reply"
+          ? (compact ? 20 : 24) + lane * 6
+          : naturalDepth;
+        const x = left
+          ? Math.min(from.left, to.left) - 9 - laneIndex * leftGap - drawing.depth
+          : Math.min(bounds.width - 12, titleEdge + rightDepth);
+        const sx = left ? Math.max(from.left, x + 4) : Math.min(titleEdge, x - 4);
+        const tx = left ? Math.max(to.left, x + 4) : Math.min(titleEdge, x - 4);
+        drawing.group.setAttribute("data-bow-x", x.toFixed(2));
+        drawing.group.setAttribute("data-arc-depth", Math.abs(x - (left ? Math.min(sx, tx) : Math.max(sx, tx))).toFixed(2));
+        drawing.group.setAttribute("data-vertical-span", verticalSpan.toFixed(2));
+        if (drawing.relation.kind === "reply") {
+          const d = `M ${sx} ${from.y} H ${x} V ${to.y} H ${tx}`;
+          drawing.path.setAttribute("d", d);
+          drawing.hit.setAttribute("d", d);
+        } else {
+          const slur = dialogueSlur({ x: sx, y: from.y }, { x: tx, y: to.y }, x, drawing.side, 1.1, { crest: drawing.crest, dotted: drawing.relation.dotted });
+          drawing.path.setAttribute("d", slur.ribbon);
+          drawing.hit.setAttribute("d", slur.curve);
+        }
+      });
+      const active = selected ?? hovered ?? focused;
+      if (active !== null && !card.hidden) positionCard(active);
+    };
+    function requestDraw() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(draw);
+    }
+    const observer = new ResizeObserver(requestDraw);
+    observer.observe(root);
+    rows.forEach((row) => observer.observe(row));
+    const languageObserver = new MutationObserver(() => { update(); requestDraw(); });
+    languageObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    const outsideClick = (event: MouseEvent) => { if (!controller.contains(event.target as Node)) clear(); };
+    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") clear(); };
+    document.addEventListener("click", outsideClick);
+    document.addEventListener("keydown", escape);
+    window.addEventListener("resize", requestDraw);
+    document.fonts.ready.then(requestDraw);
+    document.addEventListener("astro:before-swap", () => {
+      observer.disconnect();
+      languageObserver.disconnect();
+      document.removeEventListener("click", outsideClick);
+      document.removeEventListener("keydown", escape);
+      window.removeEventListener("resize", requestDraw);
+      cancelAnimationFrame(frame);
+    }, { once: true });
+    requestDraw();
+  });
+</script>

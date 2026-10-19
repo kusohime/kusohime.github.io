@@ -557,7 +557,7 @@
 
     for (const node of nodes) {
       const x = left + (right - left) * node.position;
-      svg.append(el("circle", { cx: x, cy: y, r: 5, fill: "#c81e1e" }));
+      svg.append(el("circle", { cx: x, cy: y, r: 5, fill: "var(--theme-color)" }));
       const label = el("text", { x, y: y - 14, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
       label.textContent = fractionText(node.k, node.n);
       svg.append(label);
@@ -814,7 +814,7 @@
     svg.append(el("line", { x1: left, y1: y, x2: right, y2: y, stroke: "currentColor", "stroke-width": 1 }));
     for (const node of nodes) {
       const x = left + (right - left) * node.position;
-      svg.append(el("circle", { cx: x, cy: y, r: 5, fill: "#c81e1e" }));
+      svg.append(el("circle", { cx: x, cy: y, r: 5, fill: "var(--theme-color)" }));
       const label = el("text", { x, y: y - 12, "font-size": 9, "text-anchor": "middle", fill: "currentColor" });
       label.textContent = `${node.k}/${node.n}`;
       svg.append(label);

@@ -19,8 +19,14 @@ async function renderBio(language: "en" | "zh") {
     `# ${bioContent.title[language]}[^as-of]\n\n${bioContent.intro[language]}\n\n${bioContent.body[language]}`,
   );
   const html = code
+    .replace(/(<h2\b[^>]*>)Footnotes(<\/h2>)/g, (_match, opening, closing) =>
+      opening + (language === "zh" ? "註釋" : "Footnotes") + closing,
+    )
     .replaceAll('"footnote-label"', `"bio-${language}-footnote-label"`)
-    .replace(/<a href="(\/(?:works|writings)\/[^"]*)">(?=Read\s|閱讀)/g, '<a class="home-bio-link bio-read-link" href="$1">');
+    .replace(
+      /<a href="(\/(?:works|writings)\/[^"]*)">(?=(?:\(|（)?(?:Read\s|閱讀))/g,
+      '<a class="home-bio-link bio-read-link" href="$1">',
+    );
   const heading = html.match(/^<h1\b[^>]*>[\s\S]*?<\/h1>/);
   const content = html.slice(heading?.[0].length ?? 0).trimStart();
   const intro = content.match(/^<p>([\s\S]*?)<\/p>/);
@@ -53,7 +59,7 @@ const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")])
       </>
     ) : (
     <div class="prose bio-body" data-source-file="src/config/bioContent.json">
-      <div class="lang-block" data-lang="en">
+      <div class="lang-block" data-lang="en" lang="en">
         <header class="detail-header" set:html={english.heading} />
         <p>
           <NamePronunciation translate />{" "}<span
@@ -70,7 +76,7 @@ const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")])
           set:html={english.body}
         />
       </div>
-      <div class="lang-block" data-lang="zh">
+      <div class="lang-block" data-lang="zh" lang="zh-Hant-TW">
         <header class="detail-header" set:html={chinese.heading} />
         <p>
           <NamePronunciation translate /><span
@@ -100,6 +106,24 @@ const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")])
 
   .bio-body {
     --sidenote-width: min(13rem, calc((100vw - var(--reading-width)) / 2 - var(--sidenote-gap) - 2rem));
+    --prose-line-height: 1.52;
+  }
+
+  :global(.bio-body .detail-header h1) {
+    font-weight: 700;
+  }
+
+  /* The Chinese interface resets tracking on every inherited :lang(zh) element.
+     Restore American Garamond's compact rhythm for embedded Latin text, while
+     generated CJK and ruby runs retain full-width spacing. */
+  :global(.bio-body .lang-block[data-lang="zh"] :is(p, li, .sidenote, a, em, strong, cite, sup, span)) {
+    letter-spacing: -0.025em;
+    word-spacing: -0.035em;
+  }
+
+  :global(.bio-body .lang-block[data-lang="zh"] :is(.cjk-run, .cjk-punctuation, .ruby-base, rt)) {
+    letter-spacing: var(--cjk-letter-spacing);
+    word-spacing: normal;
   }
 
   :global(.bio-body .detail-header .fn-ref),
@@ -118,16 +142,13 @@ const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")])
     color: var(--theme-color);
     font-size: 0.75rem;
     text-decoration: none;
-    white-space: normal;
-  }
-
-  :global(.bio-body .bio-read-link:hover) {
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
-  }
-
-  :global(.bio-body .bio-read-link:has(.mongolian-text)) {
     white-space: nowrap;
+  }
+
+  :global(.bio-body .bio-read-link:hover),
+  :global(.bio-body .bio-read-link:focus-visible) {
+    color: var(--theme-color);
+    text-decoration: none;
   }
 
   :global(.bio-body .bio-read-link .mongolian-text) {
@@ -139,13 +160,16 @@ const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")])
 
   :global(.bio-body .bio-read-link :is(.cjk-run, .cjk-punctuation, .ruby-base)) {
     display: inline-block;
-    font-size: 0.84em;
+    font-size: 1em;
     font-style: normal;
     font-synthesis: none;
     line-height: 1;
     vertical-align: baseline;
-    transform: scaleY(0.88);
-    transform-origin: center bottom;
+    transform: none;
+  }
+
+  :global(.bio-body .bio-read-link .all-caps-run) {
+    letter-spacing: -0.025em;
   }
 
   :global(.bio-body .bio-read-link ruby) {
@@ -161,23 +185,13 @@ const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")])
     letter-spacing: 0;
   }
 
-  /* Keep links in citations and C.V. notes usable on phones. Text-only notes still
-     use the blog's two-line annotation; wider screens share its right margin. */
-  @media (max-width: 40rem) {
-    :global(.bio-body.has-sidenotes .detail-header .jiazhu),
-    :global(.bio-body.has-sidenotes .jiazhu:has(+ .sidenote a)) {
-      display: none;
+  /* Phone work references wrap within the reading column. Footnote disclosure
+     uses the shared tap-to-open behavior in footnotes.css. */
+  @media screen and (max-width: 40rem) {
+    :global(.bio-body .bio-read-link) {
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
-    :global(.bio-body.has-sidenotes .detail-header .sidenote),
-    :global(.bio-body.has-sidenotes .sidenote:has(a)) {
-      position: static;
-      width: auto;
-      height: auto;
-      margin-left: 0.2em;
-      overflow: visible;
-      clip: auto;
-      white-space: normal;
-    }
   }
 </style>

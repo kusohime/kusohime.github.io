@@ -6,6 +6,9 @@
  */
 @import url("https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cousine:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Gentium+Plus:ital,wght@0,400;0,700;1,400&family=Hina+Mincho&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+Hebrew:wght@400;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap");
 
+@import "./dialogue-fonts.css";
+@import "./footnotes.css";
+
 @font-face {
   font-family: "Kawkab Mono";
   src: url("/fonts/kawkab-mono/KawkabMono-Regular.woff2") format("woff2");
@@ -285,7 +288,8 @@
    * 全站主题色：链接下划线、箭头、引用线等都引用这个变量。
    * Global accent: link underlines, arrow glyphs, quote rules, and related details use it.
    */
-  --theme-color: #bf262d;
+  --theme-color-solid: #b0232a;
+  --theme-color: var(--theme-color-solid);
 
   --page-width: 38rem;
   --content-width: 38rem;
@@ -299,7 +303,7 @@
   --space-lg: 2.8rem;
   --space-xl: 4rem;
 
-  --line-height: 1.5;
+  --line-height: 1.15;
   --prose-line-height: 1.6;
   --heading-line-height: 1.18;
   --heading-size: 1rem;
@@ -461,7 +465,7 @@ html {
   --color-muted: #b4aea5;
   --color-rule: #3b3935;
   --color-control-border: #49453f;
-  --theme-color: #ed8880;
+  --theme-color: #d57b74;
 }
 
 /* A single compact scale, independent of older saved text-size preferences. */
@@ -772,6 +776,7 @@ summary {
   width: 1.5rem;
   height: 1.5rem;
   object-fit: contain;
+  filter: brightness(0.92);
 }
 
 .site-name .name-pronunciation {
@@ -824,28 +829,28 @@ summary {
   display: none;
 }
 
-/* Floating paper panels: the inner surface stays clipped during unfolding. */
+/* Compact navigation slip, aligned with its label. */
 .nav-dropdown-panel {
   position: absolute;
-  top: calc(100% + 0.65rem);
-  left: -0.75rem;
+  top: calc(100% + 0.3rem);
+  left: -0.6rem;
   z-index: 40;
   display: grid;
   grid-template-rows: 1fr;
-  min-width: 10.5rem;
+  min-width: 7.5rem;
   max-width: calc(100vw - 2 * var(--page-gutter));
-  filter: drop-shadow(0 0.5rem 1rem rgb(0 0 0 / 7%));
+  filter: drop-shadow(0 0.3rem 0.6rem rgb(0 0 0 / 6%));
 }
 
 .nav-dropdown-list {
   min-height: 0;
   overflow: hidden;
   display: grid;
-  gap: 0.05rem;
-  padding: 0.35rem;
+  gap: 0;
+  padding: 0.25rem 0;
   border: 1px solid var(--color-rule);
-  border-radius: 0.3rem;
-  background: color-mix(in srgb, var(--color-background) 97%, var(--color-rule));
+  border-radius: 0.1rem;
+  background: var(--color-background);
 }
 
 .nav-dropdown[data-active="true"] > summary {
@@ -865,10 +870,14 @@ summary {
 
 .nav-dropdown-list a {
   display: block;
-  padding: 0.4rem 0.65rem;
-  border-radius: 0.15rem;
-  font-size: 0.95rem;
-  line-height: 1.3;
+  padding: 0.32rem 0.7rem;
+  border-radius: 0;
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.nav-dropdown[open] > summary {
+  color: var(--theme-color);
 }
 
 .header-tools {
@@ -2119,12 +2128,11 @@ main:has(> .home-page) {
   color: var(--color-muted);
 }
 
-/* Score pages may extend beyond the reading measure while staying inside the viewport. */
 .work-detail :is(.impasse-score-excerpts, .saijotai-score-excerpts) {
-  width: min(70rem, calc(100vw - var(--page-gutter) - var(--page-gutter)));
-  max-width: none;
-  margin-inline: 50% 0;
-  translate: -50% 0;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+  translate: none;
 }
 
 .work-detail :is(.impasse-score-excerpts, .saijotai-score-excerpts) img {
@@ -2144,8 +2152,8 @@ main:has(> .home-page) {
 .saijotai-percussion-stage {
   position: relative;
   container-type: inline-size;
-  width: min(100%, 31.7rem);
-  aspect-ratio: 507 / 349;
+  width: min(100%, 42rem);
+  aspect-ratio: 672 / 349;
   margin-inline: auto;
   overflow: hidden;
   color: var(--color-text);
@@ -2171,16 +2179,16 @@ main:has(> .home-page) {
 
 .percussion-object--wb-tb {
   top: 6.3%;
-  left: 27.2%;
-  width: 20.5%;
+  left: 45.1%;
+  width: 15.5%;
   height: 12.3%;
   font-size: 1.7em;
 }
 
 .percussion-object--snare {
   top: 18.3%;
-  left: 4.5%;
-  width: 21.8%;
+  left: 28%;
+  width: 16.4%;
   aspect-ratio: 1;
   border-radius: 50%;
   font-size: 1.65em;
@@ -2188,25 +2196,33 @@ main:has(> .home-page) {
 
 .percussion-object--hi-hat {
   top: 50.1%;
-  left: 12.1%;
-  width: 21.6%;
+  left: 33.7%;
+  width: 16.3%;
   aspect-ratio: 1;
   border-radius: 50%;
   font-size: 1.55em;
 }
 
+.percussion-object--bass-drum {
+  top: 56%;
+  left: 3.5%;
+  width: 23%;
+  height: 28.6%;
+  font-size: 1.55em;
+}
+
 .percussion-object--table-1 {
   top: 21%;
-  left: 27%;
-  width: 30.2%;
+  left: 44.9%;
+  width: 22.8%;
   height: 28.6%;
   font-size: 1.6em;
 }
 
 .percussion-object--table-2 {
   top: 29.5%;
-  left: 62%;
-  width: 25%;
+  left: 71.3%;
+  width: 18.9%;
   height: 31%;
   rotate: 38deg;
   font-size: 1.6em;
@@ -2217,9 +2233,9 @@ main:has(> .home-page) {
 }
 
 .percussion-object--heater {
-  right: 12.8%;
+  right: 9.7%;
   bottom: 3.1%;
-  width: 12.5%;
+  width: 9.4%;
   aspect-ratio: 1;
   font-size: 1.3em;
 }
@@ -2227,7 +2243,7 @@ main:has(> .home-page) {
 .percussion-wind-chimes {
   position: absolute;
   top: 38.7%;
-  left: 24.1%;
+  left: 42.7%;
   z-index: 1;
   display: flex;
   align-items: end;
@@ -2259,17 +2275,17 @@ main:has(> .home-page) {
 
 .percussion-inventory--table-1 {
   top: 54.3%;
-  left: 36.5%;
+  left: 52.1%;
 }
 
 .percussion-inventory--table-2 {
   top: 54.3%;
-  left: 53.4%;
+  left: 64.8%;
 }
 
 .percussion-inventory--voice {
-  top: 72.5%;
-  left: 53.4%;
+  top: 20%;
+  left: 4.5%;
 }
 
 @media (max-width: 34rem) {
@@ -3011,6 +3027,49 @@ main:has(> .home-page) {
   font-weight: bold;
 }
 
+.cui-reader.cui-reader--dialogue {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dialogue-episode-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.85rem;
+}
+
+.dialogue-episode-nav a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  color: inherit;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.dialogue-episode-next {
+  justify-self: end;
+}
+
+.dialogue-episode-nav .dialogue-navigation-related-active {
+  outline: 1px solid var(--theme-color);
+  outline-offset: 4px;
+  border-radius: 0.3rem;
+}
+
+.dialogue-episode-nav a:hover,
+.dialogue-episode-nav a:focus-visible {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--theme-color);
+}
+
+.dialogue-episode-nav .glyph-arrow {
+  width: 0.72em;
+  height: 0.72em;
+}
+
 .cui-reader-rail ol {
   margin: 0;
   padding: 0;
@@ -3091,7 +3150,7 @@ main:has(> .home-page) {
 
 .cui-dialogue > ul {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.42rem;
   max-width: min(100%, 46rem);
   margin-block: var(--space-md);
   padding: 0;
@@ -3099,29 +3158,14 @@ main:has(> .home-page) {
 }
 
 .cui-dialogue > ul > li {
-  width: min(82%, 30rem);
   margin: 0;
   padding: 0;
-}
-
-.cui-dialogue > ul > li:nth-child(odd) {
-  justify-self: start;
-  text-align: left;
-}
-
-.cui-dialogue > ul > li:nth-child(even) {
-  justify-self: end;
-  text-align: right;
 }
 
 .cui-dialogue > ul > li > ul {
   margin: 0.35rem 0 0;
   padding: 0;
   list-style: none;
-}
-
-.cui-dialogue > ul > li:nth-child(even) > ul {
-  text-align: right;
 }
 
 .poly-dialogue {
@@ -3142,19 +3186,6 @@ main:has(> .home-page) {
   list-style: none;
 }
 
-.poly-dialogue > ul > li {
-  margin: 0;
-  padding-left: 1.15rem;
-  text-align: left;
-  text-indent: -1.15rem;
-}
-
-.poly-dialogue > ul > li::before {
-  content: "–";
-  padding-right: 0.45rem;
-  color: var(--color-muted);
-}
-
 .poly-dialogue > p {
   margin-block: 0.45rem;
 }
@@ -3165,6 +3196,456 @@ main:has(> .home-page) {
 
 .poly-dialogue blockquote {
   margin-block: var(--space-sm);
+}
+
+/* Dialogue transcripts begin as ordinary Markdown. DialogueBubbles turns that
+   source into a compact, speaker-aware conversation only after the page loads. */
+:is(.cui-dialogue, .poly-dialogue)[data-dialogue-bubbled="true"] {
+  max-width: min(100%, 46rem);
+}
+
+.dialogue-thread {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 46rem;
+  margin-block: 1.4rem;
+}
+
+.dialogues-introduction {
+  margin-block: var(--space-md) var(--space-lg);
+}
+
+.dialogue-episode-header .dialogue-keyword {
+  margin: 0.5rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.65;
+  text-indent: 0;
+}
+
+.dialogue-opening-keyword {
+  margin-bottom: 1rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.dialogue-thread + .dialogue-thread {
+  margin-top: -0.55rem;
+}
+
+.dialogue-message {
+  display: grid;
+  gap: 0.25rem;
+  width: fit-content;
+  max-width: min(86%, 34rem);
+  margin: 0;
+  min-width: 0;
+  scroll-margin-top: 5rem;
+}
+
+.dialogue-message--left {
+  justify-self: start;
+}
+
+.dialogue-message--right {
+  justify-self: end;
+}
+
+.prose .dialogue-speaker {
+  margin: 0;
+  padding: 0 0.8rem;
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-indent: 0;
+}
+
+.dialogue-message--left .dialogue-speaker {
+  color: var(--color-text);
+}
+
+.dialogue-message--right .dialogue-speaker {
+  color: var(--theme-color);
+  text-align: right;
+}
+
+.writing-body .cui-xiong-home-image figcaption {
+  margin-top: 0.35rem;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.dialogue-bubble {
+  position: relative;
+  min-width: 0;
+  padding: 0.5rem 0.8rem 0.55rem;
+  border: 2px dotted color-mix(in srgb, var(--color-text) 72%, transparent);
+  border-radius: 1rem;
+  background: var(--color-background);
+  text-align: left;
+  text-indent: 0;
+  overflow-wrap: anywhere;
+}
+
+.dialogue-message--right .dialogue-bubble {
+  border-style: solid;
+  border-color: var(--theme-color-solid);
+  background: var(--theme-color-solid);
+  color: #fff;
+}
+
+.dialogue-message--right .dialogue-bubble a {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
+
+.dialogue-message--right .dialogue-bubble code {
+  background: rgb(255 255 255 / 12%);
+  color: inherit;
+}
+
+.dialogue-message--continuation {
+  margin-top: -0.55rem;
+}
+
+.dialogue-message--left.dialogue-message--group-end .dialogue-bubble {
+  border-bottom-left-radius: 0.3rem;
+}
+
+.dialogue-message--right.dialogue-message--group-end .dialogue-bubble {
+  border-bottom-right-radius: 0.3rem;
+}
+
+/* Only the final bubble in a consecutive run has a speech tail. */
+.dialogue-message--group-end:not(.dialogue-message--quotation) .dialogue-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: 0.6rem;
+  left: -0.38rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-left: inherit;
+  border-bottom: inherit;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.dialogue-message--right.dialogue-message--group-end:not(.dialogue-message--quotation) .dialogue-bubble::after {
+  right: -0.38rem;
+  left: auto;
+  border: 0;
+}
+
+.dialogue-message--continuation .dialogue-speaker,
+.dialogue-message--same-speaker .dialogue-speaker,
+.dialogue-message--unattributed .dialogue-speaker {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.dialogue-bubble > :first-child {
+  margin-top: 0;
+}
+
+.dialogue-bubble > :last-child {
+  margin-bottom: 0;
+}
+
+.dialogue-bubble p,
+.dialogue-bubble ul,
+.dialogue-bubble ol,
+.dialogue-bubble blockquote {
+  margin-block: 0;
+  text-indent: 0;
+}
+
+.prose .dialogue-bubble p {
+  margin: 0;
+}
+
+.prose .dialogue-bubble blockquote {
+  margin: 0.45rem 0;
+  padding: 0 0 0 0.7rem;
+  border-left: 1px solid var(--color-rule);
+}
+
+.prose .dialogue-bubble blockquote::before {
+  content: none;
+}
+
+.dialogue-bubble ul,
+.dialogue-bubble ol {
+  padding-left: 1.1rem;
+}
+
+.dialogue-bubble img,
+.dialogue-bubble video {
+  display: block;
+  width: min(100%, 30rem);
+  max-height: 36rem;
+  margin-top: 0.45rem;
+  object-fit: contain;
+}
+
+.dialogue-message--quotation .dialogue-bubble,
+.dialogue-message--quotation.dialogue-message--right .dialogue-bubble {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.prose .dialogue-quote,
+.prose .dialogue-bubble .dialogue-quote {
+  margin: 0 0 0.65rem;
+  padding: 0.45rem 0.7rem;
+  border: 0;
+  border-inline-start: 2px solid var(--theme-color);
+  border-radius: 0 0.25rem 0.25rem 0;
+  background: transparent;
+  color: inherit;
+  text-indent: 0;
+}
+
+.prose .dialogue-quote::before {
+  content: none;
+}
+
+.prose .dialogue-quote--reply,
+.prose .dialogue-bubble .dialogue-quote--reply,
+.prose .dialogue-quote--context,
+.prose .dialogue-bubble .dialogue-quote--context {
+  background: color-mix(in srgb, var(--theme-color) 5%, var(--color-background));
+}
+
+.dialogue-quote-heading {
+  display: block;
+  width: fit-content;
+  margin-bottom: 0.25rem;
+  color: var(--theme-color);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.dialogue-quote-content {
+  font-size: 0.93em;
+  line-height: 1.65;
+  white-space: normal;
+}
+
+.prose .dialogue-bubble .dialogue-quote-content > p + p {
+  margin-top: 0.6em;
+}
+
+.dialogue-quote-content > :first-child {
+  margin-top: 0;
+}
+
+.dialogue-quote-content > :last-child {
+  margin-bottom: 0;
+}
+
+.dialogue-message--quotation .dialogue-quote {
+  margin-bottom: 0;
+}
+
+.dialogue-message--right:not(.dialogue-message--quotation) :is(.dialogue-quote--reply, .dialogue-quote--context) {
+  border-inline-start-color: rgb(255 255 255 / 75%);
+  background: rgb(255 255 255 / 12%);
+}
+
+.dialogue-message--right:not(.dialogue-message--quotation) .dialogue-quote-heading {
+  color: #fff;
+}
+
+/* External quotations share the hanging opening mark used in DU's notes.
+   Replies and scene context keep their inset chat treatment. */
+.prose .dialogue-quote--external,
+.prose .dialogue-bubble .dialogue-quote--external {
+  margin-inline-start: var(--space-md);
+  padding: 0 0 0 var(--space-sm);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.prose .dialogue-quote--external::before,
+.prose .dialogue-bubble .dialogue-quote--external::before {
+  content: "“" / "";
+  top: -0.08em;
+  left: -0.5em;
+  font-size: 2.2em;
+  line-height: 1;
+  color: var(--theme-color);
+}
+
+.dialogue-message--right:not(.dialogue-message--quotation) .dialogue-quote--external::before {
+  color: inherit;
+}
+
+.dialogue-inline-quotation {
+  quotes: none;
+}
+
+.dialogue-aside,
+.dialogue-divider {
+  max-width: 46rem;
+  margin: var(--space-sm) 0;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  text-indent: 0;
+}
+
+.dialogue-divider {
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+
+.dialogue-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.8rem;
+  margin-block: 0.2rem 1.3rem;
+}
+
+.prose .dialogue-hashtags .dialogue-aside {
+  margin: 0;
+  color: var(--theme-color);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Connection studies reserve the page margins for two distinct
+   notations: orthogonal directed replies and quiet, curved thematic returns. */
+.dialogue-study {
+  --relation-outset: var(--relation-desktop-outset, 104px);
+  position: relative;
+  isolation: isolate;
+}
+
+.dialogue-relations {
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.dialogue-relation {
+  outline: none;
+  pointer-events: stroke;
+}
+
+.dialogue-relation-stroke {
+  vector-effect: non-scaling-stroke;
+}
+
+.dialogue-relation--reply .dialogue-relation-stroke {
+  stroke: var(--theme-color);
+  stroke-width: 2;
+  stroke-linejoin: miter;
+}
+
+.dialogue-relation--unresolved .dialogue-relation-stroke {
+  stroke: url(#dialogue-unresolved-fade);
+}
+
+.dialogue-relation--unresolved:not([href]) .dialogue-relation-hit {
+  cursor: default;
+}
+
+.dialogue-relation--echo .dialogue-relation-stroke {
+  fill: var(--color-text);
+  stroke: none;
+  opacity: 0.5;
+}
+
+.dialogue-relation-hit {
+  stroke: transparent;
+  stroke-width: 12;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.dialogue-relation.is-active .dialogue-relation-stroke {
+  opacity: 1;
+  stroke-width: 2;
+}
+
+.dialogue-related-active {
+  outline: none;
+}
+
+.dialogue-bubble.dialogue-related-active::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 1px solid var(--theme-color);
+  border-radius: 1.3rem;
+  pointer-events: none;
+}
+
+/* Keep relation tracks inside the viewport in phone landscape as well. */
+@media (max-width: 54rem) {
+  .dialogue-study {
+    --relation-outset: 0px;
+    box-sizing: border-box;
+    padding-inline: max(3rem, var(--relation-compact-left, 0px)) max(2.15rem, var(--relation-compact-right, 0px));
+  }
+
+  .dialogue-study .dialogue-message {
+    max-width: 92%;
+  }
+}
+
+.dialogue-source-images {
+  max-width: 46rem;
+  margin-block: var(--space-md);
+  color: var(--color-muted);
+  font-size: 0.86rem;
+}
+
+.dialogue-source-images summary {
+  width: max-content;
+  cursor: pointer;
+}
+
+.dialogue-source-images[open] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.dialogue-source-images[open] summary {
+  grid-column: 1 / -1;
+}
+
+.dialogue-source-images img {
+  width: 100%;
+  margin: 0;
+}
+
+@media (max-width: 40rem) {
+  .dialogue-message {
+    max-width: min(92%, 34rem);
+  }
+
+  .dialogue-bubble {
+    padding: 0.5rem 0.7rem 0.55rem;
+  }
+
+  .dialogue-source-images[open] {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Standalone dialogue-series pages retain the old rail and conversational
@@ -4007,12 +4488,131 @@ main:has(> .home-page) {
 
 @media (max-width: 40rem) {
   :root {
-    --page-gutter: 1rem;
-    --floating-control-size: 2.75rem;
-    --space-lg: 2.4rem;
-    --space-xl: 4rem;
+    --page-gutter: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+    --floating-control-size: 2.25rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
     --line-height: 1.5;
-    --prose-line-height: 1.62;
+    --prose-line-height: 1.52;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .site-shell {
+    padding-block: 2rem;
+  }
+
+  .site-header {
+    padding-block: 0.15rem 0;
+  }
+
+  main:has(> .home-page) {
+    padding-top: 0;
+  }
+
+  .home-intro {
+    font-size: 1rem;
+    line-height: 1.18;
+  }
+
+  .site-footer {
+    gap: 0.15rem;
+    min-height: 0;
+    line-height: 1.1;
+  }
+
+  main,
+  .catalog-groups,
+  .entry-summary,
+  .prose,
+  .writing-layout,
+  .writing-body,
+  .cui-reader-main,
+  .series-reader-main {
+    min-width: 0;
+  }
+
+  .prose {
+    overflow-wrap: anywhere;
+  }
+
+  .detail-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+
+  .site-footer > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 0;
+    padding-block: 0.12rem;
+    line-height: 1.1;
+  }
+
+  .catalog-rail a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 0;
+    padding-block: 0.1rem;
+    line-height: 1.1;
+  }
+
+  .site-shell .works-index .catalog-rail ul {
+    gap: 0.2rem 0.75rem;
+    line-height: 1.1;
+  }
+
+  .dialogue-thread {
+    font-size: 0.94rem;
+  }
+
+  .works-list > li {
+    display: grid;
+    grid-template-columns: 3.4rem minmax(0, 1fr);
+    align-items: baseline;
+  }
+
+  .works-list > li > time {
+    white-space: nowrap;
+    font-size: 0.9rem;
+  }
+
+  .works-list .catalog-entry-line {
+    display: block;
+    line-height: 1.35;
+  }
+
+  .works-list .catalog-entry-line h3 {
+    margin: 0;
+  }
+
+  .works-list .catalog-entry-subtitle {
+    margin-top: 0.1rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .catalog-groups .works-list > li {
+    margin-bottom: 0.65rem;
+  }
+
+  .writing-body :is(p, h2, h3, h4, h5):has(> .libretto-source),
+  .writing-body p > em:has(> .libretto-source) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .writing-body .libretto-translation {
+    grid-column: 1;
+    margin-bottom: 0.35em;
   }
 
   /* 中文古籍的雙行夾注：脚注分成两行小字，两个小字行合成一行正文高度。 */
@@ -4168,8 +4768,8 @@ main:has(> .home-page) {
 
   .header-tools .preference-toggle,
   .theme-toggle {
-    width: 1.6rem;
-    min-width: 1.6rem;
+    width: var(--floating-control-size);
+    min-width: var(--floating-control-size);
   }
 
   .hierarchy-back {
@@ -4186,7 +4786,8 @@ main:has(> .home-page) {
 
   .nav-dropdown-list a {
     width: 100%;
-    padding-inline: 0.65rem;
+    min-block-size: 1.9rem;
+    padding-inline: 0.7rem;
   }
 
   h1,
@@ -5052,10 +5653,6 @@ main:has(> .home-page) {
   text-transform: none;
 }
 
-.bio-page h1 {
-  font-weight: 400;
-}
-
 /* Use the available column width, including on wide screens with a narrow shell. */
 @container site (max-width: 44rem) {
   .site-shell :is(.works-index, .writings-index, .tools-index, .events-index, .cv-index,
@@ -5095,11 +5692,7 @@ main:has(> .home-page) {
   }
 }
 
-@media (max-width: 30rem) {
-  .site-shell {
-    padding-top: 2.8rem;
-  }
-
+@media (max-width: 22.5rem) {
   .header-row {
     display: grid;
     grid-template-columns: 1.7rem minmax(0, 1fr) auto;
@@ -5124,7 +5717,14 @@ main:has(> .home-page) {
     margin-bottom: 0.65rem;
   }
 
-  .nav-dropdown-panel {
-    min-width: 9rem;
+}
+
+@media (max-width: 30rem) {
+  .dialogue-study {
+    padding-inline: var(--relation-compact-left, 26.4px) var(--relation-compact-right, 18.9px);
+  }
+
+  .dialogue-study .dialogue-message {
+    max-width: 96%;
   }
 }

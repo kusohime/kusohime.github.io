@@ -6,7 +6,7 @@ subtitleZh: "Walt Whitman"
 translationFrom: "en"
 translationTo: ["zh-modern"]
 date: "2026-07-09"
-tags: ["Translation", "Poetry"]
+tags: ["Translation", "Poetry", "American Poetry"]
 excerpt: "A Chinese translation of Walt Whitman’s poem on attraction, expectation, and the difficulty of intimacy."
 excerptZh: "惠特曼一首關於吸引、期待與親密之難的詩的中譯。"
 slug: "ni-shi-na-xin-jin-bei-wo-xi-yin-er-lai-de-ren"

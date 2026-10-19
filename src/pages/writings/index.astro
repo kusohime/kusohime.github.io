@@ -13,7 +13,7 @@ const sections = blogCategories.map((section) => ({
 ---
 <BaseLayout title="Blog" titleZh="Blog" description="Translations, essays, and Dialogues with Kuma by Yixin Cui." descriptionZh="崔浥新的翻譯、隨筆與脆熊篇。" showHierarchyBack={false}>
   <div class="blog-page blog-home" data-source-file="src/pages/writings/index.astro">
-    <header class="blog-page-heading"><h1 class="blog-small-caps">Blog</h1></header>
+    <h1 class="visually-hidden">Blog</h1>
     <ol class="blog-sections">
       {sections.map((section) => (
         <li class="blog-section">

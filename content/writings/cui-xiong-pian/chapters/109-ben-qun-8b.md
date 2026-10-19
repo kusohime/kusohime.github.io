@@ -21,16 +21,23 @@ source:
 
 \#retrogenesis
 
-![本羣篇 8 image](/images/chat-export-2026-06-19/photo_1540@15-11-2025_00-31-24.jpg)
+熊：我perdure了  
+centerforthings：我endure了  
+centerforthings：i be in an investment banking interview thinking 没有人比我更懂 perdurantism in this room
 
-![本羣篇 8 image](/images/chat-export-2026-06-19/photo_1541@15-11-2025_00-31-24.jpg)
+熊：［发来一张坐着时双腿的照片］  
+脆：几把呢?
+
+熊：［在同一张照片上用红线勾勒双腿并标出箭头］  
+熊：我exdure了  
+脆：我ordure了（>我exdure了）
 
 * 我覺得這個世界上一共有四種故事：
 
-> 突然想到兩個人在一起就是全世界無敵
-> 突然好想你守護全世界我守護你👧
+  > 突然想到兩個人在一起就是全世界無敵
+  > 突然好想你守護全世界我守護你👧
 
-以及人成為神和神成為人的故事。本群發生了全部四種故事
+  以及人成為神和神成為人的故事。本群發生了全部四種故事
 
 * 什麼時候。
 * 在我腦子裡 我以為神成為人=聖經 well actually 魔法少女小圓裡發生了全部四種故事😂😂😂 bombastic side eye

@@ -51,14 +51,15 @@ Soviet agents reportedly sought it during the Cold War, but the anonymous keeper
 </div>
 
 <figure class="saijotai-percussion-plan">
-  <div class="saijotai-percussion-stage" role="img" aria-label="Percussion setup: water bowl or temple block above Table 1; snare and hi-hat at the left; wind chimes between the snare and Table 1; Table 2 at the right; and a heater at lower right.">
+  <div class="saijotai-percussion-stage" role="img" aria-label="Percussion setup: the voice station at upper left and bass drum at lower left; snare and hi-hat left of Table 1; water bowl or temple block above Table 1; wind chimes between the snare and Table 1; Table 2 at the right; and a heater at lower right.">
     <div class="percussion-object percussion-object--wb-tb"><strong>WB/TB</strong></div>
     <div class="percussion-object percussion-object--snare"><strong>Snare</strong></div>
     <div class="percussion-object percussion-object--hi-hat"><strong>Hi-hat</strong></div>
+    <div class="percussion-object percussion-object--bass-drum"><strong>Bass drum</strong></div>
     <div class="percussion-object percussion-object--table-1"><strong>Table 1</strong></div>
     <div class="percussion-object percussion-object--table-2"><strong>Table 2</strong></div>
     <div class="percussion-object percussion-object--heater"><strong>Heater</strong></div>
-    <div class="percussion-wind-chimes"><span aria-hidden="true">＊</span><small>Wind chimes</small></div>
+    <div class="percussion-wind-chimes"><span aria-hidden="true">*</span><small>Wind chimes</small></div>
     <div class="percussion-inventory percussion-inventory--table-1">
       <strong>Table 1:</strong>
       <span>Sleigh Bells</span>

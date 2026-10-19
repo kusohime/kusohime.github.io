@@ -6,7 +6,7 @@ subtitleZh: "周作人"
 translationFrom: "zh-modern"
 translationTo: ["en"]
 date: "2023-02-22"
-tags: ["Translation", "Essay"]
+tags: ["Translation", "Essay", "Chinese", "Buddhism"]
 excerpt: "Each man has a higher work of his own; though the works differ one from another, their being higher works is one and the same."
 excerptZh: "各人各有勝業，彼此雖然不同，其為勝業則一。"
 slug: "sheng-ye"

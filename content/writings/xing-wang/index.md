@@ -6,7 +6,7 @@ subtitleZh: "康斯坦丁・巴爾蒙特"
 translationFrom: "ru"
 translationTo: ["zh-modern"]
 date: "2023-10-29"
-tags: ["Translation", "Poetry", "Russian"]
+tags: ["Translation", "Poetry", "Russian", "Symbolism"]
 excerpt: "His face was like the sun at the very height of the sky."
 excerptZh: "他的面容像在天空最頂點時的太陽。"
 slug: "xing-wang"

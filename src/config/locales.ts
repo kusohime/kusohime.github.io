@@ -212,6 +212,14 @@ const writingTypeTranslations: Record<
     singular: { en: "Drama", zh: "戲劇" },
     plural: { en: "Drama", zh: "戲劇" },
   },
+  Libretto: {
+    singular: { en: "Libretto", zh: "歌劇劇本" },
+    plural: { en: "Libretti", zh: "歌劇劇本" },
+  },
+  Opera: {
+    singular: { en: "Opera", zh: "歌劇" },
+    plural: { en: "Opera", zh: "歌劇" },
+  },
   Fiction: {
     singular: { en: "Fiction", zh: "小說" },
     plural: { en: "Fiction", zh: "小說" },
@@ -232,6 +240,18 @@ const writingTypeTranslations: Record<
     singular: { en: "Poetry", zh: "詩" },
     plural: { en: "Poetry", zh: "詩" },
   },
+  "Dramatic Poetry": {
+    singular: { en: "Dramatic Poetry", zh: "劇詩" },
+    plural: { en: "Dramatic Poetry", zh: "劇詩" },
+  },
+  "American Poetry": {
+    singular: { en: "American Poetry", zh: "美國詩歌" },
+    plural: { en: "American Poetry", zh: "美國詩歌" },
+  },
+  Symbolism: {
+    singular: { en: "Symbolism", zh: "象徵主義" },
+    plural: { en: "Symbolism", zh: "象徵主義" },
+  },
   French: {
     singular: { en: "French", zh: "法文" },
     plural: { en: "French", zh: "法文" },
@@ -244,6 +264,14 @@ const writingTypeTranslations: Record<
     singular: { en: "Japanese", zh: "日文" },
     plural: { en: "Japanese", zh: "日文" },
   },
+  "Japanese Literature": {
+    singular: { en: "Japanese Literature", zh: "日本文學" },
+    plural: { en: "Japanese Literature", zh: "日本文學" },
+  },
+  Chinese: {
+    singular: { en: "Chinese", zh: "中文" },
+    plural: { en: "Chinese", zh: "中文" },
+  },
   Philosophy: {
     singular: { en: "Philosophy", zh: "哲學" },
     plural: { en: "Philosophy", zh: "哲學" },
@@ -251,6 +279,18 @@ const writingTypeTranslations: Record<
   "Philosophy of Science": {
     singular: { en: "Philosophy of Science", zh: "科學哲學" },
     plural: { en: "Philosophy of Science", zh: "科學哲學" },
+  },
+  "Analytic Philosophy": {
+    singular: { en: "Analytic Philosophy", zh: "分析哲學" },
+    plural: { en: "Analytic Philosophy", zh: "分析哲學" },
+  },
+  "Philosophy of Language": {
+    singular: { en: "Philosophy of Language", zh: "語言哲學" },
+    plural: { en: "Philosophy of Language", zh: "語言哲學" },
+  },
+  Epistemology: {
+    singular: { en: "Epistemology", zh: "知識論" },
+    plural: { en: "Epistemology", zh: "知識論" },
   },
   "Moral Philosophy": {
     singular: { en: "Moral Philosophy", zh: "道德哲學" },
@@ -276,6 +316,14 @@ const writingTypeTranslations: Record<
     singular: { en: "Calligraphy", zh: "書法" },
     plural: { en: "Calligraphy", zh: "書法" },
   },
+  "Literary Criticism": {
+    singular: { en: "Literary Criticism", zh: "文學批評" },
+    plural: { en: "Literary Criticism", zh: "文學批評" },
+  },
+  "Comparative Literature": {
+    singular: { en: "Comparative Literature", zh: "比較文學" },
+    plural: { en: "Comparative Literature", zh: "比較文學" },
+  },
   "Program Note": {
     singular: { en: "Program Note", zh: "節目說明" },
     plural: { en: "Program Notes", zh: "節目說明" },
@@ -299,6 +347,10 @@ const writingTypeTranslations: Record<
   Apologetics: {
     singular: { en: "Apologetics", zh: "護教學" },
     plural: { en: "Apologetics", zh: "護教學" },
+  },
+  Buddhism: {
+    singular: { en: "Buddhism", zh: "佛教" },
+    plural: { en: "Buddhism", zh: "佛教" },
   },
   Musicology: {
     singular: { en: "Musicology", zh: "音樂學" },

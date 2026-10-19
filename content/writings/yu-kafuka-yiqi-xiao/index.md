@@ -6,7 +6,7 @@ subtitleZh: "David Foster Wallace"
 translationFrom: "en"
 translationTo: ["zh-modern"]
 date: "2020-07-06"
-tags: ["Translation", "Essay"]
+tags: ["Translation", "Essay", "Literary Criticism"]
 excerpt: "Great short stories and great jokes have a great deal in common."
 excerptZh: "極好的短篇故事本來就和絕妙的笑話有很多共同之處。"
 slug: "yu-kafuka-yiqi-xiao"

@@ -6,7 +6,7 @@ subtitleZh: "小野正嗣"
 translationFrom: "en"
 translationTo: ["zh-modern"]
 date: "2022-02-16"
-tags: ["Translation", "Essay"]
+tags: ["Translation", "Essay", "Japanese Literature", "Literary Criticism"]
 excerpt: "I still clearly remember that quiet classmate and the colors of the two books he often read between classes—one red, the other green."
 excerptZh: "我至今仍清楚地記得那位文靜的同學，和他常在課間閱讀的那兩冊書的顏色——一冊是紅的，另一冊是綠的。"
 slug: "lun-fan-yi-qiang"

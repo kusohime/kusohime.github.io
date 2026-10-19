@@ -1,23 +1,26 @@
 ---
-// 中文：統一顯示姓名，並在游標停留或鍵盤聚焦時提供普通話讀音。
-// English: Renders the name with a shared Mandarin pronunciation tooltip.
+// Keep translation on the name label so locale changes preserve the card.
 interface Props {
   focusable?: boolean;
   translate?: boolean;
+  tooltipId?: string;
 }
 
-const { focusable = true, translate = false } = Astro.props;
-const pronunciation = "崔浥新 · Ee-Hseen Tsway · Cuī Yìxīn · [tsʰweɪ˥ i˥˩ ɕin˥]";
+const { focusable = true, translate = false, tooltipId } = Astro.props;
+const cardId = tooltipId ?? `name-pronunciation-${crypto.randomUUID()}`;
 ---
 
 <span
   class="name-pronunciation personal-name"
-  data-pronunciation={pronunciation}
-  data-i18n-en={translate ? "Yixin Cui" : undefined}
-  data-i18n-zh={translate ? "崔浥新" : undefined}
+  data-name-pronunciation
+  data-pronunciation-focusable={focusable ? "true" : undefined}
   tabindex={focusable ? "0" : undefined}
-  aria-label="Yixin Cui, 崔浥新, pronounced Ee-Hseen Tsway"
->Yixin Cui</span>
+  role={focusable ? "button" : undefined}
+  aria-label={focusable ? "Yixin Cui, pronunciation" : undefined}
+  aria-describedby={cardId}
+  aria-controls={focusable ? cardId : undefined}
+  aria-expanded={focusable ? "false" : undefined}
+><span data-i18n-en={translate ? "Yixin Cui" : undefined} data-i18n-zh={translate ? "崔浥新" : undefined}>Yixin Cui</span><span class="pronunciation-card" id={cardId} role="tooltip" aria-hidden="true"><span class="pronunciation-card-heading"><span class="pronunciation-hanzi" lang="zh-Hant">崔浥新</span><span class="pronunciation-pinyin" lang="zh-Latn-pinyin">Cuī Yìxīn</span></span><span class="pronunciation-reading">Ee-Hseen Tsway</span><span class="pronunciation-ipa">[tsʰweɪ˥ i˥˩ ɕin˥]</span></span></span>
 
 <style>
   .name-pronunciation {
@@ -26,56 +29,184 @@ const pronunciation = "崔浥新 · Ee-Hseen Tsway · Cuī Yìxīn · [tsʰweɪ�
     cursor: help;
   }
 
-  .name-pronunciation::after {
+  .name-pronunciation:focus-visible {
+    outline: 1px solid var(--color-control-border, #d5d0c8);
+    outline-offset: 0.18em;
+  }
+
+  .pronunciation-card {
     position: absolute;
-    z-index: 20;
-    top: calc(100% + 0.4rem);
-    left: 0;
+    z-index: 70;
+    top: calc(100% + 0.45rem);
+    left: var(--pronunciation-shift, 0px);
+    display: grid;
+    gap: 0.25rem;
     width: max-content;
-    max-width: calc(100vw - 2.5rem);
-    padding: 0.25rem 0.4rem;
-    border: 1px solid var(--theme-color, #c81e1e);
+    max-width: min(17rem, calc(100vw - 2rem));
+    box-sizing: border-box;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--color-control-border, #d5d0c8);
+    border-radius: 0.1rem;
     background: var(--color-background, #fff);
-    color: var(--color-text, #000);
-    content: none;
-    font-family: var(--font-body, serif);
-    font-size: 0.75rem;
-    font-weight: normal;
+    color: var(--color-text, #252320);
+    box-shadow: 0 0.3rem 0.6rem rgb(0 0 0 / 6%);
+    font-family: var(--font-garamond, serif);
+    font-size: 0.8rem;
+    font-style: normal;
+    font-weight: 400;
     font-variant-caps: normal;
-    line-height: 1.25;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    word-spacing: normal;
+    text-align: left;
+    text-indent: 0;
+    text-decoration: none;
+    white-space: normal;
+    visibility: hidden;
     opacity: 0;
     pointer-events: none;
     transform: translateY(-0.15rem);
+  }
+
+  .pronunciation-card-heading {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .pronunciation-hanzi {
+    font-family: var(--font-cjk-serif, serif);
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+  }
+
+  .pronunciation-pinyin {
+    color: var(--theme-color, #b0232a);
+    font-size: 0.82rem;
     white-space: nowrap;
   }
 
-  :global(:root[data-motion-interface="true"]) .name-pronunciation::after {
-    transition:
-      opacity 140ms ease,
-      transform 140ms ease;
+  .pronunciation-reading { font-size: 0.82rem; }
+
+  .pronunciation-ipa {
+    color: var(--color-muted, #76716b);
+    font-family: var(--font-greek, serif);
+    font-size: 0.72rem;
+    letter-spacing: 0;
+    white-space: nowrap;
   }
 
-  .name-pronunciation:hover::after,
-  .name-pronunciation:focus-visible::after,
-  :global(a:focus-visible) .name-pronunciation::after {
-    content: attr(data-pronunciation);
+  /* The name enhancer visits descendants; card readings keep normal case. */
+  .pronunciation-card :global(.small-caps-lowercase) { font-size: inherit; }
+
+  .name-pronunciation[data-pronunciation-open] > .pronunciation-card {
+    visibility: visible;
     opacity: 1;
     transform: translateY(0);
   }
 
+  :global(:root[data-motion-interface="true"]) .pronunciation-card {
+    transition: opacity 120ms ease, transform 120ms ease;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .name-pronunciation::after {
-      transition: none;
-    }
+    .pronunciation-card { transition: none; }
   }
 
-  /* 中文：中文介面直接顯示「崔浥新」，不需要讀音提示。 */
-  /* English: The Chinese UI shows 崔浥新 directly, so the pronunciation tooltip is unnecessary. */
-  :global(:root:lang(zh-Hant-TW)) .name-pronunciation {
-    cursor: inherit;
-  }
-
-  :global(:root:lang(zh-Hant-TW)) .name-pronunciation::after {
-    content: none;
-  }
+  :global(:root:lang(zh)) .name-pronunciation { cursor: inherit; }
+  :global(:root:lang(zh)) .pronunciation-card { display: none; }
 </style>
+
+<script>
+  const names = [...document.querySelectorAll<HTMLElement>("[data-name-pronunciation]")];
+  const isChinese = () => document.documentElement.lang.toLowerCase().startsWith("zh");
+
+  names.forEach((name) => {
+    const card = name.querySelector<HTMLElement>(".pronunciation-card");
+    if (!card) return;
+    const linkedName = name.closest<HTMLAnchorElement>("a");
+    const focusTarget = linkedName ?? name;
+    const canToggle = name.dataset.pronunciationFocusable === "true" && !linkedName;
+    let pinned = false;
+
+    const close = () => {
+      delete name.dataset.pronunciationOpen;
+      card.setAttribute("aria-hidden", "true");
+      if (canToggle) name.setAttribute("aria-expanded", "false");
+      pinned = false;
+    };
+
+    const position = () => {
+      name.style.setProperty("--pronunciation-shift", "0px");
+      const rect = card.getBoundingClientRect();
+      const viewportWidth = document.documentElement.clientWidth;
+      const shift = Math.min(0, viewportWidth - 12 - rect.right) + Math.max(0, 12 - rect.left);
+      name.style.setProperty("--pronunciation-shift", `${shift}px`);
+    };
+
+    const open = () => {
+      if (isChinese()) return;
+      position();
+      name.dataset.pronunciationOpen = "true";
+      card.setAttribute("aria-hidden", "false");
+      if (canToggle) name.setAttribute("aria-expanded", "true");
+    };
+
+    name.addEventListener("pointerenter", (event) => {
+      if (event.pointerType !== "touch") open();
+    });
+    name.addEventListener("pointerleave", () => {
+      if (!pinned && !focusTarget.matches(":focus-within")) close();
+    });
+    focusTarget.addEventListener("focusin", open);
+    focusTarget.addEventListener("focusout", close);
+    focusTarget.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") close();
+      if (canToggle && !isChinese() && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        if (pinned) close();
+        else { open(); pinned = true; }
+      }
+    });
+    if (canToggle) {
+      name.addEventListener("click", () => {
+        if (isChinese()) return;
+        if (pinned) close();
+        else { open(); pinned = true; }
+      });
+    }
+    document.addEventListener("pointerdown", (event) => {
+      if (event.target instanceof Node && !name.contains(event.target)) close();
+    });
+    window.addEventListener("resize", () => {
+      if (name.hasAttribute("data-pronunciation-open")) position();
+    });
+
+    const syncLanguage = () => {
+      close();
+      if (isChinese()) {
+        name.removeAttribute("aria-describedby");
+        linkedName?.removeAttribute("aria-describedby");
+        if (canToggle) {
+          name.removeAttribute("tabindex");
+          name.removeAttribute("role");
+          name.removeAttribute("aria-label");
+          name.removeAttribute("aria-expanded");
+        }
+      } else {
+        name.setAttribute("aria-describedby", card.id);
+        linkedName?.setAttribute("aria-describedby", card.id);
+        if (canToggle) {
+          name.tabIndex = 0;
+          name.setAttribute("role", "button");
+          name.setAttribute("aria-label", "Yixin Cui, pronunciation");
+          name.setAttribute("aria-expanded", "false");
+        }
+      }
+    };
+    document.addEventListener("yc-language-applied", syncLanguage);
+    syncLanguage();
+  });
+</script>

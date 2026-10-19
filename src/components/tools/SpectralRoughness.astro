@@ -106,7 +106,7 @@
         return `${index === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
       })
       .join(" ");
-    svg.append(el("path", { d: path, fill: "none", stroke: "#c81e1e", "stroke-width": 1.4 }));
+    svg.append(el("path", { d: path, fill: "none", stroke: "var(--theme-color)", "stroke-width": 1.4 }));
   }
 
   function compare() {

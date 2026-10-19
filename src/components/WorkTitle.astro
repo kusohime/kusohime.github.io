@@ -56,7 +56,7 @@ const makeParts = (value: string) => {
     {makeParts(titleWithoutMongolian).map((part) => part.annotation !== undefined
       ? <ruby><span class="ruby-base">{part.text}</span><rt>{part.annotation}</rt></ruby>
       : part.text)}
-    {mongolianTitle && <span class="work-title-mongolian-inline mongolian-text" lang="mn-Mong">{mongolianTitle}</span>}
+    {mongolianTitle && <>{" "}<span class="work-title-mongolian-inline mongolian-text" lang="mn-Mong">{mongolianTitle}</span></>}
   </>
 )}
 
@@ -64,7 +64,7 @@ const makeParts = (value: string) => {
   .work-title-mongolian-inline {
     display: inline;
     writing-mode: horizontal-tb;
-    margin-inline-start: 0.5em;
+    margin-inline-start: 0;
     vertical-align: baseline;
   }
 

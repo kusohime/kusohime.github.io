@@ -8,8 +8,9 @@ interface Props {
   category: BlogCategoryId;
   atCategory?: boolean;
   parent?: { href: string; label: LocalizedValue };
+  current?: LocalizedValue;
 }
-const { category, atCategory = false, parent } = Astro.props;
+const { category, atCategory = false, parent, current } = Astro.props;
 const section = blogCategories.find(({ id }) => id === category)!;
 ---
 <nav class="blog-breadcrumbs blog-small-caps" aria-label="Breadcrumb">
@@ -21,5 +22,6 @@ const section = blogCategories.find(({ id }) => id === category)!;
         : <a href={blogCategoryHref(category)}><LocalizedText value={section.label} /></a>}
     </li>
     {parent && <li><a href={parent.href}><LocalizedText value={parent.label} /></a></li>}
+    {current && <li><span aria-current="page"><LocalizedText value={current} /></span></li>}
   </ol>
 </nav>

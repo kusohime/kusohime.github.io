@@ -5,6 +5,7 @@
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../config/locales";
 import LocalizedText from "./LocalizedText.astro";
+import { dialogueSeriesLabel } from "../utils/blog";
 
 interface Props {
   writing: CollectionEntry<"writings">;
@@ -14,12 +15,8 @@ interface Props {
 }
 
 const { writing, entries, contentLang, imageLed = false } = Astro.props;
-const seriesTitle = writing.data.series === "脆熊篇"
-  ? "Cui Xiong Pian"
-  : writing.data.series === "本羣篇"
-    ? "Ben Qun Pian"
-    : writing.data.series ?? writing.data.title;
-const seriesTitleZh = writing.data.series ?? writing.data.titleZh;
+const seriesTitle = dialogueSeriesLabel(writing.data.series) ?? writing.data.series ?? writing.data.title;
+const seriesTitleZh = dialogueSeriesLabel(writing.data.series) ?? writing.data.series ?? writing.data.titleZh;
 const dateLabel = writing.data.displayDate ?? String(writing.data.date);
 const currentIndex = entries.findIndex((entry) => entry.id === writing.id);
 const previousEntry = currentIndex > 0 ? entries[currentIndex - 1] : undefined;

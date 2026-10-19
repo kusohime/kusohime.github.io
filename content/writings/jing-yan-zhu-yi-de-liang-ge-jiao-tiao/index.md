@@ -6,7 +6,7 @@ subtitleZh: "Willard Van Orman Quine"
 translationFrom: "en"
 translationTo: ["zh-modern"]
 date: "2021-07-15"
-tags: ["Translation", "Philosophy"]
+tags: ["Translation", "Philosophy", "Analytic Philosophy", "Philosophy of Language", "Epistemology"]
 excerpt: "Modern empiricism has been conditioned in large part by two dogmas: the analytic–synthetic distinction and reductionism."
 excerptZh: "現代經驗主義很大程度上受兩個教條制約：其一，相信分析真理與綜合真理之間有某種根本分野；其二，則是還原主義。"
 slug: "jing-yan-zhu-yi-de-liang-ge-jiao-tiao"

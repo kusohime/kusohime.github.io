@@ -1,0 +1,425 @@
+---
+import DialogueRelations from "./DialogueRelations.astro";
+import { dialogueProfiles, dialogueSlug } from "../data/dialogueProfiles";
+const profile = dialogueProfiles[dialogueSlug(Astro.url.pathname)] ?? {};
+// Turns the archival dialogue markup into speaker-aware bubbles after Markdown
+// has rendered. Keeping the source as ordinary Markdown makes the transcripts
+// easy to edit while the reader can still recognize each speaker at display time.
+---
+
+<script is:inline type="application/json" data-dialogue-profile set:html={JSON.stringify(profile).replace(/</g, "\\u003c")} />
+<script is:inline>
+  (() => {
+    const profile = JSON.parse(document.querySelector("[data-dialogue-profile]")?.textContent ?? "{}");
+    const selfNames = new Set([
+      "C",
+      "崔",
+      "脆",
+      "老残",
+      "老殘",
+      "文化苦女",
+      "苦女",
+      "外翻脆脆（收徒）",
+      "外翻脆脆(收徒)",
+    ]);
+    const aliases = new Map([
+      ["C", "脆"],
+      ["H", "贺"],
+      ["賀", "贺"],
+      ["X", "熊"],
+    ]);
+    const unknownNames = ["A", "B", "C"];
+    const messageLabel = /^\s*([\p{L}\p{N}][\p{L}\p{N} _·.（）()'’\-]{0,40})\s*(?::|：|\s+[-—–]\s+)\s*/u;
+    const divider = /^[.．…·\s]+$/u;
+    const footnoteContent = ".sidenote, .footnotes, [data-footnotes], sup, [data-footnote-ref], [data-footnote-backref]";
+
+    const splitFragments = (html) =>
+      html
+        .split(/(?:<br\s*\/?>(?:\s|\n)*)+/gi)
+        .map((fragment) => fragment.trim())
+        .filter(Boolean);
+
+    const makeAside = (html, className = "dialogue-aside") => {
+      const aside = document.createElement("p");
+      aside.className = className;
+      aside.innerHTML = html;
+      return aside;
+    };
+
+    const resolveSpeaker = (name, state) => {
+      if (name) {
+        const trimmed = name.trim();
+        const edited = profile.speakerAliases?.[trimmed];
+        const display = edited?.name ?? aliases.get(trimmed) ?? trimmed;
+        const isSelf = edited?.self ?? (selfNames.has(trimmed) || /(?:脆|老残|老殘|苦女)/u.test(trimmed));
+        const info = { display, side: isSelf ? "right" : "left", identified: true };
+        state.lastSpeaker = info;
+        return info;
+      }
+
+      if (state.lastSpeaker) return state.lastSpeaker;
+      const voices = profile.unknownSpeakers ?? [{ name: "脆", self: true }, { name: "熊", self: false }];
+      const edited = voices[state.unknownIndex % voices.length];
+      const display = edited?.name ?? unknownNames[state.unknownIndex % unknownNames.length];
+      state.unknownIndex += 1;
+      const info = { display, side: edited?.self ? "right" : "left", identified: Boolean(edited) };
+      state.lastSpeaker = info;
+      return info;
+    };
+
+    const removeLabel = (holder, label) => {
+      const match = holder.textContent?.match(label);
+      if (!match) return;
+      let remaining = match[0].length;
+      const walker = document.createTreeWalker(holder, NodeFilter.SHOW_TEXT);
+      while (remaining > 0 && walker.nextNode()) {
+        const node = walker.currentNode;
+        const value = node.nodeValue ?? "";
+        const removed = Math.min(remaining, value.length);
+        node.nodeValue = value.slice(removed);
+        remaining -= removed;
+      }
+    };
+
+    const normalizeQuote = (text) => text.normalize("NFKC").replace(/[\s\p{P}\p{S}]/gu, "").toLowerCase();
+    const findQuoteSource = (text, state) => {
+      const needle = normalizeQuote(text);
+      if (needle.length >= 4) {
+        const match = [...state.messages].reverse().find((message) => message.normalized.includes(needle));
+        if (match) return { author: match.identified ? match.author : null, href: `#${match.id}` };
+      }
+      if (/但他就是生[气氣]然[后後][说說]我像他爹|希[腊臘]酸奶事件/u.test(text)) {
+        const yogurt = [...state.messages].reverse().find((message) => /希[腊臘]酸奶/u.test(message.normalized));
+        if (/希[腊臘]酸奶事件/u.test(text) && yogurt) return { author: yogurt.author, href: `#${yogurt.id}` };
+        return { author: "脆", href: "/writings/cui-xiong-pian/22/" };
+      }
+      if (text.trim() === "10492") return { author: "脆", href: "/writings/cui-xiong-pian/23-0/" };
+      if (/#本[群羣]篇\s*8/u.test(text)) return { author: "Trilogue · 8b", href: "/writings/cui-xiong-pian/ben-qun-8b/" };
+      return null;
+    };
+
+    const quoteWidget = (content, kind, source = null) => {
+      const quote = document.createElement("blockquote");
+      quote.className = `dialogue-quote dialogue-quote--${kind}`;
+      quote.dataset.quoteKind = kind;
+      if (source?.href) quote.setAttribute("cite", source.href);
+      const author = source?.author?.trim();
+      if (author && !["Reply", "Quotation", "Context", "聊天记录", "聊天記錄"].includes(author)) {
+        const heading = document.createElement(source?.href ? "a" : "span");
+        heading.className = "dialogue-quote-heading";
+        heading.textContent = author;
+        if (source?.href) heading.href = source.href;
+        quote.append(heading);
+      }
+      const body = document.createElement("div");
+      body.className = "dialogue-quote-content";
+      if (typeof content === "string") body.innerHTML = content.trim();
+      else body.append(content);
+      // Preserve soft line breaks inside a quoted paragraph without also
+      // exposing the Markdown renderer's whitespace between block elements.
+      body.querySelectorAll("p").forEach((paragraph) => {
+        const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach((node) => {
+          if (node.parentElement?.closest("code, pre")) return;
+          let text = node.nodeValue ?? "";
+          if (node.previousSibling?.nodeName === "BR") text = text.replace(/^\s*\n/, "");
+          if (!text.includes("\n")) {
+            node.nodeValue = text;
+            return;
+          }
+          const fragment = document.createDocumentFragment();
+          text.split("\n").forEach((line, index) => {
+            if (index) fragment.append(document.createElement("br"));
+            fragment.append(document.createTextNode(line));
+          });
+          node.replaceWith(fragment);
+        });
+      });
+      quote.append(body);
+      return quote;
+    };
+
+    // Text may already be wrapped in script-specific font spans. Work in text
+    // offsets so extracting a quote never drops those spans, links or emphasis.
+    const textRange = (holder, start, end) => {
+      const walker = document.createTreeWalker(holder, NodeFilter.SHOW_TEXT);
+      const range = document.createRange();
+      let offset = 0;
+      let hasStart = false;
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const length = node.nodeValue?.length ?? 0;
+        if (!hasStart && start < offset + length) {
+          range.setStart(node, start - offset);
+          hasStart = true;
+        }
+        if (hasStart && end <= offset + length) {
+          range.setEnd(node, end - offset);
+          return range;
+        }
+        offset += length;
+      }
+      return null;
+    };
+
+    const extractInlineReplies = (holder, state) => {
+      const text = holder.textContent ?? "";
+      const matches = [];
+      for (let start = 0; start < text.length; start += 1) {
+        if (!/[（(]/u.test(text[start]) || !/^\s*>/u.test(text.slice(start + 1))) continue;
+        let depth = 1;
+        let end = start + 1;
+        for (; end < text.length && depth; end += 1) {
+          if (/[（(]/u.test(text[end])) depth += 1;
+          else if (/[）)]/u.test(text[end])) depth -= 1;
+        }
+        if (depth) continue;
+        matches.push({ index: start, raw: text.slice(start, end), content: text.slice(start + 1, end - 1).replace(/^\s*>\s*/u, "") });
+        start = end - 1;
+      }
+      const replies = [];
+      matches.reverse().forEach((match) => {
+        const range = textRange(holder, match.index, match.index + match.raw.length);
+        if (!range || range.startContainer.parentElement?.closest(`code, pre, .dialogue-quote, ${footnoteContent}`)) return;
+        const content = document.createTextNode(match.content.trim());
+        const kind = /给学校同学推荐卖椅子的/u.test(match.content) ? "context" : "reply";
+        replies.unshift(quoteWidget(content, kind, findQuoteSource(match.content, state)));
+        range.deleteContents();
+      });
+      return replies;
+    };
+
+    const decorateQuotations = (holder) => {
+      holder.querySelectorAll("blockquote:not(.dialogue-quote)").forEach((quote) => {
+        if (quote.closest(footnoteContent)) return;
+        quote.replaceWith(quoteWidget(quote.innerHTML, "external"));
+      });
+      // Short inline quotations remain inline; do not turn a quoted term into
+      // a separate message or mistake it for somebody's reply.
+      const quotationText = holder.textContent ?? "";
+      const quotations = Array.from(quotationText.matchAll(/“[^”\n]+”|「[^」\n]+」|«[^»\n]+»/gu));
+      quotations.reverse().forEach((match) => {
+        const range = textRange(holder, match.index, match.index + match[0].length);
+        if (!range || range.startContainer.parentElement?.closest(`code, pre, q, .dialogue-quote, ${footnoteContent}`)) return;
+        const quote = document.createElement("q");
+        quote.className = "dialogue-inline-quotation";
+        quote.append(range.extractContents());
+        range.insertNode(quote);
+      });
+    };
+
+    const makeMessage = (html, state, newTurn = false, quotation = false) => {
+      const holder = document.createElement("div");
+      holder.innerHTML = html;
+      const forceSeparate = Boolean(holder.querySelector("[data-dialogue-separate]"));
+      holder.querySelectorAll("[data-dialogue-separate]").forEach((marker) => marker.remove());
+      const text = holder.textContent?.trim() ?? "";
+      if (!text && !holder.querySelector("img, audio, video") && !state.pendingReplies.length) return null;
+      if (!quotation && divider.test(text)) return makeAside("· · ·", "dialogue-divider");
+      if (!quotation && text.startsWith("#")) return makeAside(holder.innerHTML);
+      if (!quotation && /^[.．…·\s]*(?:時間|时间)[來来]到第二天$/u.test(text)) {
+        return makeAside(holder.innerHTML);
+      }
+      if (/^(?:五分鐘|五分钟|[一二三四五六七八九十\d]+(?:分鐘|分钟|天|小時|小时)後)$/u.test(text)) {
+        return makeAside(holder.innerHTML);
+      }
+
+      let label = quotation ? null : text.match(messageLabel);
+      // A prose sentence ending in a colon is not a sender name. Explicit
+      // aliases still allow long epithets used by the original participants.
+      if (label && /\p{Script=Han}/u.test(label[1]) && label[1].length > 8
+        && !profile.speakerAliases?.[label[1]] && !selfNames.has(label[1])) label = null;
+      if (label) removeLabel(holder, messageLabel);
+      const inlineReplies = quotation ? [] : extractInlineReplies(holder, state);
+      if (!holder.textContent?.trim() && !holder.querySelector("img, audio, video")) {
+        if (label) {
+          resolveSpeaker(label[1], state);
+          state.pendingQuoteSender = true;
+        }
+        state.pendingReplies.push(...inlineReplies);
+        return null;
+      }
+      if (newTurn && !label) state.lastSpeaker = null;
+      let speaker = quotation && !state.lastSpeaker
+        ? { display: "", side: "left", identified: false }
+        : resolveSpeaker(label?.[1], state);
+      // These editorial assignments preserve consecutive turns and identify
+      // the author's voice in transcripts whose export omitted speaker names.
+      const edited = profile.messageSpeakers?.[state.messages.length + 1];
+      if (edited && !quotation) {
+        speaker = { display: edited.name, side: edited.self ? "right" : "left", identified: true };
+        state.lastSpeaker = speaker;
+      }
+      state.pendingQuoteSender = false;
+      if (!quotation) decorateQuotations(holder);
+
+      const message = document.createElement("section");
+      message.className = `dialogue-message dialogue-message--${speaker.side}`;
+      if (quotation) message.classList.add("dialogue-message--quotation");
+      if (quotation && !speaker.identified) message.classList.add("dialogue-message--unattributed");
+      message.dataset.speaker = speaker.display;
+      message.id = `dialogue-message-${state.messages.length + 1}`;
+      if (forceSeparate) message.dataset.dialogueSeparate = "true";
+      const speakerLabel = document.createElement("p");
+      speakerLabel.className = "dialogue-speaker";
+      speakerLabel.textContent = speaker.display;
+      const bubble = document.createElement("div");
+      bubble.className = "dialogue-bubble";
+      const ownText = holder.textContent ?? text;
+      bubble.append(...state.pendingReplies.splice(0), ...inlineReplies, ...holder.childNodes);
+      message.append(speakerLabel, bubble);
+      state.messages.push({ id: message.id, author: speaker.display, identified: speaker.identified, normalized: normalizeQuote(ownText) });
+      return message;
+    };
+
+    const makeThread = (fragments, state, newTurn = false) => {
+      const thread = document.createElement("div");
+      thread.className = "dialogue-thread";
+      fragments.forEach((fragment) => {
+        const item = makeMessage(fragment, state, newTurn);
+        if (item) thread.append(item);
+      });
+      return thread;
+    };
+
+    const convertList = (list, state) => {
+      const fragments = Array.from(list.children)
+        .filter((item) => item.tagName === "LI")
+        .map((item) => item.innerHTML);
+      const thread = makeThread(fragments, state, true);
+      list.replaceWith(thread);
+    };
+
+    const convertParagraph = (paragraph, state) => {
+      if (paragraph.querySelector(":scope > img:only-child")) return;
+      const thread = makeThread(splitFragments(paragraph.innerHTML), state);
+      if (!thread.childElementCount) return;
+      paragraph.replaceWith(thread);
+    };
+
+    const convertQuote = (quote, state) => {
+      const quotedBySender = state.pendingQuoteSender;
+      const previousSpeaker = state.lastSpeaker;
+      state.pendingQuoteSender = false;
+      const source = state.nextQuote ?? findQuoteSource(quote.textContent ?? "", state);
+      const kind = source?.kind ?? (source ? "reply" : "external");
+      state.nextQuote = null;
+      const widget = quoteWidget(quote.innerHTML, kind, source);
+      if (kind === "reply") {
+        state.pendingReplies.push(widget);
+        quote.remove();
+        return;
+      }
+      const thread = document.createElement("div");
+      thread.className = "dialogue-thread";
+      if (!quotedBySender) state.lastSpeaker = null;
+      const message = makeMessage(widget.outerHTML, state, false, true);
+      if (message && quotedBySender) message.classList.remove("dialogue-message--quotation");
+      if (!quotedBySender) state.lastSpeaker = previousSpeaker;
+      if (message) thread.append(message);
+      quote.replaceWith(thread);
+    };
+
+    const enhance = () => {
+      document
+        .querySelectorAll(".writing-body.cui-dialogue, .writing-body.poly-dialogue")
+        .forEach((root) => {
+          if (root.dataset.dialogueBubbled === "true") return;
+          const state = { lastSpeaker: null, unknownIndex: 0, messages: [], pendingReplies: [], nextQuote: null, pendingQuoteSender: false };
+          Array.from(root.children).forEach((element) => {
+            if (element.matches(footnoteContent)) return;
+            const quoteMarker = element.querySelector("[data-dialogue-quote-kind]");
+            if (quoteMarker && !element.textContent?.trim()) {
+              const source = quoteMarker.dataset.dialogueQuoteSource
+                ? findQuoteSource(quoteMarker.dataset.dialogueQuoteSource, state)
+                : null;
+              state.nextQuote = {
+                kind: quoteMarker.dataset.dialogueQuoteKind,
+                author: quoteMarker.dataset.dialogueQuoteAuthor ?? source?.author,
+                href: quoteMarker.dataset.dialogueQuoteCite ?? source?.href,
+              };
+              element.remove();
+              return;
+            }
+            if (element.matches("details, h1, h2, h3, h4, figure")) return;
+            if (element.tagName === "UL") convertList(element, state);
+            else if (element.tagName === "P") convertParagraph(element, state);
+            else if (element.tagName === "BLOCKQUOTE") convertQuote(element, state);
+            else if (element.tagName === "HR") element.replaceWith(makeAside("· · ·", "dialogue-divider"));
+          });
+          if (state.pendingReplies.length) {
+            const thread = document.createElement("div");
+            thread.className = "dialogue-thread";
+            const content = state.pendingReplies.splice(0).map((quote) => quote.outerHTML).join("");
+            const message = makeMessage(content, state, false, true);
+            if (message) thread.append(message);
+            root.append(thread);
+          }
+          // Keep consecutive lines by the same speaker together visually. A
+          // divider or contextual note starts a new group, even for that speaker.
+          let previousSpeaker = null;
+          let previousWasSeparate = false;
+          let previousMessage = null;
+          root.querySelectorAll(".dialogue-message, .dialogue-aside, .dialogue-divider").forEach((item) => {
+            if (!item.matches(".dialogue-message")) {
+              previousSpeaker = null;
+              previousWasSeparate = false;
+              previousMessage = null;
+              return;
+            }
+            item.classList.add("dialogue-message--group-end");
+            if (item.classList.contains("dialogue-message--quotation")) {
+              previousSpeaker = null;
+              previousWasSeparate = false;
+              previousMessage = null;
+              return;
+            }
+            const startsNewBubble = item.dataset.dialogueSeparate === "true";
+            const sameSpeaker = item.dataset.speaker === previousSpeaker;
+            if (sameSpeaker && !startsNewBubble && !previousWasSeparate) {
+              item.classList.add("dialogue-message--continuation");
+              previousMessage?.classList.remove("dialogue-message--group-end");
+            } else if (sameSpeaker) {
+              // A deliberately separated bubble still belongs to the same
+              // speaker, so preserve the shared attribution without visually
+              // joining the two bubbles.
+              item.classList.add("dialogue-message--same-speaker");
+            }
+            previousSpeaker = item.dataset.speaker;
+            previousWasSeparate = startsNewBubble;
+            previousMessage = item;
+          });
+          root.dataset.dialogueBubbled = "true";
+          // Keep adjacent chapter tags together rather than giving every tag
+          // the vertical rhythm of a separate conversational aside.
+          let tagGroup = null;
+          root.querySelectorAll(".dialogue-aside").forEach((aside) => {
+            if (!aside.textContent?.trim().startsWith("#")) return;
+            const thread = aside.parentElement;
+            if (thread?.classList.contains("dialogue-thread") && thread.children.length === 1) {
+              if (!tagGroup || tagGroup.nextElementSibling !== thread) {
+                tagGroup = document.createElement("div");
+                tagGroup.className = "dialogue-hashtags";
+                thread.before(tagGroup);
+              }
+              tagGroup.append(aside);
+              thread.remove();
+            }
+          });
+          root.dispatchEvent(new CustomEvent("dialogue:ready", { bubbles: true }));
+        });
+    };
+
+    // This inline component follows the complete Markdown body. Build bubbles
+    // before deferred footnote modules bind handlers to the final reference
+    // nodes; rebuilding them later from innerHTML would detach those handlers.
+    enhance();
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", enhance, { once: true });
+    }
+  })();
+</script>
+
+<DialogueRelations />

@@ -1,0 +1,124 @@
+/* Source definitions remain available without JavaScript and in print.
+   Enhanced phone layouts reveal a note only after tapping its marker. */
+.footnote-popover[hidden] {
+  display: none;
+}
+
+.footnote-popover {
+  display: none;
+}
+
+@media screen and (max-width: 40rem) {
+  .prose.has-sidenotes.has-tap-footnotes :is(.sidenote, .jiazhu),
+  .prose.has-sidenotes.has-tap-footnotes :is(section.footnotes, [data-footnotes]) {
+    display: none;
+  }
+
+  .prose.has-sidenotes.has-tap-footnotes .fn-ref .fn-tap-trigger {
+    position: relative;
+    padding: 0.2em 0.1em;
+    color: var(--theme-color);
+    cursor: pointer;
+    pointer-events: auto;
+    text-decoration: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .prose.has-sidenotes.has-tap-footnotes .fn-tap-trigger:focus-visible {
+    outline: 1px solid var(--theme-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .prose.has-sidenotes.has-tap-footnotes .fn-tap-trigger[aria-expanded="true"] {
+    color: var(--color-text);
+  }
+
+  .footnote-popover {
+    display: block;
+    position: fixed;
+    z-index: 1500;
+    box-sizing: border-box;
+    width: min(22rem, calc(100vw - 1.5rem));
+    margin: 0;
+    padding: 0.65rem 0.8rem 0.8rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    color: var(--color-text);
+    background: var(--color-background);
+    border: 1px solid var(--color-rule);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.35rem 1.5rem rgb(0 0 0 / 0.12);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 400;
+    line-height: 1.35;
+    text-align: start;
+    text-indent: 0;
+    overflow-wrap: anywhere;
+    outline: none;
+  }
+
+  .footnote-popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+    color: var(--theme-color);
+  }
+
+  .footnote-popover-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    margin: -0.35rem -0.35rem 0 0;
+    padding: 0;
+    color: var(--color-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    font: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .footnote-popover-close:focus-visible {
+    outline: 1px solid var(--theme-color);
+    outline-offset: 1px;
+  }
+
+  .footnote-popover .footnote-popover-content {
+    --prose-line-height: 1.35;
+    margin: 0;
+    font: inherit;
+    letter-spacing: -0.025em;
+    word-spacing: -0.035em;
+    line-height: 1.35;
+  }
+
+  .footnote-popover .footnote-popover-content :is(p, li) {
+    margin-block: 0 0.35em;
+    font-size: inherit;
+    line-height: inherit;
+    text-indent: 0;
+  }
+
+  .footnote-popover-content > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+@media print {
+  .footnote-popover {
+    display: none !important;
+  }
+
+  .prose.has-sidenotes.has-tap-footnotes :is(section.footnotes, [data-footnotes]) {
+    display: block;
+  }
+}

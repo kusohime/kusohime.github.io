@@ -1,29 +1,19 @@
 /**
- * 中文：脚注边注实验——把脚注标记改成红色括号 (n)，并把脚注内容复制到段落右侧空白。
- * English: Footnote sidenote experiment — render the in-text marker as a red
- * parenthetical (n) and clone each footnote's content beside its paragraph.
- *
- * 排版：宽屏时内容浮到右栏边空白；窄屏退化为行内红色括注。底部脚注列表在屏幕上
- * 隐藏（内容已搬到正文旁），但打印时保留——具体样式都在 global.css。
- * Layout: on wide screens the note floats into the right margin; on narrow screens
- * it falls back to an inline red parenthetical. The bottom list is hidden on screen
- * (its content now sits beside the text) but kept for print — all styling lives in
- * global.css under the "footnote sidenote experiment" block.
+ * Shared Markdown notes: retain margin notes on desktop and reveal a compact,
+ * dismissible note panel when its marker is tapped on a phone. The source list
+ * stays in the document for print and for the no-script fallback.
  */
 
-// 把脚注定义的块级内容（通常是一个 <p>）摊平成行内节点，便于放进 <span>。
-// Flatten a footnote definition's block content (usually one <p>) into inline
-// nodes so it can live inside a phrasing-content <span>.
+// Keep links and emphasis when flattening a Markdown definition for a sidenote.
 function inlineNoteContent(item: HTMLElement): Node[] {
   const clone = item.cloneNode(true) as HTMLElement;
-  clone
-    .querySelectorAll("a[data-footnote-backref]")
-    .forEach((backref) => backref.remove());
-  clone.querySelectorAll(".footnote-label").forEach((label) => label.remove());
+  clone.querySelectorAll("a[data-footnote-backref], .footnote-label")
+    .forEach((node) => node.remove());
 
   const nodes: Node[] = [];
   clone.childNodes.forEach((child) => {
     if (child instanceof HTMLParagraphElement) {
+      if (nodes.length > 0) nodes.push(document.createElement("br"));
       nodes.push(...Array.from(child.childNodes));
     } else {
       nodes.push(child);
@@ -32,198 +22,234 @@ function inlineNoteContent(item: HTMLElement): Node[] {
   return nodes;
 }
 
-function noteText(nodes: Node[]): string {
-  return nodes
-    .map((node) => node.textContent ?? "")
-    .join("")
-    .replace(/\s+/g, " ")
-    .trim();
+interface TapNote {
+  ref: HTMLAnchorElement;
+  sidenote: HTMLElement;
+  label: string;
+  originalAttributes: Map<string, string | null>;
 }
 
-function canvasTextMeasurer(element: HTMLElement): (text: string) => number {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) return (text) => text.length * 8;
+const tapNotes: TapNote[] = [];
+let tapFootnotesInitialized = false;
 
-  const style = window.getComputedStyle(element);
-  context.font = [
-    style.fontStyle,
-    style.fontVariant,
-    style.fontWeight,
-    style.fontSize,
-    style.fontFamily,
-  ].join(" ");
+function setupTapFootnotes(): void {
+  if (tapFootnotesInitialized || tapNotes.length === 0) return;
+  tapFootnotesInitialized = true;
 
-  return (text) => context.measureText(text).width;
-}
-
-function takeMeasuredLine(
-  text: string,
-  maxWidth: number,
-  measure: (text: string) => number,
-): [line: string, rest: string] {
-  const trimmed = text.replace(/^\s+/, "");
-  if (!trimmed) return ["", ""];
-
-  let line = "";
-  let lastBreakIndex = -1;
-  const chars = Array.from(trimmed);
-
-  for (let index = 0; index < chars.length; index += 1) {
-    const next = line + chars[index];
-    if (/\s/.test(chars[index])) lastBreakIndex = next.length;
-
-    if (measure(next) > maxWidth && line) {
-      if (lastBreakIndex > 0) {
-        return [
-          line.slice(0, lastBreakIndex).trimEnd(),
-          trimmed.slice(lastBreakIndex),
-        ];
-      }
-      return [line.trimEnd(), trimmed.slice(line.length)];
-    }
-
-    line = next;
-  }
-
-  return [line.trimEnd(), ""];
-}
-
-function renderJiazhuContainer(container: HTMLElement): void {
-  const text = container.dataset.note ?? "";
-  container.replaceChildren();
-  if (!text) return;
-
-  const parent = container.parentElement;
-  if (!parent) return;
-
-  const parentRect = parent.getBoundingClientRect();
-  const containerRect = container.getBoundingClientRect();
-  const fullWidth = parent.clientWidth;
-  const firstWidth = Math.max(48, parentRect.right - containerRect.left);
-  const measure = canvasTextMeasurer(container);
-  let rest = text;
-  let isFirstCell = true;
-
-  while (rest) {
-    const cell = document.createElement("span");
-    cell.className = "jiazhu-cell";
-    const cellWidth = Math.max(48, Math.min(isFirstCell ? firstWidth : fullWidth, fullWidth));
-    cell.style.width = `${cellWidth}px`;
-
-    for (let rowIndex = 0; rowIndex < 2; rowIndex += 1) {
-      const row = document.createElement("span");
-      row.className = "jiazhu-row";
-      const [line, nextRest] = takeMeasuredLine(rest, cellWidth, measure);
-      row.textContent = line;
-      cell.append(row);
-      rest = nextRest;
-    }
-
-    container.append(cell);
-    isFirstCell = false;
-  }
-}
-
-function renderPhoneJiazhu(): void {
-  document
-    .querySelectorAll<HTMLElement>(".jiazhu")
-    .forEach((container) => {
-      const inactivePanel = container.closest(
-        '[data-edition-panel][data-edition-active="false"]',
-      );
-      if (inactivePanel) {
-        container.replaceChildren();
-        return;
-      }
-      renderJiazhuContainer(container);
-    });
-}
-
-function schedulePhoneJiazhuRender(): void {
-  window.requestAnimationFrame(() => {
-    renderPhoneJiazhu();
-  });
-}
-
-function setupPhoneJiazhuRendering(): void {
   const phoneQuery = window.matchMedia("(max-width: 40rem)");
-  const renderIfPhone = (): void => {
-    if (phoneQuery.matches) schedulePhoneJiazhuRender();
+  const panel = document.createElement("aside");
+  panel.id = "tap-footnote-popover";
+  panel.className = "footnote-popover";
+  panel.setAttribute("role", "dialog");
+  panel.setAttribute("aria-modal", "false");
+  panel.setAttribute("aria-describedby", "tap-footnote-content");
+  panel.tabIndex = -1;
+  panel.hidden = true;
+
+  const heading = document.createElement("div");
+  heading.className = "footnote-popover-header";
+  const number = document.createElement("span");
+  number.className = "footnote-popover-number";
+  number.setAttribute("aria-hidden", "true");
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "footnote-popover-close";
+  closeButton.textContent = "×";
+  heading.append(number, closeButton);
+
+  const content = document.createElement("div");
+  content.id = "tap-footnote-content";
+  content.className = "footnote-popover-content prose";
+  panel.append(heading, content);
+  document.body.append(panel);
+
+  let activeNote: TapNote | null = null;
+
+  const close = (restoreFocus = false): void => {
+    const opener = activeNote?.ref;
+    activeNote?.ref.setAttribute("aria-expanded", "false");
+    activeNote = null;
+    panel.hidden = true;
+    content.replaceChildren();
+    if (restoreFocus) opener?.focus({ preventScroll: true });
   };
 
-  renderIfPhone();
-  window.addEventListener("editionchange", renderIfPhone);
-  phoneQuery.addEventListener("change", renderIfPhone);
-  window.addEventListener("resize", renderIfPhone, { passive: true });
-  document.fonts?.ready.then(renderIfPhone).catch(() => undefined);
+  const positionPanel = (): void => {
+    if (!activeNote || panel.hidden) return;
+    const gutter = 12;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    const refRect = activeNote.ref.getBoundingClientRect();
+    if (refRect.bottom < 0 || refRect.top > viewportHeight) {
+      close();
+      return;
+    }
+
+    panel.style.maxWidth = `${viewportWidth - gutter * 2}px`;
+    panel.style.maxHeight = `${Math.max(100, viewportHeight - gutter * 2)}px`;
+    const panelRect = panel.getBoundingClientRect();
+    const left = Math.max(gutter, Math.min(
+      refRect.left + refRect.width / 2 - panelRect.width / 2,
+      viewportWidth - panelRect.width - gutter,
+    ));
+    const below = refRect.bottom + 8;
+    const above = refRect.top - panelRect.height - 8;
+    const top = below + panelRect.height <= viewportHeight - gutter
+      ? below
+      : Math.max(gutter, above);
+    panel.style.left = `${left}px`;
+    panel.style.top = `${Math.min(top, viewportHeight - panelRect.height - gutter)}px`;
+  };
+
+  const open = (note: TapNote): void => {
+    if (activeNote === note) {
+      close(true);
+      return;
+    }
+    close();
+    activeNote = note;
+    const isChinese = note.ref.closest('[data-lang="zh"]') !== null
+      || document.documentElement.lang.startsWith("zh");
+    panel.setAttribute("aria-label", `${isChinese ? "註釋" : "Footnote"} ${note.label}`);
+    panel.lang = note.ref.closest<HTMLElement>("[lang]")?.lang
+      || document.documentElement.lang;
+    closeButton.setAttribute("aria-label", isChinese ? "關閉註釋" : "Close footnote");
+    number.textContent = `(${note.label})`;
+    // Clone at open time so enhanced CJK/Latin typography and citation links
+    // match the visible edition, instead of reducing the note to plain text.
+    Array.from(note.sidenote.childNodes).forEach((node) => {
+      if (node instanceof Element && node.matches(".sidenote-num")) return;
+      const clone = node.cloneNode(true);
+      if (clone instanceof Element) {
+        clone.removeAttribute("id");
+        clone.querySelectorAll("[id]").forEach((child) => child.removeAttribute("id"));
+      }
+      content.append(clone);
+    });
+    note.ref.setAttribute("aria-expanded", "true");
+    panel.hidden = false;
+    positionPanel();
+    panel.focus({ preventScroll: true });
+  };
+
+  const syncMode = (): void => {
+    close();
+    tapNotes.forEach((note) => {
+      const { ref } = note;
+      if (phoneQuery.matches) {
+        ref.setAttribute("role", "button");
+        ref.setAttribute("tabindex", "0");
+        ref.setAttribute("aria-haspopup", "dialog");
+        ref.setAttribute("aria-controls", panel.id);
+        ref.setAttribute("aria-expanded", "false");
+        ref.removeAttribute("aria-describedby");
+        const isChinese = ref.closest('[data-lang="zh"]') !== null
+          || document.documentElement.lang.startsWith("zh");
+        ref.setAttribute("aria-label", `${isChinese ? "註釋" : "Footnote"} ${note.label}`);
+      } else {
+        ["role", "tabindex", "aria-label", "aria-describedby"].forEach((attribute) => {
+          const value = note.originalAttributes.get(attribute);
+          if (value === null || value === undefined) ref.removeAttribute(attribute);
+          else ref.setAttribute(attribute, value);
+        });
+        ["aria-haspopup", "aria-controls", "aria-expanded"]
+          .forEach((attribute) => ref.removeAttribute(attribute));
+      }
+    });
+  };
+
+  tapNotes.forEach((note) => {
+    note.ref.addEventListener("click", (event) => {
+      if (!phoneQuery.matches) return;
+      event.preventDefault();
+      open(note);
+    });
+    note.ref.addEventListener("keydown", (event) => {
+      if (!phoneQuery.matches || (event.key !== " " && event.key !== "Enter")) return;
+      event.preventDefault();
+      open(note);
+    });
+  });
+  closeButton.addEventListener("click", () => close(true));
+  document.addEventListener("pointerdown", (event) => {
+    if (!activeNote || !(event.target instanceof Node)) return;
+    if (panel.contains(event.target) || activeNote.ref.contains(event.target)) return;
+    close();
+  });
+  document.addEventListener("focusin", (event) => {
+    if (!activeNote || !(event.target instanceof Node)) return;
+    if (!panel.contains(event.target) && !activeNote.ref.contains(event.target)) close();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (!activeNote || event.key !== "Escape") return;
+    event.preventDefault();
+    close(true);
+  });
+  document.addEventListener("yc-language-applied", syncMode);
+  window.addEventListener("editionchange", () => close());
+  window.addEventListener("resize", () => close(), { passive: true });
+  window.addEventListener("orientationchange", () => close(), { passive: true });
+  window.addEventListener("scroll", positionPanel, { passive: true, capture: true });
+  phoneQuery.addEventListener("change", syncMode);
+  syncMode();
 }
 
-// 中文：双语正文按语言块分别插入边注；脚注定义则从整个正文查找，因为 Markdown
-// 渲染器也可能把所有语言块的脚注统一收集到末尾。
-// English: Enhance bilingual prose one language block at a time, but resolve
-// definitions from the whole prose because Markdown renderers may collect every
-// language block's notes into one shared list at the end.
+// Resolve definitions across the whole prose: bilingual Markdown can collect
+// both language blocks' notes in a shared list after those blocks.
 function enhanceScope(scope: HTMLElement, prose: HTMLElement): void {
   const refs = scope.querySelectorAll<HTMLAnchorElement>("a[data-footnote-ref]");
   const disableJumpLinks = prose.closest(".writing-title-page") !== null;
   let placed = 0;
 
   refs.forEach((ref) => {
+    if (ref.dataset.footnoteEnhanced === "true") return;
     const marker = ref.closest("sup");
-    const targetId = decodeURIComponent(
-      (ref.getAttribute("href") ?? "").replace(/^#/, ""),
-    );
-    // Markdown renderers may collect notes from several raw-HTML language
-    // blocks into one shared footnote section after those blocks. Resolve the
-    // referenced list item from the whole prose container instead of assuming
-    // that every language block owns its own footnote section.
+    const targetId = decodeURIComponent((ref.getAttribute("href") ?? "").replace(/^#/, ""));
     const item = document.getElementById(targetId);
     const content = item && prose.contains(item) ? inlineNoteContent(item) : null;
     if (!marker || !content) return;
 
-    // 标记：红色括号 (n)，样式在 CSS。Marker becomes a red "(n)" via CSS.
     marker.classList.add("fn-ref");
+    ref.dataset.footnoteEnhanced = "true";
+    ref.classList.add("fn-tap-trigger");
     if (disableJumpLinks) {
       ref.removeAttribute("href");
       ref.removeAttribute("id");
     }
 
-    // 边注：行内 <span>，宽屏浮到右侧。Inline span; floats right on wide screens.
     const sidenote = document.createElement("span");
     sidenote.className = "sidenote";
     sidenote.setAttribute("role", "note");
-
     const number = document.createElement("sup");
     number.className = "sidenote-num";
-    number.textContent = ref.textContent?.trim() ?? "";
+    const label = ref.textContent?.trim() ?? "";
+    number.textContent = label;
     sidenote.append(number);
     content.forEach((node) => sidenote.append(node.cloneNode(true)));
+    marker.after(sidenote);
 
-    const jiazhu = document.createElement("span");
-    jiazhu.className = "jiazhu";
-    jiazhu.setAttribute("aria-hidden", "true");
-    jiazhu.dataset.note = noteText(content);
-
-    marker.after(jiazhu, sidenote);
+    tapNotes.push({
+      ref,
+      sidenote,
+      label,
+      originalAttributes: new Map(
+        ["role", "tabindex", "aria-label", "aria-describedby"]
+          .map((attribute) => [attribute, ref.getAttribute(attribute)]),
+      ),
+    });
     placed += 1;
   });
 
-  if (placed > 0) prose.classList.add("has-sidenotes");
+  if (placed > 0) prose.classList.add("has-sidenotes", "has-tap-footnotes");
 }
 
 function enhanceProse(prose: HTMLElement): void {
   const blocks = prose.querySelectorAll<HTMLElement>(":scope > .lang-block");
-  if (blocks.length > 0) {
-    blocks.forEach((block) => enhanceScope(block, prose));
-  } else {
-    enhanceScope(prose, prose);
-  }
+  if (blocks.length > 0) blocks.forEach((block) => enhanceScope(block, prose));
+  else enhanceScope(prose, prose);
 }
 
 export function initializeFootnoteSidenotes(): void {
-  document
-    .querySelectorAll<HTMLElement>(".prose")
-    .forEach((prose) => enhanceProse(prose));
-  setupPhoneJiazhuRendering();
+  document.querySelectorAll<HTMLElement>(".prose").forEach(enhanceProse);
+  setupTapFootnotes();
 }

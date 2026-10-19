@@ -1,0 +1,297 @@
+---
+// Editorial studies; thematic links are intentionally curated, not guessed
+// from every repeated word in the conversation.
+---
+
+<script>
+  import { dialogueProfiles, dialogueSlug } from "../data/dialogueProfiles";
+  import { dialogueSlur } from "../utils/dialogueSlur";
+
+  const ns = "http://www.w3.org/2000/svg";
+  const normalized = (text: string) => text.normalize("NFKC").replace(/[\s\p{P}\p{S}]/gu, "").toLowerCase();
+  const svgNode = (tag: string, attributes: Record<string, string>) => {
+    const node = document.createElementNS(ns, tag);
+    Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+    return node;
+  };
+
+  const setup = (root: HTMLElement) => {
+    const plan = dialogueProfiles[dialogueSlug(location.pathname)];
+    if (!plan || root.dataset.dialogueRelations === "true" || root.dataset.dialogueBubbled !== "true") return;
+    root.dataset.dialogueRelations = "true";
+    root.classList.add("dialogue-study");
+
+    const svg = svgNode("svg", { class: "dialogue-relations", "aria-label": "回复与主题呼应关系", role: "group" });
+    root.append(svg);
+
+    const messages = Array.from(root.querySelectorAll<HTMLElement>(".dialogue-message")).map((node) => {
+      const bubble = node.querySelector<HTMLElement>(".dialogue-bubble")!;
+      const copy = bubble.cloneNode(true) as HTMLElement;
+      copy.querySelectorAll('.dialogue-quote--reply, .dialogue-quote--context, .dialogue-quote-heading').forEach((item) => item.remove());
+      copy.querySelectorAll('.fn-ref, .sidenote, [data-footnotes]').forEach((item) => item.remove());
+      const imageText = Array.from(copy.querySelectorAll<HTMLImageElement>('img[alt]')).map((image) => image.alt).join(' ');
+      return { node, bubble, text: normalized(`${copy.textContent ?? ""} ${imageText}`), speaker: node.dataset.speaker };
+    });
+
+    const episodeNavigation = Array.from(root.closest(".cui-reader")?.querySelectorAll<HTMLAnchorElement>(".dialogue-episode-nav a") ?? []);
+    const navigationFor = (href?: string) => {
+      if (!href) return undefined;
+      const destination = new URL(href, location.href);
+      return episodeNavigation.find((link) => {
+        const adjacent = new URL(link.href, location.href);
+        return destination.origin === adjacent.origin && destination.pathname.replace(/\/$/, "") === adjacent.pathname.replace(/\/$/, "");
+      });
+    };
+    type Connection = { source: HTMLElement; target: HTMLElement; kind: "reply" | "echo"; side: "left" | "right"; dotted?: boolean; origin?: HTMLElement; sourceAtCenter?: boolean; unresolved?: boolean; originHref?: string; navigation?: HTMLAnchorElement };
+    const connections: Connection[] = [];
+    root.querySelectorAll<HTMLElement>('.dialogue-quote--reply').forEach((quote) => {
+      const cite = quote.getAttribute("cite");
+      const sourceMessage = cite?.startsWith("#") ? document.getElementById(cite.slice(1)) : null;
+      const source = sourceMessage?.querySelector<HTMLElement>(".dialogue-bubble");
+      const bubble = quote.closest<HTMLElement>(".dialogue-bubble")!;
+      if (source && root.contains(sourceMessage) && sourceMessage !== quote.closest(".dialogue-message") && Boolean(sourceMessage!.compareDocumentPosition(quote) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+        connections.push({ source, target: bubble, kind: "reply", side: "left" });
+      } else {
+        const originHref = cite && !cite.startsWith("#") ? cite : undefined;
+        const navigation = navigationFor(originHref);
+        connections.push({ source: bubble, target: bubble, kind: "reply", side: "left", unresolved: !navigation, originHref, navigation });
+      }
+    });
+    plan.replies?.forEach((reply) => {
+      const from = messages.find((entry) => (!reply.fromSpeaker || reply.fromSpeaker === entry.speaker) && entry.text.includes(normalized(reply.from)));
+      const to = messages.find((entry) => entry !== from && (!reply.toSpeaker || reply.toSpeaker === entry.speaker) && entry.text.includes(normalized(reply.to)));
+      if (from && to) connections.push({ source: from.bubble, target: to.bubble, origin: to.node, sourceAtCenter: true, kind: "reply", side: reply.side ?? "left" });
+      else if (from) connections.push({ source: from.bubble, target: from.bubble, kind: "reply", side: reply.side ?? "left", unresolved: true });
+    });
+    plan.motifs.forEach((motif) => {
+      const from = messages.find((entry) => (!motif.fromSpeaker || motif.fromSpeaker === entry.speaker) && entry.text.includes(normalized(motif.from)));
+      const to = messages.find((entry) => entry !== from && (!motif.toSpeaker || motif.toSpeaker === entry.speaker) && entry.text.includes(normalized(motif.to)));
+      if (from && to) connections.push({ source: from.bubble, target: to.bubble, kind: "echo", side: motif.side ?? "left", dotted: motif.dotted });
+    });
+    root.dataset.replyConnections = String(connections.filter((item) => item.kind === "reply").length);
+    root.dataset.unresolvedReplies = String(connections.filter((item) => item.unresolved).length);
+    root.dataset.navigationReplies = String(connections.filter((item) => item.navigation).length);
+    root.dataset.echoConnections = String(connections.filter((item) => item.kind === "echo").length);
+
+    const defs = svgNode("defs", {});
+    const marker = svgNode("marker", { id: "dialogue-reply-arrow", viewBox: "0 0 8 8", refX: "7", refY: "4", markerWidth: "5", markerHeight: "5", orient: "auto", markerUnits: "strokeWidth" });
+    marker.append(svgNode("path", { d: "M 1 1 L 7 4 L 1 7", fill: "none", stroke: "var(--theme-color)", "stroke-width": "1.5", "stroke-linejoin": "miter" }));
+    const fade = svgNode("linearGradient", { id: "dialogue-unresolved-fade", gradientUnits: "userSpaceOnUse", x1: "0", y1: "0", x2: "0", y2: "64" });
+    fade.append(svgNode("stop", { offset: "0", "stop-color": "var(--theme-color)", "stop-opacity": "0.12" }), svgNode("stop", { offset: "1", "stop-color": "var(--theme-color)", "stop-opacity": "1" }));
+    defs.append(marker, fade);
+    svg.append(defs);
+
+    // Keep the interactive elements alive through resizing and font loading.
+    // Replacing the SVG on every frame used to interrupt focus and hover.
+    const activeGroups = new Set<Element>();
+    const drawings = connections.map((connection) => {
+      const sourceMessage = connection.origin ?? connection.source.closest<HTMLElement>(".dialogue-message")!;
+      const href = connection.navigation || connection.unresolved ? connection.originHref : `#${sourceMessage.id}`;
+      const group = svgNode(href ? "a" : "g", {
+        class: `dialogue-relation dialogue-relation--${connection.kind}${connection.dotted ? " dialogue-relation--dotted" : ""}${connection.unresolved ? " dialogue-relation--unresolved" : ""}${connection.navigation ? " dialogue-relation--navigation" : ""}`,
+        ...(href ? { href } : { role: "img" }),
+        tabindex: "0",
+        "aria-label": connection.navigation ? connection.navigation.textContent!.trim() : connection.unresolved ? "回复" : sourceMessage.dataset.speaker ? `回到${sourceMessage.dataset.speaker}的发言` : "回到原文",
+      });
+      const path = svgNode("path", { class: "dialogue-relation-stroke", fill: "none" });
+      if (connection.kind === "reply" && !connection.unresolved) path.setAttribute("marker-end", "url(#dialogue-reply-arrow)");
+      const hit = svgNode("path", { class: "dialogue-relation-hit", fill: "none" });
+      group.append(path, hit);
+      let hovered = false;
+      let focused = false;
+      const updateActive = () => {
+        const active = hovered || focused;
+        group.classList.toggle("is-active", active);
+        if (active) activeGroups.add(group);
+        else activeGroups.delete(group);
+        const bubbles = new Set<HTMLElement>();
+        const navigation = new Set<HTMLAnchorElement>();
+        drawings.forEach((drawing) => {
+          if (activeGroups.has(drawing.group)) {
+            bubbles.add(drawing.connection.source);
+            bubbles.add(drawing.connection.target);
+            if (drawing.connection.navigation) navigation.add(drawing.connection.navigation);
+          }
+        });
+        messages.forEach(({ bubble }) => bubble.classList.toggle("dialogue-related-active", bubbles.has(bubble)));
+        episodeNavigation.forEach((link) => link.classList.toggle("dialogue-navigation-related-active", navigation.has(link)));
+      };
+      group.addEventListener("mouseenter", () => { hovered = true; updateActive(); });
+      group.addEventListener("mouseleave", () => { hovered = false; updateActive(); });
+      group.addEventListener("focus", () => { focused = true; updateActive(); });
+      group.addEventListener("blur", () => { focused = false; updateActive(); });
+      svg.append(group);
+      return { connection, group, path, hit };
+    });
+
+    const phoneQuery = window.matchMedia("(max-width: 30rem)");
+    let frame = 0;
+    function requestDraw() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(draw);
+    }
+
+    // Attach to the actual speech-tail tip when it faces the margin. Otherwise
+    // meet the frame itself, so the endpoint never floats away from its bubble.
+    function anchor(bubble: HTMLElement, rect: DOMRect, side: "left" | "right", bounds: DOMRect) {
+      const message = bubble.closest<HTMLElement>(".dialogue-message")!;
+      const facingTail = message.classList.contains(`dialogue-message--${side}`)
+        && message.classList.contains("dialogue-message--group-end")
+        && !message.classList.contains("dialogue-message--quotation");
+      if (facingTail) {
+        const tail = getComputedStyle(bubble, "::after");
+        const frame = getComputedStyle(bubble);
+        const width = parseFloat(tail.width) + parseFloat(tail.borderLeftWidth) + parseFloat(tail.borderRightWidth);
+        const height = parseFloat(tail.height) + parseFloat(tail.borderTopWidth) + parseFloat(tail.borderBottomWidth);
+        const inset = parseFloat(side === "left" ? tail.left : tail.right);
+        const corner = (width + height) / (2 * Math.SQRT2);
+        const border = parseFloat(side === "left" ? frame.borderLeftWidth : frame.borderRightWidth);
+        const offset = border + inset + width / 2 - corner;
+        return {
+          x: (side === "left" ? rect.left + offset : rect.right - offset) - bounds.left,
+          y: rect.bottom - bounds.top - parseFloat(frame.borderBottomWidth) - parseFloat(tail.bottom) - height / 2,
+        };
+      }
+      return {
+        x: (side === "left" ? rect.left : rect.right) - bounds.left,
+        y: rect.top - bounds.top + Math.min(rect.height / 2, 32),
+      };
+    }
+
+    function draw() {
+      const bounds = root.getBoundingClientRect();
+      const outset = parseFloat(getComputedStyle(root).getPropertyValue("--relation-outset")) || 0;
+      const compact = outset === 0;
+      // Keep the full relation map on phones, but give its horizontal lanes
+      // proportionally less room so the conversation keeps a readable measure.
+      // Recompute on every draw so rotating or resizing restores the wider map.
+      const compactScale = compact && phoneQuery.matches ? 0.55 : 1;
+      // scrollHeight includes the old, absolutely positioned SVG and cannot
+      // shrink reliably after a narrow layout becomes wide again.
+      const height = Math.ceil(bounds.height);
+      const rects = new Map(messages.map(({ bubble }) => [bubble, bubble.getBoundingClientRect()]));
+      const navigationRects = new Map(episodeNavigation.map((link) => [link, link.getBoundingClientRect()]));
+      const top = Math.floor(Math.min(0, ...connections.filter((connection) => connection.navigation).map((connection) => navigationRects.get(connection.navigation!)!.top - bounds.top - 8)));
+      const anchors = new Map<HTMLElement, Partial<Record<"left" | "right", { x: number; y: number }>>>();
+      const getAnchor = (bubble: HTMLElement, side: "left" | "right") => {
+        const cached = anchors.get(bubble) ?? {};
+        if (!cached[side]) cached[side] = anchor(bubble, rects.get(bubble)!, side, bounds);
+        anchors.set(bubble, cached);
+        return cached[side]!;
+      };
+
+      // Allocate lanes only while their vertical intervals overlap. Angular
+      // reply lanes and curved motif lanes never share the same track.
+      const tracks: Record<string, number[]> = {};
+      const prepared = drawings.map((drawing) => {
+        const connection = drawing.connection;
+        const source = rects.get(connection.source)!;
+        const target = rects.get(connection.target)!;
+        const navigation = connection.navigation ? navigationRects.get(connection.navigation)! : undefined;
+        const navigationAnchor = navigation ? { x: navigation.left - bounds.left - 6 * compactScale, y: navigation.top - bounds.top + navigation.height / 2 } : undefined;
+        return { ...connection, drawing, sourceAnchor: getAnchor(connection.source, connection.side), targetAnchor: getAnchor(connection.target, connection.side), navigationAnchor, source, target, start: connection.unresolved ? 0 : Math.min(source.top, target.top, navigation?.top ?? Infinity) - bounds.top, end: Math.max(source.bottom, target.bottom) - bounds.top };
+      }).sort((a, b) => a.start - b.start || a.end - b.end).map((connection) => {
+        const key = `${connection.kind}-${connection.side}`;
+        const lanes = tracks[key] ?? (tracks[key] = []);
+        let lane = lanes.findIndex((end) => end < connection.start - 8);
+        if (lane < 0) lane = lanes.length;
+        lanes[lane] = connection.end;
+        return { ...connection, lane };
+      });
+
+      // Missing origins occupy the full height above their reply. Keep those
+      // longer brackets in separate lanes, clear of the curved motif tracks.
+      const replyLanes = tracks["reply-left"]?.length ?? 0;
+      const leftEchoLanes = tracks["echo-left"]?.length ?? 0;
+      const rightEchoLanes = tracks["echo-right"]?.length ?? 0;
+      const leftEchoBase = Math.max(57, 18 + Math.max(0, replyLanes - 1) * 10 + 25);
+      const compactEchoBase = Math.max(22, 7 + Math.max(0, replyLanes - 1) * 5 + 12);
+      const desktopOutset = Math.max(104, leftEchoBase + Math.max(0, leftEchoLanes - 1) * 12 + 8, 25 + Math.max(0, rightEchoLanes - 1) * 14 + 8);
+      const compactLeft = Math.max(48, compactEchoBase + Math.max(0, leftEchoLanes - 1) * 3.5 + 16) * compactScale;
+      const compactRight = Math.max(34.4, 7 + Math.max(0, rightEchoLanes - 1) * 6 + 14) * compactScale;
+      let geometryChanged = false;
+      Object.entries({ "--relation-desktop-outset": desktopOutset, "--relation-compact-left": compactLeft, "--relation-compact-right": compactRight }).forEach(([property, value]) => {
+        const setting = `${value}px`;
+        if (root.style.getPropertyValue(property) !== setting) {
+          root.style.setProperty(property, setting);
+          geometryChanged = true;
+        }
+      });
+      if (geometryChanged) { requestDraw(); return; }
+
+      svg.setAttribute("viewBox", `${-outset} ${top} ${bounds.width + 2 * outset} ${height - top}`);
+      svg.setAttribute("width", String(bounds.width + 2 * outset));
+      svg.setAttribute("height", String(height - top));
+      (svg as SVGElement).style.left = `${-outset}px`;
+      (svg as SVGElement).style.top = `${top}px`;
+
+      prepared.forEach((connection) => {
+        const lane = connection.lane;
+        const { sourceAnchor, targetAnchor } = connection;
+        const sy = connection.sourceAtCenter ? connection.source.top - bounds.top + connection.source.height / 2 : sourceAnchor.y;
+        const ty = connection.navigationAnchor?.y ?? targetAnchor.y;
+        let d: string;
+        let hitD: string | undefined;
+        let laneX: number;
+        let sx: number;
+        let tx: number;
+        if (connection.kind === "reply") {
+          sx = sourceAnchor.x - compactScale;
+          tx = targetAnchor.x - (connection.sourceAtCenter ? 0 : 3 * compactScale);
+          laneX = compact ? (7 + lane * 5) * compactScale : -18 - lane * 10;
+          if (connection.navigationAnchor) {
+            tx = connection.navigationAnchor.x;
+            // Leave the navigation text clear; the line meets its arrow from
+            // the outer margin, also on narrow screens with inset reply lanes.
+            laneX = compact ? -Math.min(18 * compactScale, Math.max(0, bounds.left - 8 * compactScale)) : Math.min(laneX, tx - 12);
+            d = `M ${sx} ${sy} H ${laneX} V ${ty} H ${tx}`;
+          } else if (connection.unresolved) {
+            const tailLength = Math.min(64, Math.max(0, sy - 12));
+            d = `M ${sx} ${sy} H ${laneX} V ${tailLength}`;
+            const dashes = [6, 4.5, 3, 2, 1.25, 0.75];
+            const gaps = [2, 4, 7, 11, 16];
+            const scale = tailLength / (dashes.reduce((sum, dash) => sum + dash, 0) + gaps.reduce((sum, gap) => sum + gap, 0));
+            let y = tailLength;
+            dashes.forEach((dash, index) => {
+              const end = Math.max(0, y - dash * scale);
+              d += ` M ${laneX} ${y} V ${end}`;
+              y = end - (gaps[index] ?? 0) * scale;
+            });
+          } else {
+            d = `M ${sx} ${sy} H ${laneX} V ${ty} H ${tx}`;
+          }
+        } else {
+          const right = connection.side === "right";
+          sx = sourceAnchor.x;
+          tx = targetAnchor.x;
+          laneX = right
+            ? bounds.width + (compact ? (-7 - lane * 6) * compactScale : 25 + lane * 14)
+            : (compact ? (compactEchoBase + lane * 3.5) * compactScale : -leftEchoBase - lane * 12);
+          const slur = dialogueSlur({ x: sx, y: sy }, { x: tx, y: ty }, laneX, connection.side, 1.1, { dotted: connection.dotted });
+          d = slur.ribbon;
+          hitD = slur.curve;
+        }
+        const { path, hit } = connection.drawing;
+        path.setAttribute("d", d);
+        hit.setAttribute("d", hitD ?? d);
+      });
+    }
+
+    const observer = new ResizeObserver(requestDraw);
+    observer.observe(root);
+    messages.forEach(({ bubble }) => observer.observe(bubble));
+    episodeNavigation.forEach((link) => observer.observe(link));
+    const episodeHeader = root.closest(".cui-reader")?.querySelector(".dialogue-episode-header");
+    if (episodeHeader) observer.observe(episodeHeader);
+    root.querySelectorAll("img").forEach((image) => image.addEventListener("load", requestDraw));
+    window.addEventListener("resize", requestDraw);
+    phoneQuery.addEventListener("change", requestDraw);
+    document.fonts.ready.then(requestDraw);
+    requestDraw();
+  };
+
+  document.addEventListener("dialogue:ready", (event) => {
+    if (event.target instanceof HTMLElement) setup(event.target);
+  });
+  document.querySelectorAll<HTMLElement>('[data-dialogue-bubbled="true"]').forEach(setup);
+</script>

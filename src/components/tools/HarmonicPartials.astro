@@ -57,7 +57,7 @@
     const off = Math.abs(cents) > 20;
     const c = Math.max(-50, Math.min(50, cents));
     const x = 50 + c; // ±50¢ → 0..100
-    const colour = off ? "#c81e1e" : "currentColor";
+    const colour = off ? "var(--theme-color)" : "currentColor";
     return (
       `<svg class="hp-meter" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true">` +
       `<line x1="30" y1="3" x2="30" y2="13" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>` +
