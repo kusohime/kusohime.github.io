@@ -107,6 +107,7 @@ const [english, chinese] = await Promise.all([renderBio("en"), renderBio("zh")])
   .bio-body {
     --sidenote-width: min(13rem, calc((100vw - var(--reading-width)) / 2 - var(--sidenote-gap) - 2rem));
     --prose-line-height: 1.52;
+    --all-caps-letter-spacing: -0.025em;
   }
 
   :global(.bio-body .detail-header h1) {
