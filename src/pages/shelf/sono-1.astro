@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import source from "../../../scripts/saijotai-no-1-kanbun.txt?raw";
+import { renderKanbun } from "../../lib/kanbun.js";
+import "../../styles/kanbun.css";
+
+const poem = renderKanbun(source.trimEnd());
+---
+
+<BaseLayout
+  title="罪狀體邪馬臺綺譚 其一"
+  titleZh="罪狀體邪馬臺綺譚 其一"
+  noindex
+  showHierarchyBack={false}
+>
+  <article class="detail-page sono-poem" lang="ja" aria-label="罪狀體邪馬臺綺譚 其一">
+    <div class="prose work-notes">
+      <figure class="kanbun-embed" data-kanbun-embed>
+        <div class="kanbun-controls" role="group" aria-label="排版 / layout">
+          <button type="button" class="kanbun-toggle" data-kb-layout="sparse" aria-pressed="false">疏排</button>
+          <button type="button" class="kanbun-toggle" data-kb-layout="dense" aria-pressed="true">密排</button>
+        </div>
+        <div class="kanbun split-touching-kana betagumi" lang="ja" set:html={poem}></div>
+      </figure>
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  import { initializeKanbun } from "../../scripts/kanbun";
+  initializeKanbun();
+</script>
+
+<style>
+  .sono-poem :global(.unit:has(> .kb-reading-lanes, > .kb-flip) > :is(.kanji, .furigana)) {
+    color: var(--theme-color);
+  }
+</style>

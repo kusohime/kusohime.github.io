@@ -135,14 +135,17 @@ test("public output omits private assets, feed entries, and Studio code", async 
 });
 
 test("the direct-link kanbun draft survives publication without becoming discoverable", async () => {
-  const draftPath = "/shelf/6246d31c62d09a8954489fec/";
+  const draftPath = "/shelf/sono-1/";
   const filename = path.join(output, draftPath, "index.html");
   assert.ok(existsSync(filename), "The direct-link draft must be included in the public build.");
   const html = await readFile(filename, "utf8");
   assert.match(html, /<title\b[^>]*>罪狀體邪馬臺綺譚 其一\s*\|/);
   assert.match(html, /name="robots" content="noindex, nofollow"/);
 
-  // Check the rendered poem, rather than the copyable source text below it.
+  assert.doesNotMatch(html, /data-shelf-copy|shelf-source|仅凭链接|从右向左阅读|<h1\b/);
+  assert.doesNotMatch(html, /kb-blank-column/);
+
+  // Check the actual rendered poem.
   const poem = html.match(/<figure\b[^>]*data-kanbun-embed[^>]*>[\s\S]*?<\/figure>/)?.[0];
   assert.ok(poem, "The published draft must contain the rendered kanbun figure.");
   const text = poem.replace(/<[^>]*>/g, "");
@@ -160,8 +163,13 @@ test("the direct-link kanbun draft survives publication without becoming discove
   assert.ok(!existsSync(path.join(output, "writings/saijotai-yamatai-khitan-no-1")),
     "The ordinary writing route must remain an unpublished draft.");
 
+  const legacyFilename = path.join(output, "shelf/6246d31c62d09a8954489fec/index.html");
+  const legacyHtml = await readFile(legacyFilename, "utf8");
+  assert.match(legacyHtml, /http-equiv="refresh"/);
+  assert.ok(legacyHtml.includes(draftPath));
+
   for (const page of await filesUnder(output)) {
-    if (page === filename || !page.endsWith(".html")) continue;
+    if (page === filename || page === legacyFilename || !page.endsWith(".html")) continue;
     const pageHtml = await readFile(page, "utf8");
     const pageUrl = new URL(path.relative(output, page).split(path.sep).join("/"), "https://yixincui.com/");
     for (const [, href] of pageHtml.matchAll(/\bhref\s*=\s*["']([^"']+)["']/g)) {
