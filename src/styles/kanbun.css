@@ -143,6 +143,17 @@
   grid-template-rows: max-content 1em 0.5em;
 }
 
+/* Align the shared base track when one word has several ruby lanes. Centring
+   differently sized units would shift the rest of the column sideways. */
+.kanbun > p:has(.kb-reading-lanes) > .unit {
+  vertical-align: bottom;
+}
+
+.kanbun .unit:has(> .kb-reading-lanes) > .okurigana {
+  align-self: end;
+  block-size: 0.5em;
+}
+
 .kanbun .unit > .furigana.kb-reading-lanes {
   display: inline-flex;
   flex-direction: column;

@@ -630,6 +630,24 @@ test("poly synth holds notes until release and enforces its voice cap", async ()
 });
 
 /* ---------- kanbun wordplay ---------- */
+test("kanbun initial kana stay separate from the following annotated base", () => {
+  const followingWord = "‘蒼竦’(そうしょう)ナ";
+  const initialKana = '<span class="kunten okurigana"><sup>ソノ</sup></span>';
+  for (const prefix of ["ソノ", "{ソノ}", "{ソ}ノ"]) {
+    const html = toHTML(prefix + followingWord);
+    assert.equal(html, initialKana + toHTML(followingWord));
+    assert.doesNotMatch(html, /<[^>]*</);
+  }
+});
+
+test("kanbun kana-only lines produce complete standalone markup", () => {
+  assert.equal(toHTML("ソノ"), '<span class="kunten okurigana"><sup>ソノ</sup></span>');
+  const html = renderKanbun("ソノ\r\n‘蒼竦’(そうしょう)");
+  assert.equal((html.match(/<p>/g) ?? []).length, 2);
+  assert.equal((html.match(/<\/p>/g) ?? []).length, 2);
+  assert.doesNotMatch(html, /<[^>]*</);
+});
+
 test("kanbun grouped words keep kana in the main base", () => {
   for (const [word, reading] of [["琴ヶ浜", "ことがはま"], ["我ヶ", "わが"], ["或ハ", "あるいは"]]) {
     const html = toHTML(`‘${word}’(${reading})`);

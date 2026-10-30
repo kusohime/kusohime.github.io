@@ -84,6 +84,28 @@ export function toHTML(str) {
         lead = `<span class="kanbun-dash-lead" aria-hidden="true">${'―'.repeat(leadMatch[0].length)}</span>`;
         str = str.slice(leadMatch[0].length);
     }
+    // Initial kana have no preceding base to carry them. Keeping them in the
+    // normal unit pass would create a closing unit without an opening unit
+    // (and eventually malformed <span<span markup). Preserve their small-kana
+    // style in a standalone annotation, without an empty kanji grid cell.
+    let leadingOkurigana = '';
+    let leadingEnd = 0;
+    while (leadingEnd < str.length) {
+        if (isKana(str[leadingEnd])) {
+            leadingOkurigana += str[leadingEnd++];
+        } else if (str[leadingEnd] === '{') {
+            const closingBrace = str.indexOf('}', leadingEnd + 1);
+            if (closingBrace === -1) break;
+            leadingOkurigana += str.slice(leadingEnd + 1, closingBrace);
+            leadingEnd = closingBrace + 1;
+        } else {
+            break;
+        }
+    }
+    if (leadingEnd) {
+        if (leadingOkurigana) lead += `<span class="kunten okurigana"><sup>${escapeMarkup(leadingOkurigana)}</sup></span>`;
+        str = str.slice(leadingEnd);
+    }
     let arr = [...str];
     for (let i = 0, lastBracketIndex = -1, inGroup = false; i < arr.length; i++) {
         const character = arr[i];
