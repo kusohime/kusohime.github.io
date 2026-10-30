@@ -23,6 +23,7 @@ import {
   writingTypeLabel,
 } from "../../config/locales";
 import "../../styles/igt.css";
+import "../../styles/kanbun.css";
 
 export async function getStaticPaths() {
   const writings = await getCollection(
@@ -461,3 +462,8 @@ const unavailableLanguages: ("en" | "zh")[] = !zhEntry && !isMultilingualBody &&
     </nav>
   </article>
 </BaseLayout>
+
+<script>
+  import { initializeKanbun } from "../../scripts/kanbun";
+  initializeKanbun();
+</script>

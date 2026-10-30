@@ -12,7 +12,9 @@
     After a kanji: <code>(…)</code> furigana, <code>&#123;…&#125;</code> okurigana
     (braces optional on bare kana), <code>[…]</code> kaeriten. For saidoku
     再読文字 use <code>‹…›</code> / <code>«…»</code>; <code>‘…’</code> groups
-    several kanji under one ruby. One line = one column.
+    a word under one ruby (including kana). Separate parallel readings with
+    <code>／</code>; <code>フィルム〔film〕</code> adds a clickable source form.
+    One line = one column; blank lines leave a blank column.
   </p>
   <div class="tool-controls kb-insert" aria-label="Insert special marks">
     <button type="button" data-pair="‹|›" title="saidoku furigana 再読文字振り仮名">‹ ›</button>
@@ -75,6 +77,7 @@
 
 <script>
   import { renderKanbun } from "../../lib/kanbun.js";
+  import { initializeKanbun, setKanbunLayout } from "../../scripts/kanbun";
 
   const byId = (id: string) => document.getElementById(id) as any;
 
@@ -91,6 +94,7 @@
 
   function render() {
     sample.innerHTML = renderKanbun(input.value);
+    initializeKanbun(sample);
   }
 
   // ---- live preview ----
@@ -121,7 +125,7 @@
 
   // ---- layout / option controls ----
   byId("kb-layout").addEventListener("change", (e: any) => {
-    sample.classList.toggle("betagumi", e.target.value === "betagumi");
+    setKanbunLayout(sample, e.target.value === "betagumi");
   });
   byId("kb-size").addEventListener("input", (e: any) => {
     sample.style.fontSize = (Number(e.target.value) || 28) + "px";
@@ -146,7 +150,8 @@
     const btn = e.target as HTMLButtonElement;
     const old = btn.textContent;
     try {
-      await navigator.clipboard.writeText(sample.innerHTML);
+      // Export fresh markup so copied content can receive its own event handlers.
+      await navigator.clipboard.writeText(renderKanbun(input.value));
       btn.textContent = "Copied";
     } catch {
       btn.textContent = "Copy failed";

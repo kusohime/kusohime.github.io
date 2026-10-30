@@ -445,9 +445,11 @@ await test("public typography stays fixed Garamond without font controls", async
 });
 
 await test("footnotes and vertical kanbun preserve their reading starts", async () => {
-  const [sidenotes, workPage] = await Promise.all([
+  const [sidenotes, workPage, writingPage, kanbun] = await Promise.all([
     readFile(path.join(root, "src/scripts/footnoteSidenotes.ts"), "utf8"),
     readFile(path.join(root, "src/pages/works/[slug].astro"), "utf8"),
+    readFile(path.join(root, "src/pages/writings/[slug].astro"), "utf8"),
+    readFile(path.join(root, "src/scripts/kanbun.ts"), "utf8"),
   ]);
 
   // Footnote lists can be emitted after sibling language blocks, so refs must
@@ -456,8 +458,10 @@ await test("footnotes and vertical kanbun preserve their reading starts", async 
   assert.match(sidenotes, /prose\.contains\(item\)/);
 
   // Vertical-rl content reads from the right, including after fonts settle.
-  assert.match(workPage, /embed\.scrollLeft\s*=\s*embed\.scrollWidth/);
-  assert.match(workPage, /document\.fonts\?\.ready\.then\(alignToReadingStart\)/);
+  assert.match(workPage, /initializeKanbun\(\)/);
+  assert.match(writingPage, /initializeKanbun\(\)/);
+  assert.match(kanbun, /embed\.scrollLeft\s*=\s*embed\.scrollWidth/);
+  assert.match(kanbun, /document\.fonts\?\.ready\.then\(alignToReadingStart\)/);
 });
 
 console.log(`${passed} site integrity tests passed${process.exitCode ? " (with failures)" : ""}`);

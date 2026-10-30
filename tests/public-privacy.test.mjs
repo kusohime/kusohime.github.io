@@ -133,3 +133,41 @@ test("public output omits private assets, feed entries, and Studio code", async 
   }
   assert.ok(existsSync(path.join(output, "files/yixin-cui-senior-recital-program.pdf")));
 });
+
+test("the direct-link kanbun draft survives publication without becoming discoverable", async () => {
+  const draftPath = "/shelf/6246d31c62d09a8954489fec/";
+  const filename = path.join(output, draftPath, "index.html");
+  assert.ok(existsSync(filename), "The direct-link draft must be included in the public build.");
+  const html = await readFile(filename, "utf8");
+  assert.match(html, /<title\b[^>]*>罪狀體邪馬臺綺譚 其一\s*\|/);
+  assert.match(html, /name="robots" content="noindex, nofollow"/);
+
+  // Check the rendered poem, rather than the copyable source text below it.
+  const poem = html.match(/<figure\b[^>]*data-kanbun-embed[^>]*>[\s\S]*?<\/figure>/)?.[0];
+  assert.ok(poem, "The published draft must contain the rendered kanbun figure.");
+  const text = poem.replace(/<[^>]*>/g, "");
+  for (const word of ["啻", "今向", "膚留梦", "琴ヶ浜", "秘楼僧碑", "此処", "値"]) {
+    assert.ok(text.includes(word), `The rendered poem must preserve ${word}.`);
+  }
+  const readings = [...poem.matchAll(/data-kb-kana="([^"]+)"\s+data-kb-source="([^"]+)"/g)]
+    .map((match) => [match[1], match[2]]);
+  assert.deepEqual(readings, [
+    ["フィルム", "film"],
+    ["フォルム", "forme"],
+    ["フィル", "phil"],
+    ["フルム", "ḥulm"],
+  ]);
+  assert.ok(!existsSync(path.join(output, "writings/saijotai-yamatai-khitan-no-1")),
+    "The ordinary writing route must remain an unpublished draft.");
+
+  for (const page of await filesUnder(output)) {
+    if (page === filename || !page.endsWith(".html")) continue;
+    const pageHtml = await readFile(page, "utf8");
+    const pageUrl = new URL(path.relative(output, page).split(path.sep).join("/"), "https://yixincui.com/");
+    for (const [, href] of pageHtml.matchAll(/\bhref\s*=\s*["']([^"']+)["']/g)) {
+      const target = new URL(href, pageUrl);
+      assert.ok(target.origin !== pageUrl.origin || target.pathname.replace(/\/+$/, "") !== draftPath.slice(0, -1),
+        `${path.relative(output, page)} must not link to the direct-link draft.`);
+    }
+  }
+});

@@ -1,0 +1,102 @@
+---
+// This direct-link draft deliberately has no catalogue entry or incoming link.
+// Keep the normal draft and private-section rules intact; publish only this page.
+import { getEntry, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import source from "../../../scripts/saijotai-no-1-kanbun.txt?raw";
+import { renderKanbun } from "../../lib/kanbun.js";
+import "../../styles/kanbun.css";
+
+const entry = await getEntry("writings", "saijotai-yamatai-khitan-no-1");
+if (!entry) throw new Error("The Saijōtai No. 1 draft is missing.");
+const { Content } = await render(entry);
+const toolSource = source.trimEnd();
+const annotatedText = toolSource
+  .replace(/[‘’]/g, "")
+  .replace(/\(/g, "（")
+  .replace(/\)/g, "）");
+const canonicalMarkup = `<figure class="kanbun-embed" data-kanbun-embed><div class="kanbun split-touching-kana betagumi" lang="ja">${renderKanbun(toolSource)}</div></figure>`;
+---
+
+<BaseLayout
+  title={entry.data.title}
+  titleZh={entry.data.titleZh}
+  description="罪狀體邪馬臺綺譚 其一 · 草稿"
+  noindex
+  showHierarchyBack={false}
+>
+  <article class="shelf-poem" lang="ja">
+    <header class="shelf-header">
+      <p class="shelf-label" lang="zh-Hans">草稿 · 仅凭链接访问</p>
+      <h1>罪狀體邪馬臺綺譚 <span class="shelf-number"><ruby>其<rt>sono</rt></ruby>一</span></h1>
+    </header>
+    <div class="shelf-actions" lang="zh-Hans" aria-label="取用草稿">
+      <button type="button" data-shelf-copy="link">复制链接</button>
+      <button type="button" data-shelf-copy="annotated">复制带注音原文</button>
+      <button type="button" data-shelf-copy="html">复制排版 HTML</button>
+      <span class="shelf-status" role="status" aria-live="polite"></span>
+    </div>
+    <p class="shelf-hint" lang="zh-Hans">从右向左阅读，横向滑动查看全文。点按带虚线的读音可切换外文词形。</p>
+    <div class="shelf-body">
+      <Content />
+    </div>
+    <details class="shelf-source" lang="zh-Hans">
+      <summary>取用训读工具源文</summary>
+      <p>保留整词注音与四重读法，可直接粘贴到汉文训读工具中继续排版。</p>
+      <button type="button" data-shelf-copy="source">复制工具源文</button>
+      <textarea id="shelf-source" readonly rows="15" lang="ja" aria-label="训读工具源文" spellcheck="false">{toolSource}</textarea>
+    </details>
+    <textarea id="shelf-annotated" hidden aria-hidden="true">{annotatedText}</textarea>
+    <textarea id="shelf-html" hidden aria-hidden="true">{canonicalMarkup}</textarea>
+  </article>
+</BaseLayout>
+
+<script>
+  import { initializeKanbun } from "../../scripts/kanbun";
+  initializeKanbun();
+
+  const status = document.querySelector<HTMLElement>(".shelf-status");
+  document.querySelectorAll<HTMLButtonElement>("[data-shelf-copy]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const kind = button.dataset.shelfCopy;
+      const value = kind === "link"
+        ? window.location.href.split("#")[0]
+        : document.querySelector<HTMLTextAreaElement>(kind === "html" ? "#shelf-html" : kind === "source" ? "#shelf-source" : "#shelf-annotated")?.value ?? "";
+      try {
+        await navigator.clipboard.writeText(value);
+        if (status) status.textContent = "已复制";
+      } catch {
+        // Keep all three text forms usable when clipboard access is unavailable.
+        const area = document.createElement("textarea");
+        area.value = value;
+        area.setAttribute("aria-label", "待复制内容");
+        document.querySelector(".shelf-actions")?.after(area);
+        area.focus();
+        area.select();
+        if (status) status.textContent = "请复制已选中的内容";
+      }
+    });
+  });
+</script>
+
+<style>
+  .shelf-poem { padding-block: clamp(1.75rem, 5vw, 4rem); }
+  .shelf-header { margin-bottom: 1.5rem; }
+  .shelf-label { color: var(--color-muted); font-size: 0.8rem; letter-spacing: 0.08em; }
+  .shelf-header h1 { font-size: clamp(1.6rem, 3.8vw, 2.5rem); line-height: 1.8; font-weight: 400; }
+  .shelf-number { white-space: nowrap; }
+  .shelf-number rt { font-size: 0.4em; letter-spacing: 0.08em; }
+  .shelf-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; }
+  .shelf-actions button, .shelf-source button {
+    border: 1px solid var(--color-rule); background: transparent; color: var(--color-text);
+    padding: 0.5em 0.8em; font: inherit; font-size: 0.82rem; cursor: pointer;
+  }
+  .shelf-actions button:hover, .shelf-source button:hover { border-color: currentColor; }
+  .shelf-status, .shelf-hint, .shelf-source p { font-size: 0.82rem; color: var(--color-muted); }
+  .shelf-hint { margin-block: 1rem 1.75rem; }
+  .shelf-source { margin-top: 2rem; border-top: 1px solid var(--color-rule); padding-top: 1rem; }
+  .shelf-source summary { cursor: pointer; }
+  .shelf-source textarea { display: block; width: 100%; margin-top: 1rem; padding: 0.8rem; resize: vertical; font: inherit; font-size: 0.9rem; line-height: 1.8; background: var(--color-background); color: var(--color-text); border: 1px solid var(--color-rule); }
+  .shelf-body :global(.kanbun-embed) { margin-block: 0; padding-bottom: 1rem; }
+  .shelf-body :global(.kanbun-ref) { display: none; }
+</style>

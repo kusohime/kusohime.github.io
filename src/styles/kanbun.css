@@ -30,8 +30,15 @@
   margin-top: 0.5em;
 }
 
-.kanbun p {
+.kanbun.kanbun > p {
   margin: 0;
+  line-height: 100%;
+  text-indent: 0;
+}
+
+.kanbun > .kb-blank-column {
+  min-block-size: 2em;
+  min-inline-size: 1px;
 }
 
 .kanbun p > * {
@@ -128,6 +135,30 @@
   text-justify: distribute;
   text-align: justify;
   text-align-last: justify;
+}
+
+/* Grid rows run horizontally in vertical-rl. Reserve the actual width of all
+   parallel readings, so they never spill into the neighbouring text column. */
+.kanbun .unit:has(> .kb-reading-lanes) {
+  grid-template-rows: max-content 1em 0.5em;
+}
+
+.kanbun .unit > .furigana.kb-reading-lanes {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4em;
+  justify-self: start;
+  align-self: start;
+  height: max-content;
+  padding-block-end: 0.3em;
+  text-align: start;
+  text-align-last: auto;
+}
+
+.kanbun .kb-reading {
+  display: block;
+  white-space: nowrap;
 }
 
 .kanbun.betagumi:not(.furigana-center-align)
@@ -273,17 +304,34 @@
 }
 
 /* Loanword readings that flip between kana and their source word on click. */
-.kanbun rt.kb-flip {
+.kanbun .kb-flip {
+  display: inline-grid;
+  white-space: nowrap;
   cursor: pointer;
   text-decoration: underline dotted;
   text-underline-offset: 0.2em;
 }
 
-.kanbun rt.kb-flip:hover,
-.kanbun rt.kb-flip:focus-visible,
-.kanbun rt.kb-flipped {
+.kanbun .kb-flip:hover,
+.kanbun .kb-flip:focus-visible,
+.kanbun .kb-flipped {
   text-decoration-style: solid;
-  outline: none;
+}
+
+.kanbun .kb-flip:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 0.15em;
+}
+
+.kanbun .kb-reading-face {
+  grid-area: 1 / 1;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.kanbun .kb-flip:not(.kb-flipped) > [data-kb-face="source"],
+.kanbun .kb-flipped > [data-kb-face="kana"] {
+  visibility: hidden;
 }
 
 .kanbun.show-borders .unit > * {

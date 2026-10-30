@@ -30,6 +30,29 @@ const leftBracketsStr = '\\' + leftBrackets.join('\\');
 const rightBracketsStr = '\\' + rightBrackets.join('\\');
 const punctuationStr = '〻―・、，。…「」『』';
 
+function escapeMarkup(value) {
+    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Explicit source forms stay attached to their own reading. Multiple readings
+// occupy parallel ruby lanes rather than one unbroken, column-stretching string.
+function renderReading(reading, tag = 'span') {
+    const explicit = reading.match(/^([^〔〕]+)〔([^〔〕]+)〕$/u);
+    const kana = explicit?.[1] ?? reading;
+    const attributes = explicit
+        ? ` data-kb-kana="${escapeMarkup(kana)}" data-kb-source="${escapeMarkup(explicit[2])}" title="${escapeMarkup(kana)} ⇄ ${escapeMarkup(explicit[2])}"`
+        : '';
+    return `<${tag} class="${tag === 'rt' ? 'furigana' : 'kb-reading'}"${attributes}>${escapeMarkup(kana)}</${tag}>`;
+}
+
+function renderReadings(reading) {
+    const alternatives = reading.split(/[／/]/u).map((part) => part.trim());
+    if (alternatives.length > 1 && alternatives.every(Boolean)) {
+        return `<rt class="furigana kb-reading-lanes">${alternatives.map((part) => renderReading(part)).join('')}</rt>`;
+    }
+    return renderReading(reading, 'rt');
+}
+
 function isKana(str) {
     let code = str.charCodeAt();
     if (str === '・') return false; // ・ is in the katakana block but treated as punctuation here
@@ -62,13 +85,16 @@ export function toHTML(str) {
         str = str.slice(leadMatch[0].length);
     }
     let arr = [...str];
-    for (let i = 0, lastBracketIndex = -1; i < arr.length; i++) {
+    for (let i = 0, lastBracketIndex = -1, inGroup = false; i < arr.length; i++) {
+        const character = arr[i];
+        if (character === '‘' && lastBracketIndex === -1) inGroup = true;
         if (leftBrackets.includes(arr[i])) lastBracketIndex = i;
         if (lastBracketIndex === -1) {
-            if (isKana(arr[i])) arr[i] = `{${arr[i]}}`;
+            if (isKana(arr[i]) && !inGroup) arr[i] = `{${arr[i]}}`;
             else arr[i] = `“⌊${arr[i]}⌋”`;
         }
         if (rightBrackets.includes(arr[i])) lastBracketIndex = -1;
+        if (character === '’' && lastBracketIndex === -1) inGroup = false;
     }
     str = arr.join('');
     str = str.replace(/}{/g, '');
@@ -106,8 +132,7 @@ export function toHTML(str) {
     str = str.replace(/(punctuation">[」』])/g, 'right-corner-bracket $1');
 
     // process basic brackets
-    str = str.replace(/\(/g, '<rt class="furigana">');
-    str = str.replace(/\)/g, '</rt>');
+    str = str.replace(/\(([^()]*)\)/g, (_match, reading) => renderReadings(reading));
     str = str.replace(/\{/g, '<span class="kunten okurigana"><sup>');
     str = str.replace(/\}/g, '</sup></span>');
 
@@ -128,7 +153,8 @@ export function toHTML(str) {
  */
 export function renderKanbun(text) {
     return text
+        .replace(/\r\n?/g, '\n')
         .split('\n')
-        .map((line) => `<p>${toHTML(line)}</p>`)
+        .map((line) => line === '' ? '<p class="kb-blank-column" aria-hidden="true"></p>' : `<p>${toHTML(line)}</p>`)
         .join('');
 }

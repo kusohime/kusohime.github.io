@@ -4,6 +4,7 @@
  * Sethares (2005), Messiaen (1944), and standard acoustics texts.
  */
 import assert from "node:assert/strict";
+import { toHTML, renderKanbun } from "../src/lib/kanbun.js";
 import { frac, fadd, fmul, fdiv, fstr, flcm, parseFrac } from "../src/lib/fraction.js";
 import { unitValue, solveModulation, cycleAttacks } from "../src/lib/tempo.js";
 import {
@@ -626,6 +627,52 @@ test("poly synth holds notes until release and enforces its voice cap", async ()
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;
   }
+});
+
+/* ---------- kanbun wordplay ---------- */
+test("kanbun grouped words keep kana in the main base", () => {
+  for (const [word, reading] of [["琴ヶ浜", "ことがはま"], ["我ヶ", "わが"], ["或ハ", "あるいは"]]) {
+    const html = toHTML(`‘${word}’(${reading})`);
+    for (const character of word) assert.ok(html.includes(`<span class="kanji">${character}</span>`));
+    assert.doesNotMatch(html, /okurigana/);
+    assert.ok(html.includes(`<rt class="furigana">${reading}</rt>`));
+  }
+  assert.match(toHTML("‘琴ヶ浜’(ことがはま)デ"), /okurigana"><sup>デ<\/sup>/);
+});
+
+test("kanbun whole-word readings remain attached to the complete base", () => {
+  const html = toHTML("‘今向’(いまよりのち)");
+  assert.match(html, /^<ruby class="has-multiple-kanji has-2-kanji has-furigana unit">/);
+  assert.match(html, /<\/rb><rt class="furigana">いまよりのち<\/rt><\/ruby>$/);
+});
+
+test("kanbun alternative readings retain their separate explicit source forms", () => {
+  const pairs = [["フィルム", "film"], ["フォルム", "forme"], ["フィル", "phil"], ["フルム", "ḥulm"]];
+  const html = toHTML(`‘膚留梦’(${pairs.map(([kana, source]) => `${kana}〔${source}〕`).join("／")})ノ`);
+  assert.match(html, /<rt class="furigana kb-reading-lanes">/);
+  assert.equal((html.match(/class="kb-reading"/g) ?? []).length, 4);
+  for (const [kana, source] of pairs) {
+    assert.ok(html.includes(`data-kb-kana="${kana}" data-kb-source="${source}"`));
+  }
+  assert.doesNotMatch(html, /／/);
+  assert.match(html, /okurigana"><sup>ノ<\/sup>/);
+});
+
+test("kanbun explicit source forms escape markup and attributes", () => {
+  const html = toHTML('‘膚留梦’(フィルム〔<film & "forme">〕)');
+  assert.ok(html.includes('data-kb-source="&lt;film &amp; &quot;forme&quot;&gt;"'));
+  assert.doesNotMatch(html, /<film/);
+});
+
+test("kanbun keeps repetition marks, indentation, and real blank columns", () => {
+  for (const word of ["穣", "煌", "猟"]) {
+    assert.match(toHTML(`${word}〻(じょうじょう)`), /ninojiten punctuation"><sup>〻<\/sup>/);
+  }
+  const html = renderKanbun("甲\r\n\r\n　　血(ち)");
+  assert.equal((html.match(/<p\b/g) ?? []).length, 3);
+  assert.match(html, /<p class="kb-blank-column" aria-hidden="true"><\/p>/);
+  assert.equal((html.match(/class="kanji">　<\/span>/g) ?? []).length, 2);
+  assert.doesNotMatch(html, /\r/);
 });
 
 console.log(`${passed} tests passed${process.exitCode ? " (with failures)" : ""}`);
