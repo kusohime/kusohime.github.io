@@ -56,7 +56,8 @@ function enhanceReadings(kanbun: HTMLElement): void {
 }
 
 export function setKanbunLayout(kanbun: HTMLElement, dense: boolean): void {
-  const embed = kanbun.closest<HTMLElement>("[data-kanbun-embed], .kb-preview-wrap");
+  const embed = kanbun.closest<HTMLElement>(".kanbun-scroll, .kb-preview-wrap")
+    ?? kanbun.closest<HTMLElement>("[data-kanbun-embed]");
   const previousRange = embed ? embed.scrollWidth - embed.clientWidth : 0;
   const position = embed && previousRange > 0
     ? Math.min(1, Math.max(0, embed.scrollLeft / previousRange))
@@ -73,7 +74,16 @@ export function initializeKanbun(root: ParentNode = document): void {
   const kanbuns = [...root.querySelectorAll<HTMLElement>(".kanbun")];
   if (root instanceof HTMLElement && root.matches(".kanbun")) kanbuns.unshift(root);
   kanbuns.forEach((kanbun) => {
-    const embed = kanbun.closest<HTMLElement>("[data-kanbun-embed], .kb-preview-wrap");
+    const figure = kanbun.closest<HTMLElement>("[data-kanbun-embed]");
+    // Keep the controls outside the poem's horizontal scroller. Otherwise the
+    // browser scrolls an offscreen toggle into view before its click fires.
+    if (figure && kanbun.parentElement === figure) {
+      const scroller = document.createElement("div");
+      scroller.className = "kanbun-scroll";
+      kanbun.before(scroller);
+      scroller.append(kanbun);
+    }
+    const embed = kanbun.closest<HTMLElement>(".kanbun-scroll, .kb-preview-wrap") ?? figure;
     // Align after every live tool edit, as well as after initial font loading.
     const alignToReadingStart = () => {
       if (!embed) return;
@@ -89,7 +99,7 @@ export function initializeKanbun(root: ParentNode = document): void {
         // font metrics settle.
         document.fonts?.ready.then(alignToReadingStart).catch(() => undefined);
 
-        const toggles = embed.querySelectorAll<HTMLButtonElement>("[data-kb-layout]");
+        const toggles = (figure ?? embed).querySelectorAll<HTMLButtonElement>("[data-kb-layout]");
         toggles.forEach((button) => {
           button.addEventListener("click", () => {
             setKanbunLayout(kanbun, button.dataset.kbLayout === "dense");

@@ -353,6 +353,16 @@
   margin: 1.5rem 0;
 }
 
+.kanbun-embed:has(> .kanbun-scroll) {
+  overflow-x: visible;
+}
+
+.kanbun-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .kanbun-embed .kanbun {
   height: auto;
   font-size: 1.5rem;
