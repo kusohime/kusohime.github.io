@@ -4,6 +4,7 @@ subtitle: "Lili Boulanger, for Orchestra,"
 subtitleZh: "據 Lili Boulanger 原作，改編為管弦樂團"
 year: 2024
 category: "Arrangements"
+draft: true
 instrumentation:
   en: "1 flute · 1 oboe · 1 clarinet · 1 bassoon / 1 horn / piano · 1 percussionist / strings"
   zh: "長笛、雙簧管、單簧管、低音管各 1 / 法國號 1 / 鋼琴 / 打擊樂 1 人 / 弦樂組"
