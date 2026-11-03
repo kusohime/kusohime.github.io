@@ -40,7 +40,6 @@ const pageTitle = title
 const pageTitleZh = titleZh
   ? `${inlineMarkdownToPlainText(titleZh)} | ${site.name}`
   : pageTitle;
-const defaultLanguage = siteDefaults.defaultLanguage;
 const defaultTheme = siteDefaults.defaultTheme === "dark" ? "dark" : "light";
 const defaultFontFamily = "garamond";
 
@@ -99,6 +98,7 @@ const hierarchyBack = (() => {
 <!doctype html>
 <html
   lang="en"
+  data-locale="en"
   data-font-family={defaultFontFamily}
   data-unavailable-languages={unavailableLanguages.length > 0
     ? unavailableLanguages.join(" ")
@@ -152,22 +152,16 @@ const hierarchyBack = (() => {
         </>
       )
     }
-    <script is:inline define:vars={{ defaultLanguage, defaultTheme, defaultFontFamily }}>
-      // 在頁面繪製前恢復偏好設定，並固定公開頁面的 Garamond 字體。
-      // Restore preferences before paint and keep Garamond across the public site.
+    <script is:inline define:vars={{ defaultTheme, defaultFontFamily }}>
+      // 在頁面繪製前恢復主題；公開網站暫時固定使用英文和 Garamond 字體。
+      // Restore the theme before paint; keep the public site in English and Garamond.
       try {
         const storedTheme = localStorage.getItem("yc-theme");
-        const storedLanguage = localStorage.getItem("yc-language");
-        const language = storedLanguage ?? defaultLanguage;
         const theme = storedTheme === "dark" || storedTheme === "light"
           ? storedTheme
           : defaultTheme;
         document.documentElement.dataset.theme = theme;
         document.documentElement.dataset.fontFamily = defaultFontFamily;
-
-        if (language === "en" || language === "zh") {
-          document.documentElement.lang = language === "zh" ? "zh-Hant-TW" : language;
-        }
       } catch {}
     </script>
     <title data-i18n-title-en={pageTitle} data-i18n-title-zh={pageTitleZh}>{pageTitle}</title>

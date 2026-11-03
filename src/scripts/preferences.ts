@@ -19,7 +19,6 @@ import {
   formatDedication,
   formatDuration,
   formatPremiere,
-  localeCodes,
   localeInfo,
   toolGroupLabel,
   translate,
@@ -454,14 +453,9 @@ export function initializePreferences() {
   root.dataset.motionGlyphs = String(motionSettings.glyphRotation);
   root.dataset.motionInterface = String(motionSettings.interfaceMotion);
 
-  // 新访客的默认语言来自 src/config/siteDefaults.json（可在 Studio 中修改）。
-  // New visitors start in the language set in src/config/siteDefaults.json.
-  const fallbackLanguage = (localeCodes as readonly string[]).includes(
-    siteDefaults.defaultLanguage,
-  )
-    ? (siteDefaults.defaultLanguage as Locale)
-    : "en";
-  const language = readStored<Locale>("yc-language", localeCodes, fallbackLanguage);
+  // 公開網站暫時只使用英文，包括先前選擇中文的訪客。
+  // Keep the public site in English, including visitors with a saved Chinese preference.
+  const language: Locale = "en";
   const fallbackTheme: Theme = siteDefaults.defaultTheme === "dark" ? "dark" : "light";
   const theme = readStored<Theme>("yc-theme", ["light", "dark"], fallbackTheme);
   // 中文：舊訪客保存的字體選擇不再覆蓋網站的 Garamond 設計。
@@ -469,12 +463,6 @@ export function initializePreferences() {
   root.dataset.fontFamily = "garamond";
   applyTheme(theme, language);
   applyLanguage(language);
-
-  document.querySelectorAll<HTMLButtonElement>("[data-language-toggle]").forEach((button) => {
-    button.addEventListener("click", () => {
-      applyLanguage(activeLanguage() === "en" ? "zh" : "en", true);
-    });
-  });
 
   document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((button) => {
     button.addEventListener("click", () => {

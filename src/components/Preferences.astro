@@ -1,13 +1,12 @@
 ---
-// 中文：頁首偏好控制：語言與深淺主題。
-// English: Header preference controls for language and theme.
+// 中文：頁首深淺主題控制；公開網站暫時只使用英文。
+// English: Header theme control; the public site is temporarily English-only.
 import { translate, type Locale } from "../config/locales";
 
 interface Props {
   unavailableLanguages?: Locale[];
 }
 
-const { unavailableLanguages = [] } = Astro.props;
 ---
 
 <div
@@ -22,20 +21,6 @@ const { unavailableLanguages = [] } = Astro.props;
   >
     {translate("en", "preferences.group")}
   </span>
-  {/* 中文：语言标签显示当前状态，点按后切换至另一语言。 */}
-  {/* English: The language label shows the current state; one click switches it. */}
-  <button
-    type="button"
-    class="preference-toggle"
-    data-language-toggle
-    aria-label="Switch language"
-  >
-    <span class="visually-hidden" data-i18n-key="preferences.language">
-      {translate("en", "preferences.language")}
-    </span>
-    <span class="preference-value" data-current-language>EN</span>
-  </button>
-
   <button
     type="button"
     class="theme-toggle"
