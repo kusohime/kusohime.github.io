@@ -26,13 +26,15 @@ premiere:
 
 ## Program Notes
 
-The earliest known version of this piece is said to have been written by the Italian composer Pérotin. According to legend, the manuscript reached the Korean peninsula in the hands of the Venetian explorer Marco Polo. A giant shellfish is said to have exhaled a cloud of mist from which a mountain emerged. A monk residing on that mountain retrieved the manuscript, translated it into an unknown ancient Sinitic language, and eventually carried it to Japan.
+The earliest surviving version of this piece was composed by the Italian Pérotin during his French period. According to unofficial chronicles, it briefly caused a sensation throughout Europe. Marco Polo carried a copy on his travels in the East. After reaching the Korean peninsula, he encountered a giant shellfish at sea. The shellfish exhaled a cloud of mist, within which a mountain could faintly be seen, radiating light in five colors. A monk residing halfway up the mountain recovered the manuscript and translated it into a now-extinct Sinitic language. In this language, all nouns were temporary and could be declined only during certain astronomical events. The shellfish subsequently made landfall on the coast of Mino Province. Only the translation was brought ashore.
 
-For several centuries it remained with a female Japanese collector-scholar who, despite her efforts, never quite understood it. The only successful yield was an esoteric chart. I have translated it into English and placed it below. During the Second World War, a Japanese general, an amateur musicologist, brought the manuscript to Shanghai in hopes of finding someone who could interpret it. Copies were made at that time; one fell into the hands of a wealthy merchant who later emigrated to North America, bringing with him a version marked with baffling, ungrammatical Japanese pronunciation guides. This appears to have been the last surviving copy.
+For the next several centuries, the manuscript remained in the possession of a Japanese noblewoman who was both a collector and a scholar. She issued Turandot-like riddles to the world, seeking a means of deciphering the language. Her private notes indicate that the work still comprised seven movements at the time. Her published findings took the form of an esoteric chart documenting the principal misinterpretations of the manuscript. I have translated it into English and placed it below.
 
-Soviet agents reportedly sought it during the Cold War, but the anonymous keeper chose to destroy the physical manuscript and commit the entire piece to memory instead. I was fortunate to be able to transcribe the music on the day before the final keeper passed away. His last words were,
+During the Second World War, a Japanese general brought the manuscript to Shanghai in hopes of repairing its grammar. Several copies were made, one of which passed into the hands of a wealthy merchant. After a brief period of commercial success in Indonesia, the merchant emigrated to North America before the end of the war, preserving his copy intact. The other versions appear to have been looted by anonymous collectors or lost in the fighting. During the Cold War, Soviet authorities captured a shellfish in the southern part of the Chukotka Autonomous Okrug and obtained information about the work through what may have been torture. At the time, the last surviving copy was held by an unemployed musicologist in New Mexico. Upon learning of this, he quickly committed the manuscript to memory and burned it.
 
-> *sempre ad lib. e espr. assai...*
+I was fortunate to transcribe the entire work on the day before the musicologist’s death. He remained lucid throughout. His last words were:
+
+> *sempre ad lib. e espr. assai…*
 
 </div>
 
@@ -40,13 +42,15 @@ Soviet agents reportedly sought it during the Cold War, but the anonymous keeper
 
 ## 節目說明
 
-這部作品已知最早的版本，據說出自義大利作曲家 <ruby><span class="ruby-base">佩羅坦</span><rt>Pérotin</rt></ruby> 之手。傳說中，這份手稿經威尼斯探險家馬可‧波羅之手抵達朝鮮半島。據說有一隻巨大的貝類吐出一團霧氣，霧中浮現出一座山；山上一位僧人取得了手稿，將它譯成一種不明的古代漢語，最終把它帶到了日本。
+現存最早的版本由義大利作曲家 <ruby><span class="ruby-base">佩羅坦</span><rt>Pérotin</rt></ruby> 於其法國時期寫成，據野史記載一時轟動歐洲。馬可波羅在東方旅行時也攜帶了一份抄本。在他抵達朝鮮半島後，他在海上遇見了一隻巨大的貝類，貝吐出一團迷霧，迷霧中隱約有一座發著五種顏色的光的山。一位半山腰的僧人拾得手稿，將其譯為一種現已滅絕的漢語族語言。在這種語言中，所有名詞都是臨時的，只能在一定的天文學事件下變格。隨後，這隻貝登陸美濃國一處海岸，只有譯稿被帶上了陸地。
 
-此後數百年間，它一直由一位日本的女性收藏家兼學者保存；儘管她竭盡心力，卻始終未能真正讀懂。唯一的成果，是一張玄奧的圖表——我已將它譯成英文，置於下方。第二次世界大戰期間，一位兼為業餘音樂學者的日本將領，將手稿帶到上海，盼能尋得能解讀之人。當時謄抄了若干副本，其中一份落入一位富商之手；他後來移居北美，隨身帶著一份標註著令人費解、不合文法的日語讀音的版本。這似乎是僅存的最後一份。
+此後數百年間，手稿一直由一位日本貴族女性收藏家兼學者持有。她以圖蘭朵式謎題的形式向天下尋求這一語言的破譯方式。從她的手記來看，彼時全曲還有七個樂章。她公開發表的成果，是一張關於手稿主要誤解的秘傳圖表。我已將其譯成英文，置於下方。
 
-冷戰期間，據傳蘇聯特工曾尋訪此稿，但那位匿名的守護者選擇銷毀手稿實物，轉而將整部作品全數記誦於心。我有幸在最後一位守護者離世的前一天，將這部作品記譜下來。他的遺言是：
+第二次世界大戰期間，一位日本將軍將手稿帶往上海，希望修復它的語法。其間製作了數份抄本，其中一份落入一位富商手中。富商在印尼短暫地獲得了商業成功後，在戰爭結束之前移居北美，得以將抄本保持完整，而其他版本似乎都被匿名藏者劫掠或消失在戰火之中。冷戰期間，蘇聯在楚科奇自治區南部捕獲了一隻貝類，以或許是拷問的手段得知了這部作品的資訊。彼時，最後的抄本在新墨西哥州的一個未就業的音樂學家手中。他得知這一消息後，迅速背誦下了這個手稿的內容並將其燒毀。
 
-> *sempre ad lib. e espr. assai...*
+我有幸在這名音樂學家去世的前一天，將全曲轉錄下來。他始終神志清醒。他的遺言如下：
+
+> *sempre ad lib. e espr. assai…*
 
 </div>
 
