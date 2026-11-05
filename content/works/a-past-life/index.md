@@ -1,5 +1,5 @@
 ---
-title: "A Past Life 前世"
+title: "前世"
 year: 2025
 category: "Solo"
 instrumentation:

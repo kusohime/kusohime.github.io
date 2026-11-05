@@ -1,1 +1,1 @@
-- [*Bayanbulak*](/works/bayanbulak/)（首演）。[Hannah R. Nicholas](https://www.hannahroseviola.com/)，中提琴。
+- *Bayanbulak*（首演）。[Hannah R. Nicholas](https://www.hannahroseviola.com/)，中提琴。

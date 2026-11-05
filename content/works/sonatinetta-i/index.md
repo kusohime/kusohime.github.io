@@ -1,5 +1,5 @@
 ---
-title: "Sonatinetta I 微奏鳴曲 I"
+title: "Sonatinetta I"
 year: 2025
 category: "Solo"
 instrumentation:

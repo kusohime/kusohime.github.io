@@ -2,6 +2,7 @@
 title: "Bayanbulak ᠪᠠᠶᠠᠨᠪᠤᠯᠠᠭ"
 year: 2023
 category: "Solo"
+draft: true
 instrumentation:
   en: "Solo viola"
   zh: "中提琴獨奏"

@@ -1,5 +1,5 @@
 ---
-title: "DU, nouvelle prière bouddhique 妳：古代佛教祈禱"
+title: "DU, nouvelle prière bouddhique 妳：新佛祷"
 titleRuby:
   - base: "妳"
     annotation: "度"

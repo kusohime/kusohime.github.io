@@ -15,10 +15,11 @@ const mongolianMatch = title.match(mongolianPattern);
 const mongolianTitle = mongolianMatch?.[0] ?? "";
 const titleWithoutMongolian = title.replace(mongolianPattern, "").trim();
 const cjkIndex = titleWithoutMongolian.search(cjkPattern);
-const primaryTitle = splitLanguages && cjkIndex >= 0
+const hasSecondaryTitle = splitLanguages && cjkIndex > 0;
+const primaryTitle = hasSecondaryTitle
   ? titleWithoutMongolian.slice(0, cjkIndex).trim()
   : titleWithoutMongolian;
-const secondaryTitle = splitLanguages && cjkIndex >= 0
+const secondaryTitle = hasSecondaryTitle
   ? titleWithoutMongolian.slice(cjkIndex).trim()
   : "";
 

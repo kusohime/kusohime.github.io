@@ -1,5 +1,5 @@
 ---
-title: "Sonatinetta II 微奏鳴曲 II"
+title: "Sonatinetta II"
 year: 2026
 category: "Chamber"
 instrumentation:

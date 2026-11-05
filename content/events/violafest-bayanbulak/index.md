@@ -19,4 +19,4 @@ links:
     url: "https://www.swarthmore.edu/music/facilities"
 ---
 
-- [*Bayanbulak*](/works/bayanbulak/) (première). [Hannah R. Nicholas](https://www.hannahroseviola.com/), viola.
+- *Bayanbulak* (première). [Hannah R. Nicholas](https://www.hannahroseviola.com/), viola.
